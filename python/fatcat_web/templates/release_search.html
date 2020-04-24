@@ -35,37 +35,44 @@
 <br>
 
 {% if found %}
-{% if found.results %}
+  {% if found.results %}
+
     {{ entity_macros.top_results(found) }}
 
-  {% for paper in found.results %}
-  {{ entity_macros.release_search_result_row(paper) }}
-{% endfor %}
-{% if found.results|length > 8 %}
-  <div class="ui divider"></div>
-  <div style="text-align: center">
-  {{ entity_macros.bottom_results(found)}}
-  </div>
-{% endif %}
-{% else %}
+    {% for paper in found.results %}
+      {{ entity_macros.release_search_result_row(paper) }}
+    {% endfor %}
 
-Raw query was: <i>{{ found.query.q }}</i>
+    {% if found.results|length > 8 %}
+      <div class="ui divider"></div>
+      <div style="text-align: center">
+      {{ entity_macros.bottom_results(found, endpoint='release_search') }}
+      </div>
+    {% endif %}
 
-<div class="ui centered stackable grid" style="padding-top: 15%;">
-  <div class="row">
-    <div class="four wide column">
-      <img src="/static/paper_man_confused.gif" alt="confused paper man">
+  {% else %}
+
+    Raw query was: <i>{{ found.query.q }}</i>
+
+    <div class="ui centered stackable grid" style="padding-top: 15%;">
+      <div class="row">
+        <div class="four wide column">
+          <img src="/static/paper_man_confused.gif" alt="confused paper man">
+        </div>
+        <div class="six wide column">
+          <h2>No results found!</h2>
+          <p>You could try elsewhere:</p>
+          <ul>
+            <li>Search <a href="https://dissem.in/search?q={{ found.query.q | urlencode }}">dissem.in</a></li>
+            <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ found.query.q | urlencode }}">BASE</a></li>
+            <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="six wide column">
-  <h2>No results found!</h2>
-  <p>You could try elsewhere:</p>
-  <ul>
-    <li>Search <a href="https://dissem.in/search?q={{ found.query.q | urlencode }}">dissem.in</a></li>
-    <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ found.query.q | urlencode }}">BASE</a></li>
-    <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
-  </ul>
-</div>
-{% endif %}
+
+  {% endif %}
+
 {% endif %}
 
 </div>
