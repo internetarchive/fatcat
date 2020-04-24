@@ -3,9 +3,9 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
-{# HTML metadata embeddings #}
-{% if release and release.status == "active" %}
-  {% block extra_head %}
+{% block extra_head %}
+  {% if release and release.state == "active" %}
+    {# HTML metadata embeddings #}
     <link rel="canonical" href="https://{{ config.FATCAT_DOMAIN }}/release/{{ entity.ident }}">
     <meta name="twitter:card" content="summary">
 
@@ -70,8 +70,8 @@
         <meta name="citation_pdf_url" content="{{ url.url }}">
       {% endif %}
     {% endfor %}{% endfor %}
-  {% endblock %}
-{% endif %}
+  {% endif %}
+{% endblock %}
 
 {% block main_extra_attr %}itemscope itemtype="http://schema.org/ScholarlyArticle" itemid="#release"{% endblock %}
 
@@ -388,7 +388,7 @@ accessible version.
   <br>grouping other versions (eg, pre-print) and variants of this release
 </div>
 
-{% if release._can_citeproc %}
+{% if release.state == "active" and release._can_citeproc %}
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;">
     <i class="dropdown icon"></i><b>Cite This Release</b>
