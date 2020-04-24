@@ -54,10 +54,12 @@
   </a>
 </div>
 
+{% if entity.ident %}
 <div class="two ui buttons bottom attached">
   <a href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ entity.ident }}/edit" class="ui blue button">Edit Metadata</a>
   <a href="/{{ entity_type }}/{{ entity.ident }}/history" class="ui button">View History</a>
 </div>
+{% endif %}
 {%- endmacro %}
 
 

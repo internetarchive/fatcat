@@ -23,6 +23,7 @@
   Published by {{ container.publisher }}
 {% endif %}
 
+{% if container.state == "active" %}
 <h3>Search Releases from this Container</h3>
 <form class="" role="search" action="/release/search" method="get">
   <div class="ui form">
@@ -33,6 +34,7 @@
     </div>
   </div>
 </form>
+{% endif %}
 
 {% if container._random_releases %}
 <h3>Example Publications</h3>
