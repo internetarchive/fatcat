@@ -156,17 +156,35 @@
         [blank]
       {% endif %}
     </a>
+
+    {# release type suffix #}
+    {% if paper.release_type in ("article-journal", "paper-conference") %}
+      {# pass #}
+    {% elif paper.release_type in ("book", "chapter", "dataset") %}
+      <b style="text-transform: uppercase;">[{{ paper.release_type }}]</b>
+    {% elif not paper.release_type %}
+      <b style="text-transform: uppercase; color: black;">[unknown-media]</b>
+    {% else %}
+      <b style="text-transform: uppercase;">[{{ paper.release_type }}]</b>
+    {% endif %}
+
+    {# show original_title #}
+    {% if paper.original_title and paper.title != paper.original_title %}
+      <br>
+      <i style="font-weight: normal;">
+        {{ paper.original_title[:512] }} {% if paper.original_title|length > 512 %}...{% endif %}
+      </i>
+    {% endif %}
+
   </h4>
+
   {% if paper.best_pdf_url %}
   <div style="float: right; padding: 4px;">
   &nbsp;&nbsp;<a href="{{ paper.best_pdf_url }}" class="ui violet tag label"><i class="file icon"></i>fulltext</a>
   </div>
   {% endif %}
-  {#
-  <h5 style="margin-top: 4px; margin-bottom: 4px; font-size: 1em;">{{ ", ".join(paper.contrib_names[:12]) }}
-    {% if paper.contrib_names|length > 12 %}<i>(+{{ paper.contrib_names|length - 12 }} others)</i>{% endif %}
-  </h5>
-  #}
+
+  {# ### AUTHOR ROW #}
   {% if paper.contrib_names %}
     <div style="margin-top: 0px; margin-bottom: 0px; font-size: 1em;">
     <b>
@@ -175,25 +193,14 @@
     </b>
     </div>
   {% endif %}
+
+
+  {# ### JOURNAL ROW #}
   {% if paper.release_year %}
     {{ paper.release_year }}
   {% endif %}
-  {% if paper.release_type %}
-    {% if paper.release_type in ("article-journal", "paper-conference") %}
-      <span class="ui black basic label small">{{ paper.release_type }}</span>
-    {% elif paper.release_type in ("book") %}
-      <span class="ui brown basic label small">{{ paper.release_type }}</span>
-    {% else %}
-      <span class="ui grey basic label small">{{ paper.release_type }}</span>
-    {% endif %}
-  {% endif %}
-  {% if paper.withdrawn_status %}
-    <span class="ui red label small">{{ paper.withdrawn_status }}</span>
-  {% endif %}
-  {% if paper.release_stage and paper.release_stage != "published" %}
-    <span class="ui pink basic label small">{{ paper.release_stage }}</span>
-  {% elif not paper.release_stage %}
-    <span class="ui red basic label small">unknown</span>
+  {% if paper.release_year and paper.container_name %}
+    |
   {% endif %}
   {% if paper.container_name %}
     {% if paper.container_id %}
@@ -203,8 +210,22 @@
     {% endif %}
     {% if paper.container_is_oa %}<i class="icon unlock orange small"></i>{% endif %}
   {% endif %}
-  {% if paper.doi or paper.pmid or paper.arxiv_id or paper.jstor_id %}
-  <br>
+  {% if paper.withdrawn_status %}
+    <b style="color: red;"><code>[{{ paper.withdrawn_status }}]</code></b>
+  {% endif %}
+  {% if paper.release_stage == "accepted" %}
+    <b style="color: darkmagenta;"><code>[{{ paper.release_stage }} manuscript]</code></b>
+  {% elif paper.release_stage == "submitted" %}
+    <b style="color: magenta;"><code>[pre-print]</code></b>
+  {% elif paper.release_stage and paper.release_stage != "published" %}
+    <b style="color: magenta;"><code>[{{ paper.release_stage }}]</code></b>
+  {% elif not paper.release_stage %}
+    <b style="color: red;"><code>[unpublished?]</code></b>
+  {% endif %}
+
+  {# ### IDENTIFIERS #}
+  {% if paper.doi or paper.pmid or paper.arxiv_id or paper.jstor_id or paper.pmcid %}
+    <br>
   {% endif %}
   {% if paper.doi %}
     <a href="https://doi.org/{{paper.doi }}" style="color: green;">doi:{{ paper.doi }}</a> &nbsp;
@@ -212,13 +233,18 @@
   {% if paper.pmid %}
     <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{paper.pmid }}" style="color: green;">pmid:{{ paper.pmid }}</a> &nbsp;
   {% endif %}
+  {% if paper.pmcid %}
+    <a href="https://pubmed.ncbi.nlm.nih.gov/{{paper.pmcid }}/" style="color: green;">pmcid:{{ paper.pmcid }}</a> &nbsp;
+  {% endif %}
   {% if paper.arxiv_id %}
     <a href="https://arxiv.org/abs/{{paper.arxiv_id }}" style="color: green;">arXiv:{{ paper.arxiv_id }}</a> &nbsp;
   {% endif %}
-  {% if False %} {# XXX: elastic release work grouping searches #}
+
+{# WIP: elastic release work grouping searches
   <br>
   <a href="/work/{{ paper.work_id }}"><i class="sitemap icon"></i> and 5 other versions of the same work!</a>
-  {% endif %}
+#}
+
 </div>
 {% endmacro %}
 
