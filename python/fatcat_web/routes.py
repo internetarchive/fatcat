@@ -707,6 +707,8 @@ def generic_search():
 def release_search():
 
     query = request.args.get('q')
+    if not query:
+        query = '*'
     fulltext_only = bool(request.args.get('fulltext_only'))
 
     issnl = request.args.get('container_issnl')
@@ -731,6 +733,8 @@ def release_search():
 def container_search():
 
     query = request.args.get('q')
+    if not query:
+        query = '*'
     offset = request.args.get('offset', '0')
     offset = max(0, int(offset)) if offset.isnumeric() else 0
 
