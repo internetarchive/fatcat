@@ -36,6 +36,7 @@ rm -rf api/
 echo "Running cargo-fmt (final time)..."
 cargo fmt
 
-cp Cargo.toml Cargo.toml.new
+cp Cargo.toml Cargo.toml.codegen
 git checkout Cargo.toml
-echo "Make sure to review/merge fatcat-openapi/Cargo.toml by hand (compare with fatcat-openapi/Cargo.toml.new)"
+diff Cargo.toml Cargo.toml.codegen && true
+echo "Check the above diff for non-metadata changes to fatcat-openapi/Cargo.toml"
