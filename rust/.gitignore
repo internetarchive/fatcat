@@ -2,5 +2,6 @@
 target/
 bin/
 fatcat-*.tar.gz
+fatcat-openapi/Cargo.toml.codegen
 
 !.cargo
