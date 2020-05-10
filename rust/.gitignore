@@ -3,5 +3,6 @@ target/
 bin/
 fatcat-*.tar.gz
 fatcat-openapi/Cargo.toml.codegen
+openapi-generator-cli*.jar
 
 !.cargo
