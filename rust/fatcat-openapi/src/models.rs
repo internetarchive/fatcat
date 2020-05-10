@@ -5170,7 +5170,7 @@ pub struct ReleaseEntity {
     /// Full date when this release was formally published. ISO format, like `2019-03-05`. See guide for semantics.
     #[serde(rename = "release_date")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_date: Option<chrono::DateTime<chrono::Utc>>,
+    pub release_date: Option<chrono::NaiveDate>,
 
     /// Year when this release was formally published. Must match `release_date` if that field is set; this field exists because sometimes only the year is known.
     #[serde(rename = "release_year")]
@@ -5185,7 +5185,7 @@ pub struct ReleaseEntity {
     /// Full date when this release was formally withdrawn (if applicable). ISO format, like `release_date`.
     #[serde(rename = "withdrawn_date")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub withdrawn_date: Option<chrono::DateTime<chrono::Utc>>,
+    pub withdrawn_date: Option<chrono::NaiveDate>,
 
     /// Year corresponding with `withdrawn_date` like `release_year`/`release_date`.
     #[serde(rename = "withdrawn_year")]
@@ -5463,10 +5463,10 @@ impl std::str::FromStr for ReleaseEntity {
             pub container_id: Vec<String>,
             pub release_type: Vec<String>,
             pub release_stage: Vec<String>,
-            pub release_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub release_date: Vec<chrono::NaiveDate>,
             pub release_year: Vec<i64>,
             pub withdrawn_status: Vec<String>,
-            pub withdrawn_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub withdrawn_date: Vec<chrono::NaiveDate>,
             pub withdrawn_year: Vec<i64>,
             pub ext_ids: Vec<models::ReleaseExtIds>,
             pub volume: Vec<String>,
@@ -5566,20 +5566,18 @@ impl std::str::FromStr for ReleaseEntity {
                     "release_stage" => intermediate_rep
                         .release_stage
                         .push(String::from_str(val).map_err(|x| format!("{}", x))?),
-                    "release_date" => intermediate_rep.release_date.push(
-                        chrono::DateTime::<chrono::Utc>::from_str(val)
-                            .map_err(|x| format!("{}", x))?,
-                    ),
+                    "release_date" => intermediate_rep
+                        .release_date
+                        .push(chrono::NaiveDate::from_str(val).map_err(|x| format!("{}", x))?),
                     "release_year" => intermediate_rep
                         .release_year
                         .push(i64::from_str(val).map_err(|x| format!("{}", x))?),
                     "withdrawn_status" => intermediate_rep
                         .withdrawn_status
                         .push(String::from_str(val).map_err(|x| format!("{}", x))?),
-                    "withdrawn_date" => intermediate_rep.withdrawn_date.push(
-                        chrono::DateTime::<chrono::Utc>::from_str(val)
-                            .map_err(|x| format!("{}", x))?,
-                    ),
+                    "withdrawn_date" => intermediate_rep
+                        .withdrawn_date
+                        .push(chrono::NaiveDate::from_str(val).map_err(|x| format!("{}", x))?),
                     "withdrawn_year" => intermediate_rep
                         .withdrawn_year
                         .push(i64::from_str(val).map_err(|x| format!("{}", x))?),
