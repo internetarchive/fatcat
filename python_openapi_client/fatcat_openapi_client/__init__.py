@@ -15,7 +15,7 @@
 
 from __future__ import absolute_import
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 # import apis into sdk package
 from fatcat_openapi_client.api.default_api import DefaultApi

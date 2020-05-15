@@ -484,7 +484,7 @@ class DefaultApi(object):
     def create_container(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_container  # noqa: E501
 
-        Create a single Container entity as part of an existing editgroup.  Editgroup must be mutable (aka, not accepted) and editor must have permission (aka, have created the editgrou p or have `admin` role).   # noqa: E501
+        Create a single Container entity as part of an existing editgroup.  Editgroup must be mutable (aka, not accepted) and editor must have permission (aka, have created the editgroup or have `admin` role).   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.create_container(editgroup_id, entity, async_req=True)
@@ -510,7 +510,7 @@ class DefaultApi(object):
     def create_container_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_container  # noqa: E501
 
-        Create a single Container entity as part of an existing editgroup.  Editgroup must be mutable (aka, not accepted) and editor must have permission (aka, have created the editgrou p or have `admin` role).   # noqa: E501
+        Create a single Container entity as part of an existing editgroup.  Editgroup must be mutable (aka, not accepted) and editor must have permission (aka, have created the editgroup or have `admin` role).   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.create_container_with_http_info(editgroup_id, entity, async_req=True)
@@ -9986,7 +9986,7 @@ class DefaultApi(object):
     def update_container(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_container  # noqa: E501
 
-        Updates an existing entity as part of a specific (existing) editgroup. The editgroup must be open for updates (aka, not accepted/merged), and the editor making the requiest must have permissions (aka, must have created the editgroup or have `admin` role).  This method can also be used to update an existing entity edit as part of an editgroup. For example, if an entity was created in this editgroup, an editor could make changes to the new entity's metadata before merging.   # noqa: E501
+        Updates an existing entity as part of a specific (existing) editgroup. The editgroup must be open for updates (aka, not accepted/merged), and the editor making the request must have permissions (aka, must have created the editgroup or have `admin` role).  This method can also be used to update an existing entity edit as part of an editgroup. For example, if an entity was created in this editgroup, an editor could make changes to the new entity's metadata before merging.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.update_container(editgroup_id, ident, entity, async_req=True)
@@ -10013,7 +10013,7 @@ class DefaultApi(object):
     def update_container_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_container  # noqa: E501
 
-        Updates an existing entity as part of a specific (existing) editgroup. The editgroup must be open for updates (aka, not accepted/merged), and the editor making the requiest must have permissions (aka, must have created the editgroup or have `admin` role).  This method can also be used to update an existing entity edit as part of an editgroup. For example, if an entity was created in this editgroup, an editor could make changes to the new entity's metadata before merging.   # noqa: E501
+        Updates an existing entity as part of a specific (existing) editgroup. The editgroup must be open for updates (aka, not accepted/merged), and the editor making the request must have permissions (aka, must have created the editgroup or have `admin` role).  This method can also be used to update an existing entity edit as part of an editgroup. For example, if an entity was created in this editgroup, an editor could make changes to the new entity's metadata before merging.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.update_container_with_http_info(editgroup_id, ident, entity, async_req=True)

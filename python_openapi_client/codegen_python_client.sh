@@ -20,7 +20,7 @@ docker run \
     --input-spec /tmp/swagger/api.yml \
     --output /tmp/swagger/ \
     --package-name=fatcat_openapi_client \
-    -p packageVersion="0.3.1"
+    -p packageVersion="0.3.2"
 
 sudo chown -R `whoami`:`whoami` $OUTPUT
 mkdir -p fatcat_openapi_client
