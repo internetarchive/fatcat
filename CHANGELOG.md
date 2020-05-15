@@ -31,9 +31,13 @@ this release.
 ### Fixed
 
 - pubmed importer `text` vs. `get_text()` for HTML tags
+- fatcat-python-client package now works with Python 3.7, with removal of
+  `async` keyword
 
 ### Changed
 
+- fatcat-python-client re-code-generated using openapi generator instead of
+  swagger tooling
 - minimum rust version now 1.36
 - Switch from swagger-codegen to openapi-generator for python client generation
 - switch python Kafka code from pykafka to confluent-kafka
