@@ -201,11 +201,11 @@ class JalcImporter(EntityImporter):
         date = record.date or None
         if date:
             date = date.string
-            if len(date) is 10:
+            if len(date) == 10:
                 release_date = datetime.datetime.strptime(date['completed-date'], DATE_FMT).date()
                 release_year = release_date.year
                 release_date = release_date.isoformat()
-            elif len(date) is 4 and date.isdigit():
+            elif len(date) == 4 and date.isdigit():
                 release_year = int(date)
 
         pages = None

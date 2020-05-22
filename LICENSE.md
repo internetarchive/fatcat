@@ -5,15 +5,15 @@ The schema files are:
 
     Copyright, 2018 Bryan Newbold <bnewbold@robocracy.org)
 
-The python 'fatcat_openapi_client' API client library (under the
+The Python 'fatcat_openapi_client' API client library (under the
 ./python/fatcat_openapi_client/ directory), which is auto-generated from a
 swagger/openapi schema specification, is released to the public domain.
 
-The rust 'fatcat-openapi' API library (under the ./rust/fatcat-openapi/
+The Rust 'fatcat-openapi' API library (under the ./rust/fatcat-openapi/
 directory), which is auto-generated from the swagger/openapi schema
 specification, is released to the public domain.
 
-The python 'fatcat' web interface, tests, scripts, and bots (under the
+The Python 'fatcat' web interface, tests, scripts, and bots (under the
 ./python/ directory, not including fatcat_openapi_client), unless otherwise specified
 are released under the GNU Affero General Public License, version 3. A copy of
 this license should be included in this repository. Unless otherwise indicated
@@ -21,7 +21,7 @@ this code is:
 
     Copyright, 2018 Bryan Newbold <bnewbold@robocracy.org)
 
-The rust 'fatcat' API server, tests, scripts, and associated programs (under
+The Rust 'fatcat' API server, tests, scripts, and associated programs (under
 the ./rust/fatcat/ directory), unless otherwise specified are released under
 the GNU Affero General Public License, version 3. A copy of this license should
 be included in this repository. Unless otherwise indicated this code is:
