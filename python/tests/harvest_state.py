@@ -11,7 +11,7 @@ def test_harvest_state():
 
     hs = HarvestState(catchup_days=5)
     assert max(hs.to_process) < today
-    assert len(hs.to_process) is 5
+    assert len(hs.to_process) == 5
 
     for d in list(hs.to_process):
         hs.complete(d)
@@ -22,12 +22,12 @@ def test_harvest_state():
         start_date=datetime.date(2000,1,1),
         end_date=datetime.date(2000,1,3),
     )
-    assert len(hs.to_process) is 3
+    assert len(hs.to_process) == 3
     hs = HarvestState(
         start_date=datetime.date(2000,1,29),
         end_date=datetime.date(2000,2,2),
     )
-    assert len(hs.to_process) is 5
+    assert len(hs.to_process) == 5
 
     hs = HarvestState(catchup_days=0)
     assert hs.next() is None
@@ -35,6 +35,6 @@ def test_harvest_state():
         start_date=datetime.date(2000,1,1),
         end_date=datetime.date(2000,1,3),
     )
-    assert len(hs.to_process) is 3
+    assert len(hs.to_process) == 3
     hs.update('{"completed-date": "2000-01-02"}')
-    assert len(hs.to_process) is 2
+    assert len(hs.to_process) == 2
