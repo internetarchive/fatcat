@@ -144,7 +144,7 @@ class PubmedFTPWorker:
             if len(self.date_file_map) == 0:
                 raise ValueError("map from dates to files should not be empty, maybe the HTML changed?")
 
-            current = self.state.next(continuous)
+            current = self.state.next(continuous) # pylint: disable=not-callable
             if current:
                 print("Fetching citations updated on {} (UTC)".format(current), file=sys.stderr)
                 self.fetch_date(current)

@@ -98,7 +98,7 @@ class HarvestOaiPmhWorker:
     def run(self, continuous=False):
 
         while True:
-            current = self.state.next(continuous)
+            current = self.state.next(continuous) # pylint: disable=not-callable
             if current:
                 print("Fetching DOIs updated on {} (UTC)".format(current), file=sys.stderr)
                 self.fetch_date(current)
