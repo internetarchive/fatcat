@@ -19,6 +19,7 @@ class IngestFileResultImporter(EntityImporter):
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
             **kwargs)
+        self.use_glutton_match = False
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
         self.require_grobid = require_grobid
@@ -109,7 +110,7 @@ class IngestFileResultImporter(EntityImporter):
                         continue
                 release_ident = release.ident
                 break
-        if not release_ident and row.get('grobid'):
+        if self.use_glutton_match and not release_ident and row.get('grobid'):
             # try biblio-glutton extracted hit
             if row['grobid'].get('fatcat_release'):
                 release_ident = row['grobid']['fatcat_release'].split('_')[-1]
@@ -197,8 +198,7 @@ class IngestFileResultImporter(EntityImporter):
         if not existing:
             return True
 
-        # the following checks all assume there is an existing item
-
+        # NOTE: the following checks all assume there is an existing item
         if (fe.release_ids[0] in existing.release_ids) and existing.urls:
             # TODO: could still, in theory update with the new URL?
             self.counts['exists'] += 1
