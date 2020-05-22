@@ -17,6 +17,7 @@ pytest-cov = "*"
 pylint = "*"
 pg-view = "*"
 pytest-mock = "*"
+flake8 = "*"
 
 [packages]
 fatcat-openapi-client = {path = "./../python_openapi_client"}
