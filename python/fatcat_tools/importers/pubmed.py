@@ -782,6 +782,7 @@ class PubmedImporter(EntityImporter):
                 # NOTE: API behavior might change in the future?
                 if "release_edit_editgroup_id_ident_id_key" in err.body:
                     self.counts['skip-update-conflict'] += 1
+                    return False
                 else:
                     raise err
             finally:

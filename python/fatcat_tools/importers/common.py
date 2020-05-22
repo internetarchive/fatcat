@@ -458,7 +458,8 @@ class EntityImporter:
             creator_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
-            assert ae.status == 404
+            if ae.status != 404:
+                raise ae
         self._orcid_id_map[orcid] = creator_id # might be None
         return creator_id
 
@@ -479,7 +480,8 @@ class EntityImporter:
             release_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
-            assert ae.status == 404
+            if ae.status != 404:
+                raise ae
         self._doi_id_map[doi] = release_id # might be None
         return release_id
 
@@ -495,7 +497,8 @@ class EntityImporter:
             release_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
-            assert ae.status == 404
+            if ae.status != 404:
+                raise ae
         self._pmid_id_map[pmid] = release_id # might be None
         return release_id
 
@@ -512,7 +515,8 @@ class EntityImporter:
             container_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
-            assert ae.status == 404
+            if ae.status != 404:
+                raise ae
         self._issnl_id_map[issnl] = container_id # might be None
         return container_id
 

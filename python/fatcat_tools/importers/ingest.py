@@ -108,6 +108,7 @@ class IngestFileResultImporter(EntityImporter):
                     elif err.status == 400:
                         self.counts['warn-extid-invalid'] += 1
                         continue
+                    raise err
                 release_ident = release.ident
                 break
         if self.use_glutton_match and not release_ident and row.get('grobid'):
