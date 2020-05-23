@@ -30,6 +30,7 @@ jobs:
       - run: isort --recursive . || true
       - run: reorder-python-imports . || true
       - run: pip install -r requirements.txt || true
+      - run: cd python
       # - run: pytest . || true
       - run: pipenv run pytest --cov
       - run: pipenv run ./tests/cli.sh
