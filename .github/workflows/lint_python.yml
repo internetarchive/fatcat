@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@master
-      - uses: dschep/install-pipenv-action@master
+      - uses: dschep/install-pipenv-action@v1
       # with:
       #   python-version: ${{ matrix.python-version }}
       - run: pip install --upgrade pip
