@@ -16,7 +16,7 @@ def test_harvest_state():
     for d in list(hs.to_process):
         hs.complete(d)
 
-    assert hs.next() is None # pylint: disable=not-callable
+    assert hs.next_span() is None
 
     hs = HarvestState(
         start_date=datetime.date(2000,1,1),
@@ -30,7 +30,7 @@ def test_harvest_state():
     assert len(hs.to_process) == 5
 
     hs = HarvestState(catchup_days=0)
-    assert hs.next() is None # pylint: disable=not-callable
+    assert hs.next_span() is None
     hs.enqueue_period(
         start_date=datetime.date(2000,1,1),
         end_date=datetime.date(2000,1,3),

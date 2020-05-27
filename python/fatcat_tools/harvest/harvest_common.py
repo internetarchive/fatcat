@@ -83,12 +83,12 @@ class HarvestState:
                 self.to_process.add(current)
             current += datetime.timedelta(days=1)
 
-    def next(self, continuous=False):
+    def next_span(self, continuous=False):
         """
         Gets next timespan (date) to be processed, or returns None if completed.
 
         If 'continuous' arg is True, will try to enqueue recent possibly valid
-        timespans; the idea is to call next() repeatedly, and it will return a
+        timespans; the idea is to call next_span() repeatedly, and it will return a
         new timespan when it becomes "available".
         """
         if continuous:
