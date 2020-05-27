@@ -12,3 +12,5 @@ notes=FIXME,XXX,DELETEME
 
 [TYPECHECK]
 ignored-modules=responses
+# FileEntityForm' has no 'data' member (no-member) (etc)
+generated-members=data,errors
