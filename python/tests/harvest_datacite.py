@@ -13,11 +13,11 @@ def test_datacite_harvest_date(mocker):
     # to Kafka
     mocker.patch('fatcat_tools.harvest.harvest_common.HarvestState.initialize_from_kafka')
 
-    # mock day request to crossref API
+    # mock day request to datacite API
     with open('tests/files/datacite_api.json', 'r') as f:
-        crossref_resp = json.loads(f.readline())
+        resp = json.loads(f.readline())
     responses.add(responses.GET, 'https://api.datacite.org/dois',
-        json=crossref_resp, status=200)
+        json=resp, status=200)
 
     harvester = HarvestDataciteWorker(
         kafka_hosts="dummy",
