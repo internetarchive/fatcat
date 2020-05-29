@@ -143,7 +143,7 @@ class HarvestCrossrefWorker:
                 time.sleep(30.0)
                 continue
             if http_resp.status_code == 400:
-                print("skipping batch for {}, due to HTTP 400. Marking complete. Related: https://github.com/datacite/datacite/issues/897".format(date_str),
+                print("skipping batch for {}, due to HTTP 400 on {}. Marking complete. Related: https://github.com/datacite/datacite/issues/897".format(http_resp.url, date_str),
                       file=sys.stderr)
                 break
             http_resp.raise_for_status()
