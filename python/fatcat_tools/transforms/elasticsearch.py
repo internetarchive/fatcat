@@ -508,4 +508,16 @@ def file_to_elasticsearch(entity):
     t['in_ia'] = bool('archive.org' in t['domains'])
     t['in_ia_petabox'] = bool('archive.org' in t['hosts'])
 
+    any_url = None
+    good_url = None
+    best_url = None
+    for release_url in (entity.urls or []):
+        any_url = release_url.url
+        if release_url.rel in ('webarchive', 'repository'):
+            good_url = release_url.url
+        if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
+            best_url = release_url.url
+    # here is where we bake-in priority; IA-specific
+    t['best_url'] = best_url or good_url or any_url
+
     return t

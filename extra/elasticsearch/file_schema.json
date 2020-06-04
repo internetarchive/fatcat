@@ -44,6 +44,7 @@
             "rels":             { "type": "keyword", "normalizer": "default" },
             "in_ia":            { "type": "boolean" },
             "in_ia_petabox":    { "type": "boolean" },
+            "best_url":         { "type": "keyword", "normalizer": "default" },
 
             "release_id":       { "type": "alias", "path": "release_ids" },
             "sha1hex":          { "type": "alias", "path": "sha1" },
