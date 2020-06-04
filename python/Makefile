@@ -21,4 +21,4 @@ test-cli: ## Run CLI commands. WARNING: may mutate local database
 
 .PHONY: dev
 dev: ## Run web service locally, with reloading
-	pipenv run ./fatcat_web.py --debug
+	pipenv run ./fatcat_webface.py --debug
