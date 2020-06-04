@@ -30,6 +30,8 @@ def enrich_creator_entity(entity):
     return entity
 
 def enrich_file_entity(entity):
+    if entity.state == "active":
+        entity._es = file_to_elasticsearch(entity)
     return entity
 
 def enrich_fileset_entity(entity):
