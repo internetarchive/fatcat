@@ -253,8 +253,8 @@ accessible version.
 </div>
 <div class="column" style="flex: 0 0 24em;">
 
-{% if entity.state == 'active' and entity.files != [] and entity.files[0].urls != [] %}
-<a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Read Full Text</a>
+{% if entity.state == 'active' and entity._es and entity._es.best_pdf_url %}
+<a href="{{ entity._es.best_pdf_url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Read Full Text</a>
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
 <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
 {% elif entity.state == 'active' %}
