@@ -2,9 +2,6 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-include .env
-export
-
 .PHONY: help
 help: ## Print info about all commands
 	@echo "Commands:"
