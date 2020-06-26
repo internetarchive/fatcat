@@ -52,6 +52,11 @@ def clean_doi(raw):
         return None
     if not DOI_REGEX.fullmatch(raw):
         return None
+    # will likely want to expand DOI_REGEX to exclude non-ASCII characters, but
+    # for now block specific characters so we can get PubMed importer running
+    # again.
+    if 'ä' in raw:
+        return None
     return raw
 
 def test_clean_doi():
@@ -65,6 +70,7 @@ def test_clean_doi():
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/ asdf ") == None
     assert clean_doi("10.4149/gpb¬_2017042") == None  # "logical negation" character
+    assert clean_doi("10.6002/ect.2020.häyry") == None  # this example via pubmed (pmid:32519616)
 
 ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
 
