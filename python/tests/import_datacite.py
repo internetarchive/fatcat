@@ -174,6 +174,7 @@ def test_parse_datacite_dates():
         Case('empty list is None', [], (None, None, None)),
         Case('empty item is None', [{}], (None, None, None)),
         Case('year only yields year only', [{'date': '2019'}], (None, None, 2019)),
+        Case('int year', [{'date': 2019}], (None, None, 2019)),
         Case('first wins', [{'date': '2019'}, {'date': '2020'}], (None, None, 2019)),
         Case('skip bogus year', [{'date': 'abc'}, {'date': '2020'}], (None, None, 2020)),
         Case('first with type', [
