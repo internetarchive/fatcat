@@ -46,8 +46,13 @@ CONTAINER_TYPE_MAP = {
 # normalize CC licenses better.
 # The current norm is to only add license slugs that are at least partially OA.
 LICENSE_SLUG_MAP = {
+    "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
+    "//creativecommons.org/publicdomain/mark/1.0/": "CC-0",
+    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
+    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
     "//creativecommons.org/publicdomain/zero/1.0/": "CC-0",
     "//creativecommons.org/publicdomain/zero/1.0/legalcode": "CC-0",
+    "//creativecommons.org/share-your-work/public-domain/cc0/": "CC-0",
     "//creativecommons.org/licenses/by/2.0/": "CC-BY",
     "//creativecommons.org/licenses/by/3.0/": "CC-BY",
     "//creativecommons.org/licenses/by/4.0/": "CC-BY",
@@ -61,6 +66,14 @@ LICENSE_SLUG_MAP = {
     "//creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
     "//creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
     "//creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-NC-ND",
+    "//spdx.org/licenses/CC0-1.0.json": "CC-0",
+    "//spdx.org/licenses/CC-BY-1.0.json": "CC-BY",
+    "//spdx.org/licenses/CC-BY-4.0.json": "CC-BY",
+    "//spdx.org/licenses/CC-BY-NC-4.0.json": "CC-BY-NC",
+    "//spdx.org/licenses/CC-BY-SA-3.0.json": "CC-BY-SA",
+    "//spdx.org/licenses/CC-BY-SA-4.0.json": "CC-BY-SA",
+    "//spdx.org/licenses/MIT.json": "MIT",
+    "//spdx.org/licenses/OGL-Canada-2.0.json": "OGL-Canada",
     "//www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
     "//www.karger.com/Services/SiteLicenses": "KARGER",
     "//pubs.acs.org/page/policy/authorchoice_termsofuse.html": "ACS-CHOICE",
