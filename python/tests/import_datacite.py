@@ -340,6 +340,20 @@ def test_lookup_license_slug():
         Case('http://onlinelibrary.wiley.com/termsAndConditions', 'WILEY'),
         Case('https://publikationen.bibliothek.kit.edu/kitopen-lizenz', 'KIT-OPEN'),
         Case('http://journals.sagepub.com/page/policies/text-and-data-mining-license', 'SAGE-TDM'),
+    	Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
+    	Case('http://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
+    	Case('https://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
+    	Case('https://creativecommons.org/publicdomain/mark/1.0/', 'CC-PUBLICDOMAIN'),
+    	Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
+    	Case('https://creativecommons.org/share-your-work/public-domain/cc0/', 'CC-0'),
+    	Case('http://spdx.org/licenses/CC0-1.0.json', 'CC-0'),
+    	Case('http://spdx.org/licenses/CC-BY-1.0.json', 'CC-BY'),
+    	Case('http://spdx.org/licenses/CC-BY-4.0.json', 'CC-BY'),
+    	Case('http://spdx.org/licenses/CC-BY-NC-4.0.json', 'CC-BY-NC'),
+    	Case('http://spdx.org/licenses/CC-BY-SA-3.0.json', 'CC-BY-SA'),
+    	Case('http://spdx.org/licenses/CC-BY-SA-4.0.json', 'CC-BY-SA'),
+    	Case('http://spdx.org/licenses/MIT.json', 'MIT'),
+    	Case('http://spdx.org/licenses/OGL-Canada-2.0.json', 'OGL-CANADA'),
     ]
 
     for c in cases:

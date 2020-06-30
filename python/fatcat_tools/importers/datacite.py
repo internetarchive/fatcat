@@ -824,9 +824,14 @@ def lookup_license_slug(raw):
         return 'CC-0'
 
     if 'creativecommons' in raw:
+        # https://creativecommons.org/publicdomain/mark/1.0/deed.de
+        if 'creativecommons.org/publicdomain' in raw:
+            return 'CC-PUBLICDOMAIN'
+        if 'creativecommons.org/share-your-work/public-domain/cc0' in raw:
+            return 'CC-0'
         # https://creativecommons.org/licenses/by/4.0/deed.es_ES
         raw = raw.lower()
-        match = re.search(r'creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)', raw)
+        match = re.search(r'creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)', raw, re.IGNORECASE)
         if not match:
             print('missed potential license: {}'.format(raw), file=sys.stderr)
             return None
@@ -839,7 +844,7 @@ def lookup_license_slug(raw):
 
     if 'opensource.org' in raw:
         # https://opensource.org/licenses/alphabetical, e.g. opensource.org/licenses/EUPL-1.2
-        match = re.search(r'opensource.org/licenses/(?P<name>[^/]+)', raw)
+        match = re.search(r'opensource.org/licenses/(?P<name>[^/]+)', raw, re.IGNORECASE)
         if not match:
             print('missed potential license: {}'.format(raw), file=sys.stderr)
             return None
@@ -848,11 +853,11 @@ def lookup_license_slug(raw):
             return None
         if len(name) > 11:
             return None
-        return name
+        return name.upper()
 
     if 'gnu.org' in raw:
         # http://www.gnu.org/copyleft/gpl, https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
-        match = re.search(r'/(?P<name>fdl(-[0-9.]*[0-9]+)?|gpl(-[0-9.]*[0-9]+)?|lgpl(-[0-9.]*[0-9]+)|aglp(-[0-9.]*[0-9]+)?)', raw)
+        match = re.search(r'/(?P<name>fdl(-[0-9.]*[0-9]+)?|gpl(-[0-9.]*[0-9]+)?|lgpl(-[0-9.]*[0-9]+)|aglp(-[0-9.]*[0-9]+)?)', raw, re.IGNORECASE)
         if not match:
             print('missed potential license: {}'.format(raw), file=sys.stderr)
             return None
@@ -864,20 +869,21 @@ def lookup_license_slug(raw):
         return name.upper()
 
     if 'spdx.org' in raw:
+        if 'spdx.org/licenses/CC0' in raw:
+            return 'CC-0'
         # https://spdx.org/licenses/CC-BY-NC-ND-4.0.html
-        match = re.search(r'spdx.org/licenses/(?P<name>[a-z0-9-]+)', raw)
+        match = re.search(r'spdx.org/licenses/(?P<name>[a-z0-9-]+)', raw, re.IGNORECASE)
         if not match:
             print('missed potential license: {}'.format(raw), file=sys.stderr)
             return None
         name = match.groupdict().get('name')
         if not name:
             return None
-        if name.startswith('cc'):
-            name = re.sub(r"-[.0-9-]*html", "", name)
-            return name
         if len(name) > 36:
             return None
-        return name
+        # cleanup version and extensions
+        name = re.sub('(-[0-9])?[.]?[0-9]?(.json|.html)?', '', name.lower())
+        return name.upper()
 
     if 'rightsstatements.org' in raw:
         # http://rightsstatements.org/vocab/InC/1.0/
