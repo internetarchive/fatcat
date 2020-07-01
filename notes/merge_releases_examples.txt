@@ -1,0 +1,21 @@
+
+https://fatcat.wiki/release/search?q=Validation+of+middle-atmospheric+campaign-based+water+vapour+measured+by+the+ground-based+microwave+radiometer
+
+    4 releases, all dois. 3x have same author list, 1 same authors different order
+
+https://fatcat.wiki/release/search?q=Perspectives+and+pregnancy+outcomes+of+maternal+Ramadan+fasting+in+the+second+trimester+of+pregnancy
+
+    6 releases:
+        2 figshare article
+        2 figshare files
+        1 primary
+        1 correction
+
+https://figshare.com/articles/Plasmodium_falciparum_evades_innate_immunity_by_hybrid_ABO_blood_group_phenotype_formation/8208689/119
+
+    119 versions (!)
+
+https://fatcat.wiki/release/search?q=NeuroTrends+Visualization
+
+    45 versions across two figshare works 
+
