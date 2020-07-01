@@ -1,4 +1,14 @@
 
+improve argparse usage
+    change --host-url to --fatcat-api-url
+    add 'help=' to all CLI sub-commands; improves --help output
+    do ArgumentDefaultsHelpFormatter everywhere
+        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+Try stubgen for type annotation::
+    stubgen -m fatcat_openapi_client -o stubs/
+    stubgen -p fatcat_openapi_client -o stubs/
+
 - schema.org metadata for releases
 
 additional tests
