@@ -2,7 +2,6 @@
 
 import sys
 import argparse
-import datetime
 import raven
 
 from fatcat_tools import public_api

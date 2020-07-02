@@ -8,14 +8,9 @@ TODO:
 """
 
 import sys
-import json
 import argparse
 
-import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ChangelogEntry
-from fatcat_tools import uuid2fcid, fcid2uuid, entity_from_json, \
-    entity_to_dict, public_api, authenticated_api
+from fatcat_tools import uuid2fcid, fcid2uuid, authenticated_api
 
 
 def run_uuid2fcid(args):

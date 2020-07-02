@@ -11,11 +11,7 @@ import sys
 import json
 import argparse
 
-import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ChangelogEntry
-from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
-    public_api
+from fatcat_tools import uuid2fcid, entity_to_dict, public_api
 
 
 def run_export_releases(args):

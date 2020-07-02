@@ -1,3 +1,4 @@
+# flake8: noqa
 
 # bunch of libraries one might want
 import uuid
