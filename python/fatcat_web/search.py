@@ -131,7 +131,7 @@ def get_elastic_entity_stats():
         'sum',
         field='ref_count',
     )
-    search = search[:0]
+    search = search[:0]  # pylint: disable=unsubscriptable-object
 
     # NOTE: not catching exceptions
     resp = search.execute()
@@ -190,7 +190,7 @@ def get_elastic_entity_stats():
         'sum',
         field='ref_count',
     )
-    search = search[:0]
+    search = search[:0]  # pylint: disable=unsubscriptable-object
 
     # NOTE: not catching exceptions
     resp = search.execute()
