@@ -2,8 +2,7 @@
 from collections import namedtuple
 import requests
 import pymacaroons
-from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session, flash
+from flask import render_template, abort, redirect, session, flash
 from flask_login import logout_user, login_user, UserMixin
 from fatcat_web import login_manager, app, api, priv_api, Config
 import fatcat_openapi_client
