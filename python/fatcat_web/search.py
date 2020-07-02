@@ -2,112 +2,236 @@
 """
 Helpers for doing elasticsearch queries (used in the web interface; not part of
 the formal API)
-
-TODO: ELASTICSEARCH_*_INDEX should probably be factored out and just hard-coded
 """
 
+import sys
 import datetime
+from dataclasses import dataclass
+from typing import List, Optional, Any
+
 import requests
 from flask import abort, flash
-from fatcat_web import app
-
 import elasticsearch
 from elasticsearch_dsl import Search, Q
+import elasticsearch_dsl.response
 
-def generic_search_execute(search, limit=30, offset=0, deep_page_limit=2000):
+from fatcat_web import app
 
-    # Sanity checks
-    if limit > 100:
-        limit = 100
-    if offset < 0:
-        offset = 0
-    if offset > deep_page_limit:
-        # Avoid deep paging problem.
-        offset = deep_page_limit
+@dataclass
+class ReleaseQuery:
+    q: Optional[str] = None
+    limit: Optional[int] = None
+    offset: Optional[int] = None
+    fulltext_only: bool = False
+    container_id: Optional[str] = None
 
-    search = search[int(offset):int(offset)+int(limit)]
+    @classmethod
+    def from_args(cls, args) -> 'ReleaseQuery':
 
+        query_str = args.get('q') or '*'
+
+        container_id = args.get('container_id')
+        # TODO: as filter, not in query string
+        if container_id:
+            query_str += ' container_id:"{}"'.format(container_id)
+
+        # TODO: where are container_issnl queries actually used?
+        issnl = args.get('container_issnl')
+        if issnl and query_str:
+            query_str += ' container_issnl:"{}"'.format(issnl)
+
+        offset = args.get('offset', '0')
+        offset = max(0, int(offset)) if offset.isnumeric() else 0
+
+        return ReleaseQuery(
+            q=query_str,        
+            offset=offset,
+            fulltext_only=bool(args.get('fulltext_only')),
+            container_id=container_id,
+        )
+
+@dataclass
+class GenericQuery:
+    q: Optional[str] = None
+    limit: Optional[int] = None
+    offset: Optional[int] = None
+
+    @classmethod
+    def from_args(cls, args) -> 'GenericQuery':
+        query_str = args.get('q')
+        if not query_str:
+            query_str = '*'
+        offset = args.get('offset', '0')
+        offset = max(0, int(offset)) if offset.isnumeric() else 0
+
+        return GenericQuery(
+            q=query_str,
+            offset=offset,
+        )
+
+@dataclass
+class SearchHits:
+    count_returned: int
+    count_found: int
+    offset: int
+    limit: int
+    deep_page_limit: int
+    query_time_ms: int
+    results: List[Any]
+
+
+def results_to_dict(response: elasticsearch_dsl.response.Response) -> List[dict]:
+    """
+    Takes a response returns all the hits as JSON objects.
+
+    Also handles surrogate strings that elasticsearch returns sometimes,
+    probably due to mangled data processing in some pipeline. "Crimes against
+    Unicode"; production workaround
+    """
+
+    results = []
+    for h in response:
+        r = h._d_
+        # print(h.meta._d_)
+        results.append(r)
+
+    for h in results:
+        for key in h:
+            if type(h[key]) is str:
+                h[key] = h[key].encode("utf8", "ignore").decode("utf8")
+    return results
+
+def wrap_es_execution(search: Search) -> Any:
+    """
+    Executes a Search object, and converts various ES error types into
+    something we can pretty print to the user.
+    """
     try:
         resp = search.execute()
     except elasticsearch.exceptions.RequestError as e:
         # this is a "user" error
-        print("elasticsearch 400: " + str(e.info))
-        flash("Search query failed to parse; you might need to use quotes.<p><code>{}: {}</code>".format(e.error, e.info['error']['root_cause'][0]['reason']))
-        abort(e.status_code)
+        print("elasticsearch 400: " + str(e.info), file=sys.stderr)
+        if e.info.get("error", {}).get("root_cause", {}):
+            raise ValueError(str(e.info["error"]["root_cause"][0].get("reason")))
+        else:
+            raise ValueError(str(e.info))
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
-        print("elasticsearch non-200 status code: {}".format(e.info))
-        flash("Elasticsearch error: {}".format(e.error))
-        abort(e.status_code)
+        print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
+        raise IOError(str(e.info))
+    return resp
 
-    # just the dict()
-    hits = [h._d_ for h in resp]
-    for h in hits:
-        # Handle surrogate strings that elasticsearch returns sometimes,
-        # probably due to mangled data processing in some pipeline.
-        # "Crimes against Unicode"; production workaround
-        for key in h:
-            if type(h[key]) is str:
-                h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
+def do_container_search(
+    query: GenericQuery, deep_page_limit: int = 2000
+) -> SearchHits:
 
-    return {"count_returned": len(hits),
-            "count_found": int(resp.hits.total),
-            "results": hits,
-            "offset": offset,
-            "limit": limit,
-            "deep_page_limit": deep_page_limit}
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_CONTAINER_INDEX'])
 
+    search = search.query(
+        "query_string",
+        query=query.q,
+        default_operator="AND",
+        analyze_wildcard=True,
+        allow_leading_wildcard=False,
+        lenient=True,
+        fields=["biblio"],
+    )
 
-def do_release_search(q, limit=30, fulltext_only=True, offset=0):
+    # Sanity checks
+    limit = min((int(query.limit or 25), 100))
+    offset = max((int(query.offset or 0), 0))
+    if offset > deep_page_limit:
+        # Avoid deep paging problem.
+        offset = deep_page_limit
 
-    # Convert raw DOIs to DOI queries
-    if len(q.split()) == 1 and q.startswith("10.") and q.count("/") >= 1:
-        q = 'doi:"{}"'.format(q)
+    search = search[offset : (offset + limit)]
 
-    if fulltext_only:
-        q += " in_web:true"
+    resp = wrap_es_execution(search)
+    results = results_to_dict(resp)
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX']) \
-        .query(
-            'query_string',
-            query=q,
-            default_operator="AND",
-            analyze_wildcard=True,
-            lenient=True,
-            fields=["biblio"],
-        )
+    return SearchHits(
+        count_returned=len(results),
+        count_found=int(resp.hits.total),
+        offset=offset,
+        limit=limit,
+        deep_page_limit=deep_page_limit,
+        query_time_ms=int(resp.took),
+        results=results,
+    )
 
-    resp = generic_search_execute(search, offset=offset)
+def do_release_search(
+    query: ReleaseQuery, deep_page_limit: int = 2000
+) -> SearchHits:
 
-    for h in resp['results']:
-        print(h)
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+
+    # availability filters
+    if query.fulltext_only:
+        search = search.filter("term", in_ia=True)
+
+    # Below, we combine several queries to improve scoring.
+
+    # this query use the fancy built-in query string parser
+    basic_biblio = Q(
+        "query_string",
+        query=query.q,
+        default_operator="AND",
+        analyze_wildcard=True,
+        allow_leading_wildcard=False,
+        lenient=True,
+        fields=[
+            "title^2",
+            "biblio",
+        ],
+    )
+    has_fulltext = Q("term", in_ia=True)
+    poor_metadata = Q(
+        "bool",
+        should=[
+            # if these fields aren't set, metadata is poor. The more that do
+            # not exist, the stronger the signal.
+            Q("bool", must_not=Q("exists", field="title")),
+            Q("bool", must_not=Q("exists", field="release_year")),
+            Q("bool", must_not=Q("exists", field="release_type")),
+            Q("bool", must_not=Q("exists", field="release_stage")),
+        ],
+    )
+
+    search = search.query(
+        "boosting",
+        positive=Q("bool", must=basic_biblio, should=[has_fulltext],),
+        negative=poor_metadata,
+        negative_boost=0.5,
+    )
+
+    # Sanity checks
+    limit = min((int(query.limit or 25), 100))
+    offset = max((int(query.offset or 0), 0))
+    if offset > deep_page_limit:
+        # Avoid deep paging problem.
+        offset = deep_page_limit
+
+    search = search[offset : (offset + limit)]
+
+    resp = wrap_es_execution(search)
+    results = results_to_dict(resp)
+
+    for h in results:
         # Ensure 'contrib_names' is a list, not a single string
+        print(h, file=sys.stderr)
         if type(h['contrib_names']) is not list:
             h['contrib_names'] = [h['contrib_names'], ]
         h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
-    resp["query"] = { "q": q }
-    return resp
 
-
-def do_container_search(q, limit=30, offset=0):
-
-    # Convert raw ISSN-L to ISSN-L query
-    if len(q.split()) == 1 and len(q) == 9 and q[0:4].isdigit() and q[4] == '-':
-        q = 'issnl:"{}"'.format(q)
-
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX']) \
-        .query(
-            'query_string',
-            query=q,
-            default_operator="AND",
-            analyze_wildcard=True,
-            lenient=True,
-            fields=["biblio"],
-        )
-
-    resp = generic_search_execute(search, offset=offset)
-    resp["query"] = { "q": q }
-    return resp
+    return SearchHits(
+        count_returned=len(results),
+        count_found=int(resp.hits.total),
+        offset=offset,
+        limit=limit,
+        deep_page_limit=deep_page_limit,
+        query_time_ms=int(resp.took),
+        results=results,
+    )
 
 def get_elastic_entity_stats():
     """

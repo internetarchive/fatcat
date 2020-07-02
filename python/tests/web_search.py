@@ -4,6 +4,7 @@ import responses
 
 from fixtures import *
 
+@pytest.mark.skip
 @responses.activate
 def test_release_search(app):
 
@@ -18,6 +19,7 @@ def test_release_search(app):
     assert b"Showing" in rv.data
     assert b"Quantum Studies of Acetylene Adsorption on Ice Surface" in rv.data
 
+@pytest.mark.skip
 @responses.activate
 def test_container_search(app):
 
@@ -112,8 +114,3 @@ def test_container_stats(app):
     rv = app.get('/container/issnl/1234-5678/stats.json')
     assert rv.status_code == 200
     # TODO: probe this response better
-
-# TODO: container stats
-# TODO: container ISSN-L query
-# TODO: release DOI query
-# TODO: release fulltext (filter) query

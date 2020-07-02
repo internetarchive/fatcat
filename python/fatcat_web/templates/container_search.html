@@ -2,8 +2,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if query %}
-  Search: {{ query }}
+{% if query.q %}
+  Search: {{ query.q }}
 {% else %}
   Release Search
 {% endif %}
@@ -18,9 +18,9 @@
     <form class="" role="search" action="/container/search" method="get">
       <div class="ui form">
         <div class="ui action input huge fluid">
-          <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}" aria-label="search container metadata"> <button class="ui button">Search</button>
+          <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="search container metadata"> <button class="ui button">Search</button>
         </div>
-        <br>Can also lookup by <b><a href="/container/lookup">identifier</a></b> or search <b><a href="/release/search?q={{ query or "" }}">releases</a></b>.
+        <br>Can also lookup by <b><a href="/container/lookup">identifier</a></b> or search <b><a href="/release/search?q={{ query.q or "" }}">releases</a></b>.
       </div>
     </form>
   </div>
@@ -32,7 +32,7 @@
 {% if found %}
   {% if found.results %}
 
-    {{ entity_macros.top_results(found) }}
+    {{ entity_macros.top_results(query, found) }}
 
     {% for entity in found.results %}
       <div>
@@ -55,13 +55,13 @@
     {% if found.results|length > 8 %}
       <div class="ui divider"></div>
       <div style="text-align: center">
-      {{ entity_macros.bottom_results(found, endpoint='container_search') }}
+      {{ entity_macros.bottom_results(query, found, endpoint='container_search') }}
       </div>
     {% endif %}
 
   {% else %}
 
-    Raw query was: <i>{{ found.query.q }}</i>
+    Raw query was: <i>{{ query.q }}</i>
 
     <div class="ui centered stackable grid" style="padding-top: 15%;">
       <div class="row">
@@ -72,7 +72,7 @@
           <h2>No results found!</h2>
           <p>You could try elsewhere:</p>
           <ul>
-            <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
+            <li>Search <a href="https://scholar.google.com/scholar?q={{ query.q | urlencode }}">Google Scholar</a></li>
           </ul>
         </div>
       </div>
