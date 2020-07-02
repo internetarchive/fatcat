@@ -1,0 +1,7 @@
+[flake8]
+# TODO: ANN for better annotation coverage
+select = C,E,F,W
+ignore = F405,F403,W503,E231,E203,E501,E226,E711,E713,E265,ANN101,ANN204,ANN102
+max-complexity = 20
+exclude = .git,__pycache__,.venv
+max-line-length = 120
