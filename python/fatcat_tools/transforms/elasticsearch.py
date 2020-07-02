@@ -1,7 +1,5 @@
 
-import collections
 import tldextract
-from fatcat_openapi_client import ApiClient
 
 
 def check_kbart(year, archive):
@@ -14,11 +12,11 @@ def check_kbart(year, archive):
 
 def test_check_kbart():
 
-    assert check_kbart(1990, dict()) == None
-    assert check_kbart(1990, dict(year_spans=[[2000, 2000]])) == False
-    assert check_kbart(2000, dict(year_spans=[[2000, 2000]])) == True
-    assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1990, 2000]])) == False
-    assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) == True
+    assert check_kbart(1990, dict()) is None
+    assert check_kbart(1990, dict(year_spans=[[2000, 2000]])) is False
+    assert check_kbart(2000, dict(year_spans=[[2000, 2000]])) is True
+    assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1990, 2000]])) is False
+    assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) is True
 
 
 def release_to_elasticsearch(entity, force_bool=True):

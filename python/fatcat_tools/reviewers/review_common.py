@@ -1,12 +1,10 @@
 
-import json
 import time
 import datetime
 import subprocess
 from collections import Counter
 
 import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
 
 """
 checks should return:

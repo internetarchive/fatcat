@@ -354,4 +354,3 @@ class EntityUpdatesWorker(FatcatWorker):
             producer.flush()
             # TODO: publish updated 'work' entities to a topic
             consumer.store_offsets(message=msg)
-

@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from pylatexenc.latex2text import LatexNodes2Text
 
 import fatcat_openapi_client
-from .common import EntityImporter, clean
+from .common import EntityImporter
 from .crossref import lookup_license_slug
 
 
@@ -96,7 +96,6 @@ class ArxivRawImporter(EntityImporter):
             batch_size=batch_size,
             **kwargs)
         self._test_override = False
-
 
     def parse_record(self, record):
 
@@ -188,7 +187,6 @@ class ArxivRawImporter(EntityImporter):
                 if lang == 'en':
                     lang = None
 
-
         # extra:
         #   withdrawn_date
         #   translation_of
@@ -244,7 +242,7 @@ class ArxivRawImporter(EntityImporter):
 
         For each version, do a lookup by full arxiv_id, and store work/release
         id results.
-        
+
         If a version has a DOI, also do a doi lookup and store that result. If
         there is an existing release with both matching, set that as the
         existing work. If they don't match, use the full arxiv_id match and
@@ -345,6 +343,7 @@ class ArxivRawImporter(EntityImporter):
             print(json.dumps(resp))
             #sys.exit(-1)
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     parser = ArxivRawImporter(None)
     parser.parse_file(open(sys.argv[1]))

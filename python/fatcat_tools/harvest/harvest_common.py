@@ -1,15 +1,13 @@
 
 import sys
 import json
-import time
 import datetime
 import requests
 from requests.adapters import HTTPAdapter
 # unclear why pylint chokes on this import. Recent 'requests' and 'urllib3' are
 # in Pipenv.lock, and there are no errors in QA
 from requests.packages.urllib3.util.retry import Retry # pylint: disable=import-error
-from confluent_kafka import Producer, Consumer, TopicPartition, KafkaException, \
-    OFFSET_BEGINNING
+from confluent_kafka import Producer, Consumer, TopicPartition, KafkaException
 
 
 # Used for parsing ISO date format (YYYY-MM-DD)
@@ -130,9 +128,11 @@ class HarvestState:
         }).encode('utf-8')
         if kafka_topic:
             assert(kafka_config)
+
             def fail_fast(err, msg):
                 if err:
                     raise KafkaException(err)
+
             print("Committing status to Kafka: {}".format(kafka_topic), file=sys.stderr)
             producer_conf = kafka_config.copy()
             producer_conf.update({
@@ -159,9 +159,11 @@ class HarvestState:
             return
 
         print("Fetching state from kafka topic: {}".format(kafka_topic), file=sys.stderr)
+
         def fail_fast(err, msg):
             if err:
                 raise KafkaException(err)
+
         conf = kafka_config.copy()
         conf.update({
             'group.id': 'dummy_init_group', # should never be committed

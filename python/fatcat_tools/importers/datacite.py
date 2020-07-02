@@ -10,7 +10,6 @@ functions (parse_datacite_...), which may help testing.
 
 import collections
 import datetime
-import hashlib
 import re
 import json
 import sqlite3
@@ -291,7 +290,6 @@ class DataciteImporter(EntityImporter):
         if not isascii(doi):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
-
 
         creators = attributes.get('creators', []) or []
         contributors = attributes.get('contributors', []) or []  # Much fewer than creators.

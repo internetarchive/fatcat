@@ -1,7 +1,5 @@
 
 import sys
-import json
-import itertools
 import fatcat_openapi_client
 from .common import EntityImporter, clean
 
@@ -89,7 +87,7 @@ class OrcidImporter(EntityImporter):
         if existing:
             self.counts['exists'] += 1
             return False
-        
+
         return True
 
     def insert_batch(self, batch):
