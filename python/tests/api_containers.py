@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -43,7 +38,7 @@ def test_container(api):
 
     # get redirects (none)
     assert api.get_container_redirects(c2.ident) == []
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_container(eg.editgroup_id, c2.ident)
@@ -59,4 +54,3 @@ def test_container_examples(api):
 
     c2 = api.lookup_container(issnl=c1.issnl)
     assert c1.ident == c2.ident
-

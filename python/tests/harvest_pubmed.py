@@ -2,14 +2,11 @@
 Test pubmed FTP harvest.
 """
 
-import datetime
-import json
 import os
-
+import datetime
 import pytest
 
 from fatcat_tools.harvest import *
-from fatcat_tools.harvest.pubmed import generate_date_file_map
 
 
 def test_pubmed_harvest_date(mocker):
@@ -77,4 +74,3 @@ def test_pubmed_harvest_date_no_pmid(mocker):
     # The file has not PMID, not importable.
     with pytest.raises(ValueError):
         harvester.fetch_date(datetime.datetime.strptime(test_date, '%Y-%m-%d'))
-

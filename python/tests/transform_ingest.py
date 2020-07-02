@@ -1,11 +1,11 @@
 
 import json
-import pytest
+
 from fatcat_tools.transforms import release_ingest_request
 from fatcat_openapi_client import *
 from fixtures import api
-
 from import_crossref import crossref_importer
+
 
 def test_basic_ingest_release(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:
@@ -54,4 +54,3 @@ def test_rich_ingest_release():
     assert ir['base_url'] == 'https://doi.org/10.123/456'
     assert ir['ext_ids']['doi'] == '10.123/456'
     assert ir['ext_ids'].get('pmcid') is None
-

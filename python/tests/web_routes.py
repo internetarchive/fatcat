@@ -1,7 +1,4 @@
 
-import json
-import pytest
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -13,4 +10,3 @@ def test_static_routes(app):
 
     assert app.get("/search").status_code == 302
     assert app.get("/static/bogus/route").status_code == 404
-

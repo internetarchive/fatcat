@@ -3,8 +3,9 @@ import os
 import json
 import base64
 import pytest
+
 from fatcat_tools.importers import GrobidMetadataImporter, LinePusher
-from fixtures import api
+from fixtures import *
 
 """
 WARNING: these tests are currently very fragile because they have database

@@ -1,7 +1,4 @@
 
-import json
-import pytest
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -147,4 +144,3 @@ def test_web_edit_get(app_admin):
     rv = app_admin.get('/container/aaaaaaaaaaaaaeiraaaaaaaaam/edit')
     assert rv.status_code == 200
     assert b'1549-1277' in rv.data
-

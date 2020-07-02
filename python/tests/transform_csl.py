@@ -1,11 +1,11 @@
 
 import json
 import pytest
+
 from fatcat_tools import *
 from fatcat_openapi_client import *
-
-from fixtures import api
 from import_crossref import crossref_importer
+from fixtures import *
 
 def test_csl_crossref(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:

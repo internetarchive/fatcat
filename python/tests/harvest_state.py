@@ -1,6 +1,4 @@
 
-import json
-import pytest
 import datetime
 from fatcat_tools.harvest import *
 

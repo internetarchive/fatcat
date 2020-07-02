@@ -1,8 +1,4 @@
 
-import os
-import time
-import json
-import signal
 import pytest
 from dotenv import load_dotenv
 import fatcat_web
@@ -87,4 +83,3 @@ def test_get_changelog_entry(api):
 def quick_eg(api_inst):
     eg = api_inst.create_editgroup(fatcat_openapi_client.Editgroup())
     return eg
-
