@@ -9,7 +9,6 @@ import datetime
 from dataclasses import dataclass
 from typing import List, Optional, Any
 
-import requests
 from flask import abort, flash
 import elasticsearch
 from elasticsearch_dsl import Search, Q
@@ -218,7 +217,6 @@ def do_release_search(
 
     for h in results:
         # Ensure 'contrib_names' is a list, not a single string
-        print(h, file=sys.stderr)
         if type(h['contrib_names']) is not list:
             h['contrib_names'] = [h['contrib_names'], ]
         h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
@@ -233,6 +231,30 @@ def do_release_search(
         results=results,
     )
 
+def get_elastic_container_random_releases(ident, limit=5):
+    """
+    Returns a list of releases from the container.
+    """
+
+    assert limit > 0 and limit <= 100
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.query(
+        'bool',
+        must=[
+            Q('term', container_id=ident),
+            Q('range', release_year={ "lte": datetime.datetime.today().year }),
+        ]
+    )
+    search = search.sort('-in_web', '-release_date')
+    search = search.params(request_cache=True)
+    search = search[:int(limit)]
+
+    resp = wrap_es_execution(search)
+    results = results_to_dict(resp)
+
+    return results
+
 def get_elastic_entity_stats():
     """
     TODO: files, filesets, webcaptures (no schema yet)
@@ -246,10 +268,8 @@ def get_elastic_entity_stats():
     stats = {}
 
     # release totals
-    search = Search(
-        using=app.es_client,
-        index=app.config['ELASTICSEARCH_RELEASE_INDEX']) \
-        .extra(request_cache=True)
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache=True)
     search.aggs.bucket(
         'release_ref_count',
         'sum',
@@ -257,27 +277,25 @@ def get_elastic_entity_stats():
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
-    # NOTE: not catching exceptions
-    resp = search.execute()
+    resp = wrap_es_execution(search)
+
     stats['release'] = {
         "total": int(resp.hits.total),
         "refs_total": int(resp.aggregations.release_ref_count.value),
     }
 
     # paper counts
-    search = Search(
-        using=app.es_client,
-        index=app.config['ELASTICSEARCH_RELEASE_INDEX']) \
-        .query(
-            'terms',
-            release_type=[
-                "article-journal",
-                "paper-conference",
-                # "chapter",
-                # "thesis",
-            ],
-        ) \
-        .extra(request_cache=True)
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.query(
+        'terms',
+        release_type=[
+            "article-journal",
+            "paper-conference",
+            # "chapter",
+            # "thesis",
+        ],
+    )
+    search = search.params(request_cache=True)
     search.aggs.bucket(
         'paper_like',
         'filters',
@@ -293,8 +311,7 @@ def get_elastic_entity_stats():
     )
     search = search[:0]
 
-    # NOTE: not catching exceptions
-    resp = search.execute()
+    resp = wrap_es_execution(search)
     buckets = resp.aggregations.paper_like.buckets
     stats['papers'] = {
         'total': resp.hits.total,
@@ -305,10 +322,8 @@ def get_elastic_entity_stats():
     }
 
     # container counts
-    search = Search(
-        using=app.es_client,
-        index=app.config['ELASTICSEARCH_CONTAINER_INDEX']) \
-        .extra(request_cache=True)
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_CONTAINER_INDEX'])
+    search = search.params(request_cache=True)
     search.aggs.bucket(
         'release_ref_count',
         'sum',
@@ -316,8 +331,7 @@ def get_elastic_entity_stats():
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
-    # NOTE: not catching exceptions
-    resp = search.execute()
+    resp = wrap_es_execution(search)
     stats['container'] = {
         "total": resp.hits.total,
     }
@@ -335,69 +349,42 @@ def get_elastic_container_stats(ident, issnl=None):
         preserved
     """
 
-    query = {
-        "size": 0,
-        "query": {
-            "term": { "container_id": ident }
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache=True)
+    search = search.query(
+        'term',
+        container_id=ident,
+    )
+    search.aggs.bucket(
+        'container_stats',
+        'filters',
+        filters={
+            "in_web": {
+                "term": { "in_web": True },
+            },
+            "in_kbart": {
+                "term": { "in_kbart": True },
+            },
+            "is_preserved": {
+                "term": { "is_preserved": True },
+            },
         },
-        "aggs": { "container_stats": { "filters": { "filters": {
-                "in_web": { "term": { "in_web": "true" } },
-                "in_kbart": { "term": { "in_kbart": "true" } },
-                "is_preserved": { "term": { "is_preserved": "true" } },
-        }}}}
-    }
-    resp = requests.get(
-        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
-        json=query,
-        params=dict(request_cache="true"))
-    # TODO: abort()
-    #print(resp.json())
-    resp.raise_for_status()
-    resp = resp.json()
-    buckets = resp['aggregations']['container_stats']['buckets']
+    )
+    search = search[:0]
+
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.container_stats.buckets
     stats = {
         'ident': ident,
         'issnl': issnl,
-        'total': resp['hits']['total'],
+        'total': resp.hits.total,
         'in_web': buckets['in_web']['doc_count'],
         'in_kbart': buckets['in_kbart']['doc_count'],
         'is_preserved': buckets['is_preserved']['doc_count'],
     }
 
     return stats
-
-def get_elastic_container_random_releases(ident, limit=5):
-    """
-    Returns a list of releases from the container.
-    """
-
-    assert limit > 0 and limit <= 100
-
-    search = Search(using=app.es_client, index=app.conf.ELASTICSEARCH_RELEASE_INDEX) \
-        .query('bool',
-            must=[
-                Q('term', container_id=ident),
-                Q('range', release_year={ "lte": datetime.datetime.today().year }),
-            ]
-        ) \
-        .sort('-in_web', '-release_date') \
-        .extra(request_cache=True)
-
-    search = search[:int(limit)]
-
-    resp = search.execute()
-
-    hits = [dict(h.source) for h in resp]
-
-    for h in hits:
-        # Handle surrogate strings that elasticsearch returns sometimes,
-        # probably due to mangled data processing in some pipeline.
-        # "Crimes against Unicode"; production workaround
-        for key in h:
-            if type(h[key]) is str:
-                h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
-
-    return hits
 
 def get_elastic_container_histogram(ident):
     """
@@ -409,58 +396,46 @@ def get_elastic_container_histogram(ident):
         (year, in_ia, count)
     """
 
-    query = {
-        "aggs": {
-            "year_in_ia": {
-                "composite": {
-                    "size": 1000,
-                    "sources": [
-                        {"year": {
-                            "histogram": {
-                                "field": "release_year",
-                                "interval": 1,
-                        }}},
-                        {"in_ia": {
-                            "terms": {
-                                "field": "in_ia",
-                        }}},
-                    ],
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache='true')
+    search = search.query(
+        'bool',
+        must=[
+            Q("range", release_year={
+                "gte": datetime.datetime.today().year - 499,
+                "lte": datetime.datetime.today().year,
+            }),
+        ],
+        filter=[
+            Q("bool", minimum_should_match=1, should=[
+                Q("match", container_id=ident),
+            ]),
+        ],
+    )
+    search.aggs.bucket(
+        'year_in_ia',
+        'composite',
+        size=1000,
+        sources=[
+            {"year": {
+                "histogram": {
+                    "field": "release_year",
+                    "interval": 1,
                 },
-            },
-        },
-        "size": 0,
-        "query": {
-            "bool": {
-                "must": [{
-                    "range": {
-                        "release_year": {
-                            "gte": datetime.datetime.today().year - 499,
-                            "lte": datetime.datetime.today().year,
-                        }
-                    }
-                }],
-                "filter": [{
-                    "bool": {
-                        "should": [{
-                            "match": {
-                                "container_id": ident
-                            }
-                        }],
-                        "minimum_should_match": 1,
-                    },
-                }],
-            }
-        }
-    }
-    resp = requests.get(
-        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
-        json=query,
-        params=dict(request_cache="true"))
-    resp.raise_for_status()
-    # TODO: abort()
-    resp = resp.json()
-    #print(resp)
+            }},
+            {"in_ia": {
+                "terms": {
+                    "field": "in_ia",
+                },
+            }},
+        ],
+    )
+    search = search[:0]
+
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.year_in_ia.buckets
     vals = [(h['key']['year'], h['key']['in_ia'], h['doc_count'])
-            for h in resp['aggregations']['year_in_ia']['buckets']]
+            for h in buckets]
     vals = sorted(vals)
     return vals
