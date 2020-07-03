@@ -9,13 +9,14 @@ def ia_coverage_histogram(rows):
 
     raw_years = [int(r[0]) for r in rows]
     years = dict()
-    for y in range(min(raw_years), max(raw_years)+1):
-        years[int(y)] = dict(year=int(y), available=0, missing=0)
-    for r in rows:
-        if r[1]:
-            years[int(r[0])]['available'] = r[2]
-        else:
-            years[int(r[0])]['missing'] = r[2]
+    if raw_years:
+        for y in range(min(raw_years), max(raw_years)+1):
+            years[int(y)] = dict(year=int(y), available=0, missing=0)
+        for r in rows:
+            if r[1]:
+                years[int(r[0])]['available'] = r[2]
+            else:
+                years[int(r[0])]['missing'] = r[2]
 
     years = sorted(years.values(), key=lambda x: x['year'])
 
