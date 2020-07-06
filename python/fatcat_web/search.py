@@ -133,6 +133,20 @@ def wrap_es_execution(search: Search) -> Any:
         raise FatcatSearchError(e.status_code, str(e.error), description)
     return resp
 
+def agg_to_dict(agg) -> dict:
+    """
+    Takes a simple term aggregation result (with buckets) and returns a simple
+    dict with keys as terms and counts as values. Includes an extra value
+    '_other', and by convention aggregations should be writen to have "missing"
+    vaules as '_unknown'.
+    """
+    result = dict()
+    for bucket in agg.buckets:
+        result[bucket.key] = bucket.doc_count
+    if agg.sum_other_doc_count:
+        result['_other'] = agg.sum_other_doc_count
+    return result
+
 def do_container_search(
     query: GenericQuery, deep_page_limit: int = 2000
 ) -> SearchHits:
@@ -383,19 +397,36 @@ def get_elastic_container_stats(ident, issnl=None):
             },
         },
     )
+    search.aggs.bucket(
+        'preservation',
+        'terms',
+        field='preservation',
+        missing='_unknown',
+    )
+    search.aggs.bucket(
+        'release_type',
+        'terms',
+        field='release_type',
+        missing='_unknown',
+    )
+
     search = search[:0]
 
     search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
 
-    buckets = resp.aggregations.container_stats.buckets
+    container_stats = resp.aggregations.container_stats.buckets
+    preservation_bucket = agg_to_dict(resp.aggregations.preservation)
+    release_type_bucket = agg_to_dict(resp.aggregations.release_type)
     stats = {
         'ident': ident,
         'issnl': issnl,
         'total': resp.hits.total,
-        'in_web': buckets['in_web']['doc_count'],
-        'in_kbart': buckets['in_kbart']['doc_count'],
-        'is_preserved': buckets['is_preserved']['doc_count'],
+        'in_web': container_stats['in_web']['doc_count'],
+        'in_kbart': container_stats['in_kbart']['doc_count'],
+        'is_preserved': container_stats['is_preserved']['doc_count'],
+        'preservation': preservation_bucket,
+        'release_types': release_type_bucket,
     }
 
     return stats

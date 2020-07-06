@@ -114,7 +114,18 @@ def test_container_stats(app, mocker):
             'container_stats': {'buckets': {
               'is_preserved': {'doc_count': 461939},
               'in_kbart': {'doc_count': 461939},
-              'in_web': {'doc_count': 2797}}}},
+              'in_web': {'doc_count': 2797}}},
+            'preservation': {
+                'doc_count_error_upper_bound': 0, 'sum_other_doc_count': 0,
+                'buckets': [{'key': 'bright', 'doc_count': 4143}, {'key': 'none',
+                'doc_count': 101}, {'key': 'dark', 'doc_count': 79}, {'key':
+                'shadows_only', 'doc_count': 5}]},
+            'release_type': {
+                'doc_count_error_upper_bound': 0, 'sum_other_doc_count': 0,
+                'buckets': [{'key': 'article-journal', 'doc_count': 4324}, {'key':
+                'article', 'doc_count': 2}, {'key': '_unknown', 'doc_count': 1},
+                {'key': 'editorial', 'doc_count': 1}]},
+        },
         'hits': {'total': 461939, 'hits': [], 'max_score': 0.0},
         '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},
         'took': 50
