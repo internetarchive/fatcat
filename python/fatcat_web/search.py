@@ -66,7 +66,6 @@ def do_release_search(q, limit=30, fulltext_only=True, offset=0):
     if len(q.split()) == 1 and q.startswith("10.") and q.count("/") >= 1:
         q = 'doi:"{}"'.format(q)
 
-
     if fulltext_only:
         q += " in_web:true"
 
@@ -297,7 +296,7 @@ def get_elastic_container_random_releases(ident, limit=5):
 
 def get_elastic_container_histogram(ident):
     """
-    Fetches a stacked histogram of 
+    Fetches a stacked histogram
 
     Filters to the past 500 years (at most), or about 1000 values.
 

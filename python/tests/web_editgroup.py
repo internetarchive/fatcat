@@ -1,8 +1,6 @@
 
-import json
-import pytest
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
+
 
 def test_editgroup_basics(app):
 
@@ -59,4 +57,3 @@ def test_editgroup_annotations_login(app_admin):
     assert rv.status_code == 200
     assert b'Signup' not in rv.data
     assert b'Add Comment' in rv.data
-

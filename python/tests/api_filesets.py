@@ -1,10 +1,7 @@
 
-import json
 import pytest
-from copy import copy
 
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -64,7 +61,7 @@ def test_fileset(api):
 
     # get redirects (none)
     assert api.get_fileset_redirects(fs2.ident) == []
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_fileset(eg.editgroup_id, fs2.ident)
@@ -100,4 +97,3 @@ def test_bad_fileset(api):
     for b in bad_list:
         with pytest.raises(fatcat_openapi_client.rest.ApiException):
             api.create_fileset(eg.editgroup_id, b)
-

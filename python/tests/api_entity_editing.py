@@ -1,10 +1,7 @@
 
-import json
 import pytest
-from copy import copy
 
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -180,4 +177,3 @@ def test_edit_delete_all(api_dummy_entities):
     assert len(eg.edits.webcaptures) == 0
     assert len(eg.edits.releases) == 0
     assert len(eg.edits.works) == 0
-

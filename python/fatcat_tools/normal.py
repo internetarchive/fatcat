@@ -231,4 +231,3 @@ def test_clean_orcid():
     assert clean_orcid("0123-4567-3456-6789 ") == "0123-4567-3456-6789"
     assert clean_orcid("01234567-3456-6780") == None
     assert clean_orcid("0x23-4567-3456-6780") == None
-

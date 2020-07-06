@@ -1,14 +1,5 @@
 
-import re
-import sys
-import csv
-import json
-import itertools
-from itertools import islice
 from confluent_kafka import Consumer, KafkaException, TopicPartition
-
-import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
 
 
 def most_recent_message(topic, kafka_config):

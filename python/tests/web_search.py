@@ -1,8 +1,7 @@
 
 import json
-import pytest
 import responses
-from fatcat_openapi_client.rest import ApiException
+
 from fixtures import *
 
 @responses.activate

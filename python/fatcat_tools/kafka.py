@@ -1,5 +1,5 @@
 
-from confluent_kafka import Consumer, Producer, KafkaException
+from confluent_kafka import Producer, KafkaException
 
 
 def kafka_fail_fast(err, msg):

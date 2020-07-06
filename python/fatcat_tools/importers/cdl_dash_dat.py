@@ -82,7 +82,7 @@ def cdl_dash_release(meta, extra=None):
             #print(abstracts)
     if not abstracts:
         abstracts = None
-    
+
     contribs = []
     for creator in meta['creator']:
         contribs.append(ReleaseContrib(
@@ -120,7 +120,7 @@ def make_release_fileset(dat_path):
 
     with open(dat_path + "/cdl_dash_metadata.json", 'r') as fp:
         meta_dict = json.loads(fp.read())
-    
+
     release = cdl_dash_release(meta_dict)
     ark_id = release.extra['ark_id']
 

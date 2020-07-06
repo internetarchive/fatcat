@@ -1,16 +1,9 @@
 
-import re
 import sys
-import csv
-import json
 import time
-import itertools
-import datetime
-import requests
 import sickle
 from confluent_kafka import Producer, KafkaException
 
-from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState
 
 
@@ -30,7 +23,6 @@ class HarvestOaiPmhWorker:
     stuff to save on dev time, but i'd already built the Crossref harvester and
     would want something similar operationally. Oh well!
     """
-
 
     def __init__(self, kafka_hosts, produce_topic, state_topic,
             start_date=None, end_date=None):

@@ -1,10 +1,7 @@
 
 import sys
-import json
 import sqlite3
 import datetime
-import itertools
-import subprocess
 from bs4 import BeautifulSoup
 
 import fatcat_openapi_client

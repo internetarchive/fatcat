@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -50,7 +45,7 @@ def test_file(api):
 
     # get redirects (none)
     assert api.get_file_redirects(f2.ident) == []
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_file(eg.editgroup_id, f2.ident)

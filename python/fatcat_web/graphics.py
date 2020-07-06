@@ -33,4 +33,3 @@ def ia_coverage_histogram(rows):
     chart.add('via Fatcat', [y['available'] for y in years])
     chart.add('Missing', [y['missing'] for y in years])
     return chart
-

@@ -1,16 +1,10 @@
 
-import re
 import sys
-import csv
 import json
 import time
-import itertools
-import datetime
-import requests
 from confluent_kafka import Producer, KafkaException
 from urllib.parse import urlparse, parse_qs
 
-from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState, requests_retry_session
 
 
@@ -63,7 +57,6 @@ class HarvestCrossrefWorker:
     TODO: what sort of parallelism? I guess multi-processing on dates, but need
     to be careful how state is serialized back into kafka.
     """
-
 
     def __init__(self, kafka_hosts, produce_topic, state_topic, contact_email,
             api_host_url="https://api.crossref.org/works", start_date=None,

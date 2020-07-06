@@ -183,7 +183,7 @@ class JstorImporter(EntityImporter):
                     # suspect jan 1st dates get set by JSTOR when actual
                     # date not known (citation needed), so drop them
                     release_date = None
-        
+
         volume = None
         if article_meta.volume:
             volume = article_meta.volume.string or None

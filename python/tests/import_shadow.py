@@ -1,8 +1,9 @@
 
 import json
 import pytest
+
 from fatcat_tools.importers import ShadowLibraryImporter, JsonLinePusher
-from fixtures import api
+from fixtures import *
 
 
 @pytest.fixture(scope="function")
@@ -58,4 +59,3 @@ def test_shadow_dict_parse(shadow_importer):
                 assert u.url.startswith("https://web.archive.org/")
                 assert "20180729135948" in u.url
         assert len(f.release_ids) == 1
-

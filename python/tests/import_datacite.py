@@ -2,15 +2,17 @@
 Test datacite importer.
 """
 
-import collections
-import datetime
-import pytest
 import gzip
-from fatcat_tools.importers import DataciteImporter, JsonLinePusher
-from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi, index_form_to_display_name, lookup_license_slug
-from fatcat_tools.transforms import entity_to_dict
-from fixtures import api
 import json
+import datetime
+import collections
+
+import pytest
+
+from fatcat_tools.importers import DataciteImporter, JsonLinePusher
+from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, index_form_to_display_name, lookup_license_slug
+from fatcat_tools.transforms import entity_to_dict
+from fixtures import *
 
 
 @pytest.fixture(scope="function")
@@ -295,7 +297,7 @@ def test_datacite_conversions(datacite_importer):
             re = datacite_importer.parse_record(json.load(f))
             result = entity_to_dict(re)
         with open(dst, 'r') as f:
-           expected = json.loads(f.read())
+            expected = json.loads(f.read())
 
         assert result == expected, 'output mismatch in {}'.format(dst)
 
@@ -340,20 +342,20 @@ def test_lookup_license_slug():
         Case('http://onlinelibrary.wiley.com/termsAndConditions', 'WILEY'),
         Case('https://publikationen.bibliothek.kit.edu/kitopen-lizenz', 'KIT-OPEN'),
         Case('http://journals.sagepub.com/page/policies/text-and-data-mining-license', 'SAGE-TDM'),
-    	Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
-    	Case('http://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
-    	Case('https://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
-    	Case('https://creativecommons.org/publicdomain/mark/1.0/', 'CC-PUBLICDOMAIN'),
-    	Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
-    	Case('https://creativecommons.org/share-your-work/public-domain/cc0/', 'CC-0'),
-    	Case('http://spdx.org/licenses/CC0-1.0.json', 'CC-0'),
-    	Case('http://spdx.org/licenses/CC-BY-1.0.json', 'CC-BY'),
-    	Case('http://spdx.org/licenses/CC-BY-4.0.json', 'CC-BY'),
-    	Case('http://spdx.org/licenses/CC-BY-NC-4.0.json', 'CC-BY-NC'),
-    	Case('http://spdx.org/licenses/CC-BY-SA-3.0.json', 'CC-BY-SA'),
-    	Case('http://spdx.org/licenses/CC-BY-SA-4.0.json', 'CC-BY-SA'),
-    	Case('http://spdx.org/licenses/MIT.json', 'MIT'),
-    	Case('http://spdx.org/licenses/OGL-Canada-2.0.json', 'OGL-CANADA'),
+        Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
+        Case('http://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
+        Case('https://creativecommons.org/publicdomain/mark/1.0', 'CC-PUBLICDOMAIN'),
+        Case('https://creativecommons.org/publicdomain/mark/1.0/', 'CC-PUBLICDOMAIN'),
+        Case('https://creativecommons.org/publicdomain/mark/1.0/deed.de', 'CC-PUBLICDOMAIN'),
+        Case('https://creativecommons.org/share-your-work/public-domain/cc0/', 'CC-0'),
+        Case('http://spdx.org/licenses/CC0-1.0.json', 'CC-0'),
+        Case('http://spdx.org/licenses/CC-BY-1.0.json', 'CC-BY'),
+        Case('http://spdx.org/licenses/CC-BY-4.0.json', 'CC-BY'),
+        Case('http://spdx.org/licenses/CC-BY-NC-4.0.json', 'CC-BY-NC'),
+        Case('http://spdx.org/licenses/CC-BY-SA-3.0.json', 'CC-BY-SA'),
+        Case('http://spdx.org/licenses/CC-BY-SA-4.0.json', 'CC-BY-SA'),
+        Case('http://spdx.org/licenses/MIT.json', 'MIT'),
+        Case('http://spdx.org/licenses/OGL-Canada-2.0.json', 'OGL-CANADA'),
     ]
 
     for c in cases:

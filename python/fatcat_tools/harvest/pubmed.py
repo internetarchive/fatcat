@@ -19,7 +19,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 from ftplib import FTP
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 import dateparser
 from bs4 import BeautifulSoup

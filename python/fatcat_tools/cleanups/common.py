@@ -5,7 +5,6 @@ import subprocess
 from collections import Counter
 
 from fatcat_openapi_client import ApiClient, Editgroup
-from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import entity_from_dict, entity_to_dict
 
 

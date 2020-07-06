@@ -1,8 +1,6 @@
 
-
-import pytest
 from fatcat_tools.importers import CrossrefImporter, OrcidImporter
-from fixtures import api
+from fixtures import *
 
 
 def test_issnl_mapping_lookup(api):
@@ -32,4 +30,3 @@ def test_identifiers(api):
     assert oi.is_orcid("0000-00x3-3118-659") == False
     assert oi.is_orcid("0000-00033118-659") == False
     assert oi.is_orcid("0000-0003-3118-659.") == False
-

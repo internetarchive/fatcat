@@ -32,4 +32,3 @@ def entity_from_json(json_str, entity_type, api_client=None):
 def entity_from_dict(obj, entity_type, api_client=None):
     json_str = json.dumps(obj)
     return entity_from_json(json_str, entity_type, api_client=api_client)
-

@@ -1,13 +1,13 @@
 
 import json
-import pytest
+
 from fatcat_tools import *
 from fatcat_openapi_client import *
-from fixtures import api
 from import_journal_metadata import journal_metadata_importer
-
 from import_crossref import crossref_importer
 from import_matched import matched_importer
+from fixtures import *
+
 
 def test_basic_elasticsearch_convert(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:

@@ -1,11 +1,8 @@
 
-import json
 import pytest
 import datetime
-from copy import copy
 
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -130,7 +127,7 @@ def test_release(api):
 
     # get redirects (none)
     assert api.get_release_redirects(r2.ident) == []
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_release(eg.editgroup_id, r2.ident)
@@ -210,4 +207,3 @@ def test_controlled_vocab(api):
         api.create_release(eg.editgroup_id, r3)
     r3.withdrawn_status = "spam"
     api.create_release(eg.editgroup_id, r3)
-

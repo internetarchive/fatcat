@@ -1,12 +1,8 @@
 
-import sys
-import json
-import sqlite3
-import itertools
 import fatcat_openapi_client
 
 from fatcat_tools.normal import *
-from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
+from .common import EntityImporter, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
 
 
 class MatchedImporter(EntityImporter):
@@ -160,7 +156,6 @@ class MatchedImporter(EntityImporter):
             self.counts['skip-update-inflight'] += 1
             return False
 
-
         # minimum viable "existing" URL cleanup to fix dupes and broken links:
         # remove 'None' wayback URLs, and set archive.org rel 'archive'
         existing.urls = [u for u in existing.urls if not ('://web.archive.org/web/None/' in u.url)]
@@ -207,4 +202,3 @@ class MatchedImporter(EntityImporter):
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))
-

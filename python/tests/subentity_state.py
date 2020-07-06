@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 """
@@ -221,4 +216,3 @@ def test_app_entity_states(api, app):
     assert rv.status_code == 200
     rv = app.get('/work/{}'.format(r2.work_id))
     assert rv.status_code == 302
-

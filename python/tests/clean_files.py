@@ -1,9 +1,10 @@
 
 import copy
 import pytest
+
 from fatcat_tools.cleanups import FileCleaner
 from fatcat_openapi_client import *
-from fixtures import api
+from fixtures import *
 
 
 @pytest.fixture(scope="function")

@@ -2,12 +2,12 @@
 import os
 import sys
 import json
-from flask import Flask, render_template, make_response, send_from_directory, \
-    request, url_for, abort, g, redirect, jsonify, session, flash, Response
+from flask import render_template, make_response, send_from_directory, \
+    request, url_for, abort, redirect, jsonify, session, flash, Response
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
-from fatcat_openapi_client import Editgroup, EditgroupAnnotation
+from fatcat_openapi_client import EditgroupAnnotation
 from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_tools.normal import *
@@ -1042,4 +1042,3 @@ def robots():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'robots.txt',
                                mimetype='text/plain')
-

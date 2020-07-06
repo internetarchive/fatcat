@@ -1,14 +1,11 @@
 
 import json
-import collections
 
 from citeproc import CitationStylesStyle, CitationStylesBibliography
 from citeproc import Citation, CitationItem
 from citeproc import formatter
 from citeproc.source.json import CiteProcJSON
 from citeproc_styles import get_style_filepath
-
-from fatcat_openapi_client import ApiClient
 
 
 def contribs_by_role(contribs, role):
@@ -214,14 +211,13 @@ def citeproc_csl(csl_json, style, html=False):
     lines = bib.bibliography()[0]
     if style == "bibtex":
         out = ""
-        for l in lines:
-            if l.startswith(" @"):
+        for line in lines:
+            if line.startswith(" @"):
                 out += "@"
-            elif l.startswith(" "):
-                out += "\n " + l
+            elif line.startswith(" "):
+                out += "\n " + line
             else:
-                out += l
+                out += line
         return ''.join(out)
     else:
         return ''.join(lines)
-

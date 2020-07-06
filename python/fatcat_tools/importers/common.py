@@ -161,18 +161,18 @@ def is_cjk(s):
     return False
 
 def test_is_cjk():
-    assert is_cjk(None) == False
-    assert is_cjk('') == False
-    assert is_cjk('blah') == False
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼') == True
-    assert is_cjk('[岡, 鹿, 梨, 阜, 埼]') == True
-    assert is_cjk('菊') == True
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼 with eng after') == True
-    assert is_cjk('水道') == True
-    assert is_cjk('オウ, イク') == True # kanji
-    assert is_cjk('ひヒ') == True
-    assert is_cjk('き゚ゅ') == True
-    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') == True
+    assert is_cjk(None) is False
+    assert is_cjk('') is False
+    assert is_cjk('blah') is False
+    assert is_cjk('岡, 鹿, 梨, 阜, 埼') is True
+    assert is_cjk('[岡, 鹿, 梨, 阜, 埼]') is True
+    assert is_cjk('菊') is True
+    assert is_cjk('岡, 鹿, 梨, 阜, 埼 with eng after') is True
+    assert is_cjk('水道') is True
+    assert is_cjk('オウ, イク') is True # kanji
+    assert is_cjk('ひヒ') is True
+    assert is_cjk('き゚ゅ') is True
+    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') is True
 
 DOMAIN_REL_MAP = {
     "archive.org": "archive",
@@ -368,7 +368,7 @@ class EntityImporter:
         if self._entity_queue:
             self.insert_batch(self._entity_queue)
             self.counts['insert'] += len(self._entity_queue)
-            self._entity_queue =  []
+            self._entity_queue = []
 
         return self.counts
 

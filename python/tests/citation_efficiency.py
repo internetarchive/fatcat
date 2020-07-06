@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -110,4 +105,3 @@ def test_citation_encoding(api):
     assert container == r1.refs[0].container_name
     assert extra == r1.refs[0].extra
     assert locator == r1.refs[0].locator
-

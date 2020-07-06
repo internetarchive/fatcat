@@ -1,7 +1,4 @@
 
-import json
-import pytest
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -25,4 +22,3 @@ def test_change_username(app_admin):
     assert rv.status_code == 200
     rv = app_admin.get('/auth/account')
     assert b'admin-tmp' not in rv.data
-

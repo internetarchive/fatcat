@@ -1,6 +1,7 @@
 
 import json
 import pytest
+
 from fatcat_tools.importers import IngestFileResultImporter, JsonLinePusher
 from fixtures import *
 
