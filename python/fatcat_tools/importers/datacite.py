@@ -298,6 +298,9 @@ class DataciteImporter(EntityImporter):
 
         contribs = self.parse_datacite_creators(creators, doi=doi) + self.parse_datacite_creators(contributors, role=None, set_index=False, doi=doi)
 
+        # Address duplicated author names; use raw_name string comparison; refs #59.
+        contribs = unique_contributors(contribs)
+
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
         titles = attributes.get('titles', []) or []
@@ -822,6 +825,19 @@ class DataciteImporter(EntityImporter):
 
         return contribs
 
+
+def unique_contributors(contribs):
+    """
+    Given a list of ReleaseContrib items, return a list of unique
+    ReleaseContribs, refs GH #59.
+    """
+    unique_names, unique_contribs = set(), []
+    for rc in contribs:
+        if rc.raw_name and rc.raw_name in unique_names:
+            continue
+        unique_names.add(rc.raw_name)
+        unique_contribs.append(rc)
+    return unique_contribs
 
 def lookup_license_slug(raw):
     """
