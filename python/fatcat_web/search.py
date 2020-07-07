@@ -259,7 +259,7 @@ def do_release_search(
         results=results,
     )
 
-def get_elastic_container_random_releases(ident, limit=5):
+def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
     """
     Returns a list of releases from the container.
     """
@@ -283,7 +283,7 @@ def get_elastic_container_random_releases(ident, limit=5):
 
     return results
 
-def get_elastic_entity_stats():
+def get_elastic_entity_stats() -> dict:
     """
     TODO: files, filesets, webcaptures (no schema yet)
 
@@ -417,6 +417,9 @@ def get_elastic_container_stats(ident, issnl=None):
 
     container_stats = resp.aggregations.container_stats.buckets
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
+    for k in ('bright', 'dark', 'shadows_only', 'none'):
+        if not k in preservation_bucket:
+            preservation_bucket[k] = 0
     release_type_bucket = agg_to_dict(resp.aggregations.release_type)
     stats = {
         'ident': ident,
@@ -431,9 +434,11 @@ def get_elastic_container_stats(ident, issnl=None):
 
     return stats
 
-def get_elastic_container_histogram(ident):
+def get_elastic_container_histogram_legacy(ident) -> List:
     """
-    Fetches a stacked histogram
+    Fetches a stacked histogram of {year, in_ia}. This is for the older style
+    of coverage graph (SVG or JSON export). This function should be DEPRECATED
+    to be removed in the near future.
 
     Filters to the past 500 years (at most), or about 1000 values.
 
@@ -480,7 +485,174 @@ def get_elastic_container_histogram(ident):
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_in_ia.buckets
-    vals = [(h['key']['year'], h['key']['in_ia'], h['doc_count'])
+    vals = [(int(h['key']['year']), h['key']['in_ia'], h['doc_count'])
             for h in buckets]
     vals = sorted(vals)
     return vals
+
+
+def get_elastic_container_preservation_by_year(container_id: str) -> List[dict]:
+    """
+    Fetches a stacked histogram of {year, preservation}.
+
+    Preservation has 4 potential values; this function filters to the past 250 
+    years (at most), or about 1000 values.
+
+    Returns a list of dicts, sorted by year, with keys/values like:
+
+        {year (int), bright (int), dark (int), shadows_only (int), none (int)}
+    """
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache='true')
+    search = search.query(
+        'bool',
+        must=[
+            Q("range", release_year={
+                "gte": datetime.datetime.today().year - 249,
+                "lte": datetime.datetime.today().year,
+            }),
+        ],
+        filter=[
+            Q("bool", minimum_should_match=1, should=[
+                Q("match", container_id=container_id),
+            ]),
+        ],
+    )
+    search.aggs.bucket(
+        'year_preservation',
+        'composite',
+        size=1500,
+        sources=[
+            {"year": {
+                "histogram": {
+                    "field": "release_year",
+                    "interval": 1,
+                },
+            }},
+            {"preservation": {
+                "terms": {
+                    "field": "preservation",
+                },
+            }},
+        ],
+    )
+    search = search[:0]
+
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.year_preservation.buckets
+    year_nums = set([int(h['key']['year']) for h in buckets])
+    year_dicts = dict()
+    for num in range(min(year_nums), max(year_nums)+1):
+        year_dicts[num] = dict(year=num, bright=0, dark=0, shadows_only=0, none=0)
+    for row in buckets:
+        year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
+    return sorted(year_dicts.values(), key=lambda x: x['year'])
+
+def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict]:
+    """
+    Fetches a stacked histogram of {volume, preservation}.
+
+    Currently only includes volume numbers which are simple integers (all chars
+    are digits).
+
+    Returns a list of dicts, sorted by volume, with keys/values like:
+
+        {year (int), bright (int), dark (int), shadows_only (int), none (int)}
+    """
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache='true')
+    search = search.query(
+        'bool',
+        filter=[
+            Q("bool", must=[
+                Q("match", container_id=container_id),
+                Q("exists", field="volume"),
+            ]),
+        ],
+    )
+    search.aggs.bucket(
+        'volume_preservation',
+        'composite',
+        size=1500,
+        sources=[
+            {"volume": {
+                "terms": {
+                    "field": "volume",
+                },
+            }},
+            {"preservation": {
+                "terms": {
+                    "field": "preservation",
+                },
+            }},
+        ],
+    )
+    search = search[:0]
+
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.volume_preservation.buckets
+    volume_nums = set([int(h['key']['volume']) for h in buckets if h['key']['volume'].isdigit()])
+    volume_dicts = dict()
+    for num in range(min(volume_nums), max(volume_nums)+1):
+        volume_dicts[num] = dict(volume=num, bright=0, dark=0, shadows_only=0, none=0)
+    for row in buckets:
+        if row['key']['volume'].isdigit():
+            volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
+    return sorted(volume_dicts.values(), key=lambda x: x['volume'])
+
+def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
+    """
+    Fetches preservation coverage by release type
+
+    Returns a list of dicts, sorted by total count, with keys/values like:
+
+        {year (int), bright (int), dark (int), shadows_only (int), none (int)}
+    """
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.params(request_cache='true')
+    search = search.query(
+        'bool',
+        filter=[
+            Q("bool", must=[
+                Q("match", container_id=container_id),
+            ]),
+        ],
+    )
+    search.aggs.bucket(
+        'type_preservation',
+        'composite',
+        size=1500,
+        sources=[
+            {"release_type": {
+                "terms": {
+                    "field": "release_type",
+                },
+                "missing": "_unknown",
+            }},
+            {"preservation": {
+                "terms": {
+                    "field": "preservation",
+                },
+            }},
+        ],
+    )
+    search = search[:0]
+
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.volume_preservation.buckets
+    type_set = set([h['key']['release_type'] for h in buckets])
+    type_dicts = dict()
+    for k in type_set:
+        type_dicts[k] = dict(release_type=t, bright=0, dark=0, shadows_only=0, none=0, total=0)
+    for row in buckets:
+        type_dicts[row['key']['release_type']][row['key']['preservation']] = int(row['doc_count'])
+    for k in type_set:
+        for p in ('bright', 'dark', 'shadows_only', 'none'):
+            type_dicts[k]['total'] += type_dicts[k][p]
+    return sorted(type_dicts.values(), key=lambda x: x['total'])

@@ -14,7 +14,7 @@ from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram, FatcatSearchError
+from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram_legacy, get_elastic_container_preservation_by_year, get_elastic_container_preservation_by_volume, get_elastic_container_preservation_by_type, FatcatSearchError
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
 from fatcat_web.kafka import *
@@ -765,7 +765,7 @@ def container_issnl_stats(issnl):
         raise ae
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
-    except Exception as ae:
+    except (ValueError, IOError) as ae:
         app.log.error(ae)
         abort(503)
     return jsonify(stats)
@@ -792,7 +792,7 @@ def container_ident_ia_coverage_years_json(ident):
     except ApiException as ae:
         abort(ae.status)
     try:
-        histogram = get_elastic_container_histogram(container.ident)
+        histogram = get_elastic_container_histogram_legacy(container.ident)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
@@ -807,11 +807,67 @@ def container_ident_ia_coverage_years_svg(ident):
     except ApiException as ae:
         abort(ae.status)
     try:
-        histogram = get_elastic_container_histogram(container.ident)
+        histogram = get_elastic_container_histogram_legacy(container.ident)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
     return ia_coverage_histogram(histogram).render_response()
+
+@app.route('/container/<ident>/preservation_by_year.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_preservation_by_year_json(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_preservation_by_year(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return jsonify({'container_id': ident, "histogram": histogram})
+
+@app.route('/container/<ident>/preservation_by_year.svg', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_preservation_by_year_svg(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_preservation_by_year(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return preservation_by_year_histogram(histogram).render_response()
+
+@app.route('/container/<ident>/preservation_by_volume.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_preservation_by_volume_json(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_preservation_by_volume(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return jsonify({'container_id': ident, "histogram": histogram})
+
+@app.route('/container/<ident>/preservation_by_volume.svg', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_preservation_by_volume_svg(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_preservation_by_volume(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return preservation_by_volume_histogram(histogram).render_response()
 
 @app.route('/release/<ident>.bib', methods=['GET'])
 def release_bibtex(ident):
