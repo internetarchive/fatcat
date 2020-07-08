@@ -2,7 +2,7 @@
 import json
 import pytest
 
-from fatcat_web.search import get_elastic_container_random_releases, get_elastic_container_histogram
+from fatcat_web.search import get_elastic_container_random_releases
 from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 

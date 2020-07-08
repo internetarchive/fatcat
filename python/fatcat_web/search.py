@@ -496,7 +496,7 @@ def get_elastic_container_preservation_by_year(container_id: str) -> List[dict]:
     """
     Fetches a stacked histogram of {year, preservation}.
 
-    Preservation has 4 potential values; this function filters to the past 250 
+    Preservation has 4 potential values; this function filters to the past 250
     years (at most), or about 1000 values.
 
     Returns a list of dicts, sorted by year, with keys/values like:

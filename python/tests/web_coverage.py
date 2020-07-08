@@ -65,19 +65,7 @@ def test_container_coverage(app, mocker):
 
 def test_coverage_empty_years(app, mocker):
 
-    elastic_resp1 = {
-        'timed_out': False,
-        'aggregations': {
-            'container_stats': {'buckets': {
-              'is_preserved': {'doc_count': 461939},
-              'in_kbart': {'doc_count': 461939},
-              'in_web': {'doc_count': 2797}}}},
-        'hits': {'total': 461939, 'hits': [], 'max_score': 0.0},
-        '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},
-        'took': 50
-    }
-
-    elastic_resp2 = {
+    elastic_resp = {
         'took': 294,
         'timed_out': False,
         '_shards': {'total': 5, 'successful': 5, 'skipped': 0, 'failed': 0},
@@ -91,7 +79,7 @@ def test_coverage_empty_years(app, mocker):
 
     es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     es_raw.side_effect = [
-        (200, {}, json.dumps(elastic_resp2)),
+        (200, {}, json.dumps(elastic_resp)),
     ]
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaam/ia_coverage_years.svg')
