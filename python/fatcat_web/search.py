@@ -417,6 +417,7 @@ def get_elastic_container_stats(ident, issnl=None):
 
     container_stats = resp.aggregations.container_stats.buckets
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
+    preservation_bucket['total'] = resp.hits.total
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
@@ -429,7 +430,7 @@ def get_elastic_container_stats(ident, issnl=None):
         'in_kbart': container_stats['in_kbart']['doc_count'],
         'is_preserved': container_stats['is_preserved']['doc_count'],
         'preservation': preservation_bucket,
-        'release_types': release_type_bucket,
+        'release_type': release_type_bucket,
     }
 
     return stats
@@ -632,7 +633,6 @@ def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
                 "terms": {
                     "field": "release_type",
                 },
-                "missing": "_unknown",
             }},
             {"preservation": {
                 "terms": {
@@ -645,14 +645,14 @@ def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
 
     resp = wrap_es_execution(search)
 
-    buckets = resp.aggregations.volume_preservation.buckets
+    buckets = resp.aggregations.type_preservation.buckets
     type_set = set([h['key']['release_type'] for h in buckets])
     type_dicts = dict()
     for k in type_set:
-        type_dicts[k] = dict(release_type=t, bright=0, dark=0, shadows_only=0, none=0, total=0)
+        type_dicts[k] = dict(release_type=k, bright=0, dark=0, shadows_only=0, none=0, total=0)
     for row in buckets:
         type_dicts[row['key']['release_type']][row['key']['preservation']] = int(row['doc_count'])
     for k in type_set:
         for p in ('bright', 'dark', 'shadows_only', 'none'):
             type_dicts[k]['total'] += type_dicts[k][p]
-    return sorted(type_dicts.values(), key=lambda x: x['total'])
+    return sorted(type_dicts.values(), key=lambda x: x['total'], reverse=True)

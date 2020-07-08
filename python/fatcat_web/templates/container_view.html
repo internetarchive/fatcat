@@ -64,35 +64,33 @@
       <div class="label" style="text-transform: none;">Known Releases</div>
     </div>
   </div>
+</div>
+<div class="ui segment attached">
+  <b>Preservation Status</b><br>
   {% if container._stats.total >= 1 %}
-
-    {% set frac_kbart = container._stats.in_kbart/container._stats.total %}
-    {% set frac_preserved = container._stats.is_preserved/container._stats.total %}
-    {% set frac_web = container._stats.in_web/container._stats.total %}
-
-    <div class="ui {{ entity_macros.progress_color(frac_web) }} progress" style="margin-bottom: 0.1em;">
-      <div class="bar" style="width: {{ (frac_web*100)|int }}%;">
-        <div class="progress">{{ (frac_web*100)|int }}%</div>
-      </div>
-    </div>
-    {{ "{:,}".format(container._stats.in_web) }} preserved and available (bright)
-
-    <div class="ui {{ entity_macros.progress_color(frac_preserved) }} progress" style="margin-bottom: 0.1em;">
-      <div class="bar" style="width: {{ (frac_preserved*100)|int }}%;">
-        <div class="progress">{{ (frac_preserved*100)|int }}%</div>
-      </div>
-    </div>
-    {{ "{:,}".format(container._stats.is_preserved) }} preserved at all (bright or dark)
-
-    <div class="ui {{ entity_macros.progress_color(frac_kbart) }} progress" style="margin-bottom: 0.1em; margin-top: 1em;">
-      <div class="bar" style="width: {{ (frac_kbart*100)|int }}%;">
-        <div class="progress">{{ (frac_kbart*100)|int }}%</div>
-      </div>
-    </div>
-    {{ "{:,}".format(container._stats.in_kbart ) }} preserved by Keeper (dark)
-
+    {{ entity_macros.preservation_bar(container._stats.preservation) }}
+    {{ entity_macros.preservation_small_table(container._stats.preservation) }}
   {% endif %}
 </div>
+{% if container._stats.total >= 1 %}
+{% endif %}
+  <div class="ui segment attached">
+    <b>Work Types</b><br>
+    <table class="ui very basic very compact collapsing table">
+      <tbody>
+        {% for type_row in container._stats.release_type %}
+        <tr>
+          <td class="three wide">
+            {% if type_row == "_unknown" %}
+              <i>Unknown</i>
+            {% else %}
+              <code>{{ type_row }}</code>
+            {% endif %}
+          <td class="three wide right aligned">{{ container._stats.release_type[type_row] }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endif %}
 
 {% if container.issnl != None or container.wikidata_qid != None %}

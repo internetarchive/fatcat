@@ -14,73 +14,54 @@
         <div class="label" style="text-transform: none;">Known Releases</div>
       </div>
       {% if container._stats.total >= 1 %}
-
-        {% set frac_kbart = container._stats.in_kbart/container._stats.total %}
-        {% set frac_preserved = container._stats.is_preserved/container._stats.total %}
-        {% set frac_web = container._stats.in_web/container._stats.total %}
-
-        {% set pstats = container._stats.preservation %}
-        {% set frac_bright = container._stats.preservation.bright/container._stats.total %}
-        {% set frac_dark = container._stats.preservation.dark/container._stats.total %}
-        {% set frac_shadows_only = container._stats.preservation.shadows_only/container._stats.total %}
-        {% set frac_none = container._stats.preservation.none/container._stats.total %}
-
-        <div class="ui large multiple progress" data-percent="0,0,0,0" style="margin-bottom: 0.1em;">
-          <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_bright*100)|round(method='ceil') }}%;" title="bright">
-            <div class="progress">{# {{ (frac_bright*100)|int }}% #}</div>
-          </div>
-          <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_dark*100)|round(method='ceil') }}%; background-color: darkgreen;">
-            <div class="progress">{# {{ (frac_dark*100)|int }}% #}</div>
-          </div>
-          <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_shadows_only*100)|round(method='ceil') }}%; background-color: darkred;">
-            <div class="progress">{# {{ (frac_shadows_only*100)|int }}% #}</div>
-          </div>
-          <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_none*100)|round(method='ceil') }}%;">
-            <div class="progress">{# {{ (frac_none*100)|int }}% #}</div>
-          </div>
-        </div>
-        <table class="ui very basic very compact collapsing table" style="font-weight: bold; margin-left: 1em;">
-          <tbody>
-            <tr>
-              <td style="background-color: green;">
-              <td class="right aligned" >{{ "{:,}".format(pstats.bright) }}
-              <td class="right aligned" >{{ (frac_bright*100)|round(2,method='ceil') }}%
-              <td>preserved and publicly available (bright)
-            <tr>
-              <td style="background-color: darkgreen;">
-              <td class="right aligned" >{{ "{:,}".format(pstats.dark) }}
-              <td class="right aligned" >{{ (frac_dark*100)|round(2,method='ceil') }}%
-              <td>preserved but not publicly accessible (dark)
-            <tr>
-              <td style="background-color: darkred;">
-              <td class="right aligned" >{{ "{:,}".format(pstats.shadows_only) }}
-              <td class="right aligned" >{{ (frac_shadows_only*100)|round(2,method='ceil') }}%
-              <td>only independently preserved in "shadow" libraries
-            <tr>
-              <td style="background-color: red;">
-              <td class="right aligned" >{{ "{:,}".format(pstats.none) }}
-              <td class="right aligned" >{{ (frac_none*100)|round(2,method='ceil') }}%
-              <td>no known independent preservation
-          </tbody>
-        </table>
-
+        {{ entity_macros.preservation_bar(container._stats.preservation, extra_class="large") }}
+        {{ entity_macros.preservation_table(container._stats.preservation) }}
       {% endif %}
     </div>
   </div>
 </div>
 
 {% if container._stats.total >= 1 %}
-  <br>
-  <br>
+  <br><br>
   <h2>Perpetual Access Coverage by Year</h2>
 
   <figure style="margin: 0 0 0 0;">
-    <embed type="image/svg+xml" src="/container/{{ container.ident }}/ia_coverage_years.svg" />
+    <embed type="image/svg+xml" src="/container/{{ container.ident }}/preservation_by_year.svg" />
   </figure>
 
   <div style="float: right;">
-    <a href="/container/{{ container.ident }}/ia_coverage_years.json">Download as JSON</a>
+    <a href="/container/{{ container.ident }}/preservation_by_year.json">Download as JSON</a>
   </div>
+
+  <br><br>
+  <h2>Perpetual Access Coverage by Volume</h2>
+
+  <figure style="margin: 0 0 0 0;">
+    <embed type="image/svg+xml" src="/container/{{ container.ident }}/preservation_by_volume.svg" />
+  </figure>
+
+  <div style="float: right;">
+    <a href="/container/{{ container.ident }}/preservation_by_volume.json">Download as JSON</a>
+  </div>
+
+  <br><br>
+  <h2>Perpetual Access Coverage by Release Type</h2>
+  <table class="ui table">
+    <thead>
+      <tr>
+        <th>Release Type
+        <th class="right aligned">Total Count
+        <th>Coverage
+    </thead>
+    <tbody>
+      {% for type_row in container._type_preservation %}
+      <tr>
+        <td class="two wide">{{ type_row.release_type }}
+        <td class="two wide right aligned">{{ type_row.total }}
+        <td class="twelve wide">{{ entity_macros.preservation_bar(type_row) }}
+      {% endfor %}
+    </tbody>
+  </table>
 {% endif %}
 
 {% endblock %}

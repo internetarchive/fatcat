@@ -260,3 +260,92 @@ yellow
 {% endif %}
 {%- endmacro %}
 
+
+{% macro preservation_bar(stats, extra_class="") -%}
+
+  {% set frac_bright = stats.bright/stats.total %}
+  {% set frac_dark = stats.dark/stats.total %}
+  {% set frac_shadows_only = stats.shadows_only/stats.total %}
+  {% set frac_none = stats.none/stats.total %}
+
+  <div class="ui {{ extra_class }} multiple progress" data-percent="0,0,0,0" style="margin-bottom: 0.1em;">
+    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_bright*100)|round(method='ceil') }}%;" title="bright">
+      <div class="progress">{# {{ (frac_bright*100)|int }}% #}</div>
+    </div>
+    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_dark*100)|round(method='ceil') }}%; background-color: darkgreen;" title="dark">
+      <div class="progress">{# {{ (frac_dark*100)|int }}% #}</div>
+    </div>
+    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_shadows_only*100)|round(method='ceil') }}%; background-color: darkred;" title="shadows only">
+      <div class="progress">{# {{ (frac_shadows_only*100)|int }}% #}</div>
+    </div>
+    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_none*100)|round(method='ceil') }}%;" title="no preservation">
+      <div class="progress">{# {{ (frac_none*100)|int }}% #}</div>
+    </div>
+  </div>
+
+
+{%- endmacro %}
+
+{% macro preservation_table(stats) -%}
+
+  {% set frac_bright = stats.bright/stats.total %}
+  {% set frac_dark = stats.dark/stats.total %}
+  {% set frac_shadows_only = stats.shadows_only/stats.total %}
+  {% set frac_none = stats.none/stats.total %}
+
+  <table class="ui very basic very compact collapsing table" style="font-weight: bold; margin-left: 1em;">
+    <tbody>
+      <tr>
+        <td style="background-color: #21ba45;">
+        <td class="right aligned" >{{ "{:,}".format(stats.bright) }}
+        <td class="right aligned" >{{ (frac_bright*100)|round(2,method='ceil') }}%
+        <td>preserved and publicly available (bright)
+      <tr>
+        <td style="background-color: darkgreen;">
+        <td class="right aligned" >{{ "{:,}".format(stats.dark) }}
+        <td class="right aligned" >{{ (frac_dark*100)|round(2,method='ceil') }}%
+        <td>preserved but not publicly accessible (dark)
+      <tr>
+        <td style="background-color: darkred;">
+        <td class="right aligned" >{{ "{:,}".format(stats.shadows_only) }}
+        <td class="right aligned" >{{ (frac_shadows_only*100)|round(2,method='ceil') }}%
+        <td>only independently preserved in "shadow" libraries
+      <tr>
+        <td style="background-color: #db2828;">
+        <td class="right aligned" >{{ "{:,}".format(stats.none) }}
+        <td class="right aligned" >{{ (frac_none*100)|round(2,method='ceil') }}%
+        <td>no known independent preservation
+    </tbody>
+  </table>
+
+{%- endmacro %}
+
+{% macro preservation_small_table(stats) -%}
+
+  {% set frac_bright = stats.bright/stats.total %}
+  {% set frac_dark = stats.dark/stats.total %}
+  {% set frac_shadows_only = stats.shadows_only/stats.total %}
+  {% set frac_none = stats.none/stats.total %}
+
+  <table class="ui very basic very compact collapsing table">
+    <tbody>
+      <tr>
+        <td style="background-color: #21ba45;">
+        <td class="right aligned" >{{ "{:,}".format(stats.bright) }}
+        <td>preserved and accessble (bright)
+      <tr>
+        <td style="background-color: darkgreen;">
+        <td class="right aligned" >{{ "{:,}".format(stats.dark) }}
+        <td>preserved, inaccessible (dark)
+      <tr>
+        <td style="background-color: darkred;">
+        <td class="right aligned" >{{ "{:,}".format(stats.shadows_only) }}
+        <td>shadow library only
+      <tr>
+        <td style="background-color: #db2828;">
+        <td class="right aligned" >{{ "{:,}".format(stats.none) }}
+        <td>no known preservation
+    </tbody>
+  </table>
+
+{%- endmacro %}

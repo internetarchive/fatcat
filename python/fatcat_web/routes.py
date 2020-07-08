@@ -200,6 +200,10 @@ def generic_entity_view(entity_type, ident, view_template):
     metadata.pop('extra')
     entity._metadata = metadata
 
+    if view_template == "container_view_coverage.html":
+        entity._type_preservation = get_elastic_container_preservation_by_type(ident)
+        print(entity._type_preservation)
+
     return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
 
 def generic_entity_revision_view(entity_type, revision_id, view_template):
@@ -240,6 +244,7 @@ def container_underscore_view(ident):
 
 @app.route('/container/<ident>/coverage', methods=['GET'])
 def container_view_coverage(ident):
+    # note: there is a special hack to add entity._type_preservation for this endpoint
     return generic_entity_view('container', ident, 'container_view_coverage.html')
 
 @app.route('/container/<ident>/metadata', methods=['GET'])
