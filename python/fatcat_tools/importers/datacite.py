@@ -292,14 +292,17 @@ class DataciteImporter(EntityImporter):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
 
-
         creators = attributes.get('creators', []) or []
         contributors = attributes.get('contributors', []) or []  # Much fewer than creators.
 
-        contribs = self.parse_datacite_creators(creators, doi=doi) + self.parse_datacite_creators(contributors, role=None, set_index=False, doi=doi)
+        contribs = self.parse_datacite_creators(creators, doi=doi)
+        contribs_extra_contributors = self.parse_datacite_creators(contributors, set_index=False, doi=doi)
 
-        # Address duplicated author names; use raw_name string comparison; refs #59.
-        contribs = unique_contributors(contribs)
+        # Unfortunately, creators and contributors might overlap, refs GH59.
+        for cc in contribs_extra_contributors:
+            if contributor_list_contains_contributor(contribs, cc):
+                continue
+            contribs.append(cc)
 
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
@@ -800,8 +803,7 @@ class DataciteImporter(EntityImporter):
                 if contributorType:
                     extra = {'type': contributorType}
 
-                contribs.append(
-                    fatcat_openapi_client.ReleaseContrib(
+                rc = fatcat_openapi_client.ReleaseContrib(
                         creator_id=creator_id,
                         index=i,
                         raw_name=name,
@@ -810,7 +812,9 @@ class DataciteImporter(EntityImporter):
                         role=role,
                         raw_affiliation=raw_affiliation,
                         extra=extra,
-                    ))
+                    )
+                if not contributor_list_contains_contributor(contribs, rc):
+                    contribs.append(rc)
             elif nameType == 'Organizational':
                 name = c.get('name', '') or ''
                 if name in UNKNOWN_MARKERS:
@@ -826,18 +830,20 @@ class DataciteImporter(EntityImporter):
         return contribs
 
 
-def unique_contributors(contribs):
+def contributor_list_contains_contributor(contributor_list, contributor):
     """
-    Given a list of ReleaseContrib items, return a list of unique
-    ReleaseContribs, refs GH #59.
+    Given a list of contributors, determine, whether contrib is in that list.
     """
-    unique_names, unique_contribs = set(), []
-    for rc in contribs:
-        if rc.raw_name and rc.raw_name in unique_names:
+    for cc in contributor_list:
+        if cc.raw_name != contributor.raw_name:
             continue
-        unique_names.add(rc.raw_name)
-        unique_contribs.append(rc)
-    return unique_contribs
+        cc_role = cc.role or 'author'
+        contributor_role = contributor.role or 'author'
+        if cc_role != contributor_role:
+            continue
+        return True
+    return False
+
 
 def lookup_license_slug(raw):
     """
