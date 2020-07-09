@@ -505,7 +505,8 @@
       "surname": "Wurzbacher"
     },
     {
-      "raw_name": "NHM UT-University Of Tartu; Natural History Museum And Botanic Garden"
+      "raw_name": "NHM UT-University Of Tartu; Natural History Museum And Botanic Garden",
+      "role": "author"
     }
   ],
   "ext_ids": {
