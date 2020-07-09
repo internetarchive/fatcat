@@ -140,8 +140,9 @@ def handle_wmoauth(username):
     # pass off "as if" we did OAuth successfully
     FakeOAuthRemote = namedtuple('FakeOAuthRemote', ['name', 'OAUTH_CONFIG'])
     remote = FakeOAuthRemote(name='wikipedia', OAUTH_CONFIG={'api_base_url': "https://www.mediawiki.org/w"})
+    conservative_username = ''.join(filter(str.isalnum, username))
     oauth_info = {
-        'preferred_username': username,
+        'preferred_username': conservative_username,
         'iss': "https://www.mediawiki.org/w",
         'sub': username,
     }
