@@ -296,6 +296,31 @@ class DataciteImporter(EntityImporter):
         contributors = attributes.get('contributors', []) or []  # Much fewer than creators.
 
         contribs = self.parse_datacite_creators(creators, doi=doi)
+
+        # Beside creators, we have contributors in datacite. Sample:
+        # ContactPerson, DataCollector, DataCurator, DataManager, Distributor,
+        # Editor, Funder, HostingInstitution, Other, Producer, ProjectLeader,
+        # ProjectMember, RelatedPerson, ResearchGroup, Researcher,
+        # RightsHolder, Sponsor, Supervisor
+        #
+        # Datacite schema:
+        # https://schema.datacite.org/meta/kernel-4.3/doc/DataCite-MetadataKernel_v4.3.pdf#page=32
+        # -- could be used as a form of controlled vocab?
+        #
+        # Currently (07/2020) in release_contrib:
+        #
+        # select count(*), role from release_contrib group by role;
+        #    count   |    role
+        # -----------+------------
+        #  500269665 | author
+        #    4386563 | editor
+        #      17871 | translator
+        #   10870584 |
+        # (4 rows)
+	#
+        # Related: https://guide.fatcat.wiki/entity_release.html -- role
+        # (string, of a set): the type of contribution, from a controlled
+        # vocabulary. TODO: vocabulary needs review.
         contribs_extra_contributors = self.parse_datacite_creators(contributors, set_index=False, doi=doi)
 
         # Unfortunately, creators and contributors might overlap, refs GH59.
