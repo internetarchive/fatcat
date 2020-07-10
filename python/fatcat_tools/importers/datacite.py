@@ -732,6 +732,10 @@ class DataciteImporter(EntityImporter):
             if nameType in ('', 'Personal'):
                 creator_id = None
                 for nid in c.get('nameIdentifiers', []) or []:
+                    if not isinstance(nid, dict):
+                        # see: fatcat-workers/issues/44035/
+                        print('unexpected nameIdentifiers, expected list of dicts, got: {}'.format(nid), file=sys.stderr)
+                        continue
                     name_scheme = nid.get('nameIdentifierScheme', '') or ''
                     if not name_scheme.lower() == "orcid":
                         continue
