@@ -61,7 +61,7 @@ class HarvestOaiPmhWorker:
         })
         producer = Producer(producer_conf)
 
-        api = sickle.Sickle(self.endpoint_url)
+        api = sickle.Sickle(self.endpoint_url, max_retries=5, retry_status_codes=[503])
         date_str = date.isoformat()
         # this dict kwargs hack is to work around 'from' as a reserved python keyword
         # recommended by sickle docs
