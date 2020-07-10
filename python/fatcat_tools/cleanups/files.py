@@ -1,7 +1,6 @@
 
 from fatcat_openapi_client.rest import ApiException
 from fatcat_openapi_client.models import FileEntity
-from fatcat_tools.transforms import entity_to_dict, entity_from_json
 
 from .common import EntityCleaner
 
@@ -70,4 +69,3 @@ class FileCleaner(EntityCleaner):
 
         self.api.update_file(self.get_editgroup_id(), entity.ident, entity)
         return 1
-

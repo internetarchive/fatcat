@@ -9,16 +9,8 @@ import sys
 import json
 import argparse
 
-from citeproc import CitationStylesStyle, CitationStylesBibliography
-from citeproc import Citation, CitationItem
-from citeproc import formatter
-from citeproc.source.json import CiteProcJSON
-from citeproc_styles import get_style_filepath
-
-import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
 from fatcat_openapi_client import ReleaseEntity, ContainerEntity, FileEntity, ChangelogEntry
-from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
+from fatcat_tools import entity_from_json, \
     release_to_elasticsearch, container_to_elasticsearch, \
     file_to_elasticsearch, changelog_to_elasticsearch, public_api, \
     release_to_csl, citeproc_csl

@@ -1,9 +1,9 @@
 
-import json, gzip
 import pytest
-from fatcat_tools.importers import PubmedImporter, Bs4XmlLargeFilePusher
-from fixtures import api
 from bs4 import BeautifulSoup
+
+from fatcat_tools.importers import PubmedImporter, Bs4XmlLargeFilePusher
+from fixtures import *
 
 
 @pytest.fixture(scope="function")
@@ -137,4 +137,3 @@ def test_pubmed_xml_parse_refs(pubmed_importer):
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 
     assert len(r1.refs) > 1
-

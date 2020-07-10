@@ -61,4 +61,3 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
         ingest_request['link_source_id'] = link_source_id
 
     return ingest_request
-

@@ -1,10 +1,6 @@
 
-import sys
-import json
 import sqlite3
 import datetime
-import itertools
-import subprocess
 import fatcat_openapi_client
 from .common import EntityImporter, clean
 
@@ -425,7 +421,6 @@ class CrossrefImporter(EntityImporter):
             release_year = raw_date[0]
             release_date = None
 
-
         original_title = None
         if obj.get('original-title'):
             original_title = clean(obj.get('original-title')[0], force_xml=True)
@@ -500,7 +495,7 @@ class CrossrefImporter(EntityImporter):
         if existing:
             self.counts['exists'] += 1
             return False
-        
+
         return True
 
     def insert_batch(self, batch):
@@ -509,4 +504,3 @@ class CrossrefImporter(EntityImporter):
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))
-

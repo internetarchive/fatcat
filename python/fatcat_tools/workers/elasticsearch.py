@@ -1,6 +1,5 @@
 
 import json
-import time
 import requests
 from confluent_kafka import Consumer, KafkaException
 
@@ -136,7 +135,6 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                 # offsets are *committed* (to brokers) automatically, but need
                 # to be marked as processed here
                 consumer.store_offsets(message=msg)
-
 
 
 class ElasticsearchContainerWorker(ElasticsearchReleaseWorker):

@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -52,7 +47,7 @@ def test_creators(api):
 
     assert c1.display_name == c3.display_name
     assert c1.extra == c3.extra
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_creator(eg.editgroup_id, c2.ident)

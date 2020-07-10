@@ -2,10 +2,13 @@
 Test datacite importer.
 """
 
-import collections
-import datetime
-import pytest
 import gzip
+import json
+import datetime
+import collections
+
+import pytest
+
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
 from fatcat_tools.importers.datacite import (
     find_original_language_title,

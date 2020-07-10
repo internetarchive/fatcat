@@ -1,10 +1,5 @@
 
-import json
-import pytest
-from copy import copy
-
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -45,4 +40,3 @@ def test_unexpected_body(api):
     )
     f1.urls = [dict(url="http://thing", rel="repository", asdf="blue")]
     api.create_file(eg.editgroup_id, f1)
-

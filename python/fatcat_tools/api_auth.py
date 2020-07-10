@@ -1,7 +1,7 @@
 
-import os, sys
+import os
+import sys
 import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
 
 
 def public_api(host_uri):

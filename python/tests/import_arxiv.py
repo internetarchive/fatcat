@@ -1,9 +1,9 @@
 
-import json, gzip
 import pytest
-from fatcat_tools.importers import ArxivRawImporter, Bs4XmlFilePusher
-from fixtures import api
 from bs4 import BeautifulSoup
+
+from fatcat_tools.importers import ArxivRawImporter, Bs4XmlFilePusher
+from fixtures import *
 
 
 @pytest.fixture(scope="function")

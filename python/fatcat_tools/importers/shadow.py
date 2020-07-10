@@ -1,8 +1,4 @@
 
-import sys
-import json
-import sqlite3
-import itertools
 import fatcat_openapi_client
 
 from fatcat_tools.normal import *
@@ -192,4 +188,3 @@ class ShadowLibraryImporter(EntityImporter):
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))
-

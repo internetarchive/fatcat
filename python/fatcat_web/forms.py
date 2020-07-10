@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
     HiddenField, FormField, FieldList, validators
 
-from fatcat_openapi_client import ContainerEntity, CreatorEntity, FileEntity, \
+from fatcat_openapi_client import ContainerEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
 release_type_options = [
@@ -293,9 +293,9 @@ class FileUrlForm(FlaskForm):
         default='web')
 
 class FileEntityForm(EntityEditForm):
+    # TODO: positive definite
     size = IntegerField('Size (bytes)',
         [validators.DataRequired()])
-        # TODO: positive definite
     md5 = StringField("MD5",
         [validators.Optional(True),
          validators.Length(min=32, max=32)])
@@ -413,4 +413,3 @@ class SavePaperNowForm(FlaskForm):
             ingest_request['link_source'] = 'arxiv'
             ingest_request['link_source_id'] = release.ext_ids.arxiv
         return ingest_request
-

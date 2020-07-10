@@ -1,12 +1,10 @@
 
-import json
 import time
 import datetime
 import subprocess
 from collections import Counter
 
 import fatcat_openapi_client
-from fatcat_openapi_client.rest import ApiException
 
 """
 checks should return:
@@ -132,11 +130,12 @@ class ReviewBot:
                     status, result_counts[status])
             for result in results:
                 if result.status == status and result.check_type == "editgroup":
-                    comment += "\n- {description}".format(result.description)
+                    comment += "\n- {description}".format(description=result.description)
                 if result.status == status and result.check_type != "editgroup":
-                    comment += "\n- {check_type} [{rev}](/{release_type}/rev/{rev}): {description}".format(
+                    comment += "\n- {check_type} [{rev}](/{entity_type}/rev/{rev}): {description}".format(
                         check_type=result.check_type,
                         rev=result.rev,
+                        entity_type=result.check_type,
                         description=result.description)
 
         extra = self.extra.copy()

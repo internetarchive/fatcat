@@ -1,11 +1,9 @@
 
 import sys
 import json
-import sqlite3
 import datetime
 import warnings
 from bs4 import BeautifulSoup
-from bs4.element import NavigableString
 
 import fatcat_openapi_client
 from fatcat_tools.normal import *
@@ -314,7 +312,7 @@ class PubmedImporter(EntityImporter):
     Importer for PubMed/MEDLINE XML metadata.
 
     If lookup_refs is true, will do identifer-based lookups for all references.
-    
+
     TODO: MEDLINE doesn't include PMC/OA license; could include in importer?
     """
 
@@ -502,7 +500,7 @@ class PubmedImporter(EntityImporter):
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
             self._issnl_id_map[issnl] = container_id
-       
+
         ji = journal.JournalIssue
         volume = None
         if ji.find("Volume"):

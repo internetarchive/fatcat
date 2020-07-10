@@ -1,10 +1,6 @@
 
-import sys
-import json
-import base64
-import itertools
 import fatcat_openapi_client
-from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS, b32_hex
+from .common import EntityImporter, make_rel_url
 
 
 class IngestFileResultImporter(EntityImporter):
@@ -284,4 +280,3 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
                     description=self.editgroup_description,
                     extra=self.editgroup_extra),
                 entity_list=batch))
-

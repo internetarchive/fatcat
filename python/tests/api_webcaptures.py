@@ -1,11 +1,8 @@
 
-import json
 import pytest
 import datetime
-from copy import copy
 
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -84,7 +81,7 @@ def test_webcapture(api):
 
     # get redirects (none)
     assert api.get_webcapture_redirects(wc2.ident) == []
-    
+
     # delete
     eg = quick_eg(api)
     api.delete_webcapture(eg.editgroup_id, wc2.ident)

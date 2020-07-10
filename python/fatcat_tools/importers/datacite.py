@@ -10,7 +10,6 @@ functions (parse_datacite_...), which may help testing.
 
 import collections
 import datetime
-import hashlib
 import re
 import json
 import sqlite3
@@ -765,7 +764,7 @@ class DataciteImporter(EntityImporter):
             nameType = c.get('nameType', '') or ''
             if nameType in ('', 'Personal'):
                 creator_id = None
-                for nid in c.get('nameIdentifiers', []):
+                for nid in c.get('nameIdentifiers', []) or []:
                     name_scheme = nid.get('nameIdentifierScheme', '') or ''
                     if not name_scheme.lower() == "orcid":
                         continue

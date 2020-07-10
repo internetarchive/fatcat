@@ -1,8 +1,9 @@
 
 import json
 import pytest
+
 from fatcat_tools.importers import ArabesqueMatchImporter, SqlitePusher, JsonLinePusher
-from fixtures import api
+from fixtures import *
 
 
 @pytest.fixture(scope="function")

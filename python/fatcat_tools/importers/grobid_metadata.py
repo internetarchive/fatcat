@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import json
 import base64
-import datetime
 import fatcat_openapi_client
 from .common import EntityImporter, clean, make_rel_url
 

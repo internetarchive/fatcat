@@ -1,0 +1,18 @@
+
+Cambridge Chemical Database (NCI)
+
+    doi_prefix:10.3406 release_type:article
+
+    193,346+ entities
+
+    should be 'dataset' not 'article'
+
+    datacite importer
+
+Frontiers
+
+    Frontiers non-PDF abstracts, which have DOIs like `10.3389/conf.*`. Should
+    crawl these, but `release_type` should be... `abstract`? There are at least
+    18,743 of these. Should be fixed in both crossref-bot, then a retro-active
+    cleanup.
+

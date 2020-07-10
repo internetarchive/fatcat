@@ -1,7 +1,8 @@
 
 import pytest
+
 from fatcat_tools.importers import JournalMetadataImporter, JsonLinePusher
-from fixtures import api
+from fixtures import *
 
 
 @pytest.fixture(scope="function")

@@ -1,7 +1,4 @@
 
-import json
-import pytest
-from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 from fatcat_web.forms import ReleaseEntityForm, FileEntityForm, ContainerEntityForm
@@ -367,4 +364,3 @@ def test_web_work(app):
     assert rv.status_code == 404
     rv = app.get('/work/create')
     assert rv.status_code == 404
-

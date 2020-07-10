@@ -83,4 +83,3 @@ class Config(object):
             'fatcat_domain': FATCAT_DOMAIN,
         },
     }
-

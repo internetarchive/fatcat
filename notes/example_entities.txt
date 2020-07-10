@@ -1,0 +1,26 @@
+
+errata/update:
+    Fourth Test of General Relativity: Preliminary Results
+    10.1103/physrevlett.20.1265
+    10.1103/physrevlett.21.266.3 
+
+    same title; later is errata to the first.
+    very minor: The term "baud length" was consistently misprinted as "band length."
+
+DOIs for individual images
+    https://commons.wikimedia.org/wiki/Category:Media_from_Williams_et_al._2010_-_10.1371/journal.pone.0010676
+
+long-tail journal not in fatcat; web-native, tricky to crawl
+    https://angryoldmanmagazine.com/
+
+dataset
+    "ISSN-Matching of Gold OA Journals (ISSN-GOLD-OA) 2.0"
+    https://pub.uni-bielefeld.de/data/2913654
+    2 files
+    has DOI: 10.4119/unibi/2913654
+
+release group; single PDF is valid copy of two DOIs:
+    https://fatcat.wiki/file/wr64e37yvfcidgbowtslx7omne
+    10.5167/uzh-146424
+    10.1016/j.physletb.2017.12.006
+    ALSO: has CC-BY license_slug

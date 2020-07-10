@@ -1,16 +1,11 @@
 
-import os
-import json
-from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session, flash, Response
+from flask import render_template, abort, redirect, session, flash
 from flask_login import login_required
 
 from fatcat_openapi_client import Editgroup
 from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
-from fatcat_web import app, api, auth_api, priv_api
-from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
-from fatcat_web.cors import crossdomain
+from fatcat_web import app, api, auth_api
 from fatcat_web.search import *
 from fatcat_web.forms import *
 from fatcat_web.entity_helpers import *
@@ -20,7 +15,7 @@ from fatcat_web.entity_helpers import *
 
 def form_editgroup_get_or_create(api, edit_form):
     """
-    This function expects a submitted, validated 
+    This function expects a submitted, validated edit form
     """
     if edit_form.editgroup_id.data:
         try:
@@ -43,8 +38,10 @@ def form_editgroup_get_or_create(api, edit_form):
             app.log.warning(ae)
             abort(ae.status)
         # set this session editgroup_id
-        flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
-            .format(eg.editgroup_id, eg.editgroup_id))
+        flash('Started new editgroup <a href="/editgroup/{}">{}</a>'.format(
+            eg.editgroup_id,
+            eg.editgroup_id,
+        ))
     return eg
 
 def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template):
@@ -68,7 +65,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
 
     Helpers:
     - get_editgroup_revision(editgroup, entity_type, ident) -> None or entity
-    
+
     TODO: prev_rev interlock
     """
 
@@ -214,7 +211,7 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
 
     # API on behalf of user
     user_api = auth_api(session['api_token'])
-    
+
     # do the deletion
     try:
         if entity_type == 'container':
@@ -358,4 +355,3 @@ def work_editgroup_edit(editgroup_id, ident):
 @app.route('/editgroup/<editgroup_id>/work/edit/<edit_id>/delete', methods=['POST'])
 def work_edit_delete(editgroup_id, edit_id):
     return abort(404)
-
