@@ -758,9 +758,10 @@ class DataciteImporter(EntityImporter):
         # Names, that should be ignored right away.
         name_blacklist = set(('Occdownload Gbif.Org',))
 
-        for i, c in enumerate(creators):
+        i = 0
+        for c in creators:
             if not set_index:
-                i = None
+               i = None
             nameType = c.get('nameType', '') or ''
             if nameType in ('', 'Personal'):
                 creator_id = None
@@ -838,8 +839,11 @@ class DataciteImporter(EntityImporter):
                         raw_affiliation=raw_affiliation,
                         extra=extra,
                     )
+                # Filter out duplicates early.
                 if not contributor_list_contains_contributor(contribs, rc):
                     contribs.append(rc)
+                    if i is not None:
+                        i += 1
             elif nameType == 'Organizational':
                 name = c.get('name', '') or ''
                 if name in UNKNOWN_MARKERS:
@@ -849,6 +853,8 @@ class DataciteImporter(EntityImporter):
                 extra = {'organization': name}
                 contribs.append(fatcat_openapi_client.ReleaseContrib(
                     index=i, extra=extra))
+                if i is not None:
+                    i += 1
             else:
                 print('[{}] unknown name type: {}'.format(doi, nameType), file=sys.stderr)
 
