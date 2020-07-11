@@ -17,7 +17,8 @@
       "extra": {
         "type": "DataManager"
       },
-      "raw_name": "Technische Informationsbibliothek (TIB)"
+      "raw_name": "Technische Informationsbibliothek (TIB)",
+      "role": "author"
     }
   ],
   "ext_ids": {
