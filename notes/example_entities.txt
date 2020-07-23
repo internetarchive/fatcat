@@ -24,3 +24,9 @@ release group; single PDF is valid copy of two DOIs:
     10.5167/uzh-146424
     10.1016/j.physletb.2017.12.006
     ALSO: has CC-BY license_slug
+
+bad MAG match:
+
+    https://fatcat.wiki/release/b65rjfixxbh4zjd3zxcjdz2b6e
+    https://academic.microsoft.com/paper/2535407850
+    MAG has wrong metadata? have not corrected in fatcat
