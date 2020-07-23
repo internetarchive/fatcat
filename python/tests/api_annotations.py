@@ -30,5 +30,5 @@ def test_annotations(api):
         if thing.annotation_id == a[0].annotation_id:
             found = thing
             break
-    assert thing
-    assert thing.extra['thing'] == "thang"
+    assert found
+    assert found.extra['thing'] == "thang"
