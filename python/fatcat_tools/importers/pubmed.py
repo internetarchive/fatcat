@@ -450,7 +450,7 @@ class PubmedImporter(EntityImporter):
         if issnp:
             container_extra['issnp'] = issnp.string
         if not issnl:
-            issnll = self.issn2issnl(issnp)
+            issnl = self.issn2issnl(issnp)
 
         if issnl:
             container_id = self.lookup_issnl(issnl)
