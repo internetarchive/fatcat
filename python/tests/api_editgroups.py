@@ -98,7 +98,6 @@ def test_editgroup_auto_batch(api):
 
 def test_batch_params(api):
 
-    eg = quick_eg(api)
     c1 = CreatorEntity(display_name="test auto_batch")
     c2 = CreatorEntity(display_name="test another auto_batch")
 

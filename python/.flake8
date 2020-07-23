@@ -10,4 +10,4 @@ max-line-length = 120
 per-file-ignores =
     */__init__.py: F401
     tests/*.py: F401,F811
-    tests/transform_csl.py: W291
+    tests/transform_csl.py: F401,F811,W291

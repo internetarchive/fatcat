@@ -359,7 +359,7 @@ def test_self_redirect(api):
     c1_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
-        merge_edit = api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
+        api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
 
 
 def test_wip_redirect(api):

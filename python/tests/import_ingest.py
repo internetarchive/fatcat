@@ -63,7 +63,7 @@ def test_ingest_importer_stage(ingest_importer, api):
         eg = quick_eg(api)
         r1 = api.lookup_release(doi="10.123/abc")
         r1.release_stage = row['release_stage']
-        c1 = api.update_release(eg.editgroup_id, r1.ident, r1)
+        api.update_release(eg.editgroup_id, r1.ident, r1)
         api.accept_editgroup(eg.editgroup_id)
 
         # set ingest request stage
