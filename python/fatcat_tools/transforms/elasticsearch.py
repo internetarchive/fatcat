@@ -1,4 +1,6 @@
 
+import datetime
+
 import tldextract
 
 
@@ -114,6 +116,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     # TODO: mapping... probably by lookup?
     t['affiliation_rors'] = None
 
+    this_year = datetime.date.today().year
     container = release.container
     if container:
         t['publisher'] = container.publisher
@@ -130,6 +133,12 @@ def release_to_elasticsearch(entity, force_bool=True):
                 in_kbart = in_jstor
                 for archive in ('portico', 'lockss', 'clockss'):
                     in_kbart = in_kbart or check_kbart(release_year, c_extra['kbart'].get(archive))
+                    # recent KBART coverage is often not updated for the
+                    # current year. So for current-year publications, consider
+                    # coverage from *last* year to also be included in the
+                    # Keeper
+                    if not in_kbart and release_year == this_year:
+                        in_kbart = in_kbart or check_kbart(this_year - 1, c_extra['kbart'].get(archive))
 
             if c_extra.get('ia'):
                 if c_extra['ia'].get('sim') and release_year:

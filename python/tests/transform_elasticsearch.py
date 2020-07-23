@@ -1,5 +1,6 @@
 
 import json
+import datetime
 
 from fatcat_tools import *
 from fatcat_openapi_client import *
@@ -137,3 +138,48 @@ def test_elasticsearch_changelog_transform(matched_importer):
     assert es['new_releases'] == 0
     assert es['updated'] == 0
     assert es['deleted'] == 0
+
+def test_elasticsearch_release_kbart_year():
+    this_year = datetime.date.today().year
+    r = ReleaseEntity(
+        title="something",
+        release_year=this_year,
+        license_slug="CC-BY-NC",
+        ext_ids=ReleaseExtIds(),
+        refs=[
+            ReleaseRef(),
+            ReleaseRef(target_release_id="iznnn644szdwva7khyxqzc73bi"),
+        ],
+    )
+    r.state = 'active'
+    r.container = ContainerEntity(
+        name="dummy journal",
+        extra={
+            "kbart": {
+                "lockss": {
+                    "year_spans": [[1900, this_year - 2]],
+                },
+            },
+        },
+    )
+    es = release_to_elasticsearch(r)
+    assert es['release_year'] == this_year
+    assert es['in_ia'] == False
+    assert es['in_kbart'] == False
+    assert es['preservation'] == "none"
+
+    r.container = ContainerEntity(
+        name="dummy journal",
+        extra={
+            "kbart": {
+                "lockss": {
+                    "year_spans": [[1900, this_year - 1]],
+                },
+            },
+        },
+    )
+    es = release_to_elasticsearch(r)
+    assert es['release_year'] == this_year
+    assert es['in_ia'] == False
+    assert es['in_kbart'] == True
+    assert es['preservation'] == "dark"
