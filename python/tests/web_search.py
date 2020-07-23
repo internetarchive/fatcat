@@ -27,7 +27,6 @@ def test_container_search(app, mocker):
     with open('tests/files/elastic_container_search.json') as f:
         elastic_resp=json.loads(f.read())
 
-
     es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     es_raw.side_effect = [
         (200, {}, json.dumps(elastic_resp)),

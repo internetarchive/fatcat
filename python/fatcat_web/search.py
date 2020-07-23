@@ -9,7 +9,6 @@ import datetime
 from dataclasses import dataclass
 from typing import List, Optional, Any
 
-from flask import abort, flash
 import elasticsearch
 from elasticsearch_dsl import Search, Q
 import elasticsearch_dsl.response
@@ -43,7 +42,7 @@ class ReleaseQuery:
         offset = max(0, int(offset)) if offset.isnumeric() else 0
 
         return ReleaseQuery(
-            q=query_str,        
+            q=query_str,
             offset=offset,
             fulltext_only=bool(args.get('fulltext_only')),
             container_id=container_id,
