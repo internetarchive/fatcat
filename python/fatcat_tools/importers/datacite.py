@@ -191,12 +191,6 @@ LICENSE_SLUG_MAP = {
     "//spdx.org/licenses/OGL-Canada-2.0.json": "OGL-Canada",
 }
 
-# TODO(martin): drop this after 3.7 upgrade
-try:
-    isascii = str.isascii # new in 3.7, https://docs.python.org/3/library/stdtypes.html#str.isascii
-except AttributeError:
-    isascii = lambda s: len(s) == len(s.encode())
-
 
 class DataciteImporter(EntityImporter):
     """
@@ -287,7 +281,7 @@ class DataciteImporter(EntityImporter):
             print('skipping record without a DOI', file=sys.stderr)
             return
 
-        if not isascii(doi):
+        if not str.isascii(doi):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
 
