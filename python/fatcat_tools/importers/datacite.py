@@ -466,7 +466,7 @@ class DataciteImporter(EntityImporter):
             try:
                 _ = int(first_page) < int(last_page)
                 pages = '{}-{}'.format(first_page, last_page)
-            except ValueError as err:
+            except ValueError as err:  # noqa: F841
                 # TODO(martin): This is more debug than info.
                 # print('[{}] {}'.format(doi, err), file=sys.stderr)
                 pass
@@ -478,11 +478,11 @@ class DataciteImporter(EntityImporter):
         license_slug = None
         license_extra = []
 
-        for l in attributes.get('rightsList', []):
-            slug = lookup_license_slug(l.get('rightsUri'))
+        for lic in attributes.get('rightsList', []):
+            slug = lookup_license_slug(lic.get('rightsUri'))
             if slug:
                 license_slug = slug
-            license_extra.append(l)
+            license_extra.append(lic)
 
         # Release type. Try to determine the release type from a variety of
         # types supplied in datacite. The "attributes.types.resourceType" is
@@ -524,7 +524,7 @@ class DataciteImporter(EntityImporter):
         value = attributes.get('language', '') or ''
         try:
             language = pycountry.languages.lookup(value).alpha_2
-        except (LookupError, AttributeError) as err:
+        except (LookupError, AttributeError) as err:  # noqa: F841
             pass
             # TODO(martin): Print this on debug level, only.
             # print('[{}] language lookup miss for {}: {}'.format(doi, value, err), file=sys.stderr)
@@ -549,7 +549,7 @@ class DataciteImporter(EntityImporter):
             if isinstance(text, list):
                 try:
                     text = "\n".join(text)
-                except TypeError as err:
+                except TypeError:
                     continue # Bail out, if it is not a list of strings.
 
             # Limit length.
@@ -760,7 +760,7 @@ class DataciteImporter(EntityImporter):
         i = 0
         for c in creators:
             if not set_index:
-               i = None
+                i = None
             nameType = c.get('nameType', '') or ''
             if nameType in ('', 'Personal'):
                 creator_id = None

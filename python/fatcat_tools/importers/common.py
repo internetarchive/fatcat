@@ -692,7 +692,6 @@ class Bs4XmlLargeFilePusher(RecordPusher):
 
     def run(self):
         elem_iter = ET.iterparse(self.xml_file, ["start", "end"])
-        i = 0
         root = None
         for (event, element) in elem_iter:
             if not root and event == "start":

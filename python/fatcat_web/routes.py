@@ -935,7 +935,7 @@ def create_auth_token():
         try:
             duration_seconds = int(duration_seconds)
             assert duration_seconds >= 1
-        except:
+        except (ValueError, AssertionError):
             flash("duration_seconds must be a positive non-zero integer")
             abort(400)
 

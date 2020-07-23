@@ -278,15 +278,15 @@ class CrossrefImporter(EntityImporter):
         # license slug
         license_slug = None
         license_extra = []
-        for l in obj.get('license', []):
-            if l['content-version'] not in ('vor', 'unspecified'):
+        for lic in obj.get('license', []):
+            if lic['content-version'] not in ('vor', 'unspecified'):
                 continue
-            slug = lookup_license_slug(l['URL'])
+            slug = lookup_license_slug(lic['URL'])
             if slug:
                 license_slug = slug
-            if 'start' in l:
-                l['start'] = l['start']['date-time']
-            license_extra.append(l)
+            if 'start' in lic:
+                lic['start'] = lic['start']['date-time']
+            license_extra.append(lic)
 
         # references
         refs = []
@@ -297,7 +297,7 @@ class CrossrefImporter(EntityImporter):
                 # NOTE: are there crossref works with year < 100?
                 if year > 2025 or year < 100:
                     year = None
-            except:
+            except (TypeError, ValueError):
                 year = None
             ref_extra = dict()
             key = rm.get('key')
