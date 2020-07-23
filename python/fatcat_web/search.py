@@ -246,9 +246,9 @@ def get_elastic_container_random_releases(ident, limit=5):
         ]
     )
     search = search.sort('-in_web', '-release_date')
-    search = search.params(request_cache=True)
     search = search[:int(limit)]
 
+    search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
     results = results_to_dict(resp)
 
@@ -268,7 +268,6 @@ def get_elastic_entity_stats():
 
     # release totals
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache=True)
     search.aggs.bucket(
         'release_ref_count',
         'sum',
@@ -276,6 +275,7 @@ def get_elastic_entity_stats():
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
+    search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
 
     stats['release'] = {
@@ -294,7 +294,6 @@ def get_elastic_entity_stats():
             # "thesis",
         ],
     )
-    search = search.params(request_cache=True)
     search.aggs.bucket(
         'paper_like',
         'filters',
@@ -310,6 +309,7 @@ def get_elastic_entity_stats():
     )
     search = search[:0]
 
+    search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
     buckets = resp.aggregations.paper_like.buckets
     stats['papers'] = {
@@ -322,7 +322,6 @@ def get_elastic_entity_stats():
 
     # container counts
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_CONTAINER_INDEX'])
-    search = search.params(request_cache=True)
     search.aggs.bucket(
         'release_ref_count',
         'sum',
@@ -330,6 +329,7 @@ def get_elastic_entity_stats():
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
+    search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
     stats['container'] = {
         "total": resp.hits.total,
@@ -349,7 +349,6 @@ def get_elastic_container_stats(ident, issnl=None):
     """
 
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache=True)
     search = search.query(
         'term',
         container_id=ident,
@@ -371,6 +370,7 @@ def get_elastic_container_stats(ident, issnl=None):
     )
     search = search[:0]
 
+    search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.container_stats.buckets
@@ -396,7 +396,6 @@ def get_elastic_container_histogram(ident):
     """
 
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache='true')
     search = search.query(
         'bool',
         must=[
@@ -431,6 +430,7 @@ def get_elastic_container_histogram(ident):
     )
     search = search[:0]
 
+    search = search.params(request_cache='true')
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_in_ia.buckets
