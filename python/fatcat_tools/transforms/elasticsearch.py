@@ -138,7 +138,7 @@ def release_to_elasticsearch(entity, force_bool=True):
                     # coverage from *last* year to also be included in the
                     # Keeper
                     if not in_kbart and release_year == this_year:
-                        in_kbart = in_kbart or check_kbart(this_year - 1, c_extra['kbart'].get(archive))
+                        in_kbart = check_kbart(this_year - 1, c_extra['kbart'].get(archive))
 
             if c_extra.get('ia'):
                 if c_extra['ia'].get('sim') and release_year:
