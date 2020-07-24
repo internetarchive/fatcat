@@ -8,13 +8,53 @@ import fatcat_openapi_client
 from fatcat_openapi_client import *
 from fatcat_tools import authenticated_api
 
+
+ES_CONTAINER_STATS_RESP = {
+    'timed_out': False,
+    'aggregations': {
+        'container_stats': {'buckets': {
+            'is_preserved': {'doc_count': 461939},
+            'in_kbart': {'doc_count': 461939},
+            'in_web': {'doc_count': 2797},
+        }},
+        'preservation': {
+            'buckets': [
+            {'key': 'bright', 'doc_count': 444},
+            {'key': 'dark', 'doc_count': 111},
+            ],
+            'sum_other_doc_count': 0,
+        },
+        'release_type': {
+            'buckets': [
+            {'key': 'article-journal', 'doc_count': 456},
+            {'key': 'book', 'doc_count': 123},
+            ],
+            'sum_other_doc_count': 0,
+        },
+    },
+    'hits': {'total': 461939, 'hits': [], 'max_score': 0.0},
+    '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},
+    'took': 50
+}
+
+# TODO: this should not be empty
+ES_CONTAINER_RANDOM_RESP = {
+    'timed_out': False,
+    'hits': {'total': 461939, 'hits': [], 'max_score': 0.0},
+    '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},
+    'took': 50
+}
+
 @pytest.fixture
-def full_app():
+def full_app(mocker):
     load_dotenv(dotenv_path="./example.env")
     fatcat_web.app.testing = True
     fatcat_web.app.debug = False
     fatcat_web.app.config['WTF_CSRF_ENABLED'] = False
+
+    # mock out ES client requests, so they at least fail fast
     fatcat_web.app.es_client = elasticsearch.Elasticsearch("mockbackend")
+    mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     return fatcat_web.app
 
 @pytest.fixture

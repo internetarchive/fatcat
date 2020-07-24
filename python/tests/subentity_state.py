@@ -1,4 +1,6 @@
 
+import json
+
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -17,7 +19,7 @@ Current set of such references:
     => work -> release
 """
 
-def test_relation_states(api, app):
+def test_relation_states(api, app, mocker):
 
     j1 = ContainerEntity(name="test journal")
     j2 = ContainerEntity(name="another test journal")
@@ -28,6 +30,12 @@ def test_relation_states(api, app):
     f2 = FileEntity(md5="0000000000000000ad9d7b45268be409")
 
     # WIP container
+    # these are basic ES stats for the container view pages
+    es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    es_raw.side_effect = [
+        (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
+        (200, {}, json.dumps(ES_CONTAINER_RANDOM_RESP)),
+    ]
     eg = quick_eg(api)
     j2 = api.get_container(api.create_container(eg.editgroup_id, j2).ident)
     rv = app.get('/container/{}'.format(j2.ident))
@@ -129,7 +137,14 @@ def test_relation_states(api, app):
     assert rv.status_code == 200
 
 
-def test_app_entity_states(api, app):
+def test_app_entity_states(api, app, mocker):
+
+    # these are basic ES stats for the container view pages
+    es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    es_raw.side_effect = [
+        (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
+        (200, {}, json.dumps(ES_CONTAINER_RANDOM_RESP)),
+    ]
 
     j1 = ContainerEntity(name="test journal")
     j2 = ContainerEntity(name="another test journal")

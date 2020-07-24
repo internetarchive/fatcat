@@ -1,4 +1,5 @@
 
+import json
 from fixtures import *
 
 from fatcat_web.forms import ReleaseEntityForm, FileEntityForm, ContainerEntityForm
@@ -25,7 +26,14 @@ REALISTIC_DEMO_ENTITIES = {
 }
 
 
-def test_entity_basics(app):
+def test_entity_basics(app, mocker):
+
+    es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    # these are basic ES stats for the container view pages
+    es_raw.side_effect = [
+        (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
+        (200, {}, json.dumps(ES_CONTAINER_RANDOM_RESP)),
+    ]
 
     for entity_type, (ident, revision) in DUMMY_DEMO_ENTITIES.items():
         # good requests
@@ -132,7 +140,14 @@ def test_lookups(app):
     assert rv.status_code == 404
 
 
-def test_web_container(app):
+def test_web_container(app, mocker):
+
+    es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    # these are basic ES stats for the container view pages
+    es_raw.side_effect = [
+        (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
+        (200, {}, json.dumps(ES_CONTAINER_RANDOM_RESP)),
+    ]
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai')
     assert rv.status_code == 200

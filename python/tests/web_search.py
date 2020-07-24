@@ -137,7 +137,6 @@ def test_container_stats(app, mocker):
         (200, {}, json.dumps(elastic_resp)),
     ]
     rv = app.get('/container/issnl/1234-5678/stats.json')
-    #print(rv.json)
     assert rv.status_code == 200
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaam/stats.json')
