@@ -104,7 +104,7 @@ class GrobidMetadataImporter(EntityImporter):
             if raw.get('date'):
                 try:
                     year = int(raw['date'].strip()[:4])
-                except:
+                except (IndexError, ValueError):
                     pass
             for key in ('volume', 'url', 'issue', 'publisher'):
                 if raw.get(key):

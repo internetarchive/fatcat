@@ -71,7 +71,7 @@ mwoauth = MWOAuth(
 mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
 app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 
-from fatcat_web import routes, editing_routes, auth, cors, forms
+from fatcat_web import routes, editing_routes, auth, cors, forms  # noqa: E402
 
 # TODO: blocking on ORCID support in loginpass
 if Config.ORCID_CLIENT_ID:

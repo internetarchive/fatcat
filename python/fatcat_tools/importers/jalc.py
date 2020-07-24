@@ -308,7 +308,7 @@ class JalcImporter(EntityImporter):
             work_id=None,
             title=title,
             original_title=clean(original_title),
-            release_type="article-journal",
+            release_type=release_type,
             release_stage='published',
             release_date=release_date,
             release_year=release_year,

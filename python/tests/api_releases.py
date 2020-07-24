@@ -177,7 +177,7 @@ def test_empty_fields(api):
         title="something",
         contribs=[ReleaseContrib(raw_name="somebody")],
         ext_ids=ReleaseExtIds())
-    r1edit = api.create_release(eg.editgroup_id, r1)
+    api.create_release(eg.editgroup_id, r1)
 
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
         r2 = ReleaseEntity(title="", ext_ids=ReleaseExtIds())
