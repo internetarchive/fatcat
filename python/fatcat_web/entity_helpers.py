@@ -3,7 +3,7 @@ from flask import abort
 from fatcat_openapi_client.rest import ApiException, ApiValueError
 from fatcat_tools.transforms import *
 from fatcat_web import app, api
-from fatcat_web.search import get_elastic_container_stats, get_elastic_container_random_releases
+from fatcat_web.search import get_elastic_container_stats
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 
 def enrich_container_entity(entity):
@@ -14,9 +14,7 @@ def enrich_container_entity(entity):
     entity._stats = None
     try:
         entity._stats = get_elastic_container_stats(entity.ident, issnl=entity.issnl)
-        #if entity._stats['total'] > 0:
-        entity._random_releases = get_elastic_container_random_releases(entity.ident)
-    except Exception as e:
+    except ValueError as e:
         app.log.error(e)
         pass
     return entity

@@ -14,7 +14,7 @@ from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram_legacy, get_elastic_container_preservation_by_year, get_elastic_container_preservation_by_volume, get_elastic_container_preservation_by_type, FatcatSearchError
+from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram_legacy, get_elastic_container_preservation_by_year, get_elastic_container_preservation_by_volume, get_elastic_container_preservation_by_type, get_elastic_container_random_releases, FatcatSearchError
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
 from fatcat_web.kafka import *
@@ -200,9 +200,10 @@ def generic_entity_view(entity_type, ident, view_template):
     metadata.pop('extra')
     entity._metadata = metadata
 
+    if view_template == "container_view.html":
+        entity._random_releases = get_elastic_container_random_releases(entity.ident)
     if view_template == "container_view_coverage.html":
         entity._type_preservation = get_elastic_container_preservation_by_type(ident)
-        print(entity._type_preservation)
 
     return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
 
