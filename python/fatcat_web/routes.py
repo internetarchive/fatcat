@@ -14,7 +14,7 @@ from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import *
+from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
 from fatcat_web.kafka import *
@@ -706,44 +706,22 @@ def generic_search():
 @app.route('/release/search', methods=['GET', 'POST'])
 def release_search():
 
-    query = request.args.get('q')
-    if not query:
-        query = '*'
-    fulltext_only = bool(request.args.get('fulltext_only'))
+    if 'q' not in request.args.keys():
+        return render_template('release_search.html', query=ReleaseQuery(), found=None)
 
-    issnl = request.args.get('container_issnl')
-    if issnl and query:
-        query += ' container_issnl:"{}"'.format(issnl)
-
-    container_id = request.args.get('container_id')
-    if container_id and query:
-        query += ' container_id:"{}"'.format(container_id)
-
-    offset = request.args.get('offset', '0')
-    offset = max(0, int(offset)) if offset.isnumeric() else 0
-
-    if 'q' in request.args.keys():
-        # always do files for HTML
-        found = do_release_search(query, fulltext_only=fulltext_only, offset=offset)
-        return render_template('release_search.html', found=found, query=query, fulltext_only=fulltext_only)
-    else:
-        return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
+    query = ReleaseQuery.from_args(request.args)
+    found = do_release_search(query)
+    return render_template('release_search.html', query=query, found=found)
 
 @app.route('/container/search', methods=['GET', 'POST'])
 def container_search():
 
-    query = request.args.get('q')
-    if not query:
-        query = '*'
-    offset = request.args.get('offset', '0')
-    offset = max(0, int(offset)) if offset.isnumeric() else 0
+    if 'q' not in request.args.keys():
+        return render_template('container_search.html', query=GenericQuery(), found=None)
 
-    if 'q' in request.args.keys():
-        # always do files for HTML
-        found = do_container_search(query, offset=offset)
-        return render_template('container_search.html', found=found, query=query)
-    else:
-        return render_template('container_search.html', query=query)
+    query = GenericQuery.from_args(request.args)
+    found = do_container_search(query)
+    return render_template('container_search.html', query=query, found=found)
 
 def get_changelog_stats():
     stats = {}

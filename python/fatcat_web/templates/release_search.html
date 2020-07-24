@@ -2,8 +2,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if query %}
-  Search: {{ query }}
+{% if query.q %}
+  Search: {{ query.q }}
 {% else %}
   Release Search
 {% endif %}
@@ -18,14 +18,14 @@
     <form class="" role="search" action="/release/search" method="get">
       <div class="ui form">
         <div class="ui action input huge fluid">
-          <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}" aria-label="search release metadata">
+          <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="search release metadata">
           <button class="ui primary button">Search</button>
         </div>
         <div class="ui checkbox" style="float: right; margin: 1em;">
           <input type="checkbox" name="fulltext_only" id="fulltext_only" value="true" {% if fulltext_only %}checked{% endif %}>
           <label for="fulltext_only">Fulltext Available Only</label>
         </div>
-        <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search for <b><a href="/container/search?q={{ query or "" }}">containers</a></b> (eg, journals).
+        <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search for <b><a href="/container/search?q={{ query.q or "" }}">containers</a></b> (eg, journals).
       </div>
     </form>
   </div>
@@ -37,7 +37,7 @@
 {% if found %}
   {% if found.results %}
 
-    {{ entity_macros.top_results(found) }}
+    {{ entity_macros.top_results(query, found) }}
 
     {% for paper in found.results %}
       {{ entity_macros.release_search_result_row(paper) }}
@@ -46,13 +46,13 @@
     {% if found.results|length > 8 %}
       <div class="ui divider"></div>
       <div style="text-align: center">
-      {{ entity_macros.bottom_results(found, endpoint='release_search') }}
+      {{ entity_macros.bottom_results(query, found, endpoint='release_search') }}
       </div>
     {% endif %}
 
   {% else %}
 
-    Raw query was: <i>{{ found.query.q }}</i>
+    Raw query was: <i>{{ query.q }}</i>
 
     <div class="ui centered stackable grid" style="padding-top: 15%;">
       <div class="row">
@@ -63,9 +63,9 @@
           <h2>No results found!</h2>
           <p>You could try elsewhere:</p>
           <ul>
-            <li>Search <a href="https://dissem.in/search?q={{ found.query.q | urlencode }}">dissem.in</a></li>
-            <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ found.query.q | urlencode }}">BASE</a></li>
-            <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
+            <li>Search <a href="https://dissem.in/search?q={{ query.q | urlencode }}">dissem.in</a></li>
+            <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ query.q | urlencode }}">BASE</a></li>
+            <li>Search <a href="https://scholar.google.com/scholar?q={{ query.q | urlencode }}">Google Scholar</a></li>
           </ul>
         </div>
       </div>

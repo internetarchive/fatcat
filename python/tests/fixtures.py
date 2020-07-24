@@ -1,9 +1,10 @@
 
 import pytest
 from dotenv import load_dotenv
+import elasticsearch
+
 import fatcat_web
 import fatcat_openapi_client
-
 from fatcat_openapi_client import *
 from fatcat_tools import authenticated_api
 
@@ -13,6 +14,7 @@ def full_app():
     fatcat_web.app.testing = True
     fatcat_web.app.debug = False
     fatcat_web.app.config['WTF_CSRF_ENABLED'] = False
+    fatcat_web.app.es_client = elasticsearch.Elasticsearch("mockbackend")
     return fatcat_web.app
 
 @pytest.fixture
