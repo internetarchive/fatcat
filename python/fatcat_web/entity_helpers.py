@@ -2,8 +2,7 @@
 from flask import abort
 from fatcat_openapi_client.rest import ApiException, ApiValueError
 from fatcat_tools.transforms import *
-from fatcat_web import app, api
-from fatcat_web.search import get_elastic_container_stats
+from fatcat_web import api
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 
 def enrich_container_entity(entity):
@@ -11,12 +10,6 @@ def enrich_container_entity(entity):
         return entity
     if entity.state == "active":
         entity._es = container_to_elasticsearch(entity, force_bool=False)
-    entity._stats = None
-    try:
-        entity._stats = get_elastic_container_stats(entity.ident, issnl=entity.issnl)
-    except ValueError as e:
-        app.log.error(e)
-        pass
     return entity
 
 def enrich_creator_entity(entity):
