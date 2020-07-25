@@ -492,7 +492,7 @@ def get_elastic_container_histogram_legacy(ident) -> List:
     return vals
 
 
-def get_elastic_container_preservation_by_year(container_id: str) -> List[dict]:
+def get_elastic_preservation_by_year(query) -> List[dict]:
     """
     Fetches a stacked histogram of {year, preservation}.
 
@@ -505,21 +505,32 @@ def get_elastic_container_preservation_by_year(container_id: str) -> List[dict]:
     """
 
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache='true')
-    search = search.query(
-        'bool',
-        must=[
-            Q("range", release_year={
-                "gte": datetime.datetime.today().year - 249,
-                "lte": datetime.datetime.today().year,
-            }),
-        ],
-        filter=[
-            Q("bool", minimum_should_match=1, should=[
-                Q("match", container_id=container_id),
-            ]),
-        ],
+    if query.q not in [None, "*"]:
+        search = search.query(
+            "query_string",
+            query=query.q,
+            default_operator="AND",
+            analyze_wildcard=True,
+            allow_leading_wildcard=False,
+            lenient=True,
+            fields=[
+                "title^2",
+                "biblio",
+            ],
+        )
+    if query.container_id:
+        search = search.filter(
+            "term",
+            container_id=query.container_id,
+        )
+    search = search.filter(
+        "range",
+        release_year={
+            "gte": datetime.datetime.today().year - 249,
+            "lte": datetime.datetime.today().year,
+        },
     )
+
     search.aggs.bucket(
         'year_preservation',
         'composite',
@@ -539,7 +550,7 @@ def get_elastic_container_preservation_by_year(container_id: str) -> List[dict]:
         ],
     )
     search = search[:0]
-
+    search = search.params(request_cache='true')
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_preservation.buckets
@@ -564,7 +575,6 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
     """
 
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache='true')
     search = search.query(
         'bool',
         filter=[
@@ -592,7 +602,7 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
         ],
     )
     search = search[:0]
-
+    search = search.params(request_cache='true')
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.volume_preservation.buckets
@@ -605,7 +615,7 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
             volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
     return sorted(volume_dicts.values(), key=lambda x: x['volume'])
 
-def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
+def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
     """
     Fetches preservation coverage by release type
 
@@ -615,15 +625,27 @@ def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
     """
 
     search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
-    search = search.params(request_cache='true')
-    search = search.query(
-        'bool',
-        filter=[
-            Q("bool", must=[
-                Q("match", container_id=container_id),
-            ]),
-        ],
-    )
+    if query.q not in [None, "*"]:
+        search = search.query(
+            "query_string",
+            query=query.q,
+            default_operator="AND",
+            analyze_wildcard=True,
+            allow_leading_wildcard=False,
+            lenient=True,
+            fields=[
+                "biblio",
+            ],
+        )
+    if query.container_id:
+        search = search.query(
+            'bool',
+            filter=[
+                Q("bool", must=[
+                    Q("match", container_id=query.container_id),
+                ]),
+            ],
+        )
     search.aggs.bucket(
         'type_preservation',
         'composite',
@@ -642,7 +664,7 @@ def get_elastic_container_preservation_by_type(container_id: str) -> List[dict]:
         ],
     )
     search = search[:0]
-
+    search = search.params(request_cache='true')
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.type_preservation.buckets

@@ -205,7 +205,9 @@ def generic_entity_view(entity_type, ident, view_template):
         entity._random_releases = get_elastic_container_random_releases(entity.ident)
     if view_template == "container_view_coverage.html":
         entity._stats = get_elastic_container_stats(entity.ident, issnl=entity.issnl)
-        entity._type_preservation = get_elastic_container_preservation_by_type(ident)
+        entity._type_preservation = get_elastic_preservation_by_type(
+            ReleaseQuery(container_id=ident),
+        )
 
     return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
 
@@ -828,8 +830,9 @@ def container_ident_preservation_by_year_json(ident):
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+    query = ReleaseQuery(container_id=container.ident)
     try:
-        histogram = get_elastic_container_preservation_by_year(container.ident)
+        histogram = get_elastic_preservation_by_year(query)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
@@ -842,8 +845,9 @@ def container_ident_preservation_by_year_svg(ident):
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+    query = ReleaseQuery(container_id=container.ident)
     try:
-        histogram = get_elastic_container_preservation_by_year(container.ident)
+        histogram = get_elastic_preservation_by_year(query)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
