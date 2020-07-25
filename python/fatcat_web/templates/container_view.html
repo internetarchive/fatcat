@@ -86,7 +86,7 @@
             {% else %}
               <code>{{ type_row }}</code>
             {% endif %}
-          <td class="three wide right aligned">{{ container._stats.release_type[type_row] }}
+          <td class="three wide right aligned">{{ "{:,}".format(container._stats.release_type[type_row]) }}
         {% endfor %}
       </tbody>
     </table>

@@ -57,7 +57,7 @@
       {% for type_row in container._type_preservation %}
       <tr>
         <td class="two wide">{{ type_row.release_type }}
-        <td class="two wide right aligned">{{ type_row.total }}
+        <td class="two wide right aligned">{{ "{:,}".format(type_row.total) }}
         <td class="twelve wide">{{ entity_macros.preservation_bar(type_row) }}
       {% endfor %}
     </tbody>

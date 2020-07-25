@@ -732,6 +732,35 @@ def container_search():
         return render_template('container_search.html', query=query, es_error=fse), fse.status_code
     return render_template('container_search.html', query=query, found=found)
 
+@app.route('/coverage/search', methods=['GET', 'POST'])
+def coverage_search():
+
+    if 'q' not in request.args.keys():
+        return render_template(
+            'coverage_search.html',
+            query=ReleaseQuery(),
+            coverage_stats=None,
+            coverage_type_preservation=None,
+            year_histogram_svg=None,
+        )
+
+    query = ReleaseQuery.from_args(request.args)
+    coverage_stats = get_elastic_search_coverage(query)
+    if coverage_stats['total'] > 1:
+        year_histogram = get_elastic_preservation_by_year(query)
+        year_histogram_svg = preservation_by_year_histogram(year_histogram).render_data_uri()
+        coverage_type_preservation = get_elastic_preservation_by_type(query)
+    else:
+        year_histogram_svg = None
+        coverage_type_preservation = None
+    return render_template(
+        'coverage_search.html',
+        query=query,
+        coverage_stats=coverage_stats,
+        coverage_type_preservation=coverage_type_preservation,
+        year_histogram_svg=year_histogram_svg,
+    )
+
 def get_changelog_stats():
     stats = {}
     latest_changelog = api.get_changelog(limit=1)[0]

@@ -366,6 +366,42 @@ def get_elastic_entity_stats() -> dict:
 
     return stats
 
+def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = search.query(
+        "query_string",
+        query=query.q,
+        default_operator="AND",
+        analyze_wildcard=True,
+        allow_leading_wildcard=False,
+        lenient=True,
+        fields=["biblio"],
+    )
+    search.aggs.bucket(
+        'preservation',
+        'terms',
+        field='preservation',
+        missing='_unknown',
+    )
+
+    search = search[:0]
+
+    search = search.params(request_cache=True)
+    resp = wrap_es_execution(search)
+
+    preservation_bucket = agg_to_dict(resp.aggregations.preservation)
+    preservation_bucket['total'] = resp.hits.total
+    for k in ('bright', 'dark', 'shadows_only', 'none'):
+        if not k in preservation_bucket:
+            preservation_bucket[k] = 0
+    stats = {
+        'total': resp.hits.total,
+        'preservation': preservation_bucket,
+    }
+
+    return stats
+
 def get_elastic_container_stats(ident, issnl=None):
     """
     Returns dict:

@@ -1,0 +1,81 @@
+{% import "entity_macros.html" as entity_macros %}
+{% extends "base.html" %}
+
+{% block title %}
+{% if query.q %}
+  Search: {{ query.q }}
+{% else %}
+  Coverage Search
+{% endif %}
+{% endblock %}
+
+{% block fullmain %}
+
+<div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 4.5em;">
+  <div class="ui container text">
+    <h1>Preservation Coverage Visualizer</h1>
+    <form class="" role="search" action="/coverage/search" method="get">
+      <div class="ui form">
+        <div class="ui action input huge fluid">
+          <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="visualize preservation coverage">
+          <button class="ui primary button">Search</button>
+        </div>
+        <br>Can also search for <b><a href="/release/search?q={{ query.q or "" }}">releases</a></b> (eg, individual papers) or <b><a href="/container/search?q={{ query.q or "" }}">containers</a></b> (eg, journals).
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="ui container" style="margin-top: 2em;">
+
+{% if coverage_stats != None %}
+<div class="ui centered grid">
+  <div class="row">
+    <div class="twelve wide column">
+      <div class="ui large horizontal statistic">
+        <div class="value">{{ "{:,}".format(coverage_stats.total) }}</div>
+        <div class="label" style="text-transform: none;">Known Releases</div>
+      </div>
+      {% if coverage_stats.total >= 1 %}
+        {{ entity_macros.preservation_bar(coverage_stats.preservation, extra_class="large") }}
+        {{ entity_macros.preservation_table(coverage_stats.preservation) }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if year_histogram_svg != None %}
+  <br><br>
+  <h2>Perpetual Access Coverage by Year</h2>
+
+  <figure style="margin: 0 0 0 0;">
+    <embed type="image/svg+xml" src="{{ year_histogram_svg|safe }}" />
+  </figure>
+
+{% endif %}
+
+{% if coverage_type_preservation != None %}
+  <br><br>
+  <h2>Perpetual Access Coverage by Release Type</h2>
+  <table class="ui table">
+    <thead>
+      <tr>
+        <th>Release Type
+        <th class="right aligned">Total Count
+        <th>Coverage
+    </thead>
+    <tbody>
+      {% for type_row in coverage_type_preservation %}
+      <tr>
+        <td class="two wide">{{ type_row.release_type }}
+        <td class="two wide right aligned">{{ "{:,}".format(type_row.total) }}
+        <td class="twelve wide">{{ entity_macros.preservation_bar(type_row) }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+</div>
+{% endblock %}
+
