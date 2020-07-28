@@ -1,6 +1,7 @@
 
 import json
 import pytest
+import datetime
 
 from fatcat_openapi_client.rest import ApiException
 from fixtures import *
@@ -123,18 +124,48 @@ def test_coverage_search(app, mocker):
         },
     }
 
+    # preservation by date histogram
+    today = str(datetime.date.today())
+    elastic_resp3 = {
+        'took': 294,
+        'timed_out': False,
+        '_shards': {'total': 5, 'successful': 5, 'skipped': 0, 'failed': 0},
+        'hits': {'total': 4327, 'max_score': 0.0, 'hits': []},
+        'aggregations': {
+            'date_preservation': {
+              'buckets': [
+                {'key': {'date': f'{today}T00:00.000Z', 'preservation': 'bright'}, 'doc_count': 444},
+                {'key': {'date': f'{today}T00:00.000Z', 'preservation': 'dark'}, 'doc_count': 111},
+              ],
+              'sum_other_doc_count': 0,
+            },
+        },
+    }
+
 
     es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     es_raw.side_effect = [
         # counts summary
         (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
-        # by year
-        (200, {}, json.dumps(elastic_resp1)),
         # by type
         (200, {}, json.dumps(elastic_resp2)),
+        # by year
+        (200, {}, json.dumps(elastic_resp1)),
     ]
 
     rv = app.get('/coverage/search?q=*')
+    assert rv.status_code == 200
+
+    es_raw.side_effect = [
+        # counts summary
+        (200, {}, json.dumps(ES_CONTAINER_STATS_RESP)),
+        # by type
+        (200, {}, json.dumps(elastic_resp2)),
+        # by date
+        (200, {}, json.dumps(elastic_resp3)),
+    ]
+
+    rv = app.get('/coverage/search?recent=1&q=*')
     assert rv.status_code == 200
 
 
