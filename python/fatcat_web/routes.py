@@ -14,7 +14,7 @@ from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram
+from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram, FatcatSearchError
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
 from fatcat_web.kafka import *
@@ -710,7 +710,10 @@ def release_search():
         return render_template('release_search.html', query=ReleaseQuery(), found=None)
 
     query = ReleaseQuery.from_args(request.args)
-    found = do_release_search(query)
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return render_template('release_search.html', query=query, es_error=fse), fse.status_code
     return render_template('release_search.html', query=query, found=found)
 
 @app.route('/container/search', methods=['GET', 'POST'])
@@ -720,7 +723,10 @@ def container_search():
         return render_template('container_search.html', query=GenericQuery(), found=None)
 
     query = GenericQuery.from_args(request.args)
-    found = do_container_search(query)
+    try:
+        found = do_container_search(query)
+    except FatcatSearchError as fse:
+        return render_template('container_search.html', query=query, es_error=fse), fse.status_code
     return render_template('container_search.html', query=query, found=found)
 
 def get_changelog_stats():

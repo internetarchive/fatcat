@@ -80,6 +80,8 @@
 
   {% endif %}
 
+{% elif es_error %}
+  {{ search_macros.es_error_msg(es_error) }}
 {% endif %}
 
 </div>

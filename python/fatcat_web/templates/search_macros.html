@@ -44,23 +44,25 @@ found.count_returned }} out of {{ found.count_found }} results</i>&nbsp;&nbsp;
 {% macro es_error_msg(es_error) %}
   <div class="ui icon error message">
     <i class="ban icon"></i>
-    {% if es_error.status_code == 400 %}
-      <div class="content">
-        <div class="header">
+    <div class="content">
+      <div class="header">
+        {% if es_error.status_code == 400 %}
           Query Error
-        </div>
+        {% else %}
+          Search Index Error
+          {% if es_error.status_code %}({{ es_error.status_code }}){% endif %}
+        {% endif %}
+      </div>
+      {% if es_error.description %}
         <p>Computer said: <code>{{ es_error.description }}</code>
+      {% elif es_error.name %}
+        <p><b>{{ es_error.name }}</b>
+      {% endif %}
+      {% if es_error.status_code == 400 %}
         <p>Query parsing is currently very naive. Sometimes you can fix this
         problem by adding quotes around terms or entire phrases.
-      </div>
-    {% else %}
-      <div class="content">
-        <div class="header">
-          Search Index Error ({{ es_error.status_code }})
-        </div>
-        <p>Computer said: <code>{{ es_error.description }}</code>
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
   </div>
 {% endmacro %}
 
