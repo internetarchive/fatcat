@@ -1005,6 +1005,36 @@ def page_server_error(e):
 def page_server_down(e):
     return render_template('503.html'), 503
 
+@app.errorhandler(ApiException)
+def page_fatcat_api_error(ae):
+    """
+    Generic error handler for fatcat API problems. With this error handler,
+    don't need to explicitly catch API exceptions: they should get caught and
+    routed correctly here.
+    """
+    if ae.status == 404:
+        return page_not_found(ae)
+    elif ae.status in [401, 403]:
+        return page_not_authorized(ae)
+    elif ae.status in [405]:
+        return page_method_not_allowed(ae)
+    elif ae.status in [409]:
+        return page_edit_conflict(ae)
+    try:
+        json_body = json.loads(ae.body)
+        ae.error_name = json_body.get('error')
+        ae.message = json_body.get('message')
+    except ValueError:
+        pass
+    return render_template('api_error.html', api_error=ae), ae.status
+
+@app.errorhandler(ApiValueError)
+def page_fatcat_api_value_error(ae):
+    ae.status = 400
+    ae.error_name = "ValueError"
+    ae.message = str(ae)
+    return render_template('api_error.html', api_error=ae), 400
+
 @app.errorhandler(CSRFError)
 def page_csrf_error(e):
     return render_template('csrf_error.html', reason=e.description), 400

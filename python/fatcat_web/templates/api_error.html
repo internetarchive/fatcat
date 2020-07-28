@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+
+<center>
+<div style="font-size: 8em;">{{ api_error.status or "" }}</div>
+<div style="font-size: 3em;">{{ api_error.reason or "" }}</div>
+</center>
+
+<div class="ui icon error message">
+  <i class="ban icon"></i>
+  <div class="content">
+    <div class="header">
+      API Error: {{ api_error.error_name or "" }}
+    </div>
+    <p>{{ api_error.message or "" }}
+  </div>
+</div>
+
+
+{% endblock %}
