@@ -37,14 +37,17 @@ def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
     chart.add('Missing', [y['missing'] for y in years])
     return chart
 
-def preservation_by_year_histogram(rows: List[Dict]) -> pygal.Graph:
+def preservation_by_year_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
     """
 
     years = sorted(rows, key=lambda x: x['year'])
 
-    CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
+    if merge_shadows:
+        CleanStyle.colors = ("red", "darkolivegreen", "limegreen")
+    else:
+        CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
     label_count = len(years)
     if len(years) > 30:
         label_count = 10
@@ -55,20 +58,26 @@ def preservation_by_year_histogram(rows: List[Dict]) -> pygal.Graph:
     chart.x_title = "Year"
     #chart.y_title = "Count"
     chart.x_labels = [str(y['year']) for y in years]
-    chart.add('None', [y['none'] for y in years])
-    chart.add('Shadow', [y['shadows_only'] for y in years])
+    if merge_shadows:
+        chart.add('None', [y['none'] + y['shadows_only'] for y in years])
+    else:
+        chart.add('None', [y['none'] for y in years])
+        chart.add('Shadow', [y['shadows_only'] for y in years])
     chart.add('Dark', [y['dark'] for y in years])
     chart.add('Bright', [y['bright'] for y in years])
     return chart
 
-def preservation_by_date_histogram(rows: List[Dict]) -> pygal.Graph:
+def preservation_by_date_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
     """
 
     dates = sorted(rows, key=lambda x: x['date'])
 
-    CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
+    if merge_shadows:
+        CleanStyle.colors = ("red", "darkolivegreen", "limegreen")
+    else:
+        CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
     label_count = len(dates)
     if len(dates) > 30:
         label_count = 10
@@ -79,20 +88,26 @@ def preservation_by_date_histogram(rows: List[Dict]) -> pygal.Graph:
     chart.x_title = "Date"
     #chart.y_title = "Count"
     chart.x_labels = [str(y['date']) for y in dates]
-    chart.add('None', [y['none'] for y in dates])
-    chart.add('Shadow', [y['shadows_only'] for y in dates])
+    if merge_shadows:
+        chart.add('None', [y['none'] + y['shadows_only'] for y in dates])
+    else:
+        chart.add('None', [y['none'] for y in dates])
+        chart.add('Shadow', [y['shadows_only'] for y in dates])
     chart.add('Dark', [y['dark'] for y in dates])
     chart.add('Bright', [y['bright'] for y in dates])
     return chart
 
-def preservation_by_volume_histogram(rows: List[Dict]) -> pygal.Graph:
+def preservation_by_volume_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
     """
 
     volumes = sorted(rows, key=lambda x: x['volume'])
 
-    CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
+    if merge_shadows:
+        CleanStyle.colors = ("red", "darkolivegreen", "limegreen")
+    else:
+        CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
     label_count = len(volumes)
     if len(volumes) >= 30:
         label_count = 10
@@ -103,8 +118,11 @@ def preservation_by_volume_histogram(rows: List[Dict]) -> pygal.Graph:
     chart.x_title = "Volume"
     #chart.y_title = "Count"
     chart.x_labels = [str(y['volume']) for y in volumes]
-    chart.add('None', [y['none'] for y in volumes])
-    chart.add('Shadow', [y['shadows_only'] for y in volumes])
+    if merge_shadows:
+        chart.add('None', [y['none'] + y['shadows_only'] for y in volumes])
+    else:
+        chart.add('None', [y['none'] for y in volumes])
+        chart.add('Shadow', [y['shadows_only'] for y in volumes])
     chart.add('Dark', [y['dark'] for y in volumes])
     chart.add('Bright', [y['bright'] for y in volumes])
     return chart

@@ -402,6 +402,9 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        preservation_bucket['none'] += preservation_bucket['shadows_only']
+        preservation_bucket['shadows_only'] = 0
     stats = {
         'total': resp.hits.total,
         'preservation': preservation_bucket,
@@ -464,6 +467,9 @@ def get_elastic_container_stats(ident, issnl=None):
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        preservation_bucket['none'] += preservation_bucket['shadows_only']
+        preservation_bucket['shadows_only'] = 0
     release_type_bucket = agg_to_dict(resp.aggregations.release_type)
     stats = {
         'ident': ident,
@@ -602,6 +608,10 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
         year_dicts[num] = dict(year=num, bright=0, dark=0, shadows_only=0, none=0)
     for row in buckets:
         year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        for k in year_dicts.keys():
+            year_dicts[k]['none'] += year_dicts[k]['shadows_only']
+            year_dicts[k]['shadows_only'] = 0
     return sorted(year_dicts.values(), key=lambda x: x['year'])
 
 
@@ -675,6 +685,10 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
         this_date = this_date + datetime.timedelta(days=1)
     for row in buckets:
         date_dicts[row['key']['date'][0:10]][row['key']['preservation']] = int(row['doc_count'])
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        for k in date_dicts.keys():
+            date_dicts[k]['none'] += date_dicts[k]['shadows_only']
+            date_dicts[k]['shadows_only'] = 0
     return sorted(date_dicts.values(), key=lambda x: x['date'])
 
 def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict]:
@@ -728,6 +742,10 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
     for row in buckets:
         if row['key']['volume'].isdigit():
             volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        for k in volume_dicts.keys():
+            volume_dicts[k]['none'] += volume_dicts[k]['shadows_only']
+            volume_dicts[k]['shadows_only'] = 0
     return sorted(volume_dicts.values(), key=lambda x: x['volume'])
 
 def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
@@ -797,4 +815,8 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
     for k in type_set:
         for p in ('bright', 'dark', 'shadows_only', 'none'):
             type_dicts[k]['total'] += type_dicts[k][p]
+    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        for k in type_set:
+            type_dicts[k]['none'] += type_dicts[k]['shadows_only']
+            type_dicts[k]['shadows_only'] = 0
     return sorted(type_dicts.values(), key=lambda x: x['total'], reverse=True)

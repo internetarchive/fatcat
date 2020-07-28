@@ -754,10 +754,16 @@ def coverage_search():
         coverage_type_preservation = get_elastic_preservation_by_type(query)
         if query.recent:
             date_histogram = get_elastic_preservation_by_date(query)
-            date_histogram_svg = preservation_by_date_histogram(date_histogram).render_data_uri()
+            date_histogram_svg = preservation_by_date_histogram(
+                date_histogram,
+                merge_shadows=Config.FATCAT_MERGE_SHADOW_PRESERVATION,
+            ).render_data_uri()
         else:
             year_histogram = get_elastic_preservation_by_year(query)
-            year_histogram_svg = preservation_by_year_histogram(year_histogram).render_data_uri()
+            year_histogram_svg = preservation_by_year_histogram(
+                year_histogram,
+                merge_shadows=Config.FATCAT_MERGE_SHADOW_PRESERVATION,
+            ).render_data_uri()
     return render_template(
         'coverage_search.html',
         query=query,
@@ -886,7 +892,10 @@ def container_ident_preservation_by_year_svg(ident):
     except Exception as ae:
         app.log.error(ae)
         abort(503)
-    return preservation_by_year_histogram(histogram).render_response()
+    return preservation_by_year_histogram(
+        histogram,
+        merge_shadows=Config.FATCAT_MERGE_SHADOW_PRESERVATION,
+    ).render_response()
 
 @app.route('/container/<ident>/preservation_by_volume.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
@@ -914,7 +923,10 @@ def container_ident_preservation_by_volume_svg(ident):
     except Exception as ae:
         app.log.error(ae)
         abort(503)
-    return preservation_by_volume_histogram(histogram).render_response()
+    return preservation_by_volume_histogram(
+        histogram,
+        merge_shadows=Config.FATCAT_MERGE_SHADOW_PRESERVATION,
+    ).render_response()
 
 @app.route('/release/<ident>.bib', methods=['GET'])
 def release_bibtex(ident):
