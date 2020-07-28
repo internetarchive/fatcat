@@ -1,4 +1,4 @@
-{% import "entity_macros.html" as entity_macros %}
+{% import "search_macros.html" as search_macros %}
 {% extends "base.html" %}
 
 {% block title %}
@@ -32,7 +32,7 @@
 {% if found %}
   {% if found.results %}
 
-    {{ entity_macros.top_results(query, found) }}
+    {{ search_macros.top_results(query, found) }}
 
     {% for entity in found.results %}
       <div>
@@ -55,7 +55,7 @@
     {% if found.results|length > 8 %}
       <div class="ui divider"></div>
       <div style="text-align: center">
-      {{ entity_macros.bottom_results(query, found, endpoint='container_search') }}
+      {{ search_macros.bottom_results(query, found, endpoint='container_search') }}
       </div>
     {% endif %}
 
