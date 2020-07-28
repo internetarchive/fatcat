@@ -20,6 +20,10 @@
           <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="visualize preservation coverage">
           <button class="ui primary button">Search</button>
         </div>
+        <div class="ui checkbox" style="float: right; margin: 1em;">
+          <input type="checkbox" name="recent" id="recent" value="true" {% if query.recent %}checked{% endif %}>
+          <label for="recent">Recent Publications Only</label>
+        </div>
         <br>Can also search for <b><a href="/release/search?q={{ query.q or "" }}">releases</a></b> (eg, individual papers) or <b><a href="/container/search?q={{ query.q or "" }}">containers</a></b> (eg, journals).
       </div>
     </form>
@@ -51,6 +55,16 @@
 
   <figure style="margin: 0 0 0 0;">
     <embed type="image/svg+xml" src="{{ year_histogram_svg|safe }}" />
+  </figure>
+
+{% endif %}
+
+{% if date_histogram_svg != None %}
+  <br><br>
+  <h2>Perpetual Access Coverage by Date</h2>
+
+  <figure style="margin: 0 0 0 0;">
+    <embed type="image/svg+xml" src="{{ date_histogram_svg|safe }}" />
   </figure>
 
 {% endif %}

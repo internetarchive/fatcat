@@ -746,19 +746,24 @@ def coverage_search():
 
     query = ReleaseQuery.from_args(request.args)
     coverage_stats = get_elastic_search_coverage(query)
+    year_histogram_svg = None
+    date_histogram_svg = None
+    coverage_type_preservation = None
     if coverage_stats['total'] > 1:
-        year_histogram = get_elastic_preservation_by_year(query)
-        year_histogram_svg = preservation_by_year_histogram(year_histogram).render_data_uri()
         coverage_type_preservation = get_elastic_preservation_by_type(query)
-    else:
-        year_histogram_svg = None
-        coverage_type_preservation = None
+        if query.recent:
+            date_histogram = get_elastic_preservation_by_date(query)
+            date_histogram_svg = preservation_by_date_histogram(date_histogram).render_data_uri()
+        else:
+            year_histogram = get_elastic_preservation_by_year(query)
+            year_histogram_svg = preservation_by_year_histogram(year_histogram).render_data_uri()
     return render_template(
         'coverage_search.html',
         query=query,
         coverage_stats=coverage_stats,
         coverage_type_preservation=coverage_type_preservation,
         year_histogram_svg=year_histogram_svg,
+        date_histogram_svg=date_histogram_svg,
     )
 
 def get_changelog_stats():

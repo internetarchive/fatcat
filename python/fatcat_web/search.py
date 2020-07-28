@@ -31,6 +31,7 @@ class ReleaseQuery:
     offset: Optional[int] = None
     fulltext_only: bool = False
     container_id: Optional[str] = None
+    recent: bool = False
 
     @classmethod
     def from_args(cls, args) -> 'ReleaseQuery':
@@ -55,6 +56,7 @@ class ReleaseQuery:
             offset=offset,
             fulltext_only=bool(args.get('fulltext_only')),
             container_id=container_id,
+            recent=bool(args.get('recent')),
         )
 
 @dataclass
@@ -384,6 +386,11 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
         field='preservation',
         missing='_unknown',
     )
+    if query.recent:
+        date_today = datetime.date.today()
+        start_date = str(date_today - datetime.timedelta(days=60))
+        end_date = str(date_today + datetime.timedelta(days=1))
+        search = search.filter("range", release_date=dict(gte=start_date, lte=end_date))
 
     search = search[:0]
 
@@ -550,7 +557,6 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
             allow_leading_wildcard=False,
             lenient=True,
             fields=[
-                "title^2",
                 "biblio",
             ],
         )
@@ -597,6 +603,79 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
     for row in buckets:
         year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
     return sorted(year_dicts.values(), key=lambda x: x['year'])
+
+
+def get_elastic_preservation_by_date(query) -> List[dict]:
+    """
+    Fetches a stacked histogram of {date, preservation}.
+
+    Preservation has 4 potential values; this function filters to the past 250
+    years (at most), or about 1000 values.
+
+    Returns a list of dicts, sorted by date, with keys/values like:
+
+        {date (str), bright (int), dark (int), shadows_only (int), none (int)}
+    """
+
+    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    if query.q not in [None, "*"]:
+        search = search.query(
+            "query_string",
+            query=query.q,
+            default_operator="AND",
+            analyze_wildcard=True,
+            allow_leading_wildcard=False,
+            lenient=True,
+            fields=[
+                "biblio",
+            ],
+        )
+    if query.container_id:
+        search = search.filter(
+            "term",
+            container_id=query.container_id,
+        )
+    date_today = datetime.date.today()
+    start_date = date_today - datetime.timedelta(days=60)
+    end_date = date_today + datetime.timedelta(days=1)
+    search = search.filter(
+        "range", release_date=dict(
+            gte=str(start_date),
+            lte=str(end_date),
+        )
+    )
+
+    search.aggs.bucket(
+        'date_preservation',
+        'composite',
+        size=1500,
+        sources=[
+            {"date": {
+                "histogram": {
+                    "field": "release_date",
+                    "interval": 1,
+                },
+            }},
+            {"preservation": {
+                "terms": {
+                    "field": "preservation",
+                },
+            }},
+        ],
+    )
+    search = search[:0]
+    search = search.params(request_cache='true')
+    resp = wrap_es_execution(search)
+
+    buckets = resp.aggregations.date_preservation.buckets
+    date_dicts = dict()
+    this_date = start_date
+    while this_date <= end_date:
+        date_dicts[str(this_date)] = dict(date=str(this_date), bright=0, dark=0, shadows_only=0, none=0)
+        this_date = this_date + datetime.timedelta(days=1)
+    for row in buckets:
+        date_dicts[row['key']['date'][0:10]][row['key']['preservation']] = int(row['doc_count'])
+    return sorted(date_dicts.values(), key=lambda x: x['date'])
 
 def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict]:
     """
@@ -682,6 +761,11 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
                 ]),
             ],
         )
+    if query.recent:
+        date_today = datetime.date.today()
+        start_date = str(date_today - datetime.timedelta(days=60))
+        end_date = str(date_today + datetime.timedelta(days=1))
+        search = search.filter("range", release_date=dict(gte=start_date, lte=end_date))
     search.aggs.bucket(
         'type_preservation',
         'composite',

@@ -61,6 +61,30 @@ def preservation_by_year_histogram(rows: List[Dict]) -> pygal.Graph:
     chart.add('Bright', [y['bright'] for y in years])
     return chart
 
+def preservation_by_date_histogram(rows: List[Dict]) -> pygal.Graph:
+    """
+    Note: this returns a raw pygal chart; it does not render it to SVG/PNG
+    """
+
+    dates = sorted(rows, key=lambda x: x['date'])
+
+    CleanStyle.colors = ("red", "darkred", "darkolivegreen", "limegreen")
+    label_count = len(dates)
+    if len(dates) > 30:
+        label_count = 10
+    chart = pygal.StackedBar(dynamic_print_values=True, style=CleanStyle,
+        width=1000, height=500, x_labels_major_count=label_count,
+        show_minor_x_labels=False, x_label_rotation=20)
+    #chart.title = "Preservation by Date"
+    chart.x_title = "Date"
+    #chart.y_title = "Count"
+    chart.x_labels = [str(y['date']) for y in dates]
+    chart.add('None', [y['none'] for y in dates])
+    chart.add('Shadow', [y['shadows_only'] for y in dates])
+    chart.add('Dark', [y['dark'] for y in dates])
+    chart.add('Bright', [y['bright'] for y in dates])
+    return chart
+
 def preservation_by_volume_histogram(rows: List[Dict]) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
@@ -75,7 +99,7 @@ def preservation_by_volume_histogram(rows: List[Dict]) -> pygal.Graph:
     chart = pygal.StackedBar(dynamic_print_values=True, style=CleanStyle,
         width=1000, height=500, x_labels_major_count=label_count,
         show_minor_x_labels=False, x_label_rotation=20)
-    #chart.title = "Preservation by Year"
+    #chart.title = "Preservation by Volume"
     chart.x_title = "Volume"
     #chart.y_title = "Count"
     chart.x_labels = [str(y['volume']) for y in volumes]
