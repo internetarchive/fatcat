@@ -23,7 +23,7 @@
           <button class="ui primary button">Search</button>
         </div>
         <div class="ui checkbox" style="float: right; margin: 1em;">
-          <input type="checkbox" name="fulltext_only" id="fulltext_only" value="true" {% if fulltext_only %}checked{% endif %}>
+          <input type="checkbox" name="fulltext_only" id="fulltext_only" value="true" {% if query.fulltext_only %}checked{% endif %}>
           <label for="fulltext_only">Fulltext Available Only</label>
         </div>
         <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search for <b><a href="/container/search?q={{ query.q or "" }}">containers</a></b> (eg, journals).

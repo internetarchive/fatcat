@@ -742,6 +742,7 @@ def coverage_search():
             coverage_stats=None,
             coverage_type_preservation=None,
             year_histogram_svg=None,
+            date_histogram_svg=None,
         )
 
     query = ReleaseQuery.from_args(request.args)
