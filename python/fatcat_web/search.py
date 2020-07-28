@@ -192,6 +192,7 @@ def do_release_search(
             Q("bool", must_not=Q("exists", field="release_year")),
             Q("bool", must_not=Q("exists", field="release_type")),
             Q("bool", must_not=Q("exists", field="release_stage")),
+            Q("bool", must_not=Q("exists", field="container_id")),
         ],
     )
 
