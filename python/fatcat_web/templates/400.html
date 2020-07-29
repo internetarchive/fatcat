@@ -4,10 +4,20 @@
 <center>
 <div style="font-size: 8em;">400</div>
 <div style="font-size: 3em;">Bad Request</div>
-
-<p>Wasn't able to handle the request, either due to incorrect or unexpected
-input. Usually more context should be available; if you hit this page it means
-you've discovered a new corner case!
 </center>
+
+<div class="ui icon error message">
+  <i class="ban icon"></i>
+  <div class="content">
+    <div class="header"></div>
+    {% if err and err.description %}
+      <p>{{ err.description }}
+    {% else %}
+      <p>Wasn't able to handle the request, either due to incorrect or unexpected
+      input. Usually more context should be available; if you hit this page it means
+      you've discovered a new corner case!
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}

@@ -503,8 +503,7 @@ def editgroup_create_annotation(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         ega = EditgroupAnnotation(
             comment_markdown=comment_markdown,
             extra=None,
@@ -525,8 +524,7 @@ def editgroup_accept(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.accept_editgroup(str(ident))
     except ApiException as ae:
         app.log.info(ae)
@@ -543,8 +541,7 @@ def editgroup_unsubmit(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.update_editgroup(eg.editgroup_id, eg, submit=False)
     except ApiException as ae:
         app.log.info(ae)
@@ -561,8 +558,7 @@ def editgroup_submit(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
     except ApiException as ae:
         app.log.info(ae)
@@ -762,8 +758,7 @@ def stats_json():
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def container_issnl_stats(issnl):
     if not (len(issnl) == 9 and issnl[4] == '-'):
-        flash("Not a valid ISSN-L: {}".format(issnl))
-        abort(400)
+        abort(400, "Not a valid ISSN-L: {}".format(issnl))
     try:
         container = api.lookup_container(issnl=issnl)
     except ApiException as ae:
@@ -917,8 +912,7 @@ def create_auth_token():
             duration_seconds = int(duration_seconds)
             assert duration_seconds >= 1
         except (ValueError, AssertionError):
-            flash("duration_seconds must be a positive non-zero integer")
-            abort(400)
+            abort(400, "duration_seconds must be a positive non-zero integer")
 
     # check user's auth. api_token and editor_id are signed together in session
     # cookie, so if api_token is valid editor_id is assumed to match. If that
@@ -986,7 +980,7 @@ def page_method_not_allowed(e):
 
 @app.errorhandler(400)
 def page_bad_request(e):
-    return render_template('400.html'), 400
+    return render_template('400.html', err=e), 400
 
 @app.errorhandler(409)
 def page_edit_conflict(e):

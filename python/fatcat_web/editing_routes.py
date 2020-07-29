@@ -79,8 +79,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
-            flash("Editgroup already merged")
-            abort(400)
+            abort(400, "Editgroup already merged")
 
     # fetch entity (if set) or 404
     existing = None
@@ -206,8 +205,7 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
-            flash("Editgroup already merged")
-            abort(400)
+            abort(400, "Editgroup already merged")
 
     # API on behalf of user
     user_api = auth_api(session['api_token'])
