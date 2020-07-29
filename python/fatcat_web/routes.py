@@ -138,7 +138,7 @@ def generic_lookup_view(entity_type, lookup_template, extid_types, lookup_lambda
                 ae.status)
         else:
             app.log.info(ae)
-            abort(ae.status)
+            raise ae
     return redirect('/{}/{}'.format(entity_type, resp.ident))
 
 @app.route('/container/lookup', methods=['GET'])
@@ -512,7 +512,7 @@ def editgroup_create_annotation(ident):
         user_api.create_editgroup_annotation(eg.editgroup_id, ega)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     return redirect('/editgroup/{}'.format(ident))
 
 @app.route('/editgroup/<ident>/accept', methods=['POST'])
@@ -770,7 +770,7 @@ def container_issnl_stats(issnl):
     try:
         container = api.lookup_container(issnl=issnl)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
     except Exception as ae:
@@ -826,7 +826,7 @@ def release_bibtex(ident):
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     csl = release_to_csl(entity)
     bibtex = citeproc_csl(csl, 'bibtex')
     return Response(bibtex, mimetype="text/plain")
@@ -843,7 +843,7 @@ def release_citeproc(ident):
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     csl = release_to_csl(entity)
     cite = citeproc_csl(csl, style, is_html)
     if is_html:
@@ -901,7 +901,7 @@ def change_username():
         editor = user_api.update_editor(editor.editor_id, editor)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     # update our session
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
@@ -938,7 +938,7 @@ def create_auth_token():
             duration_seconds=duration_seconds)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     return render_template('auth_token.html', auth_token=resp.token)
 
 @app.route('/auth/logout')
