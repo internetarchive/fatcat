@@ -31,4 +31,4 @@ def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
         timeout=timeout,
     )
     resp.raise_for_status()
-    print(resp.json())
+    #print(resp.json())

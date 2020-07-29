@@ -557,7 +557,6 @@ def editgroup_submit(ident):
     if not app.testing:
         app.csrf.protect()
     # on behalf of user...
-    print("submitting...")
     user_api = auth_api(session['api_token'])
     try:
         eg = user_api.get_editgroup(str(ident))
@@ -566,7 +565,6 @@ def editgroup_submit(ident):
             abort(400)
         user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
     except ApiException as ae:
-        print(ae)
         app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
@@ -655,7 +653,6 @@ def release_save(ident):
                     json.dumps(msg, sort_keys=True),
                 )
             except Exception as e:
-                print(e, file=sys.stderr)
                 return render_template('release_save.html', entity=release, form=form, spn_status='kafka-error'), 500
             return render_template('release_save.html', entity=release, form=form, spn_status='success'), 200
         elif form.errors:
