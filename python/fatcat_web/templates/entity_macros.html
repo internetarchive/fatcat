@@ -162,12 +162,10 @@
     {# release type suffix #}
     {% if paper.release_type in ("article-journal", "paper-conference") %}
       {# pass #}
-    {% elif paper.release_type in ("book", "chapter", "dataset") %}
-      <b style="text-transform: uppercase;">[{{ paper.release_type }}]</b>
     {% elif not paper.release_type %}
-      <b style="text-transform: uppercase; color: black;">[unknown-media]</b>
+      <b style="text-transform: uppercase; color: black;">[unknown]</b>
     {% else %}
-      <b style="text-transform: uppercase;">[{{ paper.release_type }}]</b>
+      <b style="text-transform: uppercase; color: black;">[{{ paper.release_type }}]</b>
     {% endif %}
 
     {# show original_title #}
@@ -212,17 +210,17 @@
     {% endif %}
     {% if paper.container_is_oa %}<i class="icon unlock orange small"></i>{% endif %}
   {% endif %}
-  {% if paper.withdrawn_status %}
-    <b style="color: red;"><code>[{{ paper.withdrawn_status }}]</code></b>
-  {% endif %}
-  {% if paper.release_stage == "accepted" %}
-    <b style="color: darkmagenta;"><code>[{{ paper.release_stage }} manuscript]</code></b>
-  {% elif paper.release_stage == "submitted" %}
-    <b style="color: magenta;"><code>[pre-print]</code></b>
+
+  {% if paper.release_stage == "submitted" %}
+    <b style="color: brown; text-transform: uppercase;">pre-print</b>
   {% elif paper.release_stage and paper.release_stage != "published" %}
-    <b style="color: magenta;"><code>[{{ paper.release_stage }}]</code></b>
+    <b style="color: brown; text-transform: uppercase;">{{ paper.release_stage }} version</b>
   {% elif not paper.release_stage %}
-    <b style="color: red;"><code>[unpublished?]</code></b>
+    <b style="color: brown; text-transform: uppercase;">unpublished</b>
+  {% endif %}
+
+  {% if paper.withdrawn_status %}
+    <b style="color: red; text-transform: uppercase;">{{ paper.withdrawn_status }}</b>
   {% endif %}
 
   {# ### IDENTIFIERS #}
