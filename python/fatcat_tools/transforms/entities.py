@@ -1,9 +1,10 @@
 
 import json
+import toml
 import collections
 from fatcat_openapi_client import ApiClient
 
-def entity_to_dict(entity, api_client=None):
+def entity_to_dict(entity, api_client=None) -> dict:
     """
     Hack to take advantage of the code-generated serialization code.
 
@@ -17,7 +18,7 @@ def entity_to_dict(entity, api_client=None):
         api_client = ApiClient()
     return api_client.sanitize_for_serialization(entity)
 
-def entity_from_json(json_str, entity_type, api_client=None):
+def entity_from_json(json_str: str, entity_type, api_client=None):
     """
     Hack to take advantage of the code-generated deserialization code
 
@@ -29,6 +30,21 @@ def entity_from_json(json_str, entity_type, api_client=None):
     thing.data = json_str
     return api_client.deserialize(thing, entity_type)
 
-def entity_from_dict(obj, entity_type, api_client=None):
+def entity_from_dict(obj: dict, entity_type, api_client=None):
     json_str = json.dumps(obj)
     return entity_from_json(json_str, entity_type, api_client=api_client)
+
+def entity_to_toml(entity, api_client=None, pop_fields=None) -> str:
+    """
+    pop_fields parameter can be used to strip out some fields from the resulting
+    TOML. Eg, for fields which should not be edited, like the ident.
+    """
+    obj = entity_to_dict(entity, api_client=api_client)
+    pop_fields = pop_fields or []
+    for k in pop_fields:
+        obj.pop(k, None)
+    return toml.dumps(obj)
+
+def entity_from_toml(toml_str: str, entity_type, api_client=None):
+    obj = toml.loads(toml_str)
+    return entity_from_dict(obj, entity_type, api_client=api_client)
