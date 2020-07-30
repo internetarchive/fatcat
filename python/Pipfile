@@ -55,6 +55,7 @@ langdetect = "*"
 pathlib2 = "*"
 pycountry = "*"
 tldextract = "*"
+toml = ">=0.10"
 
 [requires]
 # We install Python 3.7 using a PPA (deadsnakes) on Internet Archive cluster
