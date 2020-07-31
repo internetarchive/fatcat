@@ -151,7 +151,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
         try:
             editgroup = api.get_editgroup(editgroup_id)
         except ApiException as ae:
-            abort(ae.status)
+            raise ae
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
