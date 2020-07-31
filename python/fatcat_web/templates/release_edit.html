@@ -7,12 +7,18 @@
 <h1 class="ui header">Edit Release Entity</h1>
 
 <form class="ui form" id="edit_release_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{ existing_ident }}/edit">
+
+  <p>Experienced users can also use the <a href="{% if editgroup
+  %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{
+  existing_ident }}/edit/toml">TOML editing form</a> to access all metadata
+  fields in a raw format.
 {% endblock %}
 
   <p>See <a href="https://guide.fatcat.wiki/entity_release.html">the catalog
   style guide</a> for schema notes, and <a
   href="https://guide.fatcat.wiki/editing_quickstart.html">the editing
   tutorial</a> if this is your first time making an edit.
+
 
   {{ form.hidden_tag() }}
 

@@ -55,7 +55,7 @@
 {% macro editgroup_dropdown(form, editgroup=None, potential_editgroups=None) -%}
   {% if editgroup %}
     <p>You are updating an existing un-merged editgroup: <a href="/editgroup/{{ editgroup.editgroup_id}}">{{ editgroup.editgroup_id }}</a>.
-    <p><b>Description:</b> {{ editgroup.description }}
+    <p><b>Description:</b> {{ editgroup.description or "" }}
   {% else %}
     {% if not potential_editgroups %}
       <p>You have no un-submitted editgroups in progress; a new one will be

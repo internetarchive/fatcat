@@ -37,3 +37,15 @@
 {% endblock %}
 {% endblock %}
 
+{% block postscript %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+<!-- Form code -->
+$(document).ready(function() {
+
+  // these javascript dropdowns hide the original <input>, which breaks browser
+  // form focusing (eg, for required fields) :(
+  $('.ui.dropdown') .dropdown();
+});
+</script>
+{% endblock %}

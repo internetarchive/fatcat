@@ -25,7 +25,7 @@
             updated
           {% endif %}
           <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view edit]</a>
-          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted and entity_type in ('release', 'file', 'container') %}
+          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
             <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
             <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

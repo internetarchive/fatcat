@@ -7,6 +7,11 @@
 <h1 class="ui header">Edit Container Entity</h1>
 
 <form class="ui form" id="edit_container_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/container/{{ existing_ident }}/edit">
+
+  <p>Experienced users can also use the <a href="{% if editgroup
+  %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/container/{{
+  existing_ident }}/edit/toml">TOML editing form</a> to access all metadata
+  fields in a raw format.
 {% endblock %}
 
   <p>See <a href="https://guide.fatcat.wiki/entity_container.html">the catalog

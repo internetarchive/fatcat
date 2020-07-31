@@ -366,27 +366,18 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
         try:
             editgroup = api.get_editgroup(editgroup_id)
         except ApiException as ae:
-            raise ae
+            abort(ae.status)
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
-            abort(400, "Editgroup already merged")
+            flash("Editgroup already merged")
+            abort(400)
 
     # API on behalf of user
     user_api = auth_api(session['api_token'])
 
     # do the deletion
-    try:
-        if entity_type == 'container':
-            user_api.delete_container_edit(editgroup.editgroup_id, edit_id)
-        elif entity_type == 'file':
-            user_api.delete_file_edit(editgroup.editgroup_id, edit_id)
-        elif entity_type == 'release':
-            user_api.delete_release_edit(editgroup.editgroup_id, edit_id)
-        else:
-            raise NotImplementedError
-    except ApiException as ae:
-        raise ae
+    generic_entity_delete_edit(user_api, entity_type, editgroup.editgroup_id, edit_id)
     return redirect("/editgroup/{}".format(editgroup_id))
 
 
@@ -452,69 +443,187 @@ def release_editgroup_edit(editgroup_id, ident):
 def release_edit_delete(editgroup_id, edit_id):
     return generic_edit_delete(editgroup_id, 'release', edit_id)
 
-
-### Not-Implemented Views ###################################################
-
-@app.route('/creator/create', methods=['GET'])
-def creator_create_view():
-    return abort(404)
-
-@app.route('/creator/<ident>/edit', methods=['GET'])
-def creator_edit(ident):
-    return render_template('entity_edit.html'), 404
-
-@app.route('/editgroup/<editgroup_id>/creator/<ident>/edit', methods=['GET', 'POST'])
-def creator_editgroup_edit(editgroup_id, ident):
-    return abort(404)
-
 @app.route('/editgroup/<editgroup_id>/creator/edit/<edit_id>/delete', methods=['POST'])
 def creator_edit_delete(editgroup_id, edit_id):
-    return abort(404)
-
-@app.route('/fileset/create', methods=['GET'])
-def fileset_create_view():
-    return abort(404)
-
-@app.route('/fileset/<ident>/edit', methods=['GET'])
-def fileset_edit(ident):
-    return render_template('entity_edit.html'), 404
-
-@app.route('/editgroup/<editgroup_id>/fileset/<ident>/edit', methods=['GET', 'POST'])
-def fileset_editgroup_edit(editgroup_id, ident):
-    return abort(404)
+    return generic_edit_delete(editgroup_id, 'creator', edit_id)
 
 @app.route('/editgroup/<editgroup_id>/fileset/edit/<edit_id>/delete', methods=['POST'])
 def fileset_edit_delete(editgroup_id, edit_id):
-    return abort(404)
-
-@app.route('/webcapture/create', methods=['GET'])
-def webcapture_create_view():
-    return abort(404)
-
-@app.route('/webcapture/<ident>/edit', methods=['GET'])
-def webcapture_edit(ident):
-    return render_template('entity_edit.html'), 404
-
-@app.route('/editgroup/<editgroup_id>/webcapture/<ident>/edit', methods=['GET', 'POST'])
-def webcapture_editgroup_edit(editgroup_id, ident):
-    return abort(404)
+    return generic_edit_delete(editgroup_id, 'fileset', edit_id)
 
 @app.route('/editgroup/<editgroup_id>/webcapture/edit/<edit_id>/delete', methods=['POST'])
 def webcapture_edit_delete(editgroup_id, edit_id):
-    return abort(404)
-
-@app.route('/work/create', methods=['GET'])
-def work_create_view():
-    return abort(404)
-
-@app.route('/work/<ident>/edit', methods=['GET'])
-def work_edit(ident):
-    return render_template('entity_edit.html'), 404
-
-@app.route('/editgroup/<editgroup_id>/work/<ident>/edit', methods=['GET', 'POST'])
-def work_editgroup_edit(editgroup_id, ident):
-    return abort(404)
+    return generic_edit_delete(editgroup_id, 'webcapture', edit_id)
 
 @app.route('/editgroup/<editgroup_id>/work/edit/<edit_id>/delete', methods=['POST'])
 def work_edit_delete(editgroup_id, edit_id):
-    return abort(404)
+    return generic_edit_delete(editgroup_id, 'work', edit_id)
+
+### TOML Views ##############################################################
+
+@app.route('/container/create/toml', methods=['GET', 'POST'])
+@login_required
+def container_create_toml_view():
+    return generic_entity_toml_edit(None, 'container', None, 'entity_create_toml.html')
+
+@app.route('/container/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def container_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'container', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/container/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def container_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'container', ident, 'entity_edit_toml.html')
+
+@app.route('/creator/create/toml', methods=['GET', 'POST'])
+@login_required
+def creator_create_toml_view():
+    return generic_entity_toml_edit(None, 'creator', None, 'entity_create_toml.html')
+
+@app.route('/creator/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def creator_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'creator', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/creator/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def creator_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'creator', ident, 'entity_edit_toml.html')
+
+@app.route('/file/create/toml', methods=['GET', 'POST'])
+@login_required
+def file_create_toml_view():
+    return generic_entity_toml_edit(None, 'file', None, 'entity_create_toml.html')
+
+@app.route('/file/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def file_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'file', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/file/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def file_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'file', ident, 'entity_edit_toml.html')
+
+@app.route('/fileset/create/toml', methods=['GET', 'POST'])
+@login_required
+def fileset_create_toml_view():
+    return generic_entity_toml_edit(None, 'fileset', None, 'entity_create_toml.html')
+
+@app.route('/fileset/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def fileset_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'fileset', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/fileset/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def fileset_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'fileset', ident, 'entity_edit_toml.html')
+
+@app.route('/webcapture/create/toml', methods=['GET', 'POST'])
+@login_required
+def webcapture_create_toml_view():
+    return generic_entity_toml_edit(None, 'webcapture', None, 'entity_create_toml.html')
+
+@app.route('/webcapture/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def webcapture_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'webcapture', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/webcapture/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def webcapture_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'webcapture', ident, 'entity_edit_toml.html')
+
+@app.route('/release/create/toml', methods=['GET', 'POST'])
+@login_required
+def release_create_toml_view():
+    return generic_entity_toml_edit(None, 'release', None, 'entity_create_toml.html')
+
+@app.route('/release/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def release_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'release', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/release/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def release_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'release', ident, 'entity_edit_toml.html')
+
+@app.route('/work/create/toml', methods=['GET', 'POST'])
+@login_required
+def work_create_toml_view():
+    return generic_entity_toml_edit(None, 'work', None, 'entity_create_toml.html')
+
+@app.route('/work/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def work_edit_toml(ident):
+    return generic_entity_toml_edit(None, 'work', ident, 'entity_edit_toml.html')
+
+@app.route('/editgroup/<editgroup_id>/work/<ident>/edit/toml', methods=['GET', 'POST'])
+@login_required
+def work_editgroup_edit_toml(editgroup_id, ident):
+    return generic_entity_toml_edit(editgroup_id, 'work', ident, 'entity_edit_toml.html')
+
+### TOML-Only Editing Redirects ################################################
+
+@app.route('/creator/create', methods=['GET'])
+@login_required
+def creator_create_view():
+    return redirect('/creator/create/toml')
+
+@app.route('/creator/<ident>/edit', methods=['GET'])
+@login_required
+def creator_edit(ident):
+    return redirect(f'/creator/{ident}/edit/toml')
+
+@app.route('/editgroup/<editgroup_id>/creator/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def creator_editgroup_edit(editgroup_id, ident):
+    return redirect(f'/editgroup/{editgroup_id}/creator/{ident}/edit/toml')
+
+@app.route('/fileset/create', methods=['GET'])
+@login_required
+def fileset_create_view():
+    return redirect('/fileset/create/toml')
+
+@app.route('/fileset/<ident>/edit', methods=['GET'])
+@login_required
+def fileset_edit(ident):
+    return redirect(f'/fileset/{ident}/edit/toml')
+
+@app.route('/editgroup/<editgroup_id>/fileset/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def fileset_editgroup_edit(editgroup_id, ident):
+    return redirect(f'/editgroup/{editgroup_id}/fileset/{ident}/edit/toml')
+
+@app.route('/webcapture/create', methods=['GET'])
+@login_required
+def webcapture_create_view():
+    return redirect('/webcapture/create/toml')
+
+@app.route('/webcapture/<ident>/edit', methods=['GET'])
+@login_required
+def webcapture_edit(ident):
+    return redirect(f'/webcapture/{ident}/edit/toml')
+
+@app.route('/editgroup/<editgroup_id>/webcapture/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def webcapture_editgroup_edit(editgroup_id, ident):
+    return redirect(f'/editgroup/{editgroup_id}/webcapture/{ident}/edit/toml')
+
+@app.route('/work/create', methods=['GET'])
+@login_required
+def work_create_view():
+    return redirect('/work/create/toml')
+
+@app.route('/work/<ident>/edit', methods=['GET'])
+@login_required
+def work_edit(ident):
+    return redirect(f'/work/{ident}/edit/toml')
+
+@app.route('/editgroup/<editgroup_id>/work/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def work_editgroup_edit(editgroup_id, ident):
+    return redirect(f'/editgroup/{editgroup_id}/work/{ident}/edit/toml')

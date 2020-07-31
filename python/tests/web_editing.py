@@ -2,7 +2,7 @@
 from fixtures import *
 
 
-def test_web_release_create_merge(app_admin, api):
+def test_web_release_create_accept(app_admin, api):
 
     eg = quick_eg(api)
 
@@ -129,18 +129,60 @@ def test_web_file_create(app_admin, api):
         follow_redirects=True)
     assert rv.status_code == 200
 
+DUMMY_DEMO_ENTITIES = {
+    'container': 'aaaaaaaaaaaaaeiraaaaaaaaam',
+    'creator': 'aaaaaaaaaaaaaircaaaaaaaaaq',
+    'file': 'aaaaaaaaaaaaamztaaaaaaaaam',
+    'fileset': 'aaaaaaaaaaaaaztgaaaaaaaaai',
+    'webcapture': 'aaaaaaaaaaaaa53xaaaaaaaaai',
+    'release': 'aaaaaaaaaaaaarceaaaaaaaaai',
+    'work': 'aaaaaaaaaaaaavkvaaaaaaaaai',
+}
 
 def test_web_edit_get(app_admin):
 
     # these are all existing entities
-    rv = app_admin.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/edit')
-    assert rv.status_code == 200
-    assert b'A bigger example' in rv.data
+    for entity_type in ['release', 'file', 'container']:
+        rv = app_admin.get(f'/{entity_type}/{DUMMY_DEMO_ENTITIES[entity_type]}/edit')
+        assert rv.status_code == 200
+        if entity_type == 'release':
+            assert b'A bigger example' in rv.data
+        elif entity_type == 'file':
+            assert b'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362' in rv.data
+        elif entity_type == 'container':
+            assert b'1549-1277' in rv.data
 
-    rv = app_admin.get('/file/aaaaaaaaaaaaamztaaaaaaaaam/edit')
-    assert rv.status_code == 200
-    assert b'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362' in rv.data
+        rv = app_admin.get(f'/{entity_type}/{DUMMY_DEMO_ENTITIES[entity_type]}/edit/toml')
+        assert rv.status_code == 200
+        if entity_type == 'release':
+            assert b'A bigger example' in rv.data
+        elif entity_type == 'file':
+            assert b'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362' in rv.data
+        elif entity_type == 'container':
+            assert b'1549-1277' in rv.data
 
-    rv = app_admin.get('/container/aaaaaaaaaaaaaeiraaaaaaaaam/edit')
-    assert rv.status_code == 200
-    assert b'1549-1277' in rv.data
+    # TOML-only endpoints
+    for entity_type in ['creator', 'fileset', 'webcapture', 'work']:
+        rv = app_admin.get(f'/{entity_type}/{DUMMY_DEMO_ENTITIES[entity_type]}/edit')
+        assert rv.status_code == 302
+
+        rv = app_admin.get(f'/{entity_type}/{DUMMY_DEMO_ENTITIES[entity_type]}/edit/toml')
+        assert rv.status_code == 200
+
+
+def test_web_create_get(app_admin):
+
+    for entity_type in ['release', 'file', 'container']:
+        rv = app_admin.get(f'/{entity_type}/create')
+        assert rv.status_code == 200
+
+        rv = app_admin.get(f'/{entity_type}/create/toml')
+        assert rv.status_code == 200
+
+    # these are TOML only
+    for entity_type in ['creator', 'fileset', 'webcapture', 'work']:
+        rv = app_admin.get(f'/{entity_type}/create')
+        assert rv.status_code == 302
+
+        rv = app_admin.get(f'/{entity_type}/create/toml')
+        assert rv.status_code == 200
