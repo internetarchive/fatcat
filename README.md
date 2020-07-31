@@ -59,7 +59,7 @@ schema, lives under `./python_openapi_client/`.
     - [x] Authorization (aka, roles)
 - Web Interface
     - [x] Migrate Python codebase
-    - [ ] Creation and editing of all entities
+    - [x] Creation and editing of all entities
 - Other
     - [x] Elasticsearch schema
     - [x] Basic logging
