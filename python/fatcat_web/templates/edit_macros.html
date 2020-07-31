@@ -17,6 +17,23 @@
 </div>
 {%- endmacro %}
 
+{% macro form_toml_field(field, div_classes="") -%}
+<h3 class="ui dividing header">Raw Metadata (TOML)</h3>
+<div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+  <p><a href="https://toml.io/en/">TOML</a> is a markup language, similar to
+  YAML or Wikitext. The schema here is the same as the Fatcat API JSON schema, but
+  with a syntax that is easier to read and edit by hand. All nested metadata
+  fields are available here; refer to the fatcat guide for metadata
+  documentation and style guide, or TOML documentation for syntax notes (eg,
+  what those double brackets mean, and how to represent lists of authors or
+  references).
+  <br>
+  <br>
+  {{ field(rows=24) }}
+  {{ form_field_errors(field) }}
+</div>
+{%- endmacro %}
+
 {% macro form_field_inline(field, div_classes="") -%}
 <div class="ui grid">
   <div class="three wide column middle aligned right aligned" {# style="padding-right: 0.5rem;" #}>
