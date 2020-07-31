@@ -4,6 +4,8 @@ Note: in thoery could use, eg, https://github.com/christabor/swagger_wtforms,
 but can't find one that is actually maintained.
 """
 
+import datetime
+
 import toml
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
@@ -30,6 +32,16 @@ release_stage_options = [
     ('accepted', 'Accepted'),
     ('published', 'Published'),
     ('updated', 'Updated'),
+]
+withdrawn_status_options = [
+    ('', 'Not Withdrawn (blank)'),
+    ('retracted', 'Retracted'),
+    ('withdrawn', 'Withdrawn'),
+    ('concern', 'Concern Noted'),
+    ('spam', 'Spam'),
+    ('legal', 'Legal Taketown'),
+    ('safety', 'Public Safety'),
+    ('national-security', 'National Security'),
 ]
 role_type_options = [
     ('author', 'Author'),
@@ -70,25 +82,13 @@ RELEASE_SIMPLE_ATTRS = ['title', 'original_title', 'work_id', 'container_id',
 
 RELEASE_EXTID_ATTRS = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid']
 
-def valid_date(form, field):
-    try:
-        datetime.date.fromisoformat(field.data)
-    except ValueError as ve:
-        raise ValidationError(
-            f"Date must be valid ISO format (like '2017-04-20'): {field.data}")
-
 def valid_year(form, field):
-    try:
-        year = int(field.data)
-    except ValueError as ve:
+    if field.data > datetime.date.today().year + 5:
         raise ValidationError(
-            f"Date must be valid ISO format (like '2017-04-20'): {field.data}")
-    if year > datetime.date.today().year + 5:
+            f"Year is too far in the future: {field.data}")
+    if field.data < 10:
         raise ValidationError(
-            f"Year is too far in the future: {year}")
-    if year < 10:
-        raise ValidationError(
-            f"Year is too far in the past: {year}")
+            f"Year is too far in the past: {field.data}")
 
 def valid_2char_ascii(form, field):
     if len(field.data) != 2 or len(field.data.encode('utf-8')) != 2 or not field.data.isalpha() or field.data != field.data.lower():
@@ -115,9 +115,13 @@ class ReleaseEntityForm(EntityEditForm):
         choices=release_type_options,
         default='')
     release_stage = SelectField(choices=release_stage_options)
+    withdrawn_status = SelectField("Withdrawn Status",
+        [validators.Optional(True)],
+        choices=withdrawn_status_options,
+        default='')
     release_date = DateField('Release Date',
-        [validators.Optional(True), valid_date])
-    release_year = DateField('Release Year',
+        [validators.Optional(True)])
+    release_year = IntegerField('Release Year',
         [validators.Optional(True), valid_year])
     doi = StringField('DOI',
         [validators.Regexp(r'^10\..*\/.*', message="DOI must be valid"),
@@ -185,6 +189,8 @@ class ReleaseEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(re.ext_ids, extid_attr, a)
+        if self.release_date.data:
+            re.release_year = self.release_date.data.year
         # bunch of complexity here to preserve old contrib metadata (eg,
         # affiliation and extra) not included in current forms
         # TODO: this may be broken; either way needs tests

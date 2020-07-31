@@ -27,21 +27,22 @@
 
   <br>
   <h3 class="ui dividing header">The Basics</h3>
+
+  {{ edit_macros.form_field_inline(form.release_type, "required") }}
+  {{ edit_macros.form_field_inline(form.title, "required") }}
+  {{ edit_macros.form_field_inline(form.original_title) }}
+
   <div class="ui grid">
     <div class="three wide column" style="padding-bottom: 0px;"></div>
     <div class="twelve wide column" style="padding-bottom: 0px;">
       <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.release_type, "required") }}
-        {{ edit_macros.form_field_basic(form.release_stage) }}
+        {{ edit_macros.form_field_basic(form.release_year) }}
+        {{ edit_macros.form_field_basic(form.release_date) }}
       </div>
     </div>
     <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
-  {{ edit_macros.form_field_inline(form.title, "required") }}
-  {{ edit_macros.form_field_inline(form.original_title) }}
-  {{ edit_macros.form_field_inline(form.work_id) }}
-  {{ edit_macros.form_field_inline(form.release_date) }}
   <div class="ui grid">
     <div class="three wide column" style="padding-bottom: 0px;"></div>
     <div class="twelve wide column" style="padding-bottom: 0px;">
@@ -52,6 +53,19 @@
     </div>
     <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
+
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.release_stage) }}
+        {{ edit_macros.form_field_basic(form.withdrawn_status) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  {{ edit_macros.form_field_inline(form.work_id) }}
 
   <br>
   <h3 class="ui dividing header">Contributors</h3>
