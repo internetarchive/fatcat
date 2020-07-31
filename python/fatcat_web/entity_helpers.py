@@ -1,5 +1,6 @@
 
 from flask import abort
+from fatcat_openapi_client import *
 from fatcat_openapi_client.rest import ApiException, ApiValueError
 from fatcat_tools.transforms import *
 from fatcat_web import api
@@ -148,6 +149,26 @@ def generic_get_entity_revision(entity_type, revision_id):
     except ApiValueError:
         abort(400)
 
+def generic_deleted_entity(entity_type, ident):
+    if entity_type == 'container':
+        entity = ContainerEntity()
+    elif entity_type == 'creator':
+        entity = CreatorEntity()
+    elif entity_type == 'file':
+        entity = FileEntity()
+    elif entity_type == 'fileset':
+        entity = FilesetEntity()
+    elif entity_type == 'webcapture':
+        entity = WebcaptureEntity()
+    elif entity_type == 'release':
+        entity = ReleaseEntity()
+    elif entity_type == 'work':
+        entity = WorkEntity()
+    else:
+        raise NotImplementedError
+    entity.ident = ident
+    return entity
+
 def generic_get_editgroup_entity(editgroup, entity_type, ident):
     if entity_type == 'container':
         edits = editgroup.edits.containers
@@ -166,14 +187,18 @@ def generic_get_editgroup_entity(editgroup, entity_type, ident):
     else:
         raise NotImplementedError
     revision_id = None
+    edit = None
     for e in edits:
         if e.ident == ident:
             revision_id = e.revision
             edit = e
             break
-    if not revision_id:
+    if not edit:
         # couldn't find relevant edit in this editgroup
         abort(404)
+    if not revision_id:
+        # deletion, presumably
+        return generic_deleted_entity(entity_type, ident), edit
 
     try:
         entity = generic_get_entity_revision(entity_type, revision_id)
