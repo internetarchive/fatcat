@@ -64,10 +64,36 @@ class ReleaseContribForm(FlaskForm):
         default='author')
 
 RELEASE_SIMPLE_ATTRS = ['title', 'original_title', 'work_id', 'container_id',
-    'release_type', 'release_stage', 'release_date', 'volume', 'issue',
-    'pages', 'publisher', 'language', 'license_slug']
+    'release_type', 'release_stage', 'withdrawn_status', 'release_date',
+    'release_year', 'volume', 'issue', 'pages', 'publisher', 'language',
+    'license_slug']
 
 RELEASE_EXTID_ATTRS = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid']
+
+def valid_date(form, field):
+    try:
+        datetime.date.fromisoformat(field.data)
+    except ValueError as ve:
+        raise ValidationError(
+            f"Date must be valid ISO format (like '2017-04-20'): {field.data}")
+
+def valid_year(form, field):
+    try:
+        year = int(field.data)
+    except ValueError as ve:
+        raise ValidationError(
+            f"Date must be valid ISO format (like '2017-04-20'): {field.data}")
+    if year > datetime.date.today().year + 5:
+        raise ValidationError(
+            f"Year is too far in the future: {year}")
+    if year < 10:
+        raise ValidationError(
+            f"Year is too far in the past: {year}")
+
+def valid_2char_ascii(form, field):
+    if len(field.data) != 2 or len(field.data.encode('utf-8')) != 2 or not field.data.isalpha() or field.data != field.data.lower():
+        raise ValidationError(
+            f"Must be 2-character ISO format, lower case: {field.data}")
 
 class ReleaseEntityForm(EntityEditForm):
     """
@@ -77,7 +103,7 @@ class ReleaseEntityForm(EntityEditForm):
     """
     title = StringField('Title',
         [validators.DataRequired()])
-    original_title = StringField('Original Title')
+    original_title = StringField('Title in Original Language (if different)')
     work_id = StringField('Work FCID',
         [validators.Optional(True),
          validators.Length(min=26, max=26)])
@@ -90,8 +116,9 @@ class ReleaseEntityForm(EntityEditForm):
         default='')
     release_stage = SelectField(choices=release_stage_options)
     release_date = DateField('Release Date',
-        [validators.Optional(True)])
-    #release_year
+        [validators.Optional(True), valid_date])
+    release_year = DateField('Release Year',
+        [validators.Optional(True), valid_year])
     doi = StringField('DOI',
         [validators.Regexp(r'^10\..*\/.*', message="DOI must be valid"),
          validators.Optional(True)])
@@ -106,7 +133,8 @@ class ReleaseEntityForm(EntityEditForm):
     issue = StringField('Issue')
     pages = StringField('Pages')
     publisher = StringField('Publisher (optional)')
-    language = StringField('Language (code)')
+    language = StringField('Language (code)',
+        [validators.Optional(True), valid_2char_ascii])
     license_slug = StringField('License (slug)')
     contribs = FieldList(FormField(ReleaseContribForm))
     #refs
@@ -206,8 +234,9 @@ class ContainerEntityForm(EntityEditForm):
     issnl = StringField("ISSN-L (linking)")
     issne = StringField("ISSN (electronic)")
     issnp = StringField("ISSN (print)")
-    original_name = StringField("Original Name (native language)")
-    country = StringField("Country of Publication (ISO code)")
+    original_name = StringField("Name in Original Language (if different)")
+    country = StringField("Country of Publication (ISO code)",
+        [validators.Optional(True), valid_2char_ascii])
     wikidata_qid = StringField('Wikidata QID')
     urls = FieldList(
         StringField("Container URLs",
