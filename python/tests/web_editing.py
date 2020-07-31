@@ -129,6 +129,57 @@ def test_web_file_create(app_admin, api):
         follow_redirects=True)
     assert rv.status_code == 200
 
+def test_web_file_toml_create(app_admin, api):
+
+    eg = quick_eg(api)
+
+    # bogus/bad submit
+    rv = app_admin.post('/file/create/toml',
+        data={
+            'editgroup_id': eg.editgroup_id,
+        },
+        follow_redirects=True)
+    assert rv.status_code == 400
+
+    # ok/valid submit
+    rv = app_admin.post('/file/create/toml',
+        data={
+            'editgroup_id': eg.editgroup_id,
+            'toml': """
+size = 12345
+sha1 = "45be56a396c4d03faaa41e055170c23534dec736"
+            """,
+        },
+        follow_redirects=True)
+    assert rv.status_code == 200
+
+    # upper-case SHA-1
+    rv = app_admin.post('/file/create/toml',
+        data={
+            'editgroup_id': eg.editgroup_id,
+            'toml': """
+size = 12345
+sha1 = "45BE56A396C4D03FAAA41E055170C23534DEC736"
+            """,
+        },
+        follow_redirects=True)
+    assert rv.status_code == 400
+
+def test_web_file_delete(app_admin, api):
+
+    eg = quick_eg(api)
+
+    rv = app_admin.get('/file/aaaaaaaaaaaaamztaaaaaaaaam/delete')
+    assert rv.status_code == 200
+
+    rv = app_admin.post('/file/aaaaaaaaaaaaamztaaaaaaaaam/delete',
+        data={
+            'editgroup_id': eg.editgroup_id,
+        },
+        follow_redirects=True)
+    assert rv.status_code == 200
+    # NOTE: did not *accept* the deletion edit
+
 DUMMY_DEMO_ENTITIES = {
     'container': 'aaaaaaaaaaaaaeiraaaaaaaaam',
     'creator': 'aaaaaaaaaaaaaircaaaaaaaaaq',
@@ -185,4 +236,10 @@ def test_web_create_get(app_admin):
         assert rv.status_code == 302
 
         rv = app_admin.get(f'/{entity_type}/create/toml')
+        assert rv.status_code == 200
+
+def test_web_edit_delete(app_admin):
+
+    for entity_type in DUMMY_DEMO_ENTITIES.keys():
+        rv = app_admin.get(f'/{entity_type}/{DUMMY_DEMO_ENTITIES[entity_type]}/delete')
         assert rv.status_code == 200
