@@ -15,6 +15,15 @@ import elasticsearch_dsl.response
 
 from fatcat_web import app
 
+class FatcatSearchError(Exception):
+
+    def __init__(self, status_code: int, name: str, description: str = None):
+        if status_code == "N/A":
+            status_code = 503
+        self.status_code = status_code
+        self.name = name
+        self.description = description
+
 @dataclass
 class ReleaseQuery:
     q: Optional[str] = None
@@ -109,14 +118,19 @@ def wrap_es_execution(search: Search) -> Any:
     except elasticsearch.exceptions.RequestError as e:
         # this is a "user" error
         print("elasticsearch 400: " + str(e.info), file=sys.stderr)
+        description = None
         if e.info.get("error", {}).get("root_cause", {}):
-            raise ValueError(str(e.info["error"]["root_cause"][0].get("reason")))
-        else:
-            raise ValueError(str(e.info))
+            description = str(e.info["error"]["root_cause"][0].get("reason"))
+        raise FatcatSearchError(e.status_code, str(e.error), description)
+    except elasticsearch.exceptions.ConnectionError as e:
+        raise FatcatSearchError(e.status_code, "ConnectionError: search engine not available")
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
         print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
-        raise IOError(str(e.info))
+        description = None
+        if e.info.get("error", {}).get("root_cause", {}):
+            description = str(e.info["error"]["root_cause"][0].get("reason"))
+        raise FatcatSearchError(e.status_code, str(e.error), description)
     return resp
 
 def do_container_search(
@@ -192,6 +206,7 @@ def do_release_search(
             Q("bool", must_not=Q("exists", field="release_year")),
             Q("bool", must_not=Q("exists", field="release_type")),
             Q("bool", must_not=Q("exists", field="release_stage")),
+            Q("bool", must_not=Q("exists", field="container_id")),
         ],
     )
 

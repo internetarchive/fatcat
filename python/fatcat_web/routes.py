@@ -14,7 +14,7 @@ from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram
+from fatcat_web.search import ReleaseQuery, GenericQuery, do_release_search, do_container_search, get_elastic_entity_stats, get_elastic_container_stats, get_elastic_container_histogram, FatcatSearchError
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
 from fatcat_web.kafka import *
@@ -138,7 +138,7 @@ def generic_lookup_view(entity_type, lookup_template, extid_types, lookup_lambda
                 ae.status)
         else:
             app.log.info(ae)
-            abort(ae.status)
+            raise ae
     return redirect('/{}/{}'.format(entity_type, resp.ident))
 
 @app.route('/container/lookup', methods=['GET'])
@@ -503,8 +503,7 @@ def editgroup_create_annotation(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         ega = EditgroupAnnotation(
             comment_markdown=comment_markdown,
             extra=None,
@@ -512,7 +511,7 @@ def editgroup_create_annotation(ident):
         user_api.create_editgroup_annotation(eg.editgroup_id, ega)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     return redirect('/editgroup/{}'.format(ident))
 
 @app.route('/editgroup/<ident>/accept', methods=['POST'])
@@ -525,8 +524,7 @@ def editgroup_accept(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.accept_editgroup(str(ident))
     except ApiException as ae:
         app.log.info(ae)
@@ -543,8 +541,7 @@ def editgroup_unsubmit(ident):
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.update_editgroup(eg.editgroup_id, eg, submit=False)
     except ApiException as ae:
         app.log.info(ae)
@@ -557,16 +554,13 @@ def editgroup_submit(ident):
     if not app.testing:
         app.csrf.protect()
     # on behalf of user...
-    print("submitting...")
     user_api = auth_api(session['api_token'])
     try:
         eg = user_api.get_editgroup(str(ident))
         if eg.changelog_index:
-            flash("Editgroup already accepted")
-            abort(400)
+            abort(400, "Editgroup already accepted")
         user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
     except ApiException as ae:
-        print(ae)
         app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
@@ -655,7 +649,6 @@ def release_save(ident):
                     json.dumps(msg, sort_keys=True),
                 )
             except Exception as e:
-                print(e, file=sys.stderr)
                 return render_template('release_save.html', entity=release, form=form, spn_status='kafka-error'), 500
             return render_template('release_save.html', entity=release, form=form, spn_status='success'), 200
         elif form.errors:
@@ -710,7 +703,10 @@ def release_search():
         return render_template('release_search.html', query=ReleaseQuery(), found=None)
 
     query = ReleaseQuery.from_args(request.args)
-    found = do_release_search(query)
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return render_template('release_search.html', query=query, es_error=fse), fse.status_code
     return render_template('release_search.html', query=query, found=found)
 
 @app.route('/container/search', methods=['GET', 'POST'])
@@ -720,7 +716,10 @@ def container_search():
         return render_template('container_search.html', query=GenericQuery(), found=None)
 
     query = GenericQuery.from_args(request.args)
-    found = do_container_search(query)
+    try:
+        found = do_container_search(query)
+    except FatcatSearchError as fse:
+        return render_template('container_search.html', query=query, es_error=fse), fse.status_code
     return render_template('container_search.html', query=query, found=found)
 
 def get_changelog_stats():
@@ -759,12 +758,11 @@ def stats_json():
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def container_issnl_stats(issnl):
     if not (len(issnl) == 9 and issnl[4] == '-'):
-        flash("Not a valid ISSN-L: {}".format(issnl))
-        abort(400)
+        abort(400, "Not a valid ISSN-L: {}".format(issnl))
     try:
         container = api.lookup_container(issnl=issnl)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
     except Exception as ae:
@@ -820,7 +818,7 @@ def release_bibtex(ident):
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     csl = release_to_csl(entity)
     bibtex = citeproc_csl(csl, 'bibtex')
     return Response(bibtex, mimetype="text/plain")
@@ -837,7 +835,7 @@ def release_citeproc(ident):
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     csl = release_to_csl(entity)
     cite = citeproc_csl(csl, style, is_html)
     if is_html:
@@ -895,7 +893,7 @@ def change_username():
         editor = user_api.update_editor(editor.editor_id, editor)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     # update our session
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
@@ -914,8 +912,7 @@ def create_auth_token():
             duration_seconds = int(duration_seconds)
             assert duration_seconds >= 1
         except (ValueError, AssertionError):
-            flash("duration_seconds must be a positive non-zero integer")
-            abort(400)
+            abort(400, "duration_seconds must be a positive non-zero integer")
 
     # check user's auth. api_token and editor_id are signed together in session
     # cookie, so if api_token is valid editor_id is assumed to match. If that
@@ -932,7 +929,7 @@ def create_auth_token():
             duration_seconds=duration_seconds)
     except ApiException as ae:
         app.log.info(ae)
-        abort(ae.status)
+        raise ae
     return render_template('auth_token.html', auth_token=resp.token)
 
 @app.route('/auth/logout')
@@ -983,7 +980,7 @@ def page_method_not_allowed(e):
 
 @app.errorhandler(400)
 def page_bad_request(e):
-    return render_template('400.html'), 400
+    return render_template('400.html', err=e), 400
 
 @app.errorhandler(409)
 def page_edit_conflict(e):
@@ -998,6 +995,36 @@ def page_server_error(e):
 @app.errorhandler(504)
 def page_server_down(e):
     return render_template('503.html'), 503
+
+@app.errorhandler(ApiException)
+def page_fatcat_api_error(ae):
+    """
+    Generic error handler for fatcat API problems. With this error handler,
+    don't need to explicitly catch API exceptions: they should get caught and
+    routed correctly here.
+    """
+    if ae.status == 404:
+        return page_not_found(ae)
+    elif ae.status in [401, 403]:
+        return page_not_authorized(ae)
+    elif ae.status in [405]:
+        return page_method_not_allowed(ae)
+    elif ae.status in [409]:
+        return page_edit_conflict(ae)
+    try:
+        json_body = json.loads(ae.body)
+        ae.error_name = json_body.get('error')
+        ae.message = json_body.get('message')
+    except ValueError:
+        pass
+    return render_template('api_error.html', api_error=ae), ae.status
+
+@app.errorhandler(ApiValueError)
+def page_fatcat_api_value_error(ae):
+    ae.status = 400
+    ae.error_name = "ValueError"
+    ae.message = str(ae)
+    return render_template('api_error.html', api_error=ae), 400
 
 @app.errorhandler(CSRFError)
 def page_csrf_error(e):

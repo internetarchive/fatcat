@@ -25,7 +25,7 @@ def form_editgroup_get_or_create(api, edit_form):
                 edit_form.editgroup_id.errors.append("Editgroup does not exist")
                 return None
             app.log.warning(ae)
-            abort(ae.status)
+            raise ae
         if eg.changelog_index:
             edit_form.editgroup_id.errors.append("Editgroup has already been accepted")
             return None
@@ -36,7 +36,7 @@ def form_editgroup_get_or_create(api, edit_form):
                 Editgroup(description=edit_form.editgroup_description.data or None))
         except ApiException as ae:
             app.log.warning(ae)
-            abort(ae.status)
+            raise ae
         # set this session editgroup_id
         flash('Started new editgroup <a href="/editgroup/{}">{}</a>'.format(
             eg.editgroup_id,
@@ -79,8 +79,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
-            flash("Editgroup already merged")
-            abort(400)
+            abort(400, "Editgroup already merged")
 
     # fetch entity (if set) or 404
     existing = None
@@ -123,7 +122,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                             raise NotImplementedError
                     except ApiException as ae:
                         app.log.warning(ae)
-                        abort(ae.status)
+                        raise ae
                     return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
                 else: # it's an update
                     # all the tricky logic is in the update method
@@ -151,7 +150,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                             if ae.status == 404:
                                 pass
                             else:
-                                abort(ae.status)
+                                raise ae
                     try:
                         if entity_type == 'container':
                             edit = user_api.update_container(editgroup.editgroup_id, existing.ident, existing)
@@ -163,7 +162,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                             raise NotImplementedError
                     except ApiException as ae:
                         app.log.warning(ae)
-                        abort(ae.status)
+                        raise ae
                     return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
             else:
                 status = 400
@@ -202,12 +201,11 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
         try:
             editgroup = api.get_editgroup(editgroup_id)
         except ApiException as ae:
-            abort(ae.status)
+            raise ae
 
         # check that editgroup is edit-able
         if editgroup.changelog_index != None:
-            flash("Editgroup already merged")
-            abort(400)
+            abort(400, "Editgroup already merged")
 
     # API on behalf of user
     user_api = auth_api(session['api_token'])
@@ -223,7 +221,7 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
         else:
             raise NotImplementedError
     except ApiException as ae:
-        abort(ae.status)
+        raise ae
     return redirect("/editgroup/{}".format(editgroup_id))
 
 

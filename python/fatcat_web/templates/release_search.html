@@ -1,4 +1,5 @@
 {% import "entity_macros.html" as entity_macros %}
+{% import "search_macros.html" as search_macros %}
 {% extends "base.html" %}
 
 {% block title %}
@@ -37,7 +38,7 @@
 {% if found %}
   {% if found.results %}
 
-    {{ entity_macros.top_results(query, found) }}
+    {{ search_macros.top_results(query, found) }}
 
     {% for paper in found.results %}
       {{ entity_macros.release_search_result_row(paper) }}
@@ -46,7 +47,7 @@
     {% if found.results|length > 8 %}
       <div class="ui divider"></div>
       <div style="text-align: center">
-      {{ entity_macros.bottom_results(query, found, endpoint='release_search') }}
+      {{ search_macros.bottom_results(query, found, endpoint='release_search') }}
       </div>
     {% endif %}
 
@@ -73,6 +74,8 @@
 
   {% endif %}
 
+{% elif es_error %}
+  {{ search_macros.es_error_msg(es_error) }}
 {% endif %}
 
 </div>

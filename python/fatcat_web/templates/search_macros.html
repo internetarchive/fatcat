@@ -1,0 +1,68 @@
+
+{% macro top_results(query, found) -%}
+
+<i>Showing
+  {% if found.offset == 0 %}
+  first
+  {% else %}
+  results {{ found.offset }} &mdash;
+  {% endif %}
+
+  {{ found.offset + found.count_returned }}
+  out of {{ found.count_found }} results
+</i>
+
+{%- endmacro %}
+
+
+{% macro bottom_results(query, found, endpoint='release_search') -%}
+
+{% if found.offset > 0 %}
+  {% if found.offset - found.limit < 0 %}
+    <a href="{{ url_for(endpoint, q=query.q, offset=0) }}">&#xab; Previous</a>
+  {% else %}
+    <a href="{{ url_for(endpoint, q=query.q, offset=found.offset - found.limit) }}">&#xab; Previous</a>
+  {% endif %}
+{% else %}
+  <span style="color:gray">&#xab; Previous</span>
+{% endif %}
+
+&nbsp;&nbsp;<i>Showing results {{ found.offset }} &mdash; {{ found.offset +
+found.count_returned }} out of {{ found.count_found }} results</i>&nbsp;&nbsp;
+
+{% if found.offset + found.limit < found.count_found and found.offset + found.limit < found.deep_page_limit %}
+  <a href="{{ url_for(endpoint, q=query.q, offset=found.offset + found.limit) }}">Next &#xbb;</a>
+  {% else %}
+  <span style="color:gray">Next &#xbb;</span>
+{% endif %}
+
+</div>
+
+{%- endmacro %}
+
+
+{% macro es_error_msg(es_error) %}
+  <div class="ui icon error message">
+    <i class="ban icon"></i>
+    <div class="content">
+      <div class="header">
+        {% if es_error.status_code == 400 %}
+          Query Error
+        {% else %}
+          Search Index Error
+          {% if es_error.status_code %}({{ es_error.status_code }}){% endif %}
+        {% endif %}
+      </div>
+      {% if es_error.description %}
+        <p>Computer said: <code>{{ es_error.description }}</code>
+      {% elif es_error.name %}
+        <p><b>{{ es_error.name }}</b>
+      {% endif %}
+      {% if es_error.status_code == 400 %}
+        <p>Query parsing is currently very naive. Sometimes you can fix this
+        problem by adding quotes around terms or entire phrases.
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
