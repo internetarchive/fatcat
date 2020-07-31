@@ -12,6 +12,9 @@
   %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/container/{{
   existing_ident }}/edit/toml">TOML editing form</a> to access all metadata
   fields in a raw format.
+  {% if not editgroup %}
+    You can also <a href="/container/{{ existing_ident }}/delete">delete this entity</a>.
+  {% endif %}
 {% endblock %}
 
   <p>See <a href="https://guide.fatcat.wiki/entity_container.html">the catalog
