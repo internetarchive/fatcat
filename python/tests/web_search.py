@@ -10,22 +10,22 @@ from fixtures import *
 def test_generic_search(app):
 
     rv = app.get('/search?q=blood')
-    assert rv.status_code == 301
+    assert rv.status_code == 302
     assert "/release/search" in rv.location
 
     # file sha1sum
     rv = app.get('/search?q=0262d5351e8e7a0af27af8ceaf7b4e581da085f2')
-    assert rv.status_code == 301
+    assert rv.status_code == 302
     assert "/file/lookup" in rv.location
 
     # PMCID
     rv = app.get('/search?q=PMC12345')
-    assert rv.status_code == 301
+    assert rv.status_code == 302
     assert "/release/lookup" in rv.location
 
     # ISSN
     rv = app.get('/search?q=1234-5678')
-    assert rv.status_code == 301
+    assert rv.status_code == 302
     assert "/container/lookup" in rv.location
 
 def test_release_search(app, mocker):
