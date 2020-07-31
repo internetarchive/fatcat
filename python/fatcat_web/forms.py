@@ -152,11 +152,11 @@ class ReleaseEntityForm(EntityEditForm):
                 a = None
             setattr(re, simple_attr, a)
         for extid_attr in RELEASE_EXTID_ATTRS:
-            a = getattr(self, simple_attr).data
+            a = getattr(self, extid_attr).data
             # special case blank strings
             if a == '':
                 a = None
-            setattr(re.ext_ids, simple_attr, a)
+            setattr(re.ext_ids, extid_attr, a)
         # bunch of complexity here to preserve old contrib metadata (eg,
         # affiliation and extra) not included in current forms
         # TODO: this may be broken; either way needs tests

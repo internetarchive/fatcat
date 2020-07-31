@@ -24,6 +24,18 @@ def test_web_release_create_accept(app_admin, api):
     #assert b'badmojo' in rv.data
     assert b'Not a valid choice' in rv.data
 
+    # bad wikidata QID
+    rv = app_admin.post('/release/create',
+        data={
+            'editgroup_id': eg.editgroup_id,
+            'release_type': 'article-journal',
+            'release_stage': 'published',
+            'title': 'something bogus',
+            'wikidata_qid': '884',
+        },
+        follow_redirects=True)
+    assert rv.status_code == 400
+
     # ok/valid submit
     rv = app_admin.post('/release/create',
         data={
@@ -31,9 +43,11 @@ def test_web_release_create_accept(app_admin, api):
             'release_type': 'article-journal',
             'release_stage': 'published',
             'title': 'something bogus',
+            'doi': '10.1234/999999',
         },
         follow_redirects=True)
     assert rv.status_code == 200
+    assert b'10.1234/999999' in rv.data
 
     rv = app_admin.get('/editgroup/{}'.format(eg.editgroup_id))
     assert rv.status_code == 200
