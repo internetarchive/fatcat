@@ -7,6 +7,8 @@ from pygal.style import CleanStyle
 def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
+
+    Rows are tuples of: (year: float or int, in_ia: bool, count: int)
     """
 
     raw_years = [int(r[0]) for r in rows]
@@ -40,6 +42,9 @@ def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
 def preservation_by_year_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
+
+    Rows are dict with keys as preservation types and values as counts (int).
+    There is also a 'year' key with float/int value.
     """
 
     years = sorted(rows, key=lambda x: x['year'])
@@ -70,6 +75,9 @@ def preservation_by_year_histogram(rows: List[Dict], merge_shadows: bool = False
 def preservation_by_date_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
+
+    Rows are dict with keys as preservation types and values as counts (int).
+    There is also a 'date' key with str value.
     """
 
     dates = sorted(rows, key=lambda x: x['date'])
@@ -100,6 +108,9 @@ def preservation_by_date_histogram(rows: List[Dict], merge_shadows: bool = False
 def preservation_by_volume_histogram(rows: List[Dict], merge_shadows: bool = False) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
+
+    Rows are dict with keys as preservation types and values as counts (int).
+    There is also a 'volume' key with str value.
     """
 
     volumes = sorted(rows, key=lambda x: x['volume'])
