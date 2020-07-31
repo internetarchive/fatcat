@@ -142,7 +142,6 @@ def test_coverage_search(app, mocker):
         },
     }
 
-
     es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     es_raw.side_effect = [
         # counts summary

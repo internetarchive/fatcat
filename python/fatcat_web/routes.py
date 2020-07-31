@@ -1,6 +1,5 @@
 
 import os
-import sys
 import json
 from flask import render_template, make_response, send_from_directory, \
     request, url_for, abort, redirect, jsonify, session, flash, Response
@@ -658,7 +657,7 @@ def release_save(ident):
                     Config.KAFKA_SAVEPAPERNOW_TOPIC,
                     json.dumps(msg, sort_keys=True),
                 )
-            except Exception as e:
+            except:
                 return render_template('release_save.html', entity=release, form=form, spn_status='kafka-error'), 500
             return render_template('release_save.html', entity=release, form=form, spn_status='success'), 200
         elif form.errors:
