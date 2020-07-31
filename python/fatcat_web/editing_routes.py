@@ -2,7 +2,7 @@
 from flask import render_template, abort, redirect, session, flash
 from flask_login import login_required
 
-from fatcat_openapi_client import Editgroup
+from fatcat_openapi_client import *
 from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api, auth_api
@@ -12,6 +12,82 @@ from fatcat_web.entity_helpers import *
 
 
 ### Helper Methods ##########################################################
+
+def generic_entity_create_from_toml(user_api, entity_type: str, editgroup_id: str, toml_str: str) -> EntityEdit:
+    if entity_type == 'container':
+        entity = entity_from_toml(toml_str, ContainerEntity)
+        edit = user_api.create_container(editgroup_id, entity)
+    elif entity_type == 'creator':
+        entity = entity_from_toml(toml_str, CreatorEntity)
+        edit = user_api.create_creator(editgroup_id, entity)
+    elif entity_type == 'file':
+        entity = entity_from_toml(toml_str, FileEntity)
+        edit = user_api.create_file(editgroup_id, entity)
+    elif entity_type == 'fileset':
+        entity = entity_from_toml(toml_str, FilesetEntity)
+        edit = user_api.create_fileset(editgroup_id, entity)
+    elif entity_type == 'webcapture':
+        entity = entity_from_toml(toml_str, WebcaptureEntity)
+        edit = user_api.create_webcapture(editgroup_id, entity)
+    elif entity_type == 'release':
+        entity = entity_from_toml(toml_str, ReleaseEntity)
+        edit = user_api.create_release(editgroup_id, entity)
+    elif entity_type == 'work':
+        entity = entity_from_toml(toml_str, WorkEntity)
+        edit = user_api.create_work(editgroup_id, entity)
+    else:
+        raise NotImplementedError
+    return edit
+
+def generic_entity_delete_edit(user_api, entity_type: str, editgroup_id: str, edit_id: str) -> None:
+    try:
+        if entity_type == 'container':
+            user_api.delete_container_edit(editgroup_id, edit_id)
+        elif entity_type == 'creator':
+            user_api.delete_creator_edit(editgroup_id, edit_id)
+        elif entity_type == 'file':
+            user_api.delete_file_edit(editgroup_id, edit_id)
+        elif entity_type == 'fileset':
+            user_api.delete_fileset_edit(editgroup_id, edit_id)
+        elif entity_type == 'webcapture':
+            user_api.delete_webcapture_edit(editgroup_id, edit_id)
+        elif entity_type == 'release':
+            user_api.delete_release_edit(editgroup_id, edit_id)
+        elif entity_type == 'work':
+            user_api.delete_work_edit(editgroup_id, edit_id)
+        else:
+            raise NotImplementedError
+    except ApiException as ae:
+        if ae.status == 404:
+            pass
+        else:
+            raise ae
+
+def generic_entity_update_from_toml(user_api, entity_type: str, editgroup_id: str, existing_ident, toml_str: str) -> EntityEdit:
+    if entity_type == 'container':
+        entity = entity_from_toml(toml_str, ContainerEntity)
+        edit = user_api.update_container(editgroup_id, existing_ident, entity)
+    elif entity_type == 'creator':
+        entity = entity_from_toml(toml_str, CreatorEntity)
+        edit = user_api.update_creator(editgroup_id, existing_ident, entity)
+    elif entity_type == 'file':
+        entity = entity_from_toml(toml_str, FileEntity)
+        edit = user_api.update_file(editgroup_id, existing_ident, entity)
+    elif entity_type == 'fileset':
+        entity = entity_from_toml(toml_str, FilesetEntity)
+        edit = user_api.update_fileset(editgroup_id, existing_ident, entity)
+    elif entity_type == 'webcapture':
+        entity = entity_from_toml(toml_str, WebcaptureEntity)
+        edit = user_api.update_webcapture(editgroup_id, existing_ident, entity)
+    elif entity_type == 'release':
+        entity = entity_from_toml(toml_str, ReleaseEntity)
+        edit = user_api.update_release(editgroup_id, existing_ident, entity)
+    elif entity_type == 'work':
+        entity = entity_from_toml(toml_str, WorkEntity)
+        edit = user_api.update_work(editgroup_id, existing_ident, entity)
+    else:
+        raise NotImplementedError
+    return edit
 
 def form_editgroup_get_or_create(api, edit_form):
     """
@@ -138,14 +214,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                         # a "update pointer" edit
                         existing.revision = None
                         try:
-                            if entity_type == 'container':
-                                user_api.delete_container_edit(editgroup.editgroup_id, existing_edit.edit_id)
-                            elif entity_type == 'file':
-                                user_api.delete_file_edit(editgroup.editgroup_id, existing_edit.edit_id)
-                            elif entity_type == 'release':
-                                user_api.delete_release_edit(editgroup.editgroup_id, existing_edit.edit_id)
-                            else:
-                                raise NotImplementedError
+                            generic_entity_delete_edit(user_api, entity_type, editgroup.editgroup_id, existing_edit.edit_id)
                         except ApiException as ae:
                             if ae.status == 404:
                                 pass
@@ -191,6 +260,102 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
             form.editgroup_id.data = potential_editgroups[0].editgroup_id
 
     return render_template(edit_template, form=form,
+        existing_ident=existing_ident, editgroup=editgroup,
+        potential_editgroups=potential_editgroups), status
+
+def generic_entity_toml_edit(editgroup_id, entity_type, existing_ident, edit_template):
+    """
+    Similar to generic_entity_edit(), but for TOML editing mode.
+
+    Handles both creation and update/edit paths.
+    """
+
+    # fetch editgroup (if set) or 404
+    editgroup = None
+    if editgroup_id:
+        try:
+            editgroup = api.get_editgroup(editgroup_id)
+        except ApiException as ae:
+            raise ae
+
+        # check that editgroup is edit-able
+        if editgroup.changelog_index != None:
+            flash("Editgroup already merged")
+            abort(400)
+
+    # fetch entity (if set) or 404
+    existing = None
+    existing_edit = None
+    if editgroup and existing_ident:
+        existing, existing_edit = generic_get_editgroup_entity(editgroup, entity_type, existing_ident)
+    elif existing_ident:
+        existing = generic_get_entity(entity_type, existing_ident)
+
+    # parse form (if submitted)
+    status = 200
+    form = EntityTomlForm()
+
+    if form.is_submitted():
+        if form.validate_on_submit():
+            # API on behalf of user
+            user_api = auth_api(session['api_token'])
+            if not editgroup:
+                editgroup = form_editgroup_get_or_create(user_api, form)
+
+            if editgroup:
+
+                if not existing_ident: # it's a create
+                    try:
+                        edit = generic_entity_create_from_toml(user_api, entity_type, editgroup.editgroup_id, form.toml.data)
+                    except ValueError as ve:
+                        form.toml.errors = [ve]
+                        status = 400
+                    except ApiException as ae:
+                        app.log.warning(ae)
+                        raise ae
+                    if status == 200:
+                        return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
+                else: # it's an update
+                    # TODO: some danger of wiping database state here is
+                    # "updated edit" causes, eg, a 4xx error. Better to allow
+                    # this in the API itself. For now, form validation *should*
+                    # catch most errors, and if not editor can hit back and try
+                    # again. This means, need to allow failure of deletion.
+                    if existing_edit:
+                        # need to clear revision on object or this becomes just
+                        # a "update pointer" edit
+                        existing.revision = None
+                        generic_entity_delete_edit(user_api, entity_type, editgroup.editgroup_id, existing_edit.edit_id)
+                    try:
+                        edit = generic_entity_update_from_toml(user_api, entity_type, editgroup.editgroup_id, existing.ident, form.toml.data)
+                    except ValueError as ve:
+                        form.toml.errors = [ve]
+                        status = 400
+                    except ApiException as ae:
+                        app.log.warning(ae)
+                        raise ae
+                    if status == 200:
+                        return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
+            else:
+                status = 400
+        elif form.errors:
+            status = 400
+            app.log.info("form errors (did not validate): {}".format(form.errors))
+
+    else: # form is not submitted
+        if existing:
+            form = EntityTomlForm.from_entity(existing)
+
+    editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
+    potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
+
+    if not form.is_submitted():
+        # default to most recent not submitted, fallback to "create new"
+        form.editgroup_id.data = ""
+        if potential_editgroups:
+            form.editgroup_id.data = potential_editgroups[0].editgroup_id
+
+    return render_template(edit_template, form=form, entity_type=entity_type,
         existing_ident=existing_ident, editgroup=editgroup,
         potential_editgroups=potential_editgroups), status
 

@@ -4,10 +4,12 @@ Note: in thoery could use, eg, https://github.com/christabor/swagger_wtforms,
 but can't find one that is actually maintained.
 """
 
+import toml
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
-    HiddenField, FormField, FieldList, validators
+    HiddenField, FormField, FieldList, validators, ValidationError, TextAreaField
 
+from fatcat_tools import entity_to_toml
 from fatcat_openapi_client import ContainerEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
@@ -413,3 +415,27 @@ class SavePaperNowForm(FlaskForm):
             ingest_request['link_source'] = 'arxiv'
             ingest_request['link_source_id'] = release.ext_ids.arxiv
         return ingest_request
+
+def valid_toml(form, field):
+    try:
+        toml.loads(field.data)
+    except toml.TomlDecodeError as tpe:
+        raise ValidationError(tpe)
+
+class EntityTomlForm(EntityEditForm):
+
+    toml = TextAreaField(
+        "TOML",
+        [validators.DataRequired(),
+         valid_toml,
+        ],
+    )
+
+    @staticmethod
+    def from_entity(entity):
+        """
+        Initializes form with TOML version of existing entity
+        """
+        etf = EntityTomlForm()
+        etf.toml.data = entity_to_toml(entity)
+        return etf
