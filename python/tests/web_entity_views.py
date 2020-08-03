@@ -210,9 +210,9 @@ def test_web_creator(app):
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai')
     assert rv.status_code == 200
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai/edit')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
     rv = app.get('/creator/create')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
 
 
 def test_web_file(app):
@@ -266,9 +266,9 @@ def test_web_fileset(app):
     rv = app.get('/fileset/aaaaaaaaaaaaaztgaaaaaaaaai')
     assert rv.status_code == 200
     rv = app.get('/fileset/aaaaaaaaaaaaaztgaaaaaaaaai/edit')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
     rv = app.get('/fileset/create')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
 
 
 def test_web_webcatpure(app):
@@ -277,9 +277,9 @@ def test_web_webcatpure(app):
     rv = app.get('/webcapture/aaaaaaaaaaaaa53xaaaaaaaaai')
     assert rv.status_code == 200
     rv = app.get('/webcapture/aaaaaaaaaaaaa53xaaaaaaaaai/edit')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
     rv = app.get('/webcapture/create')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
 
 
 def test_web_release(app):
@@ -376,6 +376,6 @@ def test_web_work(app):
     rv = app.get('/work/aaaaaaaaaaaaavkvaaaaaaaaai')
     assert rv.status_code == 200
     rv = app.get('/work/aaaaaaaaaaaaavkvaaaaaaaaai/edit')
-    assert rv.status_code == 404
+    assert rv.status_code == 302
     rv = app.get('/work/create')
-    assert rv.status_code == 404
+    assert rv.status_code == 302

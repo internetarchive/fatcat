@@ -33,7 +33,7 @@
   {% if entity.state %}
     State is "{{ entity.state }}".
   {% endif %}
-  {% if entity.state != "deleted" %}
+  {% if entity.revision %}
     Revision:
     <br><small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
   {% endif %}
@@ -43,11 +43,13 @@
   {%- else -%}
     https://api.{{ config.FATCAT_DOMAIN }}
   {%- endif -%}
-  /v0/{{ entity_type }}
-  {%- if entity.ident -%}
-    /{{ entity.ident }}
+  /v0
+  {%- if editgroup and entity.ident -%}
+    /editgroup/{{ editgroup.editgroup_id }}{# /{{ entity_type }}/{{ entity.ident }} #}
+  {%- elif entity.ident -%}
+    /{{ entity_type }}/{{ entity.ident }}
   {%- elif entity.revision -%}
-    /rev/{{ entity.revision }}
+    /{{ entity_type }}/rev/{{ entity.revision }}
   {% endif %}
   {% if expand %}?expand={{ expand}}{% endif %}">
   As JSON object via API

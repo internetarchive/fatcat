@@ -7,12 +7,21 @@
 <h1 class="ui header">Edit Release Entity</h1>
 
 <form class="ui form" id="edit_release_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{ existing_ident }}/edit">
+
+  <p>Experienced users can also use the <a href="{% if editgroup
+  %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{
+  existing_ident }}/edit/toml">TOML editing form</a> to access all metadata
+  fields in a raw format.
+  {% if not editgroup %}
+    You can also <a href="/release/{{ existing_ident }}/delete">delete this entity</a>.
+  {% endif %}
 {% endblock %}
 
   <p>See <a href="https://guide.fatcat.wiki/entity_release.html">the catalog
   style guide</a> for schema notes, and <a
   href="https://guide.fatcat.wiki/editing_quickstart.html">the editing
   tutorial</a> if this is your first time making an edit.
+
 
   {{ form.hidden_tag() }}
 
@@ -21,21 +30,22 @@
 
   <br>
   <h3 class="ui dividing header">The Basics</h3>
+
+  {{ edit_macros.form_field_inline(form.release_type, "required") }}
+  {{ edit_macros.form_field_inline(form.title, "required") }}
+  {{ edit_macros.form_field_inline(form.original_title) }}
+
   <div class="ui grid">
     <div class="three wide column" style="padding-bottom: 0px;"></div>
     <div class="twelve wide column" style="padding-bottom: 0px;">
       <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.release_type, "required") }}
-        {{ edit_macros.form_field_basic(form.release_stage) }}
+        {{ edit_macros.form_field_basic(form.release_year) }}
+        {{ edit_macros.form_field_basic(form.release_date) }}
       </div>
     </div>
     <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
-  {{ edit_macros.form_field_inline(form.title, "required") }}
-  {{ edit_macros.form_field_inline(form.original_title) }}
-  {{ edit_macros.form_field_inline(form.work_id) }}
-  {{ edit_macros.form_field_inline(form.release_date) }}
   <div class="ui grid">
     <div class="three wide column" style="padding-bottom: 0px;"></div>
     <div class="twelve wide column" style="padding-bottom: 0px;">
@@ -46,6 +56,19 @@
     </div>
     <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
+
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.release_stage) }}
+        {{ edit_macros.form_field_basic(form.withdrawn_status) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  {{ edit_macros.form_field_inline(form.work_id) }}
 
   <br>
   <h3 class="ui dividing header">Contributors</h3>

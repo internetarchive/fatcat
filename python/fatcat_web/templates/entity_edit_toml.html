@@ -1,0 +1,55 @@
+{% import "edit_macros.html" as edit_macros %}
+{% extends "base.html" %}
+
+{% block body %}
+{% block edit_form_prefix %}
+  <div class="ui segment">
+  <h1 class="ui header">Edit Entity (TOML mode)</h1>
+
+  <form class="ui form" id="edit_toml_form" method="POST" action="{% if editgroup and editgroup.editgroup_id %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}/edit/toml">
+
+  {% if not editgroup %}
+    <p>You can also <a href="/{{ entity_type }}/{{ existing_ident }}/delete">delete this entity</a>.
+  {% endif %}
+{% endblock %}
+
+  <p>See <a href="https://guide.fatcat.wiki/entity_release.html">the catalog
+  style guide</a> for schema notes, and <a
+  href="https://guide.fatcat.wiki/editing_quickstart.html">the editing
+  tutorial</a> if this is your first time making an edit.
+
+  {{ form.hidden_tag() }}
+
+  <h3 class="ui dividing header">Editgroup Metadata</h3>
+  {{ edit_macros.editgroup_dropdown(form, editgroup, potential_editgroups) }}
+
+  {{ edit_macros.form_toml_field(form.toml, "required") }}
+
+  <h3 class="ui dividing header">Submit</h3>
+  {{ edit_macros.form_field_basic(form.edit_description) }}
+  This description will be attached to the individual edit, not to the
+  editgroup as a whole.
+
+{% block edit_form_suffix %}
+  <br><br>
+  <input class="ui primary submit button" type="submit" value="Update Release!">
+  <p>
+  <i>Edit will be part of the current editgroup, which needs to be submited and
+  approved before the change is included in the catalog.</i>
+</form>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block postscript %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+<!-- Form code -->
+$(document).ready(function() {
+
+  // these javascript dropdowns hide the original <input>, which breaks browser
+  // form focusing (eg, for required fields) :(
+  $('.ui.dropdown') .dropdown();
+});
+</script>
+{% endblock %}

@@ -30,7 +30,7 @@ flask-wtf = "*"
 Flask-Misaka = "*"
 flask-mwoauth = "*"
 WTForms = "*"
-loginpass = ">=0.4"
+loginpass = "==0.4"
 # loginpass 0.4 is not actually compatible with newer authlib
 authlib = "<0.13"
 requests = ">=2"
@@ -53,8 +53,9 @@ elasticsearch = ">=6.0.0,<7.0.0"
 dateparser = ">=0.7"
 langdetect = "*"
 pathlib2 = "*"
-pycountry = "*"
+pycountry = "==19.8.18"
 tldextract = "*"
+toml = ">=0.10"
 
 [requires]
 # We install Python 3.7 using a PPA (deadsnakes) on Internet Archive cluster

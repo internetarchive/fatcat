@@ -4,10 +4,14 @@ Note: in thoery could use, eg, https://github.com/christabor/swagger_wtforms,
 but can't find one that is actually maintained.
 """
 
+import datetime
+
+import toml
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
-    HiddenField, FormField, FieldList, validators
+    HiddenField, FormField, FieldList, validators, ValidationError, TextAreaField
 
+from fatcat_tools import entity_to_toml
 from fatcat_openapi_client import ContainerEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
@@ -28,6 +32,16 @@ release_stage_options = [
     ('accepted', 'Accepted'),
     ('published', 'Published'),
     ('updated', 'Updated'),
+]
+withdrawn_status_options = [
+    ('', 'Not Withdrawn (blank)'),
+    ('retracted', 'Retracted'),
+    ('withdrawn', 'Withdrawn'),
+    ('concern', 'Concern Noted'),
+    ('spam', 'Spam'),
+    ('legal', 'Legal Taketown'),
+    ('safety', 'Public Safety'),
+    ('national-security', 'National Security'),
 ]
 role_type_options = [
     ('author', 'Author'),
@@ -62,10 +76,24 @@ class ReleaseContribForm(FlaskForm):
         default='author')
 
 RELEASE_SIMPLE_ATTRS = ['title', 'original_title', 'work_id', 'container_id',
-    'release_type', 'release_stage', 'release_date', 'volume', 'issue',
-    'pages', 'publisher', 'language', 'license_slug']
+    'release_type', 'release_stage', 'withdrawn_status', 'release_date',
+    'release_year', 'volume', 'issue', 'pages', 'publisher', 'language',
+    'license_slug']
 
 RELEASE_EXTID_ATTRS = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid']
+
+def valid_year(form, field):
+    if field.data > datetime.date.today().year + 5:
+        raise ValidationError(
+            f"Year is too far in the future: {field.data}")
+    if field.data < 10:
+        raise ValidationError(
+            f"Year is too far in the past: {field.data}")
+
+def valid_2char_ascii(form, field):
+    if len(field.data) != 2 or len(field.data.encode('utf-8')) != 2 or not field.data.isalpha() or field.data != field.data.lower():
+        raise ValidationError(
+            f"Must be 2-character ISO format, lower case: {field.data}")
 
 class ReleaseEntityForm(EntityEditForm):
     """
@@ -75,7 +103,7 @@ class ReleaseEntityForm(EntityEditForm):
     """
     title = StringField('Title',
         [validators.DataRequired()])
-    original_title = StringField('Original Title')
+    original_title = StringField('Title in Original Language (if different)')
     work_id = StringField('Work FCID',
         [validators.Optional(True),
          validators.Length(min=26, max=26)])
@@ -87,9 +115,14 @@ class ReleaseEntityForm(EntityEditForm):
         choices=release_type_options,
         default='')
     release_stage = SelectField(choices=release_stage_options)
+    withdrawn_status = SelectField("Withdrawn Status",
+        [validators.Optional(True)],
+        choices=withdrawn_status_options,
+        default='')
     release_date = DateField('Release Date',
         [validators.Optional(True)])
-    #release_year
+    release_year = IntegerField('Release Year',
+        [validators.Optional(True), valid_year])
     doi = StringField('DOI',
         [validators.Regexp(r'^10\..*\/.*', message="DOI must be valid"),
          validators.Optional(True)])
@@ -104,7 +137,8 @@ class ReleaseEntityForm(EntityEditForm):
     issue = StringField('Issue')
     pages = StringField('Pages')
     publisher = StringField('Publisher (optional)')
-    language = StringField('Language (code)')
+    language = StringField('Language (code)',
+        [validators.Optional(True), valid_2char_ascii])
     license_slug = StringField('License (slug)')
     contribs = FieldList(FormField(ReleaseContribForm))
     #refs
@@ -150,11 +184,13 @@ class ReleaseEntityForm(EntityEditForm):
                 a = None
             setattr(re, simple_attr, a)
         for extid_attr in RELEASE_EXTID_ATTRS:
-            a = getattr(self, simple_attr).data
+            a = getattr(self, extid_attr).data
             # special case blank strings
             if a == '':
                 a = None
-            setattr(re.ext_ids, simple_attr, a)
+            setattr(re.ext_ids, extid_attr, a)
+        if self.release_date.data:
+            re.release_year = self.release_date.data.year
         # bunch of complexity here to preserve old contrib metadata (eg,
         # affiliation and extra) not included in current forms
         # TODO: this may be broken; either way needs tests
@@ -204,8 +240,9 @@ class ContainerEntityForm(EntityEditForm):
     issnl = StringField("ISSN-L (linking)")
     issne = StringField("ISSN (electronic)")
     issnp = StringField("ISSN (print)")
-    original_name = StringField("Original Name (native language)")
-    country = StringField("Country of Publication (ISO code)")
+    original_name = StringField("Name in Original Language (if different)")
+    country = StringField("Country of Publication (ISO code)",
+        [validators.Optional(True), valid_2char_ascii])
     wikidata_qid = StringField('Wikidata QID')
     urls = FieldList(
         StringField("Container URLs",
@@ -413,3 +450,31 @@ class SavePaperNowForm(FlaskForm):
             ingest_request['link_source'] = 'arxiv'
             ingest_request['link_source_id'] = release.ext_ids.arxiv
         return ingest_request
+
+def valid_toml(form, field):
+    try:
+        toml.loads(field.data)
+    except toml.TomlDecodeError as tpe:
+        raise ValidationError(tpe)
+
+class EntityTomlForm(EntityEditForm):
+
+    toml = TextAreaField(
+        "TOML",
+        [validators.DataRequired(),
+         valid_toml,
+        ],
+    )
+
+    @staticmethod
+    def from_entity(entity):
+        """
+        Initializes form with TOML version of existing entity
+        """
+        etf = EntityTomlForm()
+        if entity.state == 'active':
+            pop_fields = ['ident', 'state', 'revision', 'redirect']
+        else:
+            pop_fields = ['ident', 'state']
+        etf.toml.data = entity_to_toml(entity, pop_fields=pop_fields)
+        return etf

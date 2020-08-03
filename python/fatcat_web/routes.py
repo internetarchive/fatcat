@@ -227,7 +227,7 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
 
     entity, edit = generic_get_editgroup_entity(editgroup, entity_type, ident)
 
-    if entity.state == "deleted":
+    if entity.revision is None or entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity,
             entity_type=entity_type, editgroup=editgroup)
 
