@@ -24,7 +24,7 @@ class ChoculaImporter(EntityImporter):
             **kwargs)
 
     def want(self, raw_record):
-        if not raw_record.get('fatcat_ident') and not raw_record.get('_known_issnl'):
+        if not raw_record.get('ident') and not raw_record.get('_known_issnl'):
             self.counts['skip-unknown-new-issnl'] += 1
             return False
         if raw_record.get('issnl') and raw_record.get('name'):
