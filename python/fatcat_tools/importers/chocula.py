@@ -53,7 +53,8 @@ class ChoculaImporter(EntityImporter):
 
         extra = dict()
         for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
-                  'sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'languages'):
+                  'sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'languages',
+                  'ia', 'scielo', 'kbart', 'publisher_type', 'platform'):
             if row['extra'].get(k):
                 extra[k] = row['extra'][k]
 
@@ -115,8 +116,12 @@ class ChoculaImporter(EntityImporter):
             do_update = True
         if set(ce.extra.get('webarchive_urls', [])) != set(existing.extra.get('webarchive_urls', [])):
             do_update = True
-        for k in ('ezb', 'szczepanski', 'doaj'):
+        for k in ('ezb', 'szczepanski', 'doaj', 'publisher_type', 'platform'):
             if ce.extra.get(k) and not existing.extra.get(k):
+                do_update = True
+        for k in ('kbart', 'ia', 'doaj'):
+            # always update with these fields
+            if ce.extra.get(k) and ce.extra[k] != existing.extra.get(k):
                 do_update = True
         if ce.publisher and not existing.publisher:
             do_update = True
@@ -124,8 +129,8 @@ class ChoculaImporter(EntityImporter):
             do_update = True
 
         if do_update:
-            existing.wikidata_qid = ce.wikidata_qid
-            existing.publisher = ce.publisher
+            existing.wikidata_qid = existing.wikidata_qid or ce.wikidata_qid
+            existing.publisher = existing.publisher or ce.publisher
             existing.container_type = existing.container_type or ce.container_type
             for k in ('urls', 'webarchive_urls'):
                 # update, which might clobber, but won't remove
@@ -135,7 +140,8 @@ class ChoculaImporter(EntityImporter):
                 # all URLs found to be bad), but being conservative for now so
                 # we don't clobber human edits
             for k in ('issne', 'issnp', 'country', 'sherpa_romeo', 'ezb',
-                      'szczepanski', 'doaj'):
+                      'szczepanski', 'doaj', 'ia', 'scielo', 'kbart',
+                      'publisher_type', 'platform'):
                 # update/overwrite, but don't remove any existing value
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
