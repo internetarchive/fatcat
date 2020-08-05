@@ -10,8 +10,7 @@ help: ## Print info about all commands
 
 .PHONY: test
 test: ## Run all tests and lints
-	cargo test -- 
-	pipenv run mypy fatcat_scholar/*.py tests/ --ignore-missing-imports
+	cargo test -- --test-threads 1
 
 .PHONY: dev
 dev: ## Run web service locally, with reloading
