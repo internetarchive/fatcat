@@ -32,6 +32,7 @@ tar -C /tmp -c --verbose \
     fatcat_ident_filesets.tsv \
     fatcat_ident_webcaptures.tsv \
     fatcat_ident_releases.tsv \
-    fatcat_ident_works.tsv
+    fatcat_ident_works.tsv \
+    fatcat_ident_releases_by_work.tsv
 
 echo "Done: $OUTFILE"
