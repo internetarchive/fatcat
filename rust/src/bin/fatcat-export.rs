@@ -151,8 +151,8 @@ fn loop_batch_printer(
         for line in batch {
             buf_output.write_all(&line.into_bytes())?;
             buf_output.write_all(b"\n")?;
-            buf_output.flush()?;
         }
+        buf_output.flush()?;
     }
     drop(done_sender);
     Ok(())
