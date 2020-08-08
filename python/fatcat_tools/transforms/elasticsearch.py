@@ -162,6 +162,8 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('country'):
                 t['country_code'] = c_extra['country']
                 t['country_code_upper'] = c_extra['country'].upper()
+            if c_extra.get('publisher_type'):
+                t['publisher_type'] = c_extra['publisher_type']
 
     # fall back to release-level container metadata if container not linked or
     # missing context
@@ -297,11 +299,11 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['in_shadows'] = in_shadows
 
     t['in_ia'] = bool(in_ia)
-    t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor)
+    t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor or t.get('pmcid') or t.get('arxiv_id'))
 
-    if in_ia or t.get('pmcid') or t.get('arxiv_id'):
+    if in_ia:
         t['preservation'] = 'bright'
-    elif in_kbart or in_jstor:
+    elif in_kbart or in_jstor or t.get('pmcid') or t.get('arxiv_id'):
         t['preservation'] = 'dark'
     elif in_shadows:
         t['preservation'] = 'shadows_only'
