@@ -101,12 +101,20 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.3932/",
             # ccdc.cam.ac.uk: crystal structures
             "10.5517/",
+            # researchgate: mostly blocks our crawler
+            "10.13140/",
+            # springerlink: mostly blocks crawler
+            "10.1007/",
+            # nature group: mostly blocks crawler
+            "10.1038/",
+            # SAGE: mostly blocks crawler
+            "10.1177/",
+            # IOP: mostly blocks crawler
+            "10.1088/",
         ]
         self.live_pdf_ingest_doi_prefix_acceptlist = [
             # biorxiv and medrxiv
             "10.1101/",
-            # researchgate
-            "10.13140/",
             # the lancet (often hybrid OA)
             "10.1016/s0140-6736",
             "10.1016/s2213-2600",
