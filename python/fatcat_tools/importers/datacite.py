@@ -729,7 +729,7 @@ class DataciteImporter(EntityImporter):
         # figshare
         if re.ext_ids.doi.startswith('10.6084/') or re.ext_ids.doi.startswith('10.25384'):
             # set version if DOI ends with versioned suffix
-            doi_suffix = re.ext_ids.doi.split('.')
+            doi_suffix = re.ext_ids.doi.split('.')[-1]
             if doi_suffix and doi_suffix.startswith('v') and doi_suffix[1:].isdigit():
                 re.version = doi_suffix
             # "Figure 123 from " -> component
@@ -741,8 +741,8 @@ class DataciteImporter(EntityImporter):
                     re.release_type = "component"
 
         # figshare.com
-        if re.ext_ids.doi.startswith('10.6084/m9.figshare.') and re.container_name is None:
-            re.container_name = "figshare.com"
+        if re.ext_ids.doi.startswith('10.6084/m9.figshare.') and re.extra.get('container_name') is None:
+            re.extra['container_name'] = "figshare.com"
 
         return re
 
