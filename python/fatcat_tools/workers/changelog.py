@@ -175,6 +175,7 @@ class EntityUpdatesWorker(FatcatWorker):
             'paper-conference',
             'patent',
             'peer_review',
+            'post',
             'report',
             'retraction',
             'review',
@@ -216,6 +217,20 @@ class EntityUpdatesWorker(FatcatWorker):
             for prefix in self.ingest_pdf_doi_prefix_blocklist:
                 if doi.startswith(prefix):
                     return False
+
+        # figshare
+        if doi and doi.startswith('10.6084/') or doi.startswith('10.25384/'):
+            # don't crawl "most recent version" (aka "group") DOIs
+            if not release.version:
+                return False
+
+        # zenodo
+        if doi and doi.startswith('10.5281/'):
+            # if this is a "grouping" DOI of multiple "version" DOIs, do not crawl (will crawl the versioned DOIs)
+            if release.extra and release.extra.get('relations'):
+                for rel in release.extra['relations']:
+                    if (rel.get('relationType') == 'HasVersion' and rel.get('relatedIdentifier', '').startswith('10.5281/')):
+                        return False
 
         return True
 
