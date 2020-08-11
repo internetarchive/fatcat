@@ -597,7 +597,13 @@ class DataciteImporter(EntityImporter):
         if license_extra:
             extra_datacite["license"] = license_extra
         if attributes.get("subjects"):
-            extra_datacite["subjects"] = attributes["subjects"]
+            # these subjects with schemeUri are too much metadata, which
+            # doesn't compress. filter them out.
+            extra_subjects = [
+                subj for subj in attributes["subjects"] if not subj.get("schemeUri")
+            ]
+            if extra_subjects:
+                extra_datacite["subjects"] = extra_subjects
 
         # Include version information.
         metadata_version = attributes.get("metadataVersion") or ""
