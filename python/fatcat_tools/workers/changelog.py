@@ -89,7 +89,7 @@ class EntityUpdatesWorker(FatcatWorker):
         self.ingest_file_request_topic = ingest_file_request_topic
         self.poll_interval = poll_interval
         self.consumer_group = "entity-updates"
-        self.ingest_oa_only = True
+        self.ingest_oa_only = False
         self.ingest_pdf_doi_prefix_blocklist = [
             # gbif.org: many DOIs, not PDF fulltext
             "10.15468/",
@@ -191,15 +191,16 @@ class EntityUpdatesWorker(FatcatWorker):
             'stub',
         )
 
-        # accept list sets a default "crawl it" despite OA metadata for
-        # known-OA DOI prefixes
-        in_acceptlist = False
-        if doi:
-            for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
-                if doi.startswith(prefix):
-                    in_acceptlist = True
-
         if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
+
+            # accept list sets a default "crawl it" despite OA metadata for
+            # known-OA DOI prefixes
+            in_acceptlist = False
+            if doi:
+                for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
+                    if doi.startswith(prefix):
+                        in_acceptlist = True
+
             es = release_to_elasticsearch(release)
             # most datacite documents are in IRs and should be crawled
             is_datacite_doc = False
