@@ -159,6 +159,7 @@ class EntityUpdatesWorker(FatcatWorker):
         link_source = ingest_request.get('ingest_request')
         ingest_type = ingest_request.get('ingest_type')
         doi = ingest_request.get('ext_ids', {}).get('doi')
+        es = release_to_elasticsearch(release)
 
         is_document = release.release_type in (
             'article',
@@ -191,23 +192,28 @@ class EntityUpdatesWorker(FatcatWorker):
             'stub',
         )
 
+        # accept list sets a default "crawl it" despite OA metadata for
+        # known-OA DOI prefixes
+        in_acceptlist = False
+        if doi:
+            for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
+                if doi.startswith(prefix):
+                    in_acceptlist = True
+
         if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
 
-            # accept list sets a default "crawl it" despite OA metadata for
-            # known-OA DOI prefixes
-            in_acceptlist = False
-            if doi:
-                for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
-                    if doi.startswith(prefix):
-                        in_acceptlist = True
-
-            es = release_to_elasticsearch(release)
             # most datacite documents are in IRs and should be crawled
             is_datacite_doc = False
             if release.extra and ('datacite' in release.extra) and is_document:
                 is_datacite_doc = True
             if not (es['is_oa'] or in_acceptlist or is_datacite_doc):
                 return False
+
+        # big publishers *generally* have accurate OA metadata, use
+        # preservation networks, and block our crawlers. So unless OA, or
+        # explicitly on accept list, or not preserved, skip crawling
+        if es['publisher_type'] == 'big5' and es['is_preserved'] and not (es['is_oa'] or in_acceptlist):
+            return False
 
         # if ingest_type is pdf but release_type is almost certainly not a PDF,
         # skip it. This is mostly a datacite thing.
