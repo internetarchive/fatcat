@@ -493,21 +493,6 @@ class DataciteImporter(EntityImporter):
         if release_type is None:
             print("[{}] no mapped type: {}".format(doi, value), file=sys.stderr)
 
-        # release_type exception: Global Biodiversity Information Facility
-        # publishes highly interesting datasets, but titles are mostly the same
-        # ("GBIF Occurrence Download" or "Occurrence Download"); set
-        # release_type to "stub" (CSL/FC).
-        if publisher == 'The Global Biodiversity Information Facility':
-            release_type = 'stub'
-
-        # release_type exception: lots of "Experimental Crystal Structure Determination"
-        if publisher == 'Cambridge Crystallographic Data Centre':
-            release_type = 'entry'
-
-        # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
-        if title.lower().startswith('additional file'):
-            release_type = 'stub'
-
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
         # like langcodes solves a pretty boring problem. At one level, that's
@@ -693,6 +678,35 @@ class DataciteImporter(EntityImporter):
             license_slug=license_slug,
             version=version,
         )
+        re = self.biblio_hacks(re)
+        return re
+
+    @staticmethod
+    def biblio_hacks(re):
+        """
+        This function handles known special cases. For example,
+        publisher-specific or platform-specific workarounds.
+        """
+
+        # only runs on datacite entities with a DOI
+        assert re.ext_ids.doi
+
+        # release_type exception: Global Biodiversity Information Facility
+        # publishes highly interesting datasets, but titles are mostly the same
+        # ("GBIF Occurrence Download" or "Occurrence Download"); set
+        # release_type to "stub" (CSL/FC).
+        if re.title == 'GBIF Occurrence Download' and re.ext_ids.doi.startswith('10.15468/dl.'):
+            re.release_type = 'stub'
+
+        # release_type exception: lots of "Experimental Crystal Structure Determination"
+        # publisher: "Cambridge Crystallographic Data Centre"
+        if re.ext_ids.doi.startswith('10.5517/'):
+            re.release_type = 'entry'
+
+        # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
+        if re.title.lower().startswith('additional file') and re.release_type in ('article', 'article-journal'):
+            re.release_type = 'component'
+
         return re
 
     def try_update(self, re):
