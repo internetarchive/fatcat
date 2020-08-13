@@ -478,35 +478,7 @@ class DataciteImporter(EntityImporter):
                 license_slug = slug
             license_extra.append(lic)
 
-        # Release type. Try to determine the release type from a variety of
-        # types supplied in datacite. The "attributes.types.resourceType" is
-        # uncontrolled (170000+ unique values, from "null", "Dataset" to
-        # "Jupyter Notebook" and "Macroseismic Data Points" or "2 days of IP
-        # flows in 2009") citeproc may be the closest, but not always supplied.
-        # Order lookup roughly by completeness of mapping.
-        for typeType in ('citeproc', 'ris', 'schemaOrg', 'bibtex', 'resourceTypeGeneral'):
-            value = attributes.get('types', {}).get(typeType)
-            release_type = DATACITE_TYPE_MAP.get(typeType, {}).get(value)
-            if release_type is not None:
-                break
-
-        if release_type is None:
-            print("[{}] no mapped type: {}".format(doi, value), file=sys.stderr)
-
-        # release_type exception: Global Biodiversity Information Facility
-        # publishes highly interesting datasets, but titles are mostly the same
-        # ("GBIF Occurrence Download" or "Occurrence Download"); set
-        # release_type to "stub" (CSL/FC).
-        if publisher == 'The Global Biodiversity Information Facility':
-            release_type = 'stub'
-
-        # release_type exception: lots of "Experimental Crystal Structure Determination"
-        if publisher == 'Cambridge Crystallographic Data Centre':
-            release_type = 'entry'
-
-        # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
-        if title.lower().startswith('additional file'):
-            release_type = 'stub'
+        release_type = self.datacite_release_type(doi, attributes)
 
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
@@ -693,6 +665,85 @@ class DataciteImporter(EntityImporter):
             license_slug=license_slug,
             version=version,
         )
+        re = self.biblio_hacks(re)
+        return re
+
+    @staticmethod
+    def datacite_release_type(doi, attributes):
+        """
+        Release type. Try to determine the release type from a variety of types
+        supplied in datacite. The "attributes.types.resourceType" is
+        uncontrolled (170000+ unique values, from "null", "Dataset" to "Jupyter
+        Notebook" and "Macroseismic Data Points" or "2 days of IP flows in
+        2009") citeproc may be the closest, but not always supplied.  Order
+        lookup roughly by completeness of mapping.
+        """
+
+        release_type = None
+        if not attributes.get('types'):
+            return None
+        types = attributes['types']
+
+        for typeType in ('citeproc', 'ris', 'schemaOrg', 'bibtex', 'resourceTypeGeneral'):
+            value = types.get(typeType)
+            release_type = DATACITE_TYPE_MAP.get(typeType, {}).get(value)
+            if release_type is not None:
+                break
+
+        # special case: figshare "collections" which group other entities
+        if doi.startswith('10.6084/') or doi.startswith('10.25384'):
+            if types.get('resourceType') == "Collection":
+                release_type = "stub"
+
+        if release_type is None:
+            print("[{}] no mapped type: {}".format(doi, types), file=sys.stderr)
+
+        return release_type
+
+    @staticmethod
+    def biblio_hacks(re):
+        """
+        This function handles known special cases. For example,
+        publisher-specific or platform-specific workarounds.
+        """
+
+        # only runs on datacite entities with a DOI
+        assert re.ext_ids.doi
+
+        # release_type exception: Global Biodiversity Information Facility
+        # publishes highly interesting datasets, but titles are mostly the same
+        # ("GBIF Occurrence Download" or "Occurrence Download"); set
+        # release_type to "stub" (CSL/FC).
+        if re.title == 'GBIF Occurrence Download' and re.ext_ids.doi.startswith('10.15468/dl.'):
+            re.release_type = 'stub'
+
+        # release_type exception: lots of "Experimental Crystal Structure Determination"
+        # publisher: "Cambridge Crystallographic Data Centre"
+        if re.ext_ids.doi.startswith('10.5517/'):
+            re.release_type = 'entry'
+
+        # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
+        if re.title.lower().startswith('additional file') and re.release_type in ('article', 'article-journal'):
+            re.release_type = 'component'
+
+        # figshare
+        if re.ext_ids.doi.startswith('10.6084/') or re.ext_ids.doi.startswith('10.25384'):
+            # set version if DOI ends with versioned suffix
+            doi_suffix = re.ext_ids.doi.split('.')[-1]
+            if doi_suffix and doi_suffix.startswith('v') and doi_suffix[1:].isdigit():
+                re.version = doi_suffix
+            # "Figure 123 from " -> component
+            # "Table S1. ;Figure S1;Figure S2. ;Figure S3. ;Figure S4. from Use of organic exudates from two polar diatoms by bacterial isolates from the Arctic ocean"
+            if " from " in re.title and re.release_type not in ('stub', 'graphic'):
+                if re.title.startswith("Figure "):
+                    re.release_type = "component"
+                elif re.title.startswith("Table "):
+                    re.release_type = "component"
+
+        # figshare.com
+        if re.ext_ids.doi.startswith('10.6084/m9.figshare.') and re.extra.get('container_name') is None:
+            re.extra['container_name'] = "figshare.com"
+
         return re
 
     def try_update(self, re):

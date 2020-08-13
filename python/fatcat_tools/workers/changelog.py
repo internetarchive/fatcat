@@ -89,7 +89,7 @@ class EntityUpdatesWorker(FatcatWorker):
         self.ingest_file_request_topic = ingest_file_request_topic
         self.poll_interval = poll_interval
         self.consumer_group = "entity-updates"
-        self.ingest_oa_only = True
+        self.ingest_oa_only = False
         self.ingest_pdf_doi_prefix_blocklist = [
             # gbif.org: many DOIs, not PDF fulltext
             "10.15468/",
@@ -101,12 +101,20 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.3932/",
             # ccdc.cam.ac.uk: crystal structures
             "10.5517/",
+            # researchgate: mostly blocks our crawler
+            "10.13140/",
+            # springerlink: mostly blocks crawler
+            "10.1007/",
+            # nature group: mostly blocks crawler
+            "10.1038/",
+            # SAGE: mostly blocks crawler
+            "10.1177/",
+            # IOP: mostly blocks crawler
+            "10.1088/",
         ]
         self.live_pdf_ingest_doi_prefix_acceptlist = [
             # biorxiv and medrxiv
             "10.1101/",
-            # researchgate
-            "10.13140/",
             # the lancet (often hybrid OA)
             "10.1016/s0140-6736",
             "10.1016/s2213-2600",
@@ -151,6 +159,7 @@ class EntityUpdatesWorker(FatcatWorker):
         link_source = ingest_request.get('ingest_request')
         ingest_type = ingest_request.get('ingest_type')
         doi = ingest_request.get('ext_ids', {}).get('doi')
+        es = release_to_elasticsearch(release)
 
         is_document = release.release_type in (
             'article',
@@ -167,6 +176,7 @@ class EntityUpdatesWorker(FatcatWorker):
             'paper-conference',
             'patent',
             'peer_review',
+            'post',
             'report',
             'retraction',
             'review',
@@ -191,13 +201,19 @@ class EntityUpdatesWorker(FatcatWorker):
                     in_acceptlist = True
 
         if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
-            es = release_to_elasticsearch(release)
+
             # most datacite documents are in IRs and should be crawled
             is_datacite_doc = False
             if release.extra and ('datacite' in release.extra) and is_document:
                 is_datacite_doc = True
             if not (es['is_oa'] or in_acceptlist or is_datacite_doc):
                 return False
+
+        # big publishers *generally* have accurate OA metadata, use
+        # preservation networks, and block our crawlers. So unless OA, or
+        # explicitly on accept list, or not preserved, skip crawling
+        if es['publisher_type'] == 'big5' and es['is_preserved'] and not (es['is_oa'] or in_acceptlist):
+            return False
 
         # if ingest_type is pdf but release_type is almost certainly not a PDF,
         # skip it. This is mostly a datacite thing.
@@ -208,6 +224,20 @@ class EntityUpdatesWorker(FatcatWorker):
             for prefix in self.ingest_pdf_doi_prefix_blocklist:
                 if doi.startswith(prefix):
                     return False
+
+        # figshare
+        if doi and doi.startswith('10.6084/') or doi.startswith('10.25384/'):
+            # don't crawl "most recent version" (aka "group") DOIs
+            if not release.version:
+                return False
+
+        # zenodo
+        if doi and doi.startswith('10.5281/'):
+            # if this is a "grouping" DOI of multiple "version" DOIs, do not crawl (will crawl the versioned DOIs)
+            if release.extra and release.extra.get('relations'):
+                for rel in release.extra['relations']:
+                    if (rel.get('relationType') == 'HasVersion' and rel.get('relatedIdentifier', '').startswith('10.5281/')):
+                        return False
 
         return True
 
