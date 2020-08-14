@@ -212,7 +212,7 @@ class EntityUpdatesWorker(FatcatWorker):
         # big publishers *generally* have accurate OA metadata, use
         # preservation networks, and block our crawlers. So unless OA, or
         # explicitly on accept list, or not preserved, skip crawling
-        if es['publisher_type'] == 'big5' and es['is_preserved'] and not (es['is_oa'] or in_acceptlist):
+        if es.get('publisher_type') == 'big5' and es.get('is_preserved') and not (es['is_oa'] or in_acceptlist):
             return False
 
         # if ingest_type is pdf but release_type is almost certainly not a PDF,
