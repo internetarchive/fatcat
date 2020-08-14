@@ -226,7 +226,7 @@ class EntityUpdatesWorker(FatcatWorker):
                     return False
 
         # figshare
-        if doi and doi.startswith('10.6084/') or doi.startswith('10.25384/'):
+        if doi and (doi.startswith('10.6084/') or doi.startswith('10.25384/')):
             # don't crawl "most recent version" (aka "group") DOIs
             if not release.version:
                 return False
