@@ -1,0 +1,7 @@
+# Hello friends!
+
+# You have found a QA/development instance of the Fatcat catalog. The canonical
+# location is https://fatcat.wiki, please crawl and index that location instead.
+
+User-agent: *
+Disallow: /

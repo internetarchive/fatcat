@@ -1157,7 +1157,18 @@ def page_rfc():
     return render_template('rfc.html')
 
 @app.route('/robots.txt', methods=['GET'])
-def robots():
+def page_robots_txt():
+    if app.config['FATCAT_DOMAIN'] == "fatcat.wiki":
+        robots_path = "robots.txt"
+    else:
+        robots_path = "robots.deny_all.txt"
     return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'robots.txt',
+                               robots_path,
                                mimetype='text/plain')
+
+@app.route('/sitemap.xml', methods=['GET'])
+def page_sitemap_xml():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               "sitemap.xml",
+                               mimetype='text/xml')
+
