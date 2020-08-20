@@ -6,7 +6,7 @@ import datetime
 
 def index_entity(entity_type, output):
 
-    now = datetime.datetime.now().isoformat()
+    now = datetime.date.today().isoformat()
     print("""<?xml version="1.0" encoding="UTF-8"?>""", file=output)
     print("""<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">""", file=output)
 

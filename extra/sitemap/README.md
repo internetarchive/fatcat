@@ -1,4 +1,15 @@
 
+## HOWTO: Update
+
+After a container dump, as `fatcat` user on prod server:
+
+    cd /srv/fatcat/sitemap
+    export DATE=`date --iso-8601` # or whatever
+    /srv/fatcat/src/extra/sitemap/container_url_lists.sh $DATE /srv/fatcat/snapshots/container_export.json.gz
+    /srv/fatcat/src/extra/sitemap/release_url_lists.sh $DATE /srv/fatcat/snapshots/release_export_expanded.json.gz
+    # delete old sitemap url lists
+    /srv/fatcat/src/extra/sitemap/generate_sitemap_indices.py
+
 ## Background
 
 Google has a limit of 50k lines / 10 MByte for text sitemap files, and 50K
