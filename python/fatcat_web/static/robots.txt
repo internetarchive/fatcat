@@ -1,1 +1,20 @@
 # Hello friends!
+# If you are considering large or automated crawling, you may want to look at
+# our API (https://api.fatcat.wiki) or bulk database snapshots instead.
+
+# by default, can crawl anything on this domain. HTTP 429 ("backoff") status
+# codes are used for rate-limiting instead of any crawl delay specified here.
+# Up to a handful concurrent requests should be fine.
+User-agent: *
+Allow: /
+
+# crawling search result pages is expensive, so we do specify a long crawl delay for those
+User-agent: *
+Allow: /release/search
+Allow: /container/search
+Allow: /coverage/search
+Crawl-delay: 5
+
+Sitemap: https://fatcat.wiki/sitemap.xml
+Sitemap: https://fatcat.wiki/sitemap-index-releases.xml
+Sitemap: https://fatcat.wiki/sitemap-index-containers.xml

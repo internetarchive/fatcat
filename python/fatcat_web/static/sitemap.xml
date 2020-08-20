@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- basic site pages -->
+  <url><loc>https://fatcat.wiki/</loc></url>
+  <url><loc>https://fatcat.wiki/about</loc></url>
+  <url><loc>https://fatcat.wiki/rfc</loc></url>
+  <url><loc>https://fatcat.wiki/stats</loc></url>
+  <url><loc>https://fatcat.wiki/changelog</loc></url>
+  <url><loc>https://fatcat.wiki/release/lookup</loc></url>
+  <url><loc>https://fatcat.wiki/container/lookup</loc></url>
+  <url><loc>https://fatcat.wiki/file/lookup</loc></url>
+  <!-- additional entity-level URL lists are linked from robots.txt -->
+</urlset>
