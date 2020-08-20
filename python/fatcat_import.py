@@ -236,6 +236,11 @@ def run_datacite(args):
     else:
         JsonLinePusher(dci, args.json_file).run()
 
+def run_file_meta(args):
+    fmi = FileMetaImporter(args.api,
+        edit_batch_size=100)
+    JsonLinePusher(fmi, args.json_file).run()
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -555,6 +560,16 @@ def main():
         func=run_datacite,
         auth_var="FATCAT_AUTH_WORKER_DATACITE",
     )
+
+    sub_file_meta = subparsers.add_parser('file-meta',
+        help="simple update-only importer for file metadata")
+    sub_file_meta.set_defaults(
+        func=run_file_meta,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_file_meta.add_argument('json_file',
+        help="File with jsonlines from file_meta schema to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
