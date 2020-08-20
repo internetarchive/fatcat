@@ -8,12 +8,9 @@
 {% endblock %}
 
 {% block fullmain %}
-<!--
-<div class="ui container text" itemscope itemtype="https://schema.org/WebSite">
-<meta itemprop="url" content="https://{{ config.FATCAT_DOMAIN }}/"/>
--->
 
-<div class ="ui vertical inverted masthead center aligned segment" style="padding-top: 12em; padding-bottom: 10em;">
+<div class ="ui vertical inverted masthead center aligned segment" style="padding-top: 12em; padding-bottom: 10em;" itemscope itemtype="https://schema.org/WebSite">
+  <link itemprop="url" content="https://{{ config.FATCAT_DOMAIN }}/"/>
   <div class="ui text container">
     <h1 class="ui header inverted huge centered">Perpetual Access to Millions of Open Research Publications From Around The World</h1>
     <br>
