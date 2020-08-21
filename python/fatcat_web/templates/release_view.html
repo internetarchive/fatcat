@@ -28,7 +28,7 @@
       <meta name="citation_publication_date" content="{{ release.release_date or release.release_year }}">
     {% endif %}
     {% if release.language %}
-      <meta name="DC.language" content="isbn:{{ release.language }}">
+      <meta name="DC.language" content="{{ release.language }}">
       <meta name="citation_language" content="{{ release.language }}">
     {% endif %}
     {% if release.container and release.container.issnl %}{# only want actual journals/conferences #}
