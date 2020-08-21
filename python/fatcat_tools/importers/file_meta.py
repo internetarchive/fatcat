@@ -28,10 +28,14 @@ class FileMetaImporter(EntityImporter):
     def want(self, row):
         for k in ('sha1hex', 'sha256hex', 'md5hex', 'size_bytes', 'mimetype'):
             if not row.get(k):
+                self.counts['skip-missing-field'] += 1
                 return False
         return True
 
     def parse_record(self, row):
+
+        # bezerk mode doesn't make sense for this importer
+        assert self.bezerk_mode == False
 
         file_meta = row
         fe = fatcat_openapi_client.FileEntity(
@@ -44,6 +48,7 @@ class FileMetaImporter(EntityImporter):
         return fe
 
     def try_update(self, fe):
+
         # lookup sha1, or create new entity
         existing = None
         try:
@@ -53,18 +58,18 @@ class FileMetaImporter(EntityImporter):
                 raise err
 
         if not existing:
-            self.counts['skip-no-match']
+            self.counts['skip-no-match'] += 1
             return False
 
-        if (existing.md5 and existing.sha256 and existing.size_bytes and existing.mimetype):
-            self.counts['skip-existing-complete']
+        if (existing.md5 and existing.sha256 and existing.size and existing.mimetype):
+            self.counts['skip-existing-complete'] += 1
             return False
 
         existing.md5 = existing.md5 or fe.md5
         existing.sha256 = existing.sha256 or fe.sha256
-        existing.file_bytes = existing.file_bytes or fe.file_bytes
+        existing.size = existing.size or fe.size
         existing.mimetype = existing.mimetype or fe.mimetype
 
-        self.api.update_container(self.get_editgroup_id(), existing.ident, existing)
+        self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self.counts['update'] += 1
         return False

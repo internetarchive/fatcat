@@ -237,8 +237,11 @@ def run_datacite(args):
         JsonLinePusher(dci, args.json_file).run()
 
 def run_file_meta(args):
+    # do_updates defaults to true for this importer
     fmi = FileMetaImporter(args.api,
-        edit_batch_size=100)
+        edit_batch_size=100,
+        editgroup_description=args.editgroup_description_override,
+    )
     JsonLinePusher(fmi, args.json_file).run()
 
 def main():
