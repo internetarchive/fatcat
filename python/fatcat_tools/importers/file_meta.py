@@ -10,7 +10,7 @@ class FileMetaImporter(EntityImporter):
 
     It should *only* update entities, never create (insert) them.
 
-    In particular, during early boostramping over 18 million file entities were
+    In particular, during early bootstrapping over 18 million file entities were
     imported which were missing file size, mimetype, md5, and/or sha256.
     """
 
