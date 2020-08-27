@@ -29,3 +29,4 @@ from .wayback_static import auto_wayback_static
 from .cdl_dash_dat import auto_cdl_dash_dat
 from .ingest import IngestFileResultImporter, SavePaperNowFileImporter
 from .shadow import ShadowLibraryImporter
+from .file_meta import FileMetaImporter
