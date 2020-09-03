@@ -537,6 +537,53 @@ class EntityImporter:
             return None
         return self._issn_issnl_map.get(issn)
 
+    @staticmethod
+    def generic_file_cleanups(existing):
+        """
+        Conservative cleanup of existing file entities.
+
+        Intended to be used in most bulk cleanups and other file entity
+        updates, to reduce edit volume for catalog size/churn efficiency.
+
+        Note: the former check for 'None' as a wayback datetime has been
+        completely cleaned up
+        """
+
+        # update old/deprecated 'rel' on URLs
+        for i in range(len(existing.urls)):
+            u = existing.urls[i]
+            if u.rel == 'repository' and '://archive.org/download/' in u.url:
+                existing.urls[i].rel = 'archive'
+            if u.rel == 'social':
+                u.rel = 'academicsocial'
+
+        # remove URLs which are near-duplicates
+        redundant_urls = []
+        all_urls = [u.url for u in existing.urls]
+        all_wayback_urls = [u.url for u in existing.urls if '://web.archive.org/web/' in u.url]
+        for url in all_urls:
+            # https/http redundancy
+            if url.startswith('http://') and url.replace('http://', 'https://', 1) in all_urls:
+                redundant_urls.append(url)
+                continue
+            # default HTTP port included and not included
+            if ':80/' in url and url.replace(':80', '', 1) in all_urls:
+                redundant_urls.append(url)
+                continue
+            # partial and complete wayback timestamps
+            if '://web.archive.org/web/2017/' in url:
+                original_url = "/".join(url.split("/")[5:])
+                assert len(original_url) > 5
+                for wb_url in all_wayback_urls:
+                    alt_timestamp = wb_url.split("/")[4]
+                    print(alt_timestamp)
+                    if len(alt_timestamp) >= 10 and original_url in wb_url:
+                        redundant_urls.append(url)
+                        break
+
+        existing.urls = [u for u in existing.urls if u.url not in redundant_urls]
+        return existing
+
 
 class RecordPusher:
     """

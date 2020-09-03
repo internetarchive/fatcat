@@ -70,6 +70,9 @@ class FileMetaImporter(EntityImporter):
         existing.size = existing.size or fe.size
         existing.mimetype = existing.mimetype or fe.mimetype
 
+        # generic file entity cleanups
+        existing = self.generic_file_cleanups(existing)
+
         self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self.counts['update'] += 1
         return False
