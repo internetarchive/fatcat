@@ -576,7 +576,6 @@ class EntityImporter:
                 assert len(original_url) > 5
                 for wb_url in all_wayback_urls:
                     alt_timestamp = wb_url.split("/")[4]
-                    print(alt_timestamp)
                     if len(alt_timestamp) >= 10 and original_url in wb_url:
                         redundant_urls.append(url)
                         break
