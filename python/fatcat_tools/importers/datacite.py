@@ -618,7 +618,7 @@ class DataciteImporter(EntityImporter):
         # Edition", "20191024", "v2.0.0", "v0.9.3", "10149", "2.0", null,
         # "v0.1.1", "3.0", "1.0", "3", "v1.12.2", "20191018", "v0.3.1", "v1.0",
         # "10161", "10010691", "10780", # "Presentación"
-        version = attributes.get('version')
+        version = attributes.get('version') or None
 
         # top-level extra keys
         if not container_id and container_name:
