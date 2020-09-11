@@ -385,6 +385,7 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.contribs[0].given_name == None
         assert r.contribs[0].surname == None
         assert len(r.refs) == 0
+        assert r.version == None
 
 
 def test_datacite_conversions(datacite_importer):
