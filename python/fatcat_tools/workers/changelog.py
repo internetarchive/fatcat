@@ -144,6 +144,8 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.1158/1078-0432.",
             # Transactions of the Japan Society of Mechanical Engineers
             "10.1299/kikai",
+            # protocols.io
+            "10.17504/"
         ]
 
     def want_live_ingest(self, release, ingest_request):
