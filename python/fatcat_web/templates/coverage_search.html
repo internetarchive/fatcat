@@ -1,4 +1,5 @@
 {% import "entity_macros.html" as entity_macros %}
+{% import "search_macros.html" as search_macros %}
 {% extends "base.html" %}
 
 {% block title %}
@@ -31,6 +32,12 @@
 </div>
 
 <div class="ui container" style="margin-top: 2em;">
+
+{% if es_error %}
+  <div class="ui container text">
+    {{ search_macros.es_error_msg(es_error) }}
+  </div>
+{% endif %}
 
 {% if coverage_stats != None %}
 <div class="ui centered grid">

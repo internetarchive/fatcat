@@ -745,7 +745,18 @@ def coverage_search():
         )
 
     query = ReleaseQuery.from_args(request.args)
-    coverage_stats = get_elastic_search_coverage(query)
+    try:
+        coverage_stats = get_elastic_search_coverage(query)
+    except FatcatSearchError as fse:
+        return render_template(
+            'coverage_search.html',
+            query=query,
+            coverage_stats=None,
+            coverage_type_preservation=None,
+            year_histogram_svg=None,
+            date_histogram_svg=None,
+            es_error=fse,
+        ), fse.status_code
     year_histogram_svg = None
     date_histogram_svg = None
     coverage_type_preservation = None
