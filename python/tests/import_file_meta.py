@@ -31,8 +31,6 @@ def test_file_meta_importer_basic(file_meta_importer):
     ))
     api.accept_editgroup(eg.editgroup_id)
 
-    last_index = file_meta_importer.api.get_changelog(limit=1)[0].index
-
     with open('tests/files/example_file_meta.json', 'r') as f:
         counts = JsonLinePusher(file_meta_importer, f).run()
 
