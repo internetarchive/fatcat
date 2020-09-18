@@ -604,10 +604,11 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
     buckets = resp.aggregations.year_preservation.buckets
     year_nums = set([int(h['key']['year']) for h in buckets])
     year_dicts = dict()
-    for num in range(min(year_nums), max(year_nums)+1):
-        year_dicts[num] = dict(year=num, bright=0, dark=0, shadows_only=0, none=0)
-    for row in buckets:
-        year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
+    if year_nums:
+        for num in range(min(year_nums), max(year_nums)+1):
+            year_dicts[num] = dict(year=num, bright=0, dark=0, shadows_only=0, none=0)
+        for row in buckets:
+            year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
     if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
         for k in year_dicts.keys():
             year_dicts[k]['none'] += year_dicts[k]['shadows_only']
