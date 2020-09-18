@@ -1,6 +1,7 @@
 
 import os
 import json
+import citeproc_styles
 from flask import render_template, make_response, send_from_directory, \
     request, url_for, abort, redirect, jsonify, session, flash, Response
 from flask_login import login_required
@@ -962,7 +963,10 @@ def release_citeproc(ident):
     except ApiException as ae:
         raise ae
     csl = release_to_csl(entity)
-    cite = citeproc_csl(csl, style, is_html)
+    try:
+        cite = citeproc_csl(csl, style, is_html)
+    except citeproc_styles.StyleNotFoundError as e:
+        abort(400, e)
     if is_html:
         return Response(cite)
     elif style == "csl-json":
