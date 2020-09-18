@@ -65,15 +65,12 @@
     </div>
   </div>
 </div>
-<div class="ui segment attached">
-  <b>Preservation Status</b><br>
-  {% if container._stats.total >= 1 %}
-    {{ entity_macros.preservation_bar(container._stats.preservation) }}
-    {{ entity_macros.preservation_small_table(container._stats.preservation) }}
-  {% endif %}
-</div>
 {% if container._stats.total >= 1 %}
-{% endif %}
+  <div class="ui segment attached">
+    <b>Preservation Status</b><br>
+      {{ entity_macros.preservation_bar(container._stats.preservation) }}
+      {{ entity_macros.preservation_small_table(container._stats.preservation) }}
+  </div>
   <div class="ui segment attached">
     <b>Work Types</b><br>
     <table class="ui very basic very compact collapsing table">
@@ -91,6 +88,7 @@
       </tbody>
     </table>
   </div>
+{% endif %}
 {% endif %}
 
 {% if container.issnl != None or container.wikidata_qid != None %}
