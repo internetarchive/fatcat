@@ -476,5 +476,9 @@ class EntityTomlForm(EntityEditForm):
             pop_fields = ['ident', 'state', 'revision', 'redirect']
         else:
             pop_fields = ['ident', 'state']
+
+        # remove "expand" fields
+        pop_fields += ['releases', 'container', 'work', 'creators', 'files', 'filesets', 'webcaptures']
+
         etf.toml.data = entity_to_toml(entity, pop_fields=pop_fields)
         return etf
