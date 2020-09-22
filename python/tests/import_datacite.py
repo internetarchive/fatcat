@@ -318,6 +318,12 @@ def test_parse_datacite_dates():
         result = parse_datacite_dates(case.input)
         assert result == case.result, case.about
 
+def test_datacite_spammy_title(datacite_importer):
+    r = datacite_importer.parse_record({"title": """HD! My Hero academia
+                                        Heroes: Rising [2020]Full Movie Watch
+                                        Online And Free Download""",
+                                        "attributes": {"doi": "10.1234/1234"}})
+    assert r == False
 
 def test_datacite_importer(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index

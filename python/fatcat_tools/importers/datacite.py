@@ -154,6 +154,15 @@ UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
 # UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blacklist.
 UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 
+# Any "min" number of "tokens" will signal "spam", https://fatcat.wiki/release/rzcpjwukobd4pj36ipla22cnoi
+DATACITE_TITLE_SPAM_WORDGROUPS = [
+    {
+        "tokens": ('full', 'movies', 'movie', 'watch', 'streaming', 'online',
+                   'free', 'hd', 'download', 'english', 'subtitle', 'bluray'),
+        "min": 4,
+    }
+]
+
 # TODO(martin): merge this with other maps and lookup functions, eventually.
 LICENSE_SLUG_MAP = {
     "//archaeologydataservice.ac.uk/advice/termsofuseandaccess.xhtml/": "ADS-UK",
@@ -336,6 +345,16 @@ class DataciteImporter(EntityImporter):
         if not title:
             print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
             return False
+
+        # check for blacklisted "spam", e.g. "FULL MOVIE"
+        for rule in DATACITE_TITLE_SPAM_WORDGROUPS:
+            seen = set()
+            for token in rule.get("tokens", []):
+                if token in title.lower():
+                    seen.add(token)
+            if len(seen) >= rule.get("min"):
+                print("[{}] skipping spammy title: {}".format(doi, obj), file=sys.stderr)
+                return False
 
         if not subtitle:
             subtitle = None
