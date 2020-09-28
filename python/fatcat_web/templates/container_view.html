@@ -127,10 +127,10 @@
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
 
-  {% if container._es.in_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container._es.in_kbart == False %}
-    <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
+  {% if container._es.any_kbart == True %}
+    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a><br>
+  {% elif container._es.any_kbart == False %}
+    <i class="icon times grey"></i> Not in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
   {% endif %}
 
   {% if container.extra and container.extra.sherpa_romeo and container.extra.sherpa_romeo.color %}
@@ -144,7 +144,7 @@
   <div class="content">
     {% if container.issnl %}
       <a href="https://portal.issn.org/resource/issn/{{ container.issnl }}">ISSN Portal</a><br>
-      <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">The Keepers Registry</a> (preservation)<br>
+      <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">The Keepers Registry</a> (preservation)<br>
       <a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)<br>
     {% endif %}
     {% if not container.wikidata_qid %}
