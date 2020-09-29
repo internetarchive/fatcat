@@ -17,7 +17,18 @@
   <link rel="stylesheet"
     type="text/css"
     href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.css"
+    type="text/css"
     crossorigin="anonymous">
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin&display=swap"
+    as="style">
+  <link rel="preload"
+    href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/themes/default/assets/fonts/icons.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous">
+  <link rel="icon" href="data:,">
+
   <style>
     {# bnewbold: fix light grey bars in header #}
     .ui.inverted.menu .item:before { background: none; }
@@ -131,10 +142,12 @@
 
 <script
   src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"
+  integrity="sha256=FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous">
 </script>
 <script
   src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.js"
+  integrity="sha256=9H3HWYnPJ2bEHgkOrw+48KheOqYzTvJd1hbeU9sEDFk="
   crossorigin="anonymous">
 </script>
 {% block postscript %}{% endblock %}

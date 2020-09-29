@@ -48,11 +48,7 @@
 
 <div class="ui segment top attached">
   {% if container._es and container._es.is_oa == True %}
-  <i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
-  {% elif container._es and container._es.is_oa == False  %}
-  <i class="icon lock huge black"></i><b>Not Open Access</b>
-  {% else %}
-  <i class="icon question huge grey"></i><b>Unknown OA Status</b>
+    <i class="icon unlock huge orange"></i><b>Open Access Publication</b>
   {% endif %}
 </div>
 
@@ -65,15 +61,12 @@
     </div>
   </div>
 </div>
-<div class="ui segment attached">
-  <b>Preservation Status</b><br>
-  {% if container._stats.total >= 1 %}
-    {{ entity_macros.preservation_bar(container._stats.preservation) }}
-    {{ entity_macros.preservation_small_table(container._stats.preservation) }}
-  {% endif %}
-</div>
 {% if container._stats.total >= 1 %}
-{% endif %}
+  <div class="ui segment attached">
+    <b>Preservation Status</b><br>
+      {{ entity_macros.preservation_bar(container._stats.preservation) }}
+      {{ entity_macros.preservation_small_table(container._stats.preservation) }}
+  </div>
   <div class="ui segment attached">
     <b>Work Types</b><br>
     <table class="ui very basic very compact collapsing table">
@@ -91,6 +84,7 @@
       </tbody>
     </table>
   </div>
+{% endif %}
 {% endif %}
 
 {% if container.issnl != None or container.wikidata_qid != None %}
