@@ -16,9 +16,28 @@ See also:
 
 ## [Unreleased]
 
+This is a patch release containing many web interface features and tweaks. No
+changes to API.
+
+### Added
+
+- free-form "coverage search" page, allowing visualization of coverage based on
+  elasticsearch query
+- editing of all entity types using TOML markup
+- basic sitemap XML generation
+
 ### Changed
 
 - require Python 3.7 (upgrade from Python 3.5)
+- release entity exports can now be sorted by work identifier, for easier
+  work-level grouping and analysis
+- refactored webface search code to use elasticsearch client library
+
+### Fixed
+
+- several datacite metadata import bugs
+- several other bugfixes to web interface and importer code, not reported here
+  granularly
 
 ## [0.3.2] - 2020-04-08
 
