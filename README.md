@@ -11,22 +11,24 @@
 [![pipeline status](https://gitlab.com/bnewbold/fatcat/badges/master/pipeline.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 [![coverage report](https://gitlab.com/bnewbold/fatcat/badges/master/coverage.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 
-This repository contains source code for 'fatcat', an editable catalog of
-published written works (mostly journal articles), with a focus on tracking
-the location and status of full-text copies to ensure "perpetual access".
+This repository contains source code for **fatcat**, an editable catalog of
+published written works (mostly journal articles), with a focus on tracking the
+location and status of full-text copies to ensure "perpetual access". The
+primary public instance runs at [fatcat.wiki](https://fatcat.wiki). Both the
+software project and primary instance are a project of the [Internet
+Archive](https://archive.org).
 
-The [RFC](./fatcat-rfc.md) is the original design document, and the best place
-to start for technical background. There is a work-in-progress "guide" at
-<https://guide.fatcat.wiki>; the canonical public location of this repository
-is <https://github.com/internetarchive/fatcat>.
+Some resources for learning more about the aims, goals, and structure of this
+overall project:
 
-The public production web interface is <https://fatcat.wiki>.
+* **[FORCE11 2019 Presentation Video](https://www.youtube.com/watch?v=PARqfbYIdXQ)**: "Perpetual Access Machines: Archiving Web-Published Scholarship at Scale" (30 minutes)
+* **["How the Internet Archive is Ensuring Permanent Access to Open Access Journal Articles"](https://blog.archive.org/2020/09/15/how-the-internet-archive-is-ensuring-permanent-access-to-open-access-journal-articles/)**: archive.org blog post (September 2020)
+* **[guide.fatcat.wiki](https://guide.fatcat.wiki)**: project documentation,
+  including schema overview, HOWTOs, policies, and more
+* **[Fatcat RFC](./fatcat-rfc.md)**: original project design proposal
 
-See the `LICENSE` file for detailed permissions and licensing of both python
-and rust code. In short, the auto-generated client libraries are permissively
-released, while the API server and web interface are strong copyleft (AGPLv3).
 
-## Building and Tests
+## Getting Started for Developers
 
 There are three main components:
 
@@ -34,37 +36,45 @@ There are three main components:
 - API client libraries and bots (in Python)
 - front-end web interface (in Python; built on API and library)
 
-Automated integration tests run on Gitlab CI (see `.gitlab-ci.yml`) on the
-Internet Archive's internal (not public) infrastructure.
-
-See `./python/README.md` and `./rust/README.md` for details on building,
-running, and testing these components.
+The `python/` and `rust/` folders have their own READMEs describing how to set
+up development environments and requirements for those languages. Each also has
+Makefiles to help with builds and running tests.
 
 The python client library, which is automatically generated from the API
 schema, lives under `./python_openapi_client/`.
 
-## Status
+To do unified development involving both the python code (web interface, bot
+code) and the rust code (API server), you will likely need to install and run a
+PostgreSQL (11+) database locally. For more advanced development involving
+Kafka data pipelines or the metadata search index, there is a docker compose
+file in `./extra/docker/` to run these services locally.
 
-- SQL and HTTP API schemas
-    - [x] Basic entities
-    - [x] one-to-many and many-to-many entities
-    - [x] JSON(B) "extra" metadata fields
-    - [x] full rev1 schema for all entities
-    - [x] file sets and web captures
-    - [x] editgroup review: annotations
-- HTTP API Server
-    - [x] base32 encoding of UUID identifiers
-    - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
-    - [x] Authentication (eg, accounts, OAuth2, JWT)
-    - [x] Authorization (aka, roles)
-- Web Interface
-    - [x] Migrate Python codebase
-    - [x] Creation and editing of all entities
-- Other
-    - [x] Elasticsearch schema
-    - [x] Basic logging
-    - [x] Swagger-UI 
-    - [x] Bulk metadata exports
-    - [x] Sentry (error reporting)
-    - [x] Metrics
+Contributors are asked run all of the following and correct any (new) lint
+warnings before submitting patches:
+
+    make fmt
+    make lint
+    make test
+
+It is very appreciated if new features and code comes with full test coverage,
+but maintainers can review code and help if this is difficult.
+
+
+## Contributing
+
+Software, documentation, new bots, and other contributions to this repository
+are welcome! Learn more in the [fatcat guide](https://guide.fatcat.wiki).
+
+There is a public chatroom where you can discuss and ask questions at
+[gitter.im/internetarchive/fatcat](https://gitter.im/internetarchive/fatcat).
+
+Contributors in this project are asked to abide by our
+[Code of Conduct](https://guide.fatcat.wiki/code_of_conduct.html).
+
+See the `LICENSE` file for detailed permissions and licensing of both python
+and rust code. In short, the auto-generated client libraries are permissively
+released, while the API server and web interface are strong copyleft (AGPLv3).
+
+For software developers, the "help wanted" tag in Github Issues is a way to
+discover bugs and tasks that external folks could contribute to.
 
