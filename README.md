@@ -63,7 +63,10 @@ but maintainers can review code and help if this is difficult.
 ## Contributing
 
 Software, documentation, new bots, and other contributions to this repository
-are welcome! Learn more in the [fatcat guide](https://guide.fatcat.wiki).
+are welcome! When considering a non-trivial contribution, it can save review
+time and duplicated work to jump in the chatroom or post an issue with your
+idea and intentions before starting work. Large changes and features usually
+have a design proposal drafted and merged first (see `./proposals/`).
 
 There is a public chatroom where you can discuss and ask questions at
 [gitter.im/internetarchive/fatcat](https://gitter.im/internetarchive/fatcat).

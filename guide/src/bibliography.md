@@ -1,4 +1,37 @@
 
+# Presentations
+
+2020 Workshop On Open Citations And Open Scholarly Metadata 2020 - Fatcat ([vidoo on archive.org](https://archive.org/details/fatcat_workshop_open_citations_open_scholarly_metadata_2020))
+
+2019-10-25 FORCE2019 - Perpetual Access Machines: Archiving Web-Published Scholarship at Scale ([video on youtube.com](https://www.youtube.com/watch?v=PARqfbYIdXQ))
+
+
+# Blog Posts And Press
+
+2020-09-17 blog.dshr.org - [Don't Say We Didn't Warn You](https://blog.dshr.org/2020/09/dont-say-we-didnt-warn-you.html)
+
+2020-09-15: blog.archive.org - [How the Internet Archive is Ensuring Permanent Access to Open Access Journal Articles](http://blog.archive.org/2020/09/15/how-the-internet-archive-is-ensuring-permanent-access-to-open-access-journal-articles/)
+
+2020-02-18 blog.dshr.org - [The Scholarly Record At The Internet Archive](https://blog.dshr.org/2020/02/the-scholarly-record-at-internet-archive.html)
+
+2019-04-18 blog.dshr.org - [Personal Pods and Fatcat](https://blog.dshr.org/2019/04/personal-pods-and-fatcat.html)
+
+2018-10-03 blog.dshr.org - [Brief Talk At Internet Archive Event](https://blog.dshr.org/2018/10/brief-talk-at-internet-archive-event.html)
+
+2018-03-05 blog.archive.org - [Andrew W. Mellon Foundation Awards Grant to the Internet Archive for Long Tail Journal Preservation](https://blog.archive.org/2018/03/05/andrew-w-mellon-foundation-awards-grant-to-the-internet-archive-for-long-tail-journal-preservation/)
+
+
+# Background
+
+<!-- TODO: move these to bibliography instead? -->
+
+2020-09-08 sciencemag.org: [Dozens of scientific journals have vanished from the internet, and no one preserved them](https://www.sciencemag.org/news/2020/09/dozens-scientific-journals-have-vanished-internet-and-no-one-preserved-them)
+
+2020-09-10 nature.com: [More than 100 scientific journals have disappeared from the Internet](https://www.nature.com/articles/d41586-020-02610-z)
+
+2020-08-27 arxiv.org [Open is not forever: a study of vanished open access journals](https://arxiv.org/abs/2008.11933)
+
+
 # Bibliography
 
 <!-- On zbib.org: https://zbib.org/f53f7e0032ff4268a9a5f3e13aff13b9 -->

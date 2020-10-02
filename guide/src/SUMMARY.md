@@ -23,11 +23,11 @@
 - [Public API](./http_api.md)
     - [Bulk Exports](./bulk_exports.md)
     - [Cookbook](./cookbook.md)
-- [Software Contributions](./sw_contribute.md)
+- [Contributing](./contributing.md)
 - [Policies](./policies.md)
     - [Code of Conduct](./code_of_conduct.md)
     - [Privacy](./privacy_policy.md)
 
-[Bibliography](./bibliography.md)
+[Further Reading](./bibliography.md)
 
 [About This Guide](./guide.md)
