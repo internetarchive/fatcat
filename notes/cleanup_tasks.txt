@@ -2,6 +2,7 @@
 Cambridge Chemical Database (NCI)
 
     doi_prefix:10.3406 release_type:article
+    doi_prefix:10.14469 release_type:article
 
     193,346+ entities
 
@@ -16,3 +17,9 @@ Frontiers
     18,743 of these. Should be fixed in both crossref-bot, then a retro-active
     cleanup.
 
+Applied Physics Letters
+
+    doi_prefix:10.2172 title:10.2172
+
+    For 700+ entities, the title is the DOI number. They all seem to be
+    "deleted" DOIs, and should be marked as stubs.
