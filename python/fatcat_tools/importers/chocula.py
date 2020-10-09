@@ -112,9 +112,9 @@ class ChoculaImporter(EntityImporter):
             return False
         if not existing.extra:
             existing.extra = dict()
-        if set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
+        if ce.extra.get('urls') and set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
             do_update = True
-        if set(ce.extra.get('webarchive_urls', [])) != set(existing.extra.get('webarchive_urls', [])):
+        if ce.extra.get('webarchive_urls') and set(ce.extra.get('webarchive_urls', [])) != set(existing.extra.get('webarchive_urls', [])):
             do_update = True
         for k in ('ezb', 'szczepanski', 'publisher_type', 'platform'):
             if ce.extra.get(k) and not existing.extra.get(k):
@@ -133,12 +133,10 @@ class ChoculaImporter(EntityImporter):
             existing.publisher = existing.publisher or ce.publisher
             existing.container_type = existing.container_type or ce.container_type
             for k in ('urls', 'webarchive_urls'):
-                # always update if available. should probably make this more
-                # careful/subtle in the future!
-                # note: in some cases we might *want* to remove existing (if
-                # all URLs found to be bad), but being
-                # conservative/inclusionist for now
-                if ce.extra.get(k):
+                # be conservative about URL updates; don't clobber existing URL lists
+                # may want to make this behavior more sophisticated in the
+                # future, or at least a config flag
+                if ce.extra.get(k) and not existing.extra.get(k):
                     existing.extra[k] = ce.extra.get(k, [])
             for k in ('sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'ia',
                       'scielo', 'kbart', 'publisher_type', 'platform'):
