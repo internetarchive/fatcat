@@ -131,7 +131,8 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('kbart') and release_year:
                 in_jstor = check_kbart(release_year, c_extra['kbart'].get('jstor'))
                 in_kbart = in_jstor
-                for archive in ('portico', 'lockss', 'clockss'):
+                for archive in ('portico', 'lockss', 'clockss', 'pkp_pln',
+                                'hathitrust', 'scholarsportal', 'cariniana'):
                     in_kbart = in_kbart or check_kbart(release_year, c_extra['kbart'].get(archive))
                     # recent KBART coverage is often not updated for the
                     # current year. So for current-year publications, consider
