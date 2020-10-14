@@ -17,6 +17,17 @@
         {{ entity_macros.preservation_bar(container._stats.preservation, extra_class="large") }}
         {{ entity_macros.preservation_table(container._stats.preservation) }}
       {% endif %}
+      <p>
+      {% if container.extra and container.extra.kbart %}
+        There seem to be at least some "dark" preservation holdings in:
+        {% for k, v in container.extra.kbart.items() %}
+          <code>{{ k }}</code>{{ ", " if not loop.last }}
+        {% endfor %}
+        .
+      {% endif %}
+      {% if container.issnl %}
+        Our metadata may not be up to date, but you can verify preservation holdings in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a> (click "Archival Status").
+      {% endif %}
     </div>
   </div>
 </div>

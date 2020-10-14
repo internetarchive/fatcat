@@ -46,11 +46,11 @@
 </div>
 <div class="column" style="flex: 0 0 24em;">
 
+{% if container._es and container._es.is_oa == True %}
 <div class="ui segment top attached">
-  {% if container._es and container._es.is_oa == True %}
-    <i class="icon unlock huge orange"></i><b>Open Access Publication</b>
-  {% endif %}
+  <i class="icon unlock huge orange"></i><b>Open Access Publication</b>
 </div>
+{% endif %}
 
 {% if container._stats %}
 <div class="ui segment attached">

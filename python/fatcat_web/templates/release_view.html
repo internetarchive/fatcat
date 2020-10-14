@@ -354,10 +354,6 @@ accessible version.
 <b>Container Metadata</b><br>
 {% if release.container._es.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
-{% elif release.container._es.is_oa == False  %}
-<i class="icon lock black"></i>Not Open Access<br>
-{% else %}
-<i class="icon question grey"></i>Unknown OA Status<br>
 {% endif %}
 {% if (release.container._es != None) %}
   {% if release.container._es.in_doaj == True %}
