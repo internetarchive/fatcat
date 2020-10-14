@@ -270,19 +270,19 @@ yellow
   {% set frac_none = stats.none/stats.total %}
 
   <div class="ui {{ extra_class }} multiple progress" data-percent="0,0,0,0" style="margin-bottom: 0.1em;">
-    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_bright*100)|round(method='ceil') }}%;" title="bright">
+    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_bright*100)|round(method='ceil') }}%;" title="bright: {{ "{:,}".format(stats.bright) }} ({{ (frac_bright*100)|round(2,method='ceil') }}%)">
       <div class="progress">{# {{ (frac_bright*100)|int }}% #}</div>
     </div>
-    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_dark*100)|round(method='ceil') }}%; background-color: darkgreen;" title="dark">
+    <div class="green bar" style="border-radius: 0; min-width: 0; width: {{ (frac_dark*100)|round(method='ceil') }}%; background-color: darkgreen;" title="dark: {{ "{:,}".format(stats.dark) }} ({{ (frac_dark*100)|round(2,method='ceil') }}%">
       <div class="progress">{# {{ (frac_dark*100)|int }}% #}</div>
     </div>
     {% if stats.shadows_only %}
-  {% set frac_shadows_only = stats.shadows_only/stats.total %}
-    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_shadows_only*100)|round(method='ceil') }}%; background-color: darkred;" title="shadows only">
+    {% set frac_shadows_only = stats.shadows_only/stats.total %}
+    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_shadows_only*100)|round(method='ceil') }}%; background-color: darkred;" title="shadows only: {{ "{:,}".format(stats.shadows_only) }} ({{ (frac_shadows_only*100)|round(2,method='ceil') }}%)">
       <div class="progress">{# {{ (frac_shadows_only*100)|int }}% #}</div>
     </div>
     {% endif %}
-    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_none*100)|round(method='ceil') }}%;" title="no preservation">
+    <div class="red bar" style="border-radius: 0; min-width: 0; width: {{ (frac_none*100)|round(method='ceil') }}%;" title="no preservation: {{ "{:,}".format(stats.none) }} ({{ (frac_none*100)|round(2,method='ceil') }}%)">
       <div class="progress">{# {{ (frac_none*100)|int }}% #}</div>
     </div>
   </div>
