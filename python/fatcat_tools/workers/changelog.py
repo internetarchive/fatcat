@@ -79,7 +79,8 @@ class EntityUpdatesWorker(FatcatWorker):
     """
 
     def __init__(self, api, kafka_hosts, consume_topic, release_topic,
-            file_topic, container_topic, ingest_file_request_topic, poll_interval=5.0):
+            file_topic, container_topic, ingest_file_request_topic,
+            work_ident_topic, poll_interval=5.0):
         super().__init__(kafka_hosts=kafka_hosts,
                          consume_topic=consume_topic,
                          api=api)
@@ -87,6 +88,7 @@ class EntityUpdatesWorker(FatcatWorker):
         self.file_topic = file_topic
         self.container_topic = container_topic
         self.ingest_file_request_topic = ingest_file_request_topic
+        self.work_ident_topic = work_ident_topic
         self.poll_interval = poll_interval
         self.consumer_group = "entity-updates"
         self.ingest_oa_only = False
@@ -365,7 +367,8 @@ class EntityUpdatesWorker(FatcatWorker):
                 )
             for ident in set(release_ids):
                 release = self.api.get_release(ident, expand="files,filesets,webcaptures,container")
-                work_ids.append(release.work_id)
+                if release.work_id:
+                    work_ids.append(release.work_id)
                 release_dict = self.api.api_client.sanitize_for_serialization(release)
                 producer.produce(
                     self.release_topic,
@@ -383,6 +386,25 @@ class EntityUpdatesWorker(FatcatWorker):
                             #key=None,
                             on_delivery=fail_fast,
                         )
+
+            # send work updates (just ident and changelog metadata) to scholar for re-indexing
+            for ident in set(work_ids):
+                assert ident
+                key = f"work_{ident}"
+                work_ident_dict = dict(
+                    key=key,
+                    type="fatcat_work",
+                    work_ident=ident,
+                    updated=cle['timestamp'],
+                    fatcat_changelog_index=cle['index'],
+                )
+                producer.produce(
+                    self.work_ident_topic,
+                    json.dumps(work_ident_dict).encode('utf-8'),
+                    key=key.encode('utf-8'),
+                    on_delivery=fail_fast,
+                )
+
             producer.flush()
             # TODO: publish updated 'work' entities to a topic
             consumer.store_offsets(message=msg)

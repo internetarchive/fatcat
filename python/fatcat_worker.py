@@ -22,12 +22,14 @@ def run_entity_updates(args):
     release_topic = "fatcat-{}.release-updates-v03".format(args.env)
     file_topic = "fatcat-{}.file-updates".format(args.env)
     container_topic = "fatcat-{}.container-updates".format(args.env)
+    work_ident_topic = "fatcat-{}.work-ident-updates".format(args.env)
     ingest_file_request_topic = "sandcrawler-{}.ingest-file-requests".format(args.env)
     worker = EntityUpdatesWorker(args.api, args.kafka_hosts,
         changelog_topic,
         release_topic=release_topic,
         file_topic=file_topic,
         container_topic=container_topic,
+        work_ident_topic=work_ident_topic,
         ingest_file_request_topic=ingest_file_request_topic,
     )
     worker.run()
