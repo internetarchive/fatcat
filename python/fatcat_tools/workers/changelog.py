@@ -113,6 +113,8 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.1177/",
             # IOP: mostly blocks crawler
             "10.1088/",
+            # JSTOR: mostly blocks crawler
+            "10.2307/",
         ]
         self.live_pdf_ingest_doi_prefix_acceptlist = [
             # biorxiv and medrxiv
