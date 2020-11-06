@@ -41,6 +41,23 @@ def test_ingest_importer(ingest_importer):
     assert counts['exists'] == 1
     assert counts['skip'] == 1
 
+def test_ingest_importer_xml(ingest_importer):
+    last_index = ingest_importer.api.get_changelog(limit=1)[0].index
+    with open('tests/files/example_ingest_xml.json', 'r') as f:
+        ingest_importer.bezerk_mode = True
+        counts = JsonLinePusher(ingest_importer, f).run()
+    assert counts['insert'] == 1
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
+
+    # fetch most recent editgroup
+    change = ingest_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
+    assert eg.description
+    assert "crawled from web" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.IngestFileResultImporter" in eg.extra['agent']
+
 def test_ingest_importer_stage(ingest_importer, api):
     """
     Tests that ingest importer correctly handles release stage matching
