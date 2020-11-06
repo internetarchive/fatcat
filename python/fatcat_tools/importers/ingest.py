@@ -1,4 +1,6 @@
 
+import datetime
+
 import fatcat_openapi_client
 from .common import EntityImporter, make_rel_url
 
@@ -160,8 +162,6 @@ class IngestFileResultImporter(EntityImporter):
             # support old cdx-only ingest results
             cdx = row.get('cdx')
             if not cdx:
-                # TODO: support archive.org hits?
-                self.counts['skip-no-terminal'] += 1
                 return None
             else:
                 terminal = {
@@ -175,7 +175,11 @@ class IngestFileResultImporter(EntityImporter):
             terminal['terminal_url'] = terminal['url']
         if not 'terminal_dt' in terminal:
             terminal['terminal_dt'] = terminal['dt']
+
+        # convert CDX-style digits to ISO-style timestamp
         assert len(terminal['terminal_dt']) == 14
+        terminal['terminal_timestamp'] = datetime.datetime.strptime(terminal['terminal_dt'], "%Y%m%d%H%M%S").isoformat() + "Z"
+        return terminal
 
     def parse_urls(self, row, terminal):
 
@@ -240,6 +244,11 @@ class IngestFileResultImporter(EntityImporter):
             return None
 
         terminal = self.parse_terminal(row)
+        if not terminal:
+            # TODO: support archive.org hits?
+            self.counts['skip-no-terminal'] += 1
+            return None
+
         urls = self.parse_urls(row, terminal)
 
         fe = fatcat_openapi_client.FileEntity(
@@ -353,6 +362,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
                     extra=self.editgroup_extra),
                 entity_list=batch))
 
+
 class IngestWebResultImporter(IngestFileResultImporter):
     """
     Variant of IngestFileResultImporter for processing HTML ingest requests
@@ -361,7 +371,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.pop('editgroup_description', None) or "WebCaptures crawled from web using sandcrawler ingest tool"
+        eg_desc = kwargs.pop('editgroup_description', None) or "Webcaptures crawled from web using sandcrawler ingest tool"
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestWebResultImporter')
         kwargs['do_updates'] = False
@@ -391,9 +401,6 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
 
     def parse_record(self, row):
-        """
-        TODO: more of this parsing could be DRY with the file version
-        """
 
         request = row['request']
         file_meta = row['file_meta']
@@ -414,8 +421,13 @@ class IngestWebResultImporter(IngestFileResultImporter):
             return None
 
         terminal = self.parse_terminal(row)
+        if not terminal:
+            # TODO: support archive.org hits?
+            self.counts['skip-no-terminal'] += 1
+            return None
+
         urls = self.parse_urls(row, terminal)
-        archive_urls = [u for u in urls if u['rel'] == 'webarchive']
+        archive_urls = [u for u in urls if u.rel == 'webarchive']
 
         if terminal['terminal_status_code'] != 200:
             self.counts['skip-terminal-status-code'] += 1
@@ -430,8 +442,10 @@ class IngestWebResultImporter(IngestFileResultImporter):
         wc_cdx = []
         # primary resource first
         wc_cdx.append(fatcat_openapi_client.WebcaptureCdxLine(
-            surt=terminal['terminal_surt'], # XXX: from CDX?
-            timestamp=terminal['terminal_dt'], # as an ISO datetime
+            # XXX
+            #surt=terminal['terminal_surt'], # XXX: from CDX?
+            surt=terminal['terminal_url'],
+            timestamp=terminal['terminal_timestamp'],
             url=terminal['terminal_url'],
             mimetype=file_meta['mimetype'],
             status_code=terminal['terminal_status_code'],
@@ -441,9 +455,12 @@ class IngestWebResultImporter(IngestFileResultImporter):
         ))
 
         for resource in row.get('html_resources', []):
+            timestamp = resource['timestamp']
+            if not "+" in timestamp and not "Z" in timestamp:
+                timestamp += "Z"
             wc_cdx.append(fatcat_openapi_client.WebcaptureCdxLine(
                 surt=resource['surt'],
-                timestamp=resource['timestamp'],
+                timestamp=timestamp,
                 url=resource['url'],
                 mimetype=resource.get('mimetype'),
                 size=resource.get('size_bytes'),
@@ -451,13 +468,12 @@ class IngestWebResultImporter(IngestFileResultImporter):
                 sha256=resource.get('sha256hex'),
             ))
 
-        wc = fatcat_openapi_client.WebCaptureEntity(
+        wc = fatcat_openapi_client.WebcaptureEntity(
             cdx=wc_cdx,
             archive_urls=archive_urls,
             original_url=terminal['terminal_url'],
-            timestamp=terminal['terminal_dt'],
+            timestamp=terminal['terminal_timestamp'],
             release_ids=[release_ident],
-            urls=urls,
         )
 
         edit_extra = self.parse_edit_extra(row)
@@ -493,7 +509,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
             return False
 
     def insert_batch(self, batch):
-        self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebCaptureAutoBatch(
+        self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebcaptureAutoBatch(
             editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
