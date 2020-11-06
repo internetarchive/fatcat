@@ -94,6 +94,12 @@ def test_ingest_dict_parse(ingest_importer):
 def test_ingest_dict_parse_old(ingest_importer):
     with open('tests/files/example_ingest.old.json', 'r') as f:
         raw = json.loads(f.readline())
+
+        # ancient ingest requests had no type; skip them
+        f = ingest_importer.parse_record(raw)
+        assert f == None
+        raw['request']['ingest_type'] = 'pdf'
+
         f = ingest_importer.parse_record(raw)
         assert f.sha1 == "00242a192acc258bdfdb151943419437f440c313"
         assert f.md5 == "f4de91152c7ab9fdc2a128f962faebff"

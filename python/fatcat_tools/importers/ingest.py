@@ -20,7 +20,7 @@ class IngestFileResultImporter(EntityImporter):
         assert self.default_link_rel
         self.require_grobid = require_grobid
         if self.require_grobid:
-            print("Requiring GROBID status == 200")
+            print("Requiring GROBID status == 200 (for PDFs)")
         else:
             print("NOT checking GROBID success")
         self.ingest_request_source_whitelist = [
@@ -74,8 +74,22 @@ class IngestFileResultImporter(EntityImporter):
         if not row.get('file_meta'):
             self.counts['skip-file-meta'] += 1
             return False
-        if self.require_grobid and row.get('grobid', {}).get('status_code') != 200:
-            self.counts['skip-grobid'] += 1
+
+        # type-specific filters
+        if row['request'].get('ingest_type') == 'pdf':
+            if self.require_grobid and row.get('grobid', {}).get('status_code') != 200:
+                self.counts['skip-grobid'] += 1
+                return False
+            if row['file_meta'].get('mimetype') not in ("application/pdf",):
+                self.counts['skip-mimetype'] += 1
+                return False
+        elif row['request'].get('ingest_type') == 'xml':
+            if row['file_meta'].get('mimetype') not in ("application/xml",
+                    "application/jats+xml", "application/tei+xml", "text/xml"):
+                self.counts['skip-mimetype'] += 1
+                return False
+        else:
+            self.counts['skip-ingest-type'] += 1
             return False
 
         return True
@@ -85,6 +99,18 @@ class IngestFileResultImporter(EntityImporter):
         request = row['request']
         fatcat = request.get('fatcat')
         file_meta = row['file_meta']
+    
+        # double check that want() filtered request correctly (eg, old requests)
+        if request.get('ingest_type') not in ('pdf', 'xml'):
+            self.counts['skip-ingest-type'] += 1
+            return None
+        assert (request['ingest_type'], file_meta['mimetype']) in [
+            ("pdf", "application/pdf"),
+            ("xml", "application/xml"),
+            ("xml", "application/jats+xml"),
+            ("xml", "application/tei+xml"),
+            ("xml", "text/xml"),
+        ]
 
         # identify release by fatcat ident, or extid lookup, or biblio-glutton match
         release_ident = None
