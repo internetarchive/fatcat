@@ -144,6 +144,26 @@ def run_ingest_file(args):
     else:
         JsonLinePusher(ifri, args.json_file).run()
 
+def run_ingest_web(args):
+    iwri = IngestWebResultImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        skip_source_allowlist=args.skip_source_allowlist,
+        do_updates=args.do_updates,
+        default_link_rel=args.default_link_rel,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            iwri,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ingest-file-results",
+            "fatcat-{}-ingest-web-result".format(args.kafka_env),
+            kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size,
+        ).run()
+    else:
+        JsonLinePusher(iwri, args.json_file).run()
+
 def run_savepapernow_file(args):
     ifri = SavePaperNowFileImporter(args.api,
         editgroup_description=args.editgroup_description_override,
@@ -455,6 +475,28 @@ def main():
         action='store_true',
         help="whether postproc_status column must be '200'")
     sub_ingest_file.add_argument('--default-link-rel',
+        default="web",
+        help="default URL rel for matches (eg, 'publisher', 'web')")
+
+    sub_ingest_web = subparsers.add_parser('ingest-web-results',
+        help="add/update web entities linked to releases based on sandcrawler ingest results")
+    sub_ingest_web.set_defaults(
+        func=run_ingest_web,
+        auth_var="FATCAT_AUTH_WORKER_CRAWL",
+    )
+    sub_ingest_web.add_argument('json_file',
+        help="ingest_web JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_ingest_web.add_argument('--skip-source-allowlist',
+        action='store_true',
+        help="don't filter import based on request source allowlist")
+    sub_ingest_web.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+    sub_ingest_web.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing web entities if new match (instead of skipping)")
+    sub_ingest_web.add_argument('--default-link-rel',
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
