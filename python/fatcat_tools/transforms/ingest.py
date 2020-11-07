@@ -15,15 +15,19 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
     if release.state != 'active':
         return None
 
+    # TODO: infer ingest type based on release_type or container metadata?
+    if not ingest_type:
+        ingest_type = 'pdf'
+
     # generate a URL where we expect to find fulltext
     url = None
     link_source = None
     link_source_id = None
-    if release.ext_ids.arxiv:
+    if release.ext_ids.arxiv and ingest_type == "pdf":
         url = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
         link_source = "arxiv"
         link_source_id = release.ext_ids.arxiv
-    elif release.ext_ids.pmcid:
+    elif release.ext_ids.pmcid and ingest_type == "pdf":
         # TODO: how to tell if an author manuscript in PMC vs. published?
         #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
         url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
@@ -39,10 +43,6 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
 
     ext_ids = release.ext_ids.to_dict()
     ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
-
-    # TODO: infer ingest type based on release_type or container metadata?
-    if not ingest_type:
-        ingest_type = 'pdf'
 
     ingest_request = {
         'ingest_type': ingest_type,
