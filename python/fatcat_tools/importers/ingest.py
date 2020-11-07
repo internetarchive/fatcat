@@ -221,7 +221,6 @@ class IngestFileResultImporter(EntityImporter):
     def parse_record(self, row):
 
         request = row['request']
-        fatcat = request.get('fatcat')
         file_meta = row['file_meta']
 
         # double check that want() filtered request correctly (eg, old requests)
@@ -399,7 +398,6 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
         return True
 
-
     def parse_record(self, row):
 
         request = row['request']
@@ -442,9 +440,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
         wc_cdx = []
         # primary resource first
         wc_cdx.append(fatcat_openapi_client.WebcaptureCdxLine(
-            # XXX
-            #surt=terminal['terminal_surt'], # XXX: from CDX?
-            surt=terminal['terminal_url'],
+            surt=terminal_cdx['surt'],
             timestamp=terminal['terminal_timestamp'],
             url=terminal['terminal_url'],
             mimetype=file_meta['mimetype'],
@@ -463,7 +459,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
                 timestamp=timestamp,
                 url=resource['url'],
                 mimetype=resource.get('mimetype'),
-                size=resource.get('size_bytes'),
+                size=resource.get('size'),
                 sha1=resource.get('sha1hex'),
                 sha256=resource.get('sha256hex'),
             ))
@@ -482,7 +478,6 @@ class IngestWebResultImporter(IngestFileResultImporter):
             wc.edit_extra = edit_extra
         return wc
 
-
     def try_update(self, wc):
 
         # check for existing edits-in-progress with same file hash
@@ -491,22 +486,24 @@ class IngestWebResultImporter(IngestFileResultImporter):
                 self.counts['skip-in-queue'] += 1
                 return False
 
-        # lookup sha1, or create new entity
-        existing = None
-        # XXX: lookup *release* instead; skip if any existing web capture entities
-        # XXX: only one release per webcapture
-        try:
-            existing = self.api.lookup_file(sha1=wc.sha1)
-        except fatcat_openapi_client.rest.ApiException as err:
-            if err.status != 404:
-                raise err
+        # lookup sha1, or create new entity (TODO: API doesn't support this yet)
+        #existing = None
 
-        if not existing:
-            return True
-        else:
-            # TODO: for now, never update
-            self.counts['skip-update-disabled'] += 1
+        # TODO: currently only allow one release per webcapture
+        release = self.api.get_release(wc.release_ids[0], expand="webcaptures")
+        if release.webcaptures:
+            # check if this is an existing match, or just a similar hit
+            for other in release.webcaptures:
+                if wc.original_url == other.original_url:
+                    # TODO: compare very similar timestamps of same time (different formats)
+                    self.counts['exists'] += 1
+                    return False
+            self.counts['skip-release-has-webcapture'] += 1
             return False
+
+        # TODO: for now, never update
+        self.counts['skip-update-disabled'] += 1
+        return False
 
     def insert_batch(self, batch):
         self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebcaptureAutoBatch(
