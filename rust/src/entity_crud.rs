@@ -1742,6 +1742,8 @@ impl EntityCrud for ReleaseEntity {
                 jstor: None,
                 ark: None,
                 mag: None,
+                doaj: None,
+                dblp: None,
             },
             refs: None,
             contribs: None,
@@ -2018,6 +2020,8 @@ impl EntityCrud for ReleaseEntity {
             jstor: None,
             ark: None,
             mag: None,
+            doaj: None,
+            dblp: None,
         };
 
         let extid_rows: Vec<ReleaseExtidRow> = release_rev_extid::table
@@ -2030,6 +2034,8 @@ impl EntityCrud for ReleaseEntity {
                 "jstor" => ext_ids.jstor = Some(extid_row.value),
                 "ark" => ext_ids.ark = Some(extid_row.value),
                 "mag" => ext_ids.mag = Some(extid_row.value),
+                "doaj" => ext_ids.doaj = Some(extid_row.value),
+                "dblp" => ext_ids.dblp = Some(extid_row.value),
                 _ => (),
             }
         }
@@ -2287,6 +2293,20 @@ impl EntityCrud for ReleaseEntity {
                 release_extid_rows.push(ReleaseExtidRow {
                     release_rev: *rev_id,
                     extid_type: "mag".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.doaj {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "doaj".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.dblp {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "dblp".to_string(),
                     value: extid.clone(),
                 });
             };

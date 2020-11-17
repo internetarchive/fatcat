@@ -262,6 +262,8 @@ impl Server {
         jstor: &Option<String>,
         ark: &Option<String>,
         mag: &Option<String>,
+        doaj: &Option<String>,
+        dblp: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ReleaseEntity> {
@@ -276,8 +278,10 @@ impl Server {
             jstor,
             ark,
             mag,
+            doaj,
+            dblp,
         ) {
-            (Some(doi), None, None, None, None, None, None, None, None, None) => {
+            (Some(doi), None, None, None, None, None, None, None, None, None, None, None) => {
                 // DOIs always stored lower-case; lookups are case-insensitive
                 let doi = doi.to_lowercase();
                 check_doi(&doi)?;
@@ -288,7 +292,20 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, Some(wikidata_qid), None, None, None, None, None, None, None, None) => {
+            (
+                None,
+                Some(wikidata_qid),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ) => {
                 check_wikidata_qid(wikidata_qid)?;
                 release_ident::table
                     .inner_join(release_rev::table)
@@ -297,7 +314,7 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, Some(isbn13), None, None, None, None, None, None, None) => {
+            (None, None, Some(isbn13), None, None, None, None, None, None, None, None, None) => {
                 check_isbn13(isbn13)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -310,7 +327,7 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, Some(pmid), None, None, None, None, None, None) => {
+            (None, None, None, Some(pmid), None, None, None, None, None, None, None, None) => {
                 check_pmid(pmid)?;
                 release_ident::table
                     .inner_join(release_rev::table)
@@ -319,7 +336,7 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, None, None, Some(pmcid), None, None, None, None, None) => {
+            (None, None, None, None, Some(pmcid), None, None, None, None, None, None, None) => {
                 check_pmcid(pmcid)?;
                 release_ident::table
                     .inner_join(release_rev::table)
@@ -328,7 +345,7 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, None, None, None, Some(core), None, None, None, None) => {
+            (None, None, None, None, None, Some(core), None, None, None, None, None, None) => {
                 check_core_id(core)?;
                 release_ident::table
                     .inner_join(release_rev::table)
@@ -337,7 +354,7 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, None, None, None, None, Some(arxiv), None, None, None) => {
+            (None, None, None, None, None, None, Some(arxiv), None, None, None, None, None) => {
                 // TODO: this allows only lookup by full, versioned arxiv identifier. Probably also
                 // want to allow lookup by "work" style identifier?
                 check_arxiv_id(arxiv)?;
@@ -352,7 +369,7 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, Some(jstor), None, None) => {
+            (None, None, None, None, None, None, None, Some(jstor), None, None, None, None) => {
                 check_jstor_id(jstor)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -365,7 +382,7 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, Some(ark), None) => {
+            (None, None, None, None, None, None, None, None, Some(ark), None, None, None) => {
                 check_ark_id(ark)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -378,7 +395,7 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, None, Some(mag)) => {
+            (None, None, None, None, None, None, None, None, None, Some(mag), None, None) => {
                 check_mag_id(mag)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -386,6 +403,32 @@ impl Server {
                         .inner_join(release_rev_extid::table)
                         .filter(release_rev_extid::extid_type.eq("mag".to_string()))
                         .filter(release_rev_extid::value.eq(mag))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
+            }
+            (None, None, None, None, None, None, None, None, None, None, Some(doaj), None) => {
+                check_doaj_id(doaj)?;
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("doaj".to_string()))
+                        .filter(release_rev_extid::value.eq(doaj))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
+            }
+            (None, None, None, None, None, None, None, None, None, None, None, Some(dblp)) => {
+                check_dblp_id(dblp)?;
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("dblp".to_string()))
+                        .filter(release_rev_extid::value.eq(dblp))
                         .filter(release_ident::is_live.eq(true))
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?;

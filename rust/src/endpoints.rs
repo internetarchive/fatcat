@@ -689,6 +689,8 @@ impl Api for Server {
         jstor: Option<String>,
         ark: Option<String>,
         mag: Option<String>,
+        doaj: Option<String>,
+        dblp: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -716,6 +718,8 @@ impl Api for Server {
                 &jstor,
                 &ark,
                 &mag,
+                &doaj,
+                &dblp,
                 expand_flags,
                 hide_flags,
             )
