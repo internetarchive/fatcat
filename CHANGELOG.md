@@ -39,6 +39,16 @@ changes to API.
 - several other bugfixes to web interface and importer code, not reported here
   granularly
 
+## [0.3.3] - 2020-11-16
+
+Minor additions to the API schema: new external identifiers for release
+entities, for `doaj` and `dblp`. Database schema (SQL) not changed.
+
+### Added
+
+- two new release external identifiers: `doaj` (article-level) and `dblp` (also
+  article-level). These are API changes, but backwards compatible.
+
 ## [0.3.2] - 2020-04-08
 
 This release was tagged retro-actively; it was the last commit before upgrading
