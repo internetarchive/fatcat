@@ -392,7 +392,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
         if row['request'].get('ingest_type') != 'html':
             self.counts['skip-ingest-type'] += 1
             return False
-        if row['file_meta'].get('mimetype') not in ("text/html", "application/html"):
+        if row['file_meta'].get('mimetype') not in ("text/html", "application/xhtml+xml"):
             self.counts['skip-mimetype'] += 1
             return False
 
@@ -407,7 +407,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
         if request.get('ingest_type') != "html":
             self.counts['skip-ingest-type'] += 1
             return None
-        if file_meta['mimetype'] not in ("text/html", "application/html"):
+        if file_meta['mimetype'] not in ("text/html", "application/xhtml+xml"):
             self.counts['skip-mimetype'] += 1
             return None
 
