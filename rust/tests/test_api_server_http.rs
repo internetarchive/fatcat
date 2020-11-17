@@ -664,7 +664,10 @@ fn test_post_fileset() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/editgroup/{}/fileset", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/fileset",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{"manifest": [
                     {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" },

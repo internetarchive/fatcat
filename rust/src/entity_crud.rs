@@ -334,7 +334,9 @@ macro_rules! generic_db_create {
         fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
             if self.redirect.is_some() {
                 return Err(FatcatError::BadRequest(
-                    "can't create an entity that redirects from the start".to_string()).into());
+                    "can't create an entity that redirects from the start".to_string(),
+                )
+                .into());
             }
             let rev_id = self.db_insert_rev(conn)?;
             let ident: Uuid = insert_into($ident_table::table)
@@ -351,7 +353,7 @@ macro_rules! generic_db_create {
                 .get_result(conn)?;
             Ok(edit)
         }
-    }
+    };
 }
 
 macro_rules! generic_db_create_batch {
@@ -764,7 +766,7 @@ macro_rules! generic_db_insert_rev {
         fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
             Self::db_insert_revs(conn, &[self]).map(|id_list| id_list[0])
         }
-    }
+    };
 }
 
 impl EntityCrud for ContainerEntity {

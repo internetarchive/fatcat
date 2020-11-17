@@ -26,7 +26,6 @@ macro_rules! entity_auto_batch_handler {
             entity_list: &[models::$model],
             editor_id: FatcatId,
         ) -> Result<Editgroup> {
-
             let editgroup_row = editgroup.db_create(conn, true)?;
             let editgroup_id = FatcatId::from_uuid(&editgroup_row.id);
             let edit_context = make_edit_context(editor_id, editgroup_id, true)?;
@@ -39,7 +38,7 @@ macro_rules! entity_auto_batch_handler {
                 .get_result(conn)?;
             self.get_editgroup_handler(conn, editgroup_id)
         }
-    }
+    };
 }
 
 pub fn get_release_files(
