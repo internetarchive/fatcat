@@ -9527,7 +9527,7 @@ class DefaultApi(object):
                 len(local_var_params['issnl']) < 9):
             raise ApiValueError("Invalid value for parameter `issnl` when calling `lookup_container`, length must be greater than or equal to `9`")  # noqa: E501
         if 'issnl' in local_var_params and not re.search(r'\d{4}-\d{3}[0-9X]', local_var_params['issnl']):  # noqa: E501
-            raise ApiValueError("Invalid value for parameter `issnl` when calling `lookup_container`, must conform to the pattern `/\d{4}-\d{3}[0-9X]/`")  # noqa: E501
+            raise ApiValueError(r"Invalid value for parameter `issnl` when calling `lookup_container`, must conform to the pattern `/\d{4}-\d{3}[0-9X]/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -9649,7 +9649,7 @@ class DefaultApi(object):
                 len(local_var_params['orcid']) < 19):
             raise ApiValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, length must be greater than or equal to `19`")  # noqa: E501
         if 'orcid' in local_var_params and not re.search(r'\d{4}-\d{4}-\d{4}-\d{3}[\dX]', local_var_params['orcid']):  # noqa: E501
-            raise ApiValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, must conform to the pattern `/\d{4}-\d{4}-\d{4}-\d{3}[\dX]/`")  # noqa: E501
+            raise ApiValueError(r"Invalid value for parameter `orcid` when calling `lookup_creator`, must conform to the pattern `/\d{4}-\d{4}-\d{4}-\d{3}[\dX]/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
