@@ -4,13 +4,17 @@
 
 // Imports required by this file.
 // extern crate <name of this crate>;
-use fatcat_openapi;
+extern crate clap;
+extern crate fatcat_openapi;
+extern crate hyper_openssl;
+extern crate iron;
+extern crate swagger;
 
 // Imports required by server library.
 // extern crate fatcat_openapi;
 // extern crate swagger;
-use chrono;
-use futures;
+extern crate chrono;
+extern crate futures;
 #[macro_use]
 extern crate error_chain;
 
@@ -20,6 +24,7 @@ use hyper_openssl::openssl::ssl::{SslAcceptorBuilder, SslMethod};
 use hyper_openssl::openssl::x509::X509_FILETYPE_PEM;
 use hyper_openssl::OpensslServer;
 use iron::{Chain, Iron};
+use swagger::auth::AllowAllMiddleware;
 
 mod server_lib;
 

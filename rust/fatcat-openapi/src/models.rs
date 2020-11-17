@@ -1230,6 +1230,16 @@ pub struct ReleaseExtIds {
     #[serde(rename = "mag")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mag: Option<String>,
+
+    /// DOAJ article-level identifier
+    #[serde(rename = "doaj")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub doaj: Option<String>,
+
+    /// dblp (https://dblp.uni-trier.de/) paper identifier; eg for conference proceedings
+    #[serde(rename = "dblp")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dblp: Option<String>,
 }
 
 impl ReleaseExtIds {
@@ -1245,6 +1255,8 @@ impl ReleaseExtIds {
             jstor: None,
             ark: None,
             mag: None,
+            doaj: None,
+            dblp: None,
         }
     }
 }
