@@ -60,7 +60,7 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.publisher == "Elsevier"
         assert r.release_type == "article-journal"
         assert r.release_stage == "published"
-        # XXX: assert r.license_slug == "cc-by-nc-nd"
+        assert r.license_slug == "cc-by-nc-nd"
         assert r.original_title == None
         assert r.ext_ids.doi == "10.1016/j.matdes.2016.06.110"
         assert r.ext_ids.doaj == "e58f08a11ecb495ead55a44ad4f89808"
@@ -71,9 +71,9 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.number == None
         assert r.pages == "608-617"
         assert r.version == None
-        # XXX: assert r.language == "en"
+        assert r.language == "en"
         # matched by ISSN, so wouldn't be defined normally
-        # XXX: assert r.extra['container_name'] == "Materials & Design"
+        assert r.extra['container_name'] == "Materials & Design"
         assert len(r.abstracts) == 1
         assert len(r.abstracts[0].content) == 1033
         assert len(r.contribs) == 5
@@ -82,11 +82,6 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.contribs[0].surname == None
         assert not r.refs
 
-        print(r.extra)
-        # XXX: assert r.extra['release_month'] == 10
-        # XXX: assert r.extra['country'] == 'gb'
-
-        #assert r.extra["doaj"]["subjects"] == [
-        #    {"subject": "Plant Genetic Resource for Food and Agriculture"}
-        #]
-
+        #print(r.extra)
+        assert r.extra['release_month'] == 10
+        assert r.extra['country'] == 'gb'

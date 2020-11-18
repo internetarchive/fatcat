@@ -4,17 +4,15 @@ Importer for DOAJ article-level metadata, schema v1.
 DOAJ API schema and docs: https://doaj.org/api/v1/docs
 """
 
-import collections
+import warnings
 import datetime
-import sys
-from typing import List, Dict, Optional
-
-import langdetect
+from typing import List, Optional
 
 import fatcat_openapi_client
-from fatcat_tools.normal import clean_doi
-from fatcat_tools.transforms import entity_to_dict
-from fatcat_tools.importers.common import EntityImporter, clean
+from fatcat_tools.normal import (clean_doi, clean_str, parse_month,
+    clean_orcid, detect_text_lang, parse_lang_name, parse_country_name,
+    clean_pmid, clean_pmcid)
+from fatcat_tools.importers.common import EntityImporter
 
 # Cutoff length for abstracts.
 MAX_ABSTRACT_LENGTH = 2048
@@ -48,7 +46,6 @@ class DoajArticleImporter(EntityImporter):
     def want(self, obj):
         return True
 
-
     def parse_record(self, obj):
         """
         bibjson {
@@ -74,14 +71,6 @@ class DoajArticleImporter(EntityImporter):
             title (string, optional),
             volume (string, optional)
         }
-
-        TODO:
-        - release_date
-        - container_id
-        - issue (number?)
-        - license is article license; import as slug
-        - "open_access" flag in doaj_meta
-        - container lookup from issns ("issns" key)
         """
 
         if not obj or not isinstance(obj, dict) or not 'bibjson' in obj:
@@ -90,42 +79,51 @@ class DoajArticleImporter(EntityImporter):
 
         bibjson = obj['bibjson']
 
-        title = clean(bibjson.get('title'))
+        title = clean_str(bibjson.get('title'), force_xml=True)
         if not title:
             self.counts['skip-title'] += 1
             return False
 
+        container_name = clean_str(bibjson['journal']['title'])
         container_id = None
-        container_name = None
+        # NOTE: 'issns' not documented in API schema
+        for issn in bibjson['journal']['issns']:
+            issnl = self.issn2issnl(issn)
+            if issnl:
+                container_id = self.lookup_issnl(self.issn2issnl(issn))
+            if container_id:
+                # don't store container_name when we have an exact match
+                container_name = None
+                break
 
-        volume = clean(bibjson['journal'].get('volume'))
-        number = clean(bibjson['journal'].get('number'))
-        publisher = clean(bibjson['journal'].get('publisher'))
+        volume = clean_str(bibjson['journal'].get('volume'))
+        # NOTE: this schema seems to use "number" as "issue number"
+        issue = clean_str(bibjson['journal'].get('number'))
+        publisher = clean_str(bibjson['journal'].get('publisher'))
 
         try:
             release_year = int(bibjson.get('year'))
         except (TypeError, ValueError):
             release_year = None
-        # XXX: parse_month
-        release_month = clean(bibjson.get('year'))
+        release_month = parse_month(clean_str(bibjson.get('month')))
 
         # block bogus far-future years/dates
         if release_year is not None and (release_year > (self.this_year + 5) or release_year < 1000):
             release_month = None
             release_year = None
 
-        # country
-        country = None
-        # XXX: country = parse_country(bibjson['journal'].get('country'))
-
-        # language
+        license_slug = self.doaj_license_slug(bibjson['journal'].get('license'))
+        country = parse_country_name(bibjson['journal'].get('country'))
         language = None
-        # XXX: language = parse_language(bibjson['journal'].get('language'))
+        for raw in bibjson['journal'].get('language') or []:
+            language = parse_lang_name(raw)
+            if language:
+                break
 
         # pages
-        # TODO: error in API docs? seems like start_page not under 'journal' object
-        start_page = clean(bibjson['journal'].get('start_page')) or clean(bibjson.get('start_page'))
-        end_page = clean(bibjson['journal'].get('end_page')) or clean(bibjson.get('end_page'))
+        # NOTE: error in API docs? seems like start_page not under 'journal' object
+        start_page = clean_str(bibjson['journal'].get('start_page')) or clean_str(bibjson.get('start_page'))
+        end_page = clean_str(bibjson['journal'].get('end_page')) or clean_str(bibjson.get('end_page'))
         pages: Optional[str] = None
         if start_page and end_page:
             pages = f"{start_page}-{end_page}"
@@ -136,13 +134,13 @@ class DoajArticleImporter(EntityImporter):
         ext_ids = self.doaj_ext_ids(bibjson['identifier'], doaj_article_id)
         abstracts = self.doaj_abstracts(bibjson)
         contribs = self.doaj_contribs(bibjson.get('author') or [])
-            
+
         # DOAJ-specific extra
         doaj_extra = dict()
         if bibjson.get('subject'):
             doaj_extra['subject'] = bibjson.get('subject')
         if bibjson.get('keywords'):
-            doaj_extra['keywords'] = [k for k in [clean(s) for s in bibjson.get('keywords')] if k]
+            doaj_extra['keywords'] = [k for k in [clean_str(s) for s in bibjson.get('keywords')] if k]
 
         # generic extra
         extra = dict()
@@ -171,13 +169,12 @@ class DoajArticleImporter(EntityImporter):
             ext_ids=ext_ids,
             contribs=contribs,
             volume=volume,
-            number=number, # XXX
-            #issue,
+            issue=issue,
             pages=pages,
             language=language,
             abstracts=abstracts,
             extra=extra,
-            #license_slug=license_slug,
+            license_slug=license_slug,
         )
         re = self.biblio_hacks(re)
         return re
@@ -192,7 +189,7 @@ class DoajArticleImporter(EntityImporter):
 
     def try_update(self, re):
 
-        # lookup existing DOI (don't need to try other ext idents for crossref)
+        # lookup existing release by DOAJ article id
         existing = None
         try:
             existing = self.api.lookup_release(doaj=re.ext_ids.doaj)
@@ -202,13 +199,62 @@ class DoajArticleImporter(EntityImporter):
             # doesn't exist, need to update
             return True
 
-        # eventually we'll want to support "updates", but for now just skip if
-        # entity already exists
-        if existing:
+        # then try other ext_id lookups
+        if not existing:
+            for extid_type in ('doi', 'pmid', 'pmcid'):
+                extid_val = re.ext_ids.__dict__[extid_type]
+                if not extid_val:
+                    continue
+                try:
+                    existing = self.api.lookup_release(**{extid_type: extid_val})
+                except fatcat_openapi_client.rest.ApiException as err:
+                    if err.status != 404:
+                        raise err
+                if existing:
+                    if existing.ext_ids.doaj:
+                        warn_str = f"unexpected DOAJ ext_id match after lookup failed doaj={re.ext_ids.doaj} ident={existing.ident}"
+                        warnings.warn(warn_str)
+                        self.counts["skip-doaj-id-mismatch"] += 1
+                        return None
+                    break
+
+        # TODO: in the future could do fuzzy match here, eg using elasticsearch
+
+        # create entity
+        if not existing:
+            return True
+
+        # other logic could go here about skipping updates
+        if not self.do_updates or existing.ext_ids.doaj:
             self.counts['exists'] += 1
             return False
 
-        return True
+        # fields to copy over for update
+        existing.ext_ids.doaj = existing.ext_ids.doaj or re.ext_ids.doaj
+        existing.release_type = existing.release_type or re.release_type
+        existing.release_stage = existing.release_stage or re.release_stage
+        existing.container_id = existing.container_id or re.container_id
+        existing.abstracts = existing.abstracts or re.abstracts
+        existing.extra['doaj'] = re.extra['doaj']
+        existing.volume = existing.volume or re.volume
+        existing.issue = existing.issue or re.issue
+        existing.pages = existing.pages or re.pages
+        existing.language = existing.language or re.language
+
+        try:
+            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
+            self.counts['update'] += 1
+        except fatcat_openapi_client.rest.ApiException as err:
+            # there is a code path where we try to update the same release
+            # twice in a row; if that happens, just skip
+            # NOTE: API behavior might change in the future?
+            if "release_edit_editgroup_id_ident_id_key" in err.body:
+                self.counts['skip-update-conflict'] += 1
+                return False
+            else:
+                raise err
+
+        return False
 
     def insert_batch(self, batch):
         self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
@@ -218,19 +264,13 @@ class DoajArticleImporter(EntityImporter):
             entity_list=batch))
 
     def doaj_abstracts(self, bibjson: dict) -> List[fatcat_openapi_client.ReleaseAbstract]:
-        text = clean(bibjson['abstract'])
+        text = clean_str(bibjson.get('abstract'))
         if not text or len(text) < 10:
             return []
         if len(text) > MAX_ABSTRACT_LENGTH:
             text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
 
-        # Detect language. This is fuzzy and may be removed, if too unreliable.
-        lang = None
-        try:
-            lang = langdetect.detect(text)
-        except (langdetect.lang_detect_exception.LangDetectException, TypeError) as err:
-            #print('[{}] language detection failed with {} on {}'.format(doi, err, text), file=sys.stderr)
-            pass
+        lang = detect_text_lang(text)
 
         abstract = fatcat_openapi_client.ReleaseAbstract(
             mimetype="text/plain",
@@ -249,15 +289,22 @@ class DoajArticleImporter(EntityImporter):
         }
         """
         contribs = []
-        # TODO: index?
+        index = 0
         for author in authors:
             if not author.get('name'):
                 continue
+            creator_id = None
+            orcid = clean_orcid(author.get('orcid_id'))
+            if orcid:
+                creator_id = self.lookup_orcid(orcid)
             contribs.append(fatcat_openapi_client.ReleaseContrib(
                 raw_name=author.get('name'),
-                # XXX: orcid_id=author.get('orcid_id') or None,
-                # XXX: affiliation=author.get('affiliation') or None,
+                role='author',
+                index=index,
+                creator_id=creator_id,
+                raw_affiliation=clean_str(author.get('affiliation')),
             ))
+            index += 1
         return contribs
 
     def doaj_ext_ids(self, identifiers: List[dict], doaj_article_id: str) -> fatcat_openapi_client.ReleaseExtIds:
@@ -277,9 +324,9 @@ class DoajArticleImporter(EntityImporter):
             if id_obj['type'].lower() == 'doi':
                 doi = clean_doi(id_obj['id'])
             elif id_obj['type'].lower() == 'pmid':
-                pmid = id_obj['id']
+                pmid = clean_pmid(id_obj['id'])
             elif id_obj['type'].lower() == 'pmcid':
-                pmcid = id_obj['id']
+                pmcid = clean_pmcid(id_obj['id'])
 
         return fatcat_openapi_client.ReleaseExtIds(
             doaj=doaj_article_id,
@@ -287,3 +334,24 @@ class DoajArticleImporter(EntityImporter):
             pmid=pmid,
             pmcid=pmcid,
         )
+
+    def doaj_license_slug(self, license_list: List[dict]) -> Optional[str]:
+        """
+        bibjson.journal.license {
+            open_access (boolean, optional),
+            title (string, optional),
+            type (string, optional),
+            url (string, optional),
+            version (string, optional)
+        }
+        """
+        if not license_list:
+            return None
+        for license in license_list:
+            if not license.get('open_access'):
+                continue
+            slug = license.get('type')
+            if slug.startswith('CC '):
+                slug = slug.replace('CC ', 'cc-').lower()
+                return slug
+        return None
