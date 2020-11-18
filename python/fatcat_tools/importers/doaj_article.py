@@ -23,8 +23,6 @@ class DoajArticleImporter(EntityImporter):
     def __init__(self,
                  api,
                  issn_map_file,
-                 debug=False,
-                 insert_log_file=None,
                  **kwargs):
 
         eg_desc = kwargs.get(
@@ -34,6 +32,8 @@ class DoajArticleImporter(EntityImporter):
         eg_extra = kwargs.get('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent',
                                          'fatcat_tools.DoajArticleImporter')
+        # ensure default is to not do updates with this worker (override super() default)
+        kwargs['do_updates'] = kwargs.get("do_updates", False)
         super().__init__(api,
                          issn_map_file=issn_map_file,
                          editgroup_description=eg_desc,
