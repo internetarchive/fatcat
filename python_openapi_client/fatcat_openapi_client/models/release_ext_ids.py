@@ -43,7 +43,8 @@ class ReleaseExtIds(object):
         'ark': 'str',
         'mag': 'str',
         'doaj': 'str',
-        'dblp': 'str'
+        'dblp': 'str',
+        'oai': 'str'
     }
 
     attribute_map = {
@@ -58,10 +59,11 @@ class ReleaseExtIds(object):
         'ark': 'ark',
         'mag': 'mag',
         'doaj': 'doaj',
-        'dblp': 'dblp'
+        'dblp': 'dblp',
+        'oai': 'oai'
     }
 
-    def __init__(self, doi=None, wikidata_qid=None, isbn13=None, pmid=None, pmcid=None, core=None, arxiv=None, jstor=None, ark=None, mag=None, doaj=None, dblp=None):  # noqa: E501
+    def __init__(self, doi=None, wikidata_qid=None, isbn13=None, pmid=None, pmcid=None, core=None, arxiv=None, jstor=None, ark=None, mag=None, doaj=None, dblp=None, oai=None):  # noqa: E501
         """ReleaseExtIds - a model defined in OpenAPI"""  # noqa: E501
 
         self._doi = None
@@ -76,6 +78,7 @@ class ReleaseExtIds(object):
         self._mag = None
         self._doaj = None
         self._dblp = None
+        self._oai = None
         self.discriminator = None
 
         if doi is not None:
@@ -102,6 +105,8 @@ class ReleaseExtIds(object):
             self.doaj = doaj
         if dblp is not None:
             self.dblp = dblp
+        if oai is not None:
+            self.oai = oai
 
     @property
     def doi(self):
@@ -378,6 +383,29 @@ class ReleaseExtIds(object):
         """
 
         self._dblp = dblp
+
+    @property
+    def oai(self):
+        """Gets the oai of this ReleaseExtIds.  # noqa: E501
+
+        OAI-PMH identifier; only used when an OAI-PMH record is the only authoritative metadata (eg, journal OAI-PMH feeds w/o DOIs)  # noqa: E501
+
+        :return: The oai of this ReleaseExtIds.  # noqa: E501
+        :rtype: str
+        """
+        return self._oai
+
+    @oai.setter
+    def oai(self, oai):
+        """Sets the oai of this ReleaseExtIds.
+
+        OAI-PMH identifier; only used when an OAI-PMH record is the only authoritative metadata (eg, journal OAI-PMH feeds w/o DOIs)  # noqa: E501
+
+        :param oai: The oai of this ReleaseExtIds.  # noqa: E501
+        :type: str
+        """
+
+        self._oai = oai
 
     def to_dict(self):
         """Returns the model properties as a dict"""

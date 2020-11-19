@@ -9857,6 +9857,7 @@ class DefaultApi(object):
         :param str mag:
         :param str doaj:
         :param str dblp:
+        :param str oai:
         :param str expand: List of sub-entities to expand in response. See `get_release`.
         :param str hide: List of sub-entities to elide in response. See `get_release`.
         :param _preload_content: if False, the urllib3.HTTPResponse object will
@@ -9895,6 +9896,7 @@ class DefaultApi(object):
         :param str mag:
         :param str doaj:
         :param str dblp:
+        :param str oai:
         :param str expand: List of sub-entities to expand in response. See `get_release`.
         :param str hide: List of sub-entities to elide in response. See `get_release`.
         :param _return_http_data_only: response data without head status code
@@ -9913,7 +9915,7 @@ class DefaultApi(object):
 
         local_var_params = locals()
 
-        all_params = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid', 'core', 'arxiv', 'jstor', 'ark', 'mag', 'doaj', 'dblp', 'expand', 'hide']  # noqa: E501
+        all_params = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid', 'core', 'arxiv', 'jstor', 'ark', 'mag', 'doaj', 'dblp', 'oai', 'expand', 'hide']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9957,6 +9959,8 @@ class DefaultApi(object):
             query_params.append(('doaj', local_var_params['doaj']))  # noqa: E501
         if 'dblp' in local_var_params:
             query_params.append(('dblp', local_var_params['dblp']))  # noqa: E501
+        if 'oai' in local_var_params:
+            query_params.append(('oai', local_var_params['oai']))  # noqa: E501
         if 'expand' in local_var_params:
             query_params.append(('expand', local_var_params['expand']))  # noqa: E501
         if 'hide' in local_var_params:
