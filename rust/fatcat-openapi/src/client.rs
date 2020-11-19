@@ -5879,6 +5879,7 @@ impl Api for Client {
         param_mag: Option<String>,
         param_doaj: Option<String>,
         param_dblp: Option<String>,
+        param_oai: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -5896,11 +5897,12 @@ impl Api for Client {
         let query_mag = param_mag.map_or_else(String::new, |query| format!("mag={mag}&", mag = query.to_string()));
         let query_doaj = param_doaj.map_or_else(String::new, |query| format!("doaj={doaj}&", doaj = query.to_string()));
         let query_dblp = param_dblp.map_or_else(String::new, |query| format!("dblp={dblp}&", dblp = query.to_string()));
+        let query_oai = param_oai.map_or_else(String::new, |query| format!("oai={oai}&", oai = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{doaj}{dblp}{expand}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{doaj}{dblp}{oai}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
@@ -5914,6 +5916,7 @@ impl Api for Client {
             mag = utf8_percent_encode(&query_mag, QUERY_ENCODE_SET),
             doaj = utf8_percent_encode(&query_doaj, QUERY_ENCODE_SET),
             dblp = utf8_percent_encode(&query_dblp, QUERY_ENCODE_SET),
+            oai = utf8_percent_encode(&query_oai, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );

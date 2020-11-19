@@ -560,6 +560,7 @@ fn main() {
                     Some("mag_example".to_string()),
                     Some("doaj_example".to_string()),
                     Some("dblp_example".to_string()),
+                    Some("oai_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
                 )
