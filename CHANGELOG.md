@@ -42,11 +42,11 @@ changes to API.
 ## [0.3.3] - 2020-11-16
 
 Minor additions to the API schema: new external identifiers for release
-entities, for `doaj` and `dblp`. Database schema (SQL) not changed.
+entities, for `doaj`, `dblp`, and `oai`. Database schema (SQL) not changed.
 
 ### Added
 
-- two new release external identifiers: `doaj` (article-level) and `dblp` (also
+- two new release external identifiers: `doaj`, `dblp`, and `oai` (all
   article-level). These are API changes, but backwards compatible.
 
 ## [0.3.2] - 2020-04-08
