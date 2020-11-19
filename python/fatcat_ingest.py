@@ -87,6 +87,7 @@ def _run_search_dump(args, search):
         ingest_request = release_ingest_request(
             release,
             ingest_request_source="fatcat-ingest",
+            ingest_type=args.ingest_type,
         )
         if not ingest_request:
             continue
@@ -214,6 +215,9 @@ def main():
     parser.add_argument('--force-recrawl',
         action='store_true',
         help="Tell ingest worker to skip GWB history lookup and do SPNv2 crawl")
+    parser.add_argument('--ingest-type',
+        default="pdf",
+        help="What medium to ingest (pdf, xml, html)")
     subparsers = parser.add_subparsers()
 
     sub_container = subparsers.add_parser('container',

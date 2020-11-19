@@ -27,6 +27,6 @@ from .orcid import OrcidImporter
 from .arabesque import ArabesqueMatchImporter, ARABESQUE_MATCH_WHERE_CLAUSE
 from .wayback_static import auto_wayback_static
 from .cdl_dash_dat import auto_cdl_dash_dat
-from .ingest import IngestFileResultImporter, SavePaperNowFileImporter
+from .ingest import IngestFileResultImporter, SavePaperNowFileImporter, IngestWebResultImporter
 from .shadow import ShadowLibraryImporter
 from .file_meta import FileMetaImporter

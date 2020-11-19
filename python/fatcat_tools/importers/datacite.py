@@ -151,7 +151,7 @@ UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
     'Unknown',
 )))
 
-# UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blacklist.
+# UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blocklist.
 UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 
 # Any "min" number of "tokens" will signal "spam", https://fatcat.wiki/release/rzcpjwukobd4pj36ipla22cnoi
@@ -346,7 +346,7 @@ class DataciteImporter(EntityImporter):
             print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
             return False
 
-        # check for blacklisted "spam", e.g. "FULL MOVIE"
+        # check for blocklisted "spam", e.g. "FULL MOVIE"
         for rule in DATACITE_TITLE_SPAM_WORDGROUPS:
             seen = set()
             for token in rule.get("tokens", []):
@@ -819,7 +819,7 @@ class DataciteImporter(EntityImporter):
         contribs = []
 
         # Names, that should be ignored right away.
-        name_blacklist = set(('Occdownload Gbif.Org',))
+        name_blocklist = set(('Occdownload Gbif.Org',))
 
         i = 0
         for c in creators:
@@ -861,7 +861,7 @@ class DataciteImporter(EntityImporter):
                     continue
                 if not name:
                     name = "{} {}".format(given_name or '', surname or '').strip()
-                if name in name_blacklist:
+                if name in name_blocklist:
                     continue
                 if name.lower() in UNKNOWN_MARKERS_LOWER:
                     continue
