@@ -739,6 +739,7 @@ impl Api for Server {
         mag: Option<String>,
         doaj: Option<String>,
         dblp: Option<String>,
+        oai: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -768,6 +769,7 @@ impl Api for Server {
                 &mag,
                 &doaj,
                 &dblp,
+                &oai,
                 expand_flags,
                 hide_flags,
             )

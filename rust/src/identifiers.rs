@@ -411,6 +411,44 @@ fn test_check_dblp_id() {
     assert!(check_dblp_id("").is_err());
 }
 
+pub fn check_oai_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        // http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
+        static ref RE: Regex = Regex::new(r"^oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*'\(\);/\?:@&=\+$,%]+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedChecksum(
+            "OAI-PMH identifier (expected, eg, 'oai:foo.org:some-local-id-54')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_oai_id() {
+    assert!(check_oai_id("journals/entcs/GoubaultM12").is_err());
+    assert!(check_oai_id("10.123*").is_err());
+    assert!(check_oai_id("").is_err());
+    assert!(check_oai_id("something:arXiv.org:hep-th/9901001").is_err()); // bad schema
+    assert!(check_oai_id("oai:999:abc123").is_err()); // namespace-identifier must not start with digit
+    assert!(check_oai_id("oai:wibble:abc123").is_err()); // namespace-identifier must be domain name
+    assert!(check_oai_id("oai:wibble.org:ab cd").is_err()); // space not permitted (must be escaped as %20)
+    assert!(check_oai_id("oai:wibble.org:ab#cd").is_err()); // # not permitted
+    assert!(check_oai_id("oai:wibble.org:ab<cd").is_err()); // < not permitted
+    // the "official" regex used above allows this case
+    //assert!(check_oai_id("oai:wibble.org:ab%3ccd").is_err()); // < must be escaped at %3C not %3c
+
+    assert!(check_oai_id("oai:arXiv.org:hep-th/9901001").is_ok());
+    assert!(check_oai_id("oai:foo.org:some-local-id-53").is_ok());
+    assert!(check_oai_id("oai:FOO.ORG:some-local-id-53").is_ok());
+    assert!(check_oai_id("oai:foo.org:some-local-id-54").is_ok());
+    assert!(check_oai_id("oai:foo.org:Some-Local-Id-54").is_ok());
+    assert!(check_oai_id("oai:wibble.org:ab%20cd").is_ok());
+    assert!(check_oai_id("oai:wibble.org:ab?cd").is_ok());
+}
+
 pub fn check_issn(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^\d{4}-\d{3}[0-9X]$").unwrap();

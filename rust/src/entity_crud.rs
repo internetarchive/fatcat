@@ -1746,6 +1746,7 @@ impl EntityCrud for ReleaseEntity {
                 mag: None,
                 doaj: None,
                 dblp: None,
+                oai: None,
             },
             refs: None,
             contribs: None,
@@ -2024,6 +2025,7 @@ impl EntityCrud for ReleaseEntity {
             mag: None,
             doaj: None,
             dblp: None,
+            oai: None,
         };
 
         let extid_rows: Vec<ReleaseExtidRow> = release_rev_extid::table
@@ -2038,6 +2040,7 @@ impl EntityCrud for ReleaseEntity {
                 "mag" => ext_ids.mag = Some(extid_row.value),
                 "doaj" => ext_ids.doaj = Some(extid_row.value),
                 "dblp" => ext_ids.dblp = Some(extid_row.value),
+                "oai" => ext_ids.oai = Some(extid_row.value),
                 _ => (),
             }
         }
@@ -2309,6 +2312,13 @@ impl EntityCrud for ReleaseEntity {
                 release_extid_rows.push(ReleaseExtidRow {
                     release_rev: *rev_id,
                     extid_type: "dblp".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.oai {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "oai".to_string(),
                     value: extid.clone(),
                 });
             };
