@@ -16,6 +16,7 @@ SQL (and API, and elasticsearch):
   includes. Eg, `book`, `chapter`, `article`/`work`, `issue`, `volume`,
   `abstract`, `component`. Unclear how to initialize this field; default to
   `article`/`work`?
+- TODO: webcapture: lookup by primary URL sha1?
 - TODO: release: switch how pages work? first/last?
 - TODO: indication of peer-review process? at release or container level?
 - TODO: container: separate canonical and disambiguating titles (?)
