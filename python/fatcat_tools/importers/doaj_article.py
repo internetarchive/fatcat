@@ -196,15 +196,14 @@ class DoajArticleImporter(EntityImporter):
         except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
-            # doesn't exist, need to update
-            return True
 
         # then try other ext_id lookups
         if not existing:
             for extid_type in ('doi', 'pmid', 'pmcid'):
-                extid_val = re.ext_ids.__dict__[extid_type]
+                extid_val = getattr(re.ext_ids, extid_type)
                 if not extid_val:
                     continue
+                #print(f"  lookup release type: {extid_type} val: {extid_val}")
                 try:
                     existing = self.api.lookup_release(**{extid_type: extid_val})
                 except fatcat_openapi_client.rest.ApiException as err:
@@ -215,7 +214,7 @@ class DoajArticleImporter(EntityImporter):
                         warn_str = f"unexpected DOAJ ext_id match after lookup failed doaj={re.ext_ids.doaj} ident={existing.ident}"
                         warnings.warn(warn_str)
                         self.counts["skip-doaj-id-mismatch"] += 1
-                        return None
+                        return False
                     break
 
         # TODO: in the future could do fuzzy match here, eg using elasticsearch
