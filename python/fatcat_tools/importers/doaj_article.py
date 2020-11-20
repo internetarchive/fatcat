@@ -321,6 +321,8 @@ class DoajArticleImporter(EntityImporter):
         pmid: Optional[str] = None
         pmcid: Optional[str] = None
         for id_obj in identifiers:
+            if not id_obj.get('id'):
+                continue
             if id_obj['type'].lower() == 'doi':
                 doi = clean_doi(id_obj['id'])
             elif id_obj['type'].lower() == 'pmid':
