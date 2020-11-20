@@ -361,6 +361,7 @@ def detect_text_lang(raw: str) -> Optional[str]:
         return None
     try:
         lang = langdetect.detect(raw)
+        lang = lang.split('-')[0]
         assert len(lang) == 2
         return lang
     except (langdetect.lang_detect_exception.LangDetectException, TypeError):
@@ -373,6 +374,8 @@ def test_detect_text_lang() -> None:
     assert detect_text_lang(EN_SAMPLE) == "en"
     JA_SAMPLE = "モーラの種類は、以下に示すように111程度存在する。ただし、研究者により数え方が少しずつ異なる。"
     assert detect_text_lang(JA_SAMPLE) == "ja"
+    ZH_SAMPLE = "随着分布式清洁能源的普及,通信技术在协调各个分布式电源的控制中显得尤为重要。在电力信息传输的过程中,不同的网络状态下表现出不同的通信特性,严重的甚至会发生信息错乱丢包等行为,这对电网的实时控制产生严重影响。为研究信息系统对电力物理系统的实时影响,搭建了电力信息物理融合仿真平台,运用RT-LAB与OPNET两款实时仿真器,通过TCP/IP进行数据交互,对微电网电压、频率的集中式恢复与分布式恢复问题展开研究。仿真结果表明,该平台能有效地反映通信网络对电网控制的影响,提供了一种可靠的未来电力信息物理融合系统研究技术。"
+    assert detect_text_lang(ZH_SAMPLE) == "zh"
 
 def parse_lang_name(raw: Optional[str]) -> Optional[str]:
     """
