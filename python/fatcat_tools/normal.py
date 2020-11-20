@@ -62,7 +62,8 @@ def clean_doi(raw):
     # will likely want to expand DOI_REGEX to exclude non-ASCII characters, but
     # for now block specific characters so we can get PubMed importer running
     # again.
-    if 'ä' in raw or 'á' in raw or '\u200e' in raw or '\u2043' in raw:
+    # known characters to skip: ä á \u200e \u2043 \u2012
+    if not raw.isascii():
         return None
     return raw
 
@@ -81,6 +82,8 @@ def test_clean_doi():
     assert clean_doi("10.30466/vrf.2019.98547.2350\u200e") == None
     assert clean_doi("10.12016/j.issn.2096⁃1456.2017.06.014") == None
     assert clean_doi("10.4025/diálogos.v17i2.36030") == None
+    assert clean_doi("10.19027/jai.10.106‒115") == None
+    assert clean_doi("10.15673/атбп2312-3125.17/2014.26332") == None
 
 
 ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
