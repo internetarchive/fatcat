@@ -781,8 +781,6 @@ class DataciteImporter(EntityImporter):
         except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
-            # doesn't exist, need to update
-            return True
 
         # eventually we'll want to support "updates", but for now just skip if
         # entity already exists
