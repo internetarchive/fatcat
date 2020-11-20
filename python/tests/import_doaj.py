@@ -16,7 +16,6 @@ def doaj_importer(api):
         yield DoajArticleImporter(api, issn_file, bezerk_mode=True)
 
 def test_doaj_importer(doaj_importer):
-    return True # XXX
     last_index = doaj_importer.api.get_changelog(limit=1)[0].index
     with open("tests/files/example_doaj_articles.json", "r") as f:
         doaj_importer.bezerk_mode = True
