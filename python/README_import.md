@@ -126,3 +126,10 @@ Run import in parallel:
 
     zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched - --default-mime 'application/pdf'
 
+## DOAJ
+
+Takes a few hours.
+
+    export FATCAT_API_AUTH_TOKEN=... (FATCAT_AUTH_WORKER_DOAJ)
+
+    zcat /srv/fatcat/datasets/doaj_article_data_2020-11-13_all.json.gz | pv -l | parallel -j12 --round-robin --pipe ./fatcat_import.py doaj-article --issn-map-file /srv/fatcat/datasets/ISSN-to-ISSN-L.txt -
