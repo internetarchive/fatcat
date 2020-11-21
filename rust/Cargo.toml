@@ -44,7 +44,7 @@ serde_json = "1.0"
 serde = "1.0"
 serde_derive = "1.0"
 serde_ignored = "0.0.4"
-sentry = { version = "^0.12", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_failure"] }
+sentry = { version = "0.15", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_failure", "with_default_transport" ] }
 cadence = "^0.16"
 
 # Command-line tools
