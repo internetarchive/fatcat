@@ -8287,6 +8287,9 @@ where
                 let param_jstor = query_params.get("jstor").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_ark = query_params.get("ark").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_mag = query_params.get("mag").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_doaj = query_params.get("doaj").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_dblp = query_params.get("dblp").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_oai = query_params.get("oai").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
@@ -8302,6 +8305,9 @@ where
                         param_jstor,
                         param_ark,
                         param_mag,
+                        param_doaj,
+                        param_dblp,
+                        param_oai,
                         param_expand,
                         param_hide,
                         context,

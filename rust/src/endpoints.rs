@@ -76,7 +76,6 @@ macro_rules! wrap_entity_handlers {
     $delete_edit_fn:ident, $delete_edit_resp:ident, $get_rev_fn:ident, $get_rev_resp:ident,
     $get_redirects_fn:ident, $get_redirects_resp:ident,
     $model:ident) => {
-
         fn $get_fn(
             &self,
             ident: String,
@@ -99,11 +98,12 @@ macro_rules! wrap_entity_handlers {
                         let mut entity = $model::db_get(&conn, entity_id, hide_flags)?;
                         entity.db_expand(&conn, expand_flags)?;
                         Ok(entity)
-                    },
+                    }
                 }
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(entity) =>
-                    $get_resp::FoundEntity(entity),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(entity) => $get_resp::FoundEntity(entity),
                 Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -116,19 +116,27 @@ macro_rules! wrap_entity_handlers {
             context: &Context,
         ) -> Box<dyn Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| {
-                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
-                auth_context.require_role(FatcatRole::Editor)?;
-                auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
-                edit_context.check(&conn)?;
-                entity.db_create(&conn, &edit_context)?.into_model()
-            }).map_err(|e| FatcatError::from(e)) {
+            let ret = match conn
+                .transaction(|| {
+                    let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                    let auth_context = self.auth_confectionary.require_auth(
+                        &conn,
+                        &context.auth_data,
+                        Some(stringify!($post_fn)),
+                    )?;
+                    auth_context.require_role(FatcatRole::Editor)?;
+                    auth_context.require_editgroup(&conn, editgroup_id)?;
+                    let edit_context =
+                        make_edit_context(auth_context.editor_id, editgroup_id, false)?;
+                    edit_context.check(&conn)?;
+                    entity.db_create(&conn, &edit_context)?.into_model()
+                })
+                .map_err(|e| FatcatError::from(e))
+            {
                 Ok(edit) => {
                     self.metrics.incr("entities.created").ok();
                     $post_resp::CreatedEntity(edit)
-                },
+                }
                 Err(fe) => generic_auth_err_responses!(fe, $post_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -141,7 +149,11 @@ macro_rules! wrap_entity_handlers {
         ) -> Box<dyn Future<Item = $post_auto_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_auto_batch_fn)))?;
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some(stringify!($post_auto_batch_fn)),
+                )?;
                 auth_context.require_role(FatcatRole::Admin)?;
                 let mut editgroup = auto_batch.editgroup.clone();
                 // TODO: this is duplicated code with create_editgroup()
@@ -151,16 +163,21 @@ macro_rules! wrap_entity_handlers {
                             && !auth_context.has_role(FatcatRole::Admin)
                         {
                             return Err(FatcatError::InsufficientPrivileges(
-                                "not authorized to create editgroups in others' names".to_string()
-                            ))
+                                "not authorized to create editgroups in others' names".to_string(),
+                            ));
                         }
                     }
                     None => {
                         editgroup.editor_id = Some(auth_context.editor_id.to_string());
                     }
                 };
-                self.$post_auto_batch_handler(&conn, editgroup, &auto_batch.entity_list, auth_context.editor_id)
-                    .map_err(|e| FatcatError::from(e))
+                self.$post_auto_batch_handler(
+                    &conn,
+                    editgroup,
+                    &auto_batch.entity_list,
+                    auth_context.editor_id,
+                )
+                .map_err(|e| FatcatError::from(e))
             }) {
                 Ok(editgroup) => {
                     // TODO: need a count helper on editgroup
@@ -168,7 +185,7 @@ macro_rules! wrap_entity_handlers {
                     self.metrics.incr("editgroup.created").ok();
                     self.metrics.incr("editgroup.accepted").ok();
                     $post_auto_batch_resp::CreatedEditgroup(editgroup)
-                },
+                }
                 Err(fe) => generic_auth_err_responses!(fe, $post_auto_batch_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -182,20 +199,30 @@ macro_rules! wrap_entity_handlers {
             context: &Context,
         ) -> Box<dyn Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| {
-                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($update_fn)))?;
-                auth_context.require_role(FatcatRole::Editor)?;
-                let entity_id = FatcatId::from_str(&ident)?;
-                auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
-                edit_context.check(&conn)?;
-                entity.db_update(&conn, &edit_context, entity_id)?.into_model()
-            }).map_err(|e| FatcatError::from(e)) {
+            let ret = match conn
+                .transaction(|| {
+                    let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                    let auth_context = self.auth_confectionary.require_auth(
+                        &conn,
+                        &context.auth_data,
+                        Some(stringify!($update_fn)),
+                    )?;
+                    auth_context.require_role(FatcatRole::Editor)?;
+                    let entity_id = FatcatId::from_str(&ident)?;
+                    auth_context.require_editgroup(&conn, editgroup_id)?;
+                    let edit_context =
+                        make_edit_context(auth_context.editor_id, editgroup_id, false)?;
+                    edit_context.check(&conn)?;
+                    entity
+                        .db_update(&conn, &edit_context, entity_id)?
+                        .into_model()
+                })
+                .map_err(|e| FatcatError::from(e))
+            {
                 Ok(edit) => {
                     self.metrics.incr("entities.updated").ok();
                     $update_resp::UpdatedEntity(edit)
-                },
+                }
                 Err(fe) => generic_auth_err_responses!(fe, $update_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -208,20 +235,28 @@ macro_rules! wrap_entity_handlers {
             context: &Context,
         ) -> Box<dyn Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| {
-                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_fn)))?;
-                auth_context.require_role(FatcatRole::Editor)?;
-                let entity_id = FatcatId::from_str(&ident)?;
-                auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
-                edit_context.check(&conn)?;
-                $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
-            }).map_err(|e| FatcatError::from(e)) {
+            let ret = match conn
+                .transaction(|| {
+                    let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                    let auth_context = self.auth_confectionary.require_auth(
+                        &conn,
+                        &context.auth_data,
+                        Some(stringify!($delete_fn)),
+                    )?;
+                    auth_context.require_role(FatcatRole::Editor)?;
+                    let entity_id = FatcatId::from_str(&ident)?;
+                    auth_context.require_editgroup(&conn, editgroup_id)?;
+                    let edit_context =
+                        make_edit_context(auth_context.editor_id, editgroup_id, false)?;
+                    edit_context.check(&conn)?;
+                    $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
+                })
+                .map_err(|e| FatcatError::from(e))
+            {
                 Ok(edit) => {
                     self.metrics.incr("entities.deleted").ok();
                     $delete_resp::DeletedEntity(edit)
-                },
+                }
                 Err(fe) => generic_auth_err_responses!(fe, $delete_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -238,9 +273,10 @@ macro_rules! wrap_entity_handlers {
             let ret = match (|| {
                 let entity_id = FatcatId::from_str(&ident)?;
                 $model::db_get_history(&conn, entity_id, limit)
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(history) =>
-                    $get_history_resp::FoundEntityHistory(history),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(history) => $get_history_resp::FoundEntityHistory(history),
                 Err(fe) => generic_err_responses!(fe, $get_history_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -268,11 +304,12 @@ macro_rules! wrap_entity_handlers {
                         let mut entity = $model::db_get_rev(&conn, rev_id, hide_flags)?;
                         entity.db_expand(&conn, expand_flags)?;
                         Ok(entity)
-                    },
+                    }
                 }
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(entity) =>
-                    $get_rev_resp::FoundEntityRevision(entity),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(entity) => $get_rev_resp::FoundEntityRevision(entity),
                 Err(fe) => generic_err_responses!(fe, $get_rev_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -288,9 +325,10 @@ macro_rules! wrap_entity_handlers {
             let ret = match (|| {
                 let edit_id = Uuid::from_str(&edit_id)?;
                 $model::db_get_edit(&conn, edit_id)?.into_model()
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(edit) =>
-                    $get_edit_resp::FoundEdit(edit),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(edit) => $get_edit_resp::FoundEdit(edit),
                 Err(fe) => generic_err_responses!(fe, $get_edit_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -306,23 +344,29 @@ macro_rules! wrap_entity_handlers {
             let ret = match conn.transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
                 let edit_id = Uuid::from_str(&edit_id)?;
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_edit_fn)))?;
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some(stringify!($delete_edit_fn)),
+                )?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let edit = $model::db_get_edit(&conn, edit_id)?;
                 if !(edit.editgroup_id == editgroup_id.to_uuid()) {
                     return Err(FatcatError::BadRequest(
-                        "editgroup_id parameter didn't match that of the edit".to_string()
-                    ))
+                        "editgroup_id parameter didn't match that of the edit".to_string(),
+                    ));
                 }
                 auth_context.require_editgroup(&conn, editgroup_id)?;
                 // check for editgroup being deleted happens in db_delete_edit()
-                $model::db_delete_edit(&conn, edit_id)
-                    .map_err(|e| FatcatError::from(e))
+                $model::db_delete_edit(&conn, edit_id).map_err(|e| FatcatError::from(e))
             }) {
-                Ok(()) =>
-                    $delete_edit_resp::DeletedEdit(Success {
-                        success: true,
-                        message: format!("Successfully deleted work-in-progress {} edit: {}", stringify!($model), edit_id)
+                Ok(()) => $delete_edit_resp::DeletedEdit(Success {
+                    success: true,
+                    message: format!(
+                        "Successfully deleted work-in-progress {} edit: {}",
+                        stringify!($model),
+                        edit_id
+                    ),
                 }),
                 Err(fe) => generic_auth_err_responses!(fe, $delete_edit_resp),
             };
@@ -340,15 +384,15 @@ macro_rules! wrap_entity_handlers {
                 let entity_id = FatcatId::from_str(&ident)?;
                 let redirects: Vec<FatcatId> = $model::db_get_redirects(&conn, entity_id)?;
                 Ok(redirects.into_iter().map(|fcid| fcid.to_string()).collect())
-            })().map_err(|e: Error| FatcatError::from(e)) {
-                Ok(redirects) =>
-                    $get_redirects_resp::FoundEntityRedirects(redirects),
+            })()
+            .map_err(|e: Error| FatcatError::from(e))
+            {
+                Ok(redirects) => $get_redirects_resp::FoundEntityRedirects(redirects),
                 Err(fe) => generic_err_responses!(fe, $get_redirects_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
-
-    }
+    };
 }
 
 macro_rules! wrap_lookup_handler {
@@ -371,14 +415,16 @@ macro_rules! wrap_lookup_handler {
                 Some(param) => HideFlags::from_str(&param).unwrap(),
             };
             // No transaction for GET
-            let ret = match self.$get_handler(&conn, &$idname, &wikidata_qid, expand_flags, hide_flags).map_err(|e| FatcatError::from(e)) {
-                Ok(entity) =>
-                    $get_resp::FoundEntity(entity),
+            let ret = match self
+                .$get_handler(&conn, &$idname, &wikidata_qid, expand_flags, hide_flags)
+                .map_err(|e| FatcatError::from(e))
+            {
+                Ok(entity) => $get_resp::FoundEntity(entity),
                 Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
-    }
+    };
 }
 
 macro_rules! wrap_fcid_handler {
@@ -393,14 +439,15 @@ macro_rules! wrap_fcid_handler {
             let ret = match (|| {
                 let fcid = FatcatId::from_str(&id)?;
                 self.$get_handler(&conn, fcid)
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(entity) =>
-                    $get_resp::Found(entity),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(entity) => $get_resp::Found(entity),
                 Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
-    }
+    };
 }
 
 macro_rules! wrap_fcid_hide_handler {
@@ -420,14 +467,15 @@ macro_rules! wrap_fcid_hide_handler {
                     Some(param) => HideFlags::from_str(&param)?,
                 };
                 self.$get_handler(&conn, fcid, hide_flags)
-            })().map_err(|e| FatcatError::from(e)) {
-                Ok(entity) =>
-                    $get_resp::Found(entity),
+            })()
+            .map_err(|e| FatcatError::from(e))
+            {
+                Ok(entity) => $get_resp::Found(entity),
                 Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
-    }
+    };
 }
 
 impl Api for Server {
@@ -689,6 +737,9 @@ impl Api for Server {
         jstor: Option<String>,
         ark: Option<String>,
         mag: Option<String>,
+        doaj: Option<String>,
+        dblp: Option<String>,
+        oai: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -716,6 +767,9 @@ impl Api for Server {
                 &jstor,
                 &ark,
                 &mag,
+                &doaj,
+                &dblp,
+                &oai,
                 expand_flags,
                 hide_flags,
             )

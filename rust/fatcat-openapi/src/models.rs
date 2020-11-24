@@ -1230,6 +1230,21 @@ pub struct ReleaseExtIds {
     #[serde(rename = "mag")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mag: Option<String>,
+
+    /// DOAJ article-level identifier
+    #[serde(rename = "doaj")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub doaj: Option<String>,
+
+    /// dblp (https://dblp.uni-trier.de/) paper identifier; eg for conference proceedings
+    #[serde(rename = "dblp")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dblp: Option<String>,
+
+    /// OAI-PMH identifier; only used when an OAI-PMH record is the only authoritative metadata (eg, journal OAI-PMH feeds w/o DOIs)
+    #[serde(rename = "oai")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub oai: Option<String>,
 }
 
 impl ReleaseExtIds {
@@ -1245,6 +1260,9 @@ impl ReleaseExtIds {
             jstor: None,
             ark: None,
             mag: None,
+            doaj: None,
+            dblp: None,
+            oai: None,
         }
     }
 }

@@ -1,6 +1,7 @@
 #![allow(missing_docs, unused_variables, trivial_casts)]
 
-use fatcat_openapi;
+extern crate clap;
+extern crate fatcat_openapi;
 #[allow(unused_extern_crates)]
 extern crate futures;
 #[allow(unused_extern_crates)]
@@ -557,6 +558,9 @@ fn main() {
                     Some("jstor_example".to_string()),
                     Some("ark_example".to_string()),
                     Some("mag_example".to_string()),
+                    Some("doaj_example".to_string()),
+                    Some("dblp_example".to_string()),
+                    Some("oai_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
                 )

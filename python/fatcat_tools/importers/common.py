@@ -3,12 +3,9 @@ import re
 import sys
 import csv
 import json
-import ftfy
-import base64
 import sqlite3
 import datetime
 import subprocess
-import unicodedata
 from collections import Counter
 from confluent_kafka import Consumer, KafkaException
 import xml.etree.ElementTree as ET
@@ -18,161 +15,12 @@ from bs4 import BeautifulSoup
 import fatcat_openapi_client
 from fatcat_openapi_client.rest import ApiException
 
+# TODO: refactor so remove need for this (re-imports for backwards compatibility)
+from fatcat_tools.normal import (clean_str as clean, is_cjk, b32_hex, LANG_MAP_MARC) # noqa: F401
 
 DATE_FMT = "%Y-%m-%d"
 SANE_MAX_RELEASES = 200
 SANE_MAX_URLS = 100
-
-# These are very close, but maybe not exactly 1-to-1 with 639-2? Some mix of
-# 2/T and 2/B?
-# PubMed/MEDLINE and JSTOR use these MARC codes
-# https://www.loc.gov/marc/languages/language_name.html
-LANG_MAP_MARC = {
-    'afr': 'af',
-    'alb': 'sq',
-    'amh': 'am',
-    'ara': 'ar',
-    'arm': 'hy',
-    'aze': 'az',
-    'ben': 'bn',
-    'bos': 'bs',
-    'bul': 'bg',
-    'cat': 'ca',
-    'chi': 'zh',
-    'cze': 'cs',
-    'dan': 'da',
-    'dut': 'nl',
-    'eng': 'en',
-    'epo': 'eo',
-    'est': 'et',
-    'fin': 'fi',
-    'fre': 'fr',
-    'geo': 'ka',
-    'ger': 'de',
-    'gla': 'gd',
-    'gre': 'el',
-    'heb': 'he',
-    'hin': 'hi',
-    'hrv': 'hr',
-    'hun': 'hu',
-    'ice': 'is',
-    'ind': 'id',
-    'ita': 'it',
-    'jpn': 'ja',
-    'kin': 'rw',
-    'kor': 'ko',
-    'lat': 'la',
-    'lav': 'lv',
-    'lit': 'lt',
-    'mac': 'mk',
-    'mal': 'ml',
-    'mao': 'mi',
-    'may': 'ms',
-    'nor': 'no',
-    'per': 'fa',
-    'per': 'fa',
-    'pol': 'pl',
-    'por': 'pt',
-    'pus': 'ps',
-    'rum': 'ro',
-    'rus': 'ru',
-    'san': 'sa',
-    'slo': 'sk',
-    'slv': 'sl',
-    'spa': 'es',
-    'srp': 'sr',
-    'swe': 'sv',
-    'tha': 'th',
-    'tur': 'tr',
-    'ukr': 'uk',
-    'urd': 'ur',
-    'vie': 'vi',
-    'wel': 'cy',
-
-# additions
-    'gle': 'ga', # "Irish" (Gaelic)
-    'jav': 'jv', # Javanese
-    'welsh': 'cy', # Welsh
-    'oci': 'oc', # Occitan
-
-# Don't have ISO 639-1 codes
-    'grc': 'el', # Ancient Greek; map to modern greek
-    'map': None, # Austronesian (collection)
-    'syr': None, # Syriac, Modern
-    'gem': None, # Old Saxon
-    'non': None, # Old Norse
-    'emg': None, # Eastern Meohang
-    'neg': None, # Negidal
-    'mul': None, # Multiple languages
-    'und': None, # Undetermined
-}
-
-
-def clean(thing, force_xml=False):
-    """
-    This function is appropriate to be called on any random, non-markup string,
-    such as author names, titles, etc.
-
-    It will try to clean up common unicode mangles, HTML characters, etc.
-
-    This will detect XML/HTML and "do the right thing" (aka, not remove
-    entities like '&amp' if there are tags in the string), unless you pass the
-    'force_xml' parameter, which might be appropriate for, eg, names and
-    titles, which generally should be projected down to plain text.
-
-    Also strips extra whitespace.
-    """
-    if not thing:
-        return None
-    fix_entities = 'auto'
-    if force_xml:
-        fix_entities = True
-    fixed = ftfy.fix_text(thing, fix_entities=fix_entities).strip()
-    if not fixed or len(fixed) <= 1:
-        # wasn't zero-length before, but is now; return None
-        return None
-    return fixed
-
-def test_clean():
-
-    assert clean(None) == None
-    assert clean('') == None
-    assert clean('1') == None
-    assert clean('123') == '123'
-    assert clean('a&amp;b') == 'a&b'
-    assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
-    assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
-
-def b32_hex(s):
-    s = s.strip().split()[0].lower()
-    if s.startswith("sha1:"):
-        s = s[5:]
-    if len(s) != 32:
-        return s
-    return base64.b16encode(base64.b32decode(s.upper())).lower().decode('utf-8')
-
-def is_cjk(s):
-    if not s:
-        return False
-    for c in s:
-        if c.isalpha():
-            lang_prefix = unicodedata.name(c).split()[0]
-            return lang_prefix in ('CJK', 'HIRAGANA', 'KATAKANA', 'HANGUL')
-    return False
-
-def test_is_cjk():
-    assert is_cjk(None) is False
-    assert is_cjk('') is False
-    assert is_cjk('blah') is False
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼') is True
-    assert is_cjk('[岡, 鹿, 梨, 阜, 埼]') is True
-    assert is_cjk('菊') is True
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼 with eng after') is True
-    assert is_cjk('水道') is True
-    assert is_cjk('オウ, イク') is True # kanji
-    assert is_cjk('ひヒ') is True
-    assert is_cjk('き゚ゅ') is True
-    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') is True
 
 DOMAIN_REL_MAP = {
     "archive.org": "archive",
@@ -444,6 +292,7 @@ class EntityImporter:
         raise NotImplementedError
 
     def is_orcid(self, orcid):
+        # TODO: replace with clean_orcid() from fatcat_tools.normal
         return self._orcid_regex.match(orcid) is not None
 
     def lookup_orcid(self, orcid):
@@ -464,6 +313,7 @@ class EntityImporter:
         return creator_id
 
     def is_doi(self, doi):
+        # TODO: replace with clean_doi() from fatcat_tools.normal
         return doi.startswith("10.") and doi.count("/") >= 1
 
     def lookup_doi(self, doi):

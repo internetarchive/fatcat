@@ -73,7 +73,7 @@ fn into_base_path<T: IntoUrl>(input: T, correct_scheme: Option<&'static str>) ->
 #[derive(Clone)]
 pub struct Client {
     base_path: String,
-    hyper_client: Arc<dyn Fn() -> hyper::client::Client + Sync + Send>,
+    hyper_client: Arc<Fn() -> hyper::client::Client + Sync + Send>,
 }
 
 impl fmt::Debug for Client {
@@ -161,7 +161,7 @@ impl Client {
     /// The reason for this function's existence is to support legacy test code, which did mocking at the hyper layer.
     /// This is not a recommended way to write new tests. If other reasons are found for using this function, they
     /// should be mentioned here.
-    pub fn try_new_with_hyper_client<T>(base_path: T, hyper_client: Arc<dyn Fn() -> hyper::client::Client + Sync + Send>) -> Result<Client, ClientInitError>
+    pub fn try_new_with_hyper_client<T>(base_path: T, hyper_client: Arc<Fn() -> hyper::client::Client + Sync + Send>) -> Result<Client, ClientInitError>
     where
         T: IntoUrl,
     {
@@ -173,7 +173,7 @@ impl Client {
 }
 
 impl Api for Client {
-    fn auth_check(&self, param_role: Option<String>, context: &Context) -> Box<dyn Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+    fn auth_check(&self, param_role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_role = param_role.map_or_else(String::new, |query| format!("role={role}&", role = query.to_string()));
 
@@ -251,7 +251,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn auth_oidc(&self, param_oidc_params: models::AuthOidc, context: &Context) -> Box<dyn Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+    fn auth_oidc(&self, param_oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/auth/oidc", self.base_path);
 
         let body = serde_json::to_string(&param_oidc_params).expect("impossible to fail to serialize");
@@ -345,7 +345,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_auth_token(&self, param_editor_id: String, param_duration_seconds: Option<i32>, context: &Context) -> Box<dyn Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send> {
+    fn create_auth_token(&self, param_editor_id: String, param_duration_seconds: Option<i32>, context: &Context) -> Box<Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_duration_seconds = param_duration_seconds.map_or_else(String::new, |query| format!("duration_seconds={duration_seconds}&", duration_seconds = query.to_string()));
 
@@ -428,7 +428,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_changelog(&self, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
+    fn get_changelog(&self, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -484,7 +484,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_changelog_entry(&self, param_index: i64, context: &Context) -> Box<dyn Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+    fn get_changelog_entry(&self, param_index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/changelog/{index}",
             self.base_path,
@@ -548,7 +548,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container(&self, param_editgroup_id: String, param_entity: models::ContainerEntity, context: &Context) -> Box<dyn Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+    fn create_container(&self, param_editgroup_id: String, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/container",
             self.base_path,
@@ -639,7 +639,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container_auto_batch(&self, param_auto_batch: models::ContainerAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_container_auto_batch(&self, param_auto_batch: models::ContainerAutoBatch, context: &Context) -> Box<Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/container/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -726,7 +726,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+    fn delete_container(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/container/{ident}",
             self.base_path,
@@ -813,7 +813,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+    fn delete_container_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/container/edit/{edit_id}",
             self.base_path,
@@ -900,7 +900,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+    fn get_container(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -970,7 +970,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
+    fn get_container_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/container/edit/{edit_id}",
             self.base_path,
@@ -1034,7 +1034,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
+    fn get_container_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -1102,7 +1102,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetContainerRedirectsResponse, Error = ApiError> + Send> {
+    fn get_container_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetContainerRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/container/{ident}/redirects",
             self.base_path,
@@ -1172,7 +1172,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetContainerRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetContainerRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -1249,7 +1249,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_issnl = param_issnl.map_or_else(String::new, |query| format!("issnl={issnl}&", issnl = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
@@ -1328,7 +1328,7 @@ impl Api for Client {
         param_ident: String,
         param_entity: models::ContainerEntity,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/container/{ident}",
             self.base_path,
@@ -1420,7 +1420,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator(&self, param_editgroup_id: String, param_entity: models::CreatorEntity, context: &Context) -> Box<dyn Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+    fn create_creator(&self, param_editgroup_id: String, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/creator",
             self.base_path,
@@ -1511,7 +1511,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator_auto_batch(&self, param_auto_batch: models::CreatorAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_creator_auto_batch(&self, param_auto_batch: models::CreatorAutoBatch, context: &Context) -> Box<Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/creator/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -1598,7 +1598,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+    fn delete_creator(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/creator/{ident}",
             self.base_path,
@@ -1685,7 +1685,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+    fn delete_creator_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/creator/edit/{edit_id}",
             self.base_path,
@@ -1772,7 +1772,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+    fn get_creator(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -1842,7 +1842,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
+    fn get_creator_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/creator/edit/{edit_id}",
             self.base_path,
@@ -1906,7 +1906,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
+    fn get_creator_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -1974,7 +1974,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetCreatorRedirectsResponse, Error = ApiError> + Send> {
+    fn get_creator_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetCreatorRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/creator/{ident}/redirects",
             self.base_path,
@@ -2038,7 +2038,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+    fn get_creator_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
@@ -2112,7 +2112,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetCreatorRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetCreatorRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -2189,7 +2189,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_orcid = param_orcid.map_or_else(String::new, |query| format!("orcid={orcid}&", orcid = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
@@ -2268,7 +2268,7 @@ impl Api for Client {
         param_ident: String,
         param_entity: models::CreatorEntity,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/creator/{ident}",
             self.base_path,
@@ -2360,7 +2360,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn accept_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<dyn Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
+    fn accept_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/accept",
             self.base_path,
@@ -2453,7 +2453,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_editgroup(&self, param_editgroup: models::Editgroup, context: &Context) -> Box<dyn Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
+    fn create_editgroup(&self, param_editgroup: models::Editgroup, context: &Context) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup", self.base_path);
 
         let body = serde_json::to_string(&param_editgroup).expect("impossible to fail to serialize");
@@ -2545,7 +2545,7 @@ impl Api for Client {
         param_editgroup_id: String,
         param_annotation: models::EditgroupAnnotation,
         context: &Context,
-    ) -> Box<dyn Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/annotation",
             self.base_path,
@@ -2636,7 +2636,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<dyn Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+    fn get_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}",
             self.base_path,
@@ -2700,12 +2700,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editgroup_annotations(
-        &self,
-        param_editgroup_id: String,
-        param_expand: Option<String>,
-        context: &Context,
-    ) -> Box<dyn Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
+    fn get_editgroup_annotations(&self, param_editgroup_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
 
@@ -2802,7 +2797,7 @@ impl Api for Client {
         param_before: Option<chrono::DateTime<chrono::Utc>>,
         param_since: Option<chrono::DateTime<chrono::Utc>>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
@@ -2881,7 +2876,7 @@ impl Api for Client {
         param_editgroup: models::Editgroup,
         param_submit: Option<bool>,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_submit = param_submit.map_or_else(String::new, |query| format!("submit={submit}&", submit = query.to_string()));
 
@@ -2976,7 +2971,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor(&self, param_editor_id: String, context: &Context) -> Box<dyn Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+    fn get_editor(&self, param_editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editor/{editor_id}",
             self.base_path,
@@ -3047,7 +3042,7 @@ impl Api for Client {
         param_before: Option<chrono::DateTime<chrono::Utc>>,
         param_since: Option<chrono::DateTime<chrono::Utc>>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
         let query_before = param_before.map_or_else(String::new, |query| format!("before={before}&", before = query.to_string()));
@@ -3148,7 +3143,7 @@ impl Api for Client {
         param_before: Option<chrono::DateTime<chrono::Utc>>,
         param_since: Option<chrono::DateTime<chrono::Utc>>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
         let query_before = param_before.map_or_else(String::new, |query| format!("before={before}&", before = query.to_string()));
@@ -3220,7 +3215,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_editor(&self, param_editor_id: String, param_editor: models::Editor, context: &Context) -> Box<dyn Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+    fn update_editor(&self, param_editor_id: String, param_editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editor/{editor_id}",
             self.base_path,
@@ -3311,7 +3306,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file(&self, param_editgroup_id: String, param_entity: models::FileEntity, context: &Context) -> Box<dyn Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+    fn create_file(&self, param_editgroup_id: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/file",
             self.base_path,
@@ -3402,7 +3397,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file_auto_batch(&self, param_auto_batch: models::FileAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_file_auto_batch(&self, param_auto_batch: models::FileAutoBatch, context: &Context) -> Box<Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/file/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -3489,7 +3484,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+    fn delete_file(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/file/{ident}",
             self.base_path,
@@ -3576,7 +3571,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+    fn delete_file_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/file/edit/{edit_id}",
             self.base_path,
@@ -3663,7 +3658,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetFileResponse, Error = ApiError> + Send> {
+    fn get_file(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -3733,7 +3728,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
+    fn get_file_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/file/edit/{edit_id}",
             self.base_path,
@@ -3797,7 +3792,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
+    fn get_file_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -3865,7 +3860,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetFileRedirectsResponse, Error = ApiError> + Send> {
+    fn get_file_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetFileRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/file/{ident}/redirects",
             self.base_path,
@@ -3935,7 +3930,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetFileRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetFileRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -4013,7 +4008,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_md5 = param_md5.map_or_else(String::new, |query| format!("md5={md5}&", md5 = query.to_string()));
         let query_sha1 = param_sha1.map_or_else(String::new, |query| format!("sha1={sha1}&", sha1 = query.to_string()));
@@ -4088,7 +4083,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_file(&self, param_editgroup_id: String, param_ident: String, param_entity: models::FileEntity, context: &Context) -> Box<dyn Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+    fn update_file(&self, param_editgroup_id: String, param_ident: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/file/{ident}",
             self.base_path,
@@ -4180,7 +4175,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_fileset(&self, param_editgroup_id: String, param_entity: models::FilesetEntity, context: &Context) -> Box<dyn Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
+    fn create_fileset(&self, param_editgroup_id: String, param_entity: models::FilesetEntity, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/fileset",
             self.base_path,
@@ -4271,7 +4266,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_fileset_auto_batch(&self, param_auto_batch: models::FilesetAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_fileset_auto_batch(&self, param_auto_batch: models::FilesetAutoBatch, context: &Context) -> Box<Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/fileset/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -4358,7 +4353,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
+    fn delete_fileset(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/fileset/{ident}",
             self.base_path,
@@ -4445,7 +4440,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+    fn delete_fileset_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/fileset/edit/{edit_id}",
             self.base_path,
@@ -4532,7 +4527,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_fileset(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetFilesetResponse, Error = ApiError> + Send> {
+    fn get_fileset(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -4602,7 +4597,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_fileset_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
+    fn get_fileset_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/fileset/edit/{edit_id}",
             self.base_path,
@@ -4666,7 +4661,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_fileset_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send> {
+    fn get_fileset_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -4734,7 +4729,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_fileset_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetFilesetRedirectsResponse, Error = ApiError> + Send> {
+    fn get_fileset_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetFilesetRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/fileset/{ident}/redirects",
             self.base_path,
@@ -4804,7 +4799,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -4880,7 +4875,7 @@ impl Api for Client {
         param_ident: String,
         param_entity: models::FilesetEntity,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/fileset/{ident}",
             self.base_path,
@@ -4972,7 +4967,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release(&self, param_editgroup_id: String, param_entity: models::ReleaseEntity, context: &Context) -> Box<dyn Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+    fn create_release(&self, param_editgroup_id: String, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/release",
             self.base_path,
@@ -5063,7 +5058,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release_auto_batch(&self, param_auto_batch: models::ReleaseAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_release_auto_batch(&self, param_auto_batch: models::ReleaseAutoBatch, context: &Context) -> Box<Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/release/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -5150,7 +5145,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+    fn delete_release(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/release/{ident}",
             self.base_path,
@@ -5237,7 +5232,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+    fn delete_release_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/release/edit/{edit_id}",
             self.base_path,
@@ -5324,7 +5319,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+    fn get_release(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -5394,7 +5389,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
+    fn get_release_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/release/edit/{edit_id}",
             self.base_path,
@@ -5458,7 +5453,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_files(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+    fn get_release_files(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
@@ -5526,7 +5521,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_filesets(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetReleaseFilesetsResponse, Error = ApiError> + Send> {
+    fn get_release_filesets(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesetsResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
@@ -5594,7 +5589,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
+    fn get_release_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -5662,7 +5657,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send> {
+    fn get_release_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/release/{ident}/redirects",
             self.base_path,
@@ -5732,7 +5727,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetReleaseRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetReleaseRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -5802,7 +5797,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_webcaptures(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetReleaseWebcapturesResponse, Error = ApiError> + Send> {
+    fn get_release_webcaptures(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseWebcapturesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
@@ -5882,10 +5877,13 @@ impl Api for Client {
         param_jstor: Option<String>,
         param_ark: Option<String>,
         param_mag: Option<String>,
+        param_doaj: Option<String>,
+        param_dblp: Option<String>,
+        param_oai: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_doi = param_doi.map_or_else(String::new, |query| format!("doi={doi}&", doi = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
@@ -5897,11 +5895,14 @@ impl Api for Client {
         let query_jstor = param_jstor.map_or_else(String::new, |query| format!("jstor={jstor}&", jstor = query.to_string()));
         let query_ark = param_ark.map_or_else(String::new, |query| format!("ark={ark}&", ark = query.to_string()));
         let query_mag = param_mag.map_or_else(String::new, |query| format!("mag={mag}&", mag = query.to_string()));
+        let query_doaj = param_doaj.map_or_else(String::new, |query| format!("doaj={doaj}&", doaj = query.to_string()));
+        let query_dblp = param_dblp.map_or_else(String::new, |query| format!("dblp={dblp}&", dblp = query.to_string()));
+        let query_oai = param_oai.map_or_else(String::new, |query| format!("oai={oai}&", oai = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{expand}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{doaj}{dblp}{oai}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
@@ -5913,6 +5914,9 @@ impl Api for Client {
             jstor = utf8_percent_encode(&query_jstor, QUERY_ENCODE_SET),
             ark = utf8_percent_encode(&query_ark, QUERY_ENCODE_SET),
             mag = utf8_percent_encode(&query_mag, QUERY_ENCODE_SET),
+            doaj = utf8_percent_encode(&query_doaj, QUERY_ENCODE_SET),
+            dblp = utf8_percent_encode(&query_dblp, QUERY_ENCODE_SET),
+            oai = utf8_percent_encode(&query_oai, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -5980,7 +5984,7 @@ impl Api for Client {
         param_ident: String,
         param_entity: models::ReleaseEntity,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/release/{ident}",
             self.base_path,
@@ -6072,7 +6076,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_webcapture(&self, param_editgroup_id: String, param_entity: models::WebcaptureEntity, context: &Context) -> Box<dyn Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
+    fn create_webcapture(&self, param_editgroup_id: String, param_entity: models::WebcaptureEntity, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/webcapture",
             self.base_path,
@@ -6163,7 +6167,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_webcapture_auto_batch(&self, param_auto_batch: models::WebcaptureAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_webcapture_auto_batch(&self, param_auto_batch: models::WebcaptureAutoBatch, context: &Context) -> Box<Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/webcapture/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -6250,7 +6254,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
+    fn delete_webcapture(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/webcapture/{ident}",
             self.base_path,
@@ -6337,7 +6341,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn delete_webcapture_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/webcapture/edit/{edit_id}",
             self.base_path,
@@ -6424,13 +6428,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_webcapture(
-        &self,
-        param_ident: String,
-        param_expand: Option<String>,
-        param_hide: Option<String>,
-        context: &Context,
-    ) -> Box<dyn Future<Item = GetWebcaptureResponse, Error = ApiError> + Send> {
+    fn get_webcapture(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -6500,7 +6498,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_webcapture_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn get_webcapture_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/webcapture/edit/{edit_id}",
             self.base_path,
@@ -6564,7 +6562,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_webcapture_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send> {
+    fn get_webcapture_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -6632,7 +6630,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_webcapture_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetWebcaptureRedirectsResponse, Error = ApiError> + Send> {
+    fn get_webcapture_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetWebcaptureRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/webcapture/{ident}/redirects",
             self.base_path,
@@ -6702,7 +6700,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -6778,7 +6776,7 @@ impl Api for Client {
         param_ident: String,
         param_entity: models::WebcaptureEntity,
         context: &Context,
-    ) -> Box<dyn Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/webcapture/{ident}",
             self.base_path,
@@ -6870,7 +6868,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work(&self, param_editgroup_id: String, param_entity: models::WorkEntity, context: &Context) -> Box<dyn Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+    fn create_work(&self, param_editgroup_id: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/work",
             self.base_path,
@@ -6961,7 +6959,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work_auto_batch(&self, param_auto_batch: models::WorkAutoBatch, context: &Context) -> Box<dyn Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send> {
+    fn create_work_auto_batch(&self, param_auto_batch: models::WorkAutoBatch, context: &Context) -> Box<Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/auto/work/batch", self.base_path);
 
         let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
@@ -7048,7 +7046,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<dyn Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+    fn delete_work(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/work/{ident}",
             self.base_path,
@@ -7135,7 +7133,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+    fn delete_work_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/work/edit/{edit_id}",
             self.base_path,
@@ -7222,7 +7220,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+    fn get_work(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -7292,7 +7290,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_edit(&self, param_edit_id: String, context: &Context) -> Box<dyn Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
+    fn get_work_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/work/edit/{edit_id}",
             self.base_path,
@@ -7356,7 +7354,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<dyn Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
+    fn get_work_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
@@ -7424,7 +7422,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_redirects(&self, param_ident: String, context: &Context) -> Box<dyn Future<Item = GetWorkRedirectsResponse, Error = ApiError> + Send> {
+    fn get_work_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetWorkRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/work/{ident}/redirects",
             self.base_path,
@@ -7488,7 +7486,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<dyn Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+    fn get_work_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
@@ -7562,7 +7560,7 @@ impl Api for Client {
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
-    ) -> Box<dyn Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
@@ -7632,7 +7630,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_work(&self, param_editgroup_id: String, param_ident: String, param_entity: models::WorkEntity, context: &Context) -> Box<dyn Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+    fn update_work(&self, param_editgroup_id: String, param_ident: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/work/{ident}",
             self.base_path,
@@ -7747,7 +7745,7 @@ impl From<openssl::error::ErrorStack> for ClientInitError {
 
 impl fmt::Display for ClientInitError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        (self as &dyn fmt::Debug).fmt(f)
+        (self as &fmt::Debug).fmt(f)
     }
 }
 

@@ -362,6 +362,93 @@ fn test_check_isbn13() {
     assert!(check_isbn13("9781566199094").is_err());
 }
 
+pub fn check_doaj_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[a-f0-9]{32}$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedChecksum(
+            "DOAJ Article Identifier (expected, eg, 'e58f08a11ecb495ead55a44ad4f89808')"
+                .to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_doaj_id() {
+    assert!(check_doaj_id("e58f08a11ecb495ead55a44ad4f89808").is_ok());
+    assert!(check_doaj_id("1b39813549077b2347c0f370c3864b40").is_ok());
+    assert!(check_doaj_id("1b39813549077b2347c0f370c3864b40 ").is_err());
+    assert!(check_doaj_id("1g39813549077b2347c0f370c3864b40").is_err());
+    assert!(check_doaj_id("1B39813549077B2347C0F370c3864b40").is_err());
+    assert!(check_doaj_id("1b39813549077b2347c0f370c3864b4").is_err());
+    assert!(check_doaj_id("1b39813549077b2347c0f370c3864b411").is_err());
+}
+
+pub fn check_dblp_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        // TODO: what should this actually be? more or less restrictive?
+        static ref RE: Regex = Regex::new(r"^[a-z]+/[a-zA-Z0-9]+/[a-zA-Z0-9/]+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedChecksum(
+            "dblp Article Key (expected, eg, 'journals/entcs/GoubaultM12')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_dblp_id() {
+    assert!(check_dblp_id("journals/entcs/GoubaultM12").is_ok());
+    assert!(check_dblp_id("journals/entcs/GoubaultM12").is_ok());
+    assert!(check_dblp_id("10.123*").is_err());
+    assert!(check_dblp_id("").is_err());
+}
+
+pub fn check_oai_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        // http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
+        static ref RE: Regex = Regex::new(r"^oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*'\(\);/\?:@&=\+$,%]+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedChecksum(
+            "OAI-PMH identifier (expected, eg, 'oai:foo.org:some-local-id-54')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_oai_id() {
+    assert!(check_oai_id("journals/entcs/GoubaultM12").is_err());
+    assert!(check_oai_id("10.123*").is_err());
+    assert!(check_oai_id("").is_err());
+    assert!(check_oai_id("something:arXiv.org:hep-th/9901001").is_err()); // bad schema
+    assert!(check_oai_id("oai:999:abc123").is_err()); // namespace-identifier must not start with digit
+    assert!(check_oai_id("oai:wibble:abc123").is_err()); // namespace-identifier must be domain name
+    assert!(check_oai_id("oai:wibble.org:ab cd").is_err()); // space not permitted (must be escaped as %20)
+    assert!(check_oai_id("oai:wibble.org:ab#cd").is_err()); // # not permitted
+    assert!(check_oai_id("oai:wibble.org:ab<cd").is_err()); // < not permitted
+    // the "official" regex used above allows this case
+    //assert!(check_oai_id("oai:wibble.org:ab%3ccd").is_err()); // < must be escaped at %3C not %3c
+
+    assert!(check_oai_id("oai:arXiv.org:hep-th/9901001").is_ok());
+    assert!(check_oai_id("oai:foo.org:some-local-id-53").is_ok());
+    assert!(check_oai_id("oai:FOO.ORG:some-local-id-53").is_ok());
+    assert!(check_oai_id("oai:foo.org:some-local-id-54").is_ok());
+    assert!(check_oai_id("oai:foo.org:Some-Local-Id-54").is_ok());
+    assert!(check_oai_id("oai:wibble.org:ab%20cd").is_ok());
+    assert!(check_oai_id("oai:wibble.org:ab?cd").is_ok());
+}
+
 pub fn check_issn(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^\d{4}-\d{3}[0-9X]$").unwrap();

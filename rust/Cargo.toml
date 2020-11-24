@@ -1,6 +1,6 @@
 [package]
 name = "fatcat"
-version = "0.3.1"
+version = "0.3.3"
 edition = "2018"
 authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "A scalable, versioned, API-oriented catalog for bibliographic entities and file metadata"
@@ -44,7 +44,7 @@ serde_json = "1.0"
 serde = "1.0"
 serde_derive = "1.0"
 serde_ignored = "0.0.4"
-sentry = { version = "^0.12", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_failure"] }
+sentry = { version = "0.15", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_failure", "with_default_transport" ] }
 cadence = "^0.16"
 
 # Command-line tools

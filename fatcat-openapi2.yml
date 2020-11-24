@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   title: fatcat
-  version: 0.3.1
+  version: 0.3.3
   description: |
     Fatcat is a scalable, versioned, API-oriented catalog of bibliographic
     entities and file metadata.
@@ -897,6 +897,15 @@ definitions:
       mag:
         type: string
         description: "Microsoft Academic Graph identifier"
+      doaj:
+        type: string
+        description: "DOAJ article-level identifier"
+      dblp:
+        type: string
+        description: "dblp (https://dblp.uni-trier.de/) paper identifier; eg for conference proceedings"
+      oai:
+        type: string
+        description: "OAI-PMH identifier; only used when an OAI-PMH record is the only authoritative metadata (eg, journal OAI-PMH feeds w/o DOIs)"
   release_abstract:
     type: object
     properties:
@@ -3092,6 +3101,18 @@ paths:
           type: string
           required: false
         - name: mag
+          in: query
+          type: string
+          required: false
+        - name: doaj
+          in: query
+          type: string
+          required: false
+        - name: dblp
+          in: query
+          type: string
+          required: false
+        - name: oai
           in: query
           type: string
           required: false

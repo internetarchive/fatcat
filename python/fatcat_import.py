@@ -256,6 +256,24 @@ def run_datacite(args):
     else:
         JsonLinePusher(dci, args.json_file).run()
 
+def run_doaj_article(args):
+    dai = DoajArticleImporter(args.api,
+        args.issn_map_file,
+        edit_batch_size=args.batch_size,
+        do_updates=args.do_updates,
+    )
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            dai,
+            args.kafka_hosts,
+            args.kafka_env,
+            "api-doaj",
+            "fatcat-{}-import-doaj".format(args.kafka_env),
+            consume_batch_size=args.batch_size,
+        ).run()
+    else:
+        JsonLinePusher(dai, args.json_file).run()
+
 def run_file_meta(args):
     # do_updates defaults to true for this importer
     fmi = FileMetaImporter(args.api,
@@ -604,6 +622,25 @@ def main():
     sub_datacite.set_defaults(
         func=run_datacite,
         auth_var="FATCAT_AUTH_WORKER_DATACITE",
+    )
+
+    sub_doaj_article = subparsers.add_parser('doaj-article',
+        help="import doaj.org article metadata")
+    sub_doaj_article.add_argument('json_file',
+        help="File with JSON lines from DOAJ API (or bulk dump) to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_doaj_article.add_argument('--issn-map-file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_doaj_article.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+    sub_doaj_article.add_argument('--do-updates',
+        action='store_true',
+        help="update any pre-existing release entities")
+    sub_doaj_article.set_defaults(
+        func=run_doaj_article,
+        auth_var="FATCAT_AUTH_WORKER_DOAJ",
     )
 
     sub_file_meta = subparsers.add_parser('file-meta',

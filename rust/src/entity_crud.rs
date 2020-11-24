@@ -334,7 +334,9 @@ macro_rules! generic_db_create {
         fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
             if self.redirect.is_some() {
                 return Err(FatcatError::BadRequest(
-                    "can't create an entity that redirects from the start".to_string()).into());
+                    "can't create an entity that redirects from the start".to_string(),
+                )
+                .into());
             }
             let rev_id = self.db_insert_rev(conn)?;
             let ident: Uuid = insert_into($ident_table::table)
@@ -351,7 +353,7 @@ macro_rules! generic_db_create {
                 .get_result(conn)?;
             Ok(edit)
         }
-    }
+    };
 }
 
 macro_rules! generic_db_create_batch {
@@ -764,7 +766,7 @@ macro_rules! generic_db_insert_rev {
         fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
             Self::db_insert_revs(conn, &[self]).map(|id_list| id_list[0])
         }
-    }
+    };
 }
 
 impl EntityCrud for ContainerEntity {
@@ -1742,6 +1744,9 @@ impl EntityCrud for ReleaseEntity {
                 jstor: None,
                 ark: None,
                 mag: None,
+                doaj: None,
+                dblp: None,
+                oai: None,
             },
             refs: None,
             contribs: None,
@@ -2018,6 +2023,9 @@ impl EntityCrud for ReleaseEntity {
             jstor: None,
             ark: None,
             mag: None,
+            doaj: None,
+            dblp: None,
+            oai: None,
         };
 
         let extid_rows: Vec<ReleaseExtidRow> = release_rev_extid::table
@@ -2030,6 +2038,9 @@ impl EntityCrud for ReleaseEntity {
                 "jstor" => ext_ids.jstor = Some(extid_row.value),
                 "ark" => ext_ids.ark = Some(extid_row.value),
                 "mag" => ext_ids.mag = Some(extid_row.value),
+                "doaj" => ext_ids.doaj = Some(extid_row.value),
+                "dblp" => ext_ids.dblp = Some(extid_row.value),
+                "oai" => ext_ids.oai = Some(extid_row.value),
                 _ => (),
             }
         }
@@ -2287,6 +2298,27 @@ impl EntityCrud for ReleaseEntity {
                 release_extid_rows.push(ReleaseExtidRow {
                     release_rev: *rev_id,
                     extid_type: "mag".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.doaj {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "doaj".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.dblp {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "dblp".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.oai {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "oai".to_string(),
                     value: extid.clone(),
                 });
             };

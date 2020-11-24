@@ -30,3 +30,4 @@ from .cdl_dash_dat import auto_cdl_dash_dat
 from .ingest import IngestFileResultImporter, SavePaperNowFileImporter, IngestWebResultImporter
 from .shadow import ShadowLibraryImporter
 from .file_meta import FileMetaImporter
+from .doaj_article import DoajArticleImporter

@@ -213,6 +213,9 @@ def release_to_elasticsearch(entity, force_bool=True):
     t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
     t['ia_pdf_url'] = ia_pdf_url
 
+    if release.ext_ids.doaj:
+        is_oa = True
+
     if release.license_slug:
         # TODO: more/better checks here, particularly strict *not* OA licenses
         if release.license_slug.startswith("CC-"):
