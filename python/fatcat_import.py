@@ -71,8 +71,7 @@ def run_pubmed(args):
         Bs4XmlLargeFilePusher(
             pi,
             args.xml_file,
-            "PubmedArticle",
-            record_list_tag="PubmedArticleSet",
+            ["PubmedArticle"],
         ).run()
 
 def run_jstor(args):
