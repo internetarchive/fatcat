@@ -133,6 +133,28 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("0806.v1") == None
     assert clean_arxiv_id("08062878v1") == None
 
+def clean_wikidata_qid(raw):
+    if not raw:
+        return None
+    raw = raw.strip()
+    if len(raw.split()) != 1 or len(raw) < 2:
+        return None
+    if raw[0] == 'Q' and raw[1] != '0' and raw[1:].isdigit():
+        return raw
+    return None
+
+def test_clean_wikidata_qid():
+    assert clean_wikidata_qid("Q1234") == "Q1234"
+    assert clean_wikidata_qid("Q1") == "Q1"
+    assert clean_wikidata_qid(" Q1234 ") == "Q1234"
+    assert clean_wikidata_qid(" Q1 234 ") == None
+    assert clean_wikidata_qid("q1234") == None
+    assert clean_wikidata_qid("1234 ") == None
+    assert clean_wikidata_qid("Q0123") == None
+    assert clean_wikidata_qid("PMC123") == None
+    assert clean_wikidata_qid("qfba3") == None
+    assert clean_wikidata_qid("") == None
+
 def clean_pmid(raw):
     if not raw:
         return None
@@ -147,8 +169,8 @@ def test_clean_pmid():
     assert clean_pmid("1234") == "1234"
     assert clean_pmid("1234 ") == "1234"
     assert clean_pmid("PMC123") == None
-    assert clean_sha1("qfba3") == None
-    assert clean_sha1("") == None
+    assert clean_pmid("qfba3") == None
+    assert clean_pmid("") == None
 
 def clean_pmcid(raw):
     if not raw:
