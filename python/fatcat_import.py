@@ -273,6 +273,19 @@ def run_doaj_article(args):
     else:
         JsonLinePusher(dai, args.json_file).run()
 
+def run_dblp_release(args):
+    dwi = DblpReleaseImporter(args.api,
+        args.issn_map_file,
+        edit_batch_size=args.batch_size,
+        do_updates=args.do_updates,
+    )
+    Bs4XmlLargeFilePusher(
+        dwi,
+        args.xml_file,
+        DblpReleaseImporter.ELEMENT_TYPES,
+        use_lxml=True,
+    ).run()
+
 def run_file_meta(args):
     # do_updates defaults to true for this importer
     fmi = FileMetaImporter(args.api,
@@ -640,6 +653,22 @@ def main():
     sub_doaj_article.set_defaults(
         func=run_doaj_article,
         auth_var="FATCAT_AUTH_WORKER_DOAJ",
+    )
+
+    sub_dblp_release = subparsers.add_parser('dblp-release',
+        help="import dblp release metadata")
+    sub_dblp_release.add_argument('xml_file',
+        help="File with DBLP XML to import from",
+        default=sys.stdin, type=argparse.FileType('rb'))
+    sub_dblp_release.add_argument('--issn-map-file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_dblp_release.add_argument('--do-updates',
+        action='store_true',
+        help="update any pre-existing release entities")
+    sub_dblp_release.set_defaults(
+        func=run_dblp_release,
+        auth_var="FATCAT_AUTH_WORKER_DBLP",
     )
 
     sub_file_meta = subparsers.add_parser('file-meta',
