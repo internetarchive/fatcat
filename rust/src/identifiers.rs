@@ -369,7 +369,7 @@ pub fn check_doaj_id(raw: &str) -> Result<()> {
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
-        Err(FatcatError::MalformedChecksum(
+        Err(FatcatError::MalformedExternalId(
             "DOAJ Article Identifier (expected, eg, 'e58f08a11ecb495ead55a44ad4f89808')"
                 .to_string(),
             raw.to_string(),
@@ -427,7 +427,7 @@ pub fn check_oai_id(raw: &str) -> Result<()> {
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
-        Err(FatcatError::MalformedChecksum(
+        Err(FatcatError::MalformedExternalId(
             "OAI-PMH identifier (expected, eg, 'oai:foo.org:some-local-id-54')".to_string(),
             raw.to_string(),
         ))?
