@@ -388,15 +388,15 @@ fn test_check_doaj_id() {
     assert!(check_doaj_id("1b39813549077b2347c0f370c3864b411").is_err());
 }
 
-pub fn check_dblp_id(raw: &str) -> Result<()> {
+pub fn check_dblp_key(raw: &str) -> Result<()> {
     lazy_static! {
         // TODO: what should this actually be? more or less restrictive?
-        static ref RE: Regex = Regex::new(r"^[a-z]+/[a-zA-Z0-9]+/[a-zA-Z0-9/]+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^(journals|conf|series|phd|books|tr|ms|www)(/[a-zA-Z0-9-+]+){1,4}$").unwrap();
     }
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
-        Err(FatcatError::MalformedChecksum(
+        Err(FatcatError::MalformedExternalId(
             "dblp Article Key (expected, eg, 'journals/entcs/GoubaultM12')".to_string(),
             raw.to_string(),
         ))?
@@ -404,11 +404,19 @@ pub fn check_dblp_id(raw: &str) -> Result<()> {
 }
 
 #[test]
-fn test_check_dblp_id() {
-    assert!(check_dblp_id("journals/entcs/GoubaultM12").is_ok());
-    assert!(check_dblp_id("journals/entcs/GoubaultM12").is_ok());
-    assert!(check_dblp_id("10.123*").is_err());
-    assert!(check_dblp_id("").is_err());
+fn test_check_dblp_key() {
+    assert!(check_dblp_key("journals/entcs/GoubaultM12").is_ok());
+    assert!(check_dblp_key("journals/entcs/GoubaultM12").is_ok());
+    assert!(check_dblp_key("conf/entcs/GoubaultM12").is_ok());
+    assert!(check_dblp_key("conf/3dica/DorringtonGCPS11").is_ok());
+    assert!(check_dblp_key("conf/c++/CohenHS91").is_ok());
+    assert!(check_dblp_key("phd/Hoff2002").is_ok());
+    assert!(check_dblp_key("phd/dk/Heine2010").is_ok());
+    assert!(check_dblp_key("phd/Beferull-Lozano02").is_ok());
+    assert!(check_dblp_key("www/org/w3/TR/xmlquery-use-cases").is_ok());
+    assert!(check_dblp_key("books/mc/18/KuznetsovSPCSS18").is_ok());
+    assert!(check_dblp_key("10.123*").is_err());
+    assert!(check_dblp_key("").is_err());
 }
 
 pub fn check_oai_id(raw: &str) -> Result<()> {

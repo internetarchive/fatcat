@@ -536,7 +536,7 @@ impl Server {
                 Some(dblp),
                 None,
             ) => {
-                check_dblp_id(dblp)?;
+                check_dblp_key(dblp)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)
