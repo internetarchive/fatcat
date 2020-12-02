@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE dblp SYSTEM "dblp.dtd">
+<dblp>
+
+<!-- note these entries have been manipulated for testing -->
+
+<inproceedings key="conf/er/Norrie08" mdate="2008-10-20">
+<author>Moira C. Norrie</author>
+<author>Michael H. B&ouml;hlen</author>
+<title>PIM Meets Web 2.0.</title>
+<pages>15-25</pages>
+<year>2008</year>
+<booktitle>ER</booktitle>
+<ee>http://dx.doi.org/10.1007/978-3-540-87877-3 3</ee>
+<crossref>conf/er/2008</crossref>
+<url>db/conf/er/er2008.html#Norrie08</url>
+</inproceedings>
+
+<proceedings key="conf/er/2008" mdate="2008-10-20">
+<editor>Qing Li</editor>
+<editor>Stefano Spaccapietra</editor>
+<editor>Eric Yu</editor>
+<editor>Antoni Oliv&eacute;</editor>
+<title>Conceptual Modeling - ER 2008, 27th International Conference on Conceptual Modeling, Barcelona, Spain, October 20-24, 2008. Proceedings</title>
+<volume>5231</volume>
+<year>2008</year>
+<isbn>978-3-540-87876-6</isbn>
+<booktitle>ER</booktitle>
+<series href="db/journals/lncs.html">Lecture Notes in Computer Science</series>
+<publisher>Springer</publisher>
+<url>db/conf/er/er2008.html</url>
+</proceedings>
+
+
+<article key="journals/cacm/Gentry10" mdate="2010-04-26">
+<author>Craig Gentry</author>
+<title>Computing arbitrary functions of encrypted data.</title>
+<pages>97-105</pages>
+<year>2010</year>
+<volume>53</volume>
+<journal>Commun. ACM</journal>
+<number>3</number>
+<ee>http://doi.acm.org/10.1145/1666420.1666444</ee>
+<url>db/journals/cacm/cacm53.html#Gentry10</url>
+</article>
+
+
+<inproceedings key="conf/focs/Yao82a" mdate="2011-10-19">
+<title>Theory and Applications of Trapdoor Functions (Extended Abstract)</title>
+<author>Andrew Chi-Chih Yao</author>
+<pages>80-91</pages>
+<crossref>conf/focs/FOCS23</crossref>
+<year>1982</year>
+<booktitle>FOCS</booktitle>
+<url>db/conf/focs/focs82.html#Yao82a</url>
+<ee>http://doi.ieeecomputersociety.org/10.1109/SFCS.1982.45</ee>
+</inproceedings>
+
+
+<www mdate="2004-03-23" key="homepages/g/OdedGoldreich">
+<author>Oded Goldreich</author>
+<title>Home Page</title>
+<url>http://www.wisdom.weizmann.ac.il/~oded/</url>
+</www>
+
+</dblp>
