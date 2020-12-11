@@ -9,7 +9,7 @@
   Alternative titles (and translations) can be stored in "extra" metadata (see
   below)
 - `container_type` (string): eg, journal vs. conference vs. book series.
-  Controlled vocabulary is TODO.
+  Controlled vocabulary is described below.
 - `publisher` (string): The name of the publishing organization. Eg, "Society
   of Curious Students".
 - `issnl` (string): an external identifier, with registration controlled by the
@@ -27,6 +27,8 @@
 - `abbrev` (string): a commonly used abbreviation for the publication, as used
   in citations, following the [ISO 4][] standard. Eg, "Journal of Polymer
   Science Part A" -> "J. Polym. Sci. A"
+- `acronym` (string): acronym of publication name. Usually all upper-case, but
+  sometimes a very terse, single-word truncated form of the name (eg, a pun).
 - `coden` (string): an external identifier, the [CODEN code][]. 6 characters,
   all upper-case.
 - `issnp` (string): Print ISSN
@@ -70,10 +72,12 @@ Additional fields used in analytics and "curration" tracking:
     - `color` (string): the SHERPA/RoMEO "color" of the publisher of this container
 - `doi`: TODO: include list of prefixes and which (if any) DOI registrar is used
 - `dblp` (object):
-  - `id` (string)
+  - `prefix` (string): prefix of dblp keys published as part of this container
+    (eg, 'journals/blah' or 'conf/xyz')
 - `ia` (object): Internet Archive specific fields
   - `sim` (object): same format as `kbart` preservation above; coverage in microfilm collection
   - `longtail` (bool): is this considered a "long-tail" open access venue
+- `publisher_type` (string): controlled vocabulary
 
 For KBART and other "coverage" fields, we "over-count" on the assumption that
 works with "in-progress" status will soon actually be preserved. Elements of
@@ -87,6 +91,7 @@ preserved).
 
 - `journal`
 - `proceedings`
+- `conference-series`
 - `book-series`
 - `blog`
 - `magazine`
