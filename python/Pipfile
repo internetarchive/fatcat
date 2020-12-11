@@ -59,7 +59,8 @@ toml = ">=0.10"
 fuzzycat = "==0.1.9"
 
 [requires]
-# We install Python 3.7 using a PPA (deadsnakes) on Internet Archive cluster
-# machines, which as of Spring 2020 are still running Ubuntu Xenial (16.04),
-# which has a system default of Python 3.5.
-python_version = "3.7"
+# As of Fall 2020, Internet Archive cluster VMs are split between Ubuntu Xenial
+# (16.04) and Focal (20.04). Default python version for xenial is 3.5, but we
+# backport python 3.7 and 3.8 using a PPA (deadsnakes). Default on Focal is
+# python 3.8, which we hope to stick with for at least a couple years.
+python_version = "3.8"
