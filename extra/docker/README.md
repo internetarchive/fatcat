@@ -21,3 +21,7 @@ TODO:
 ## Test Base Image
 
     docker build -t bnewbold/fatcat-test-base -f Dockerfile.test-base .
+
+If it looks good:
+
+    docker push bnewbold/fatcat-test-base:latest
