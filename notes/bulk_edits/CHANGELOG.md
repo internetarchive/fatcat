@@ -9,12 +9,16 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2020-12
+
+Updated ORCIDs from 2020 dump. About 2.4 million new `creator` entities.
+
 ## 2020-03
 
 Started harvesting both Arxiv and Pubmed metadata daily and importing to
 fatcat. Did backfill imports for both sources.
 
-JALC DOI register update from 2019 dump.
+JALC DOI registry update from 2019 dump.
 
 ## 2020-01
 
