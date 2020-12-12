@@ -14,7 +14,7 @@ variables:
   PIPENV_VENV_IN_PROJECT: "true"
   CARGO_HOME: ".cargo_cache"
 
-image: "bnewbold/fatcat-test-base:xenial"
+image: "bnewbold/fatcat-test-base:latest"
 
 unified_test:
   variables:
