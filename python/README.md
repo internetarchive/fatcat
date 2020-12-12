@@ -11,9 +11,9 @@ pypi.org.
 
 ## Dependencies
 
-This project uses `pipenv` to manage dependencies, and requires Python 3.7. 
+This project uses `pipenv` to manage dependencies, and requires Python 3.8.
 You can can install `pipenv` with `pip` (or `pip3`). If you also install
-`pyenv`, `pipenv` will automatically install Python 3.7 for you if needed. You
+`pyenv`, `pipenv` will automatically install Python 3.8 for you if needed. You
 may want to set the `PIPENV_VENV_IN_PROJECT` environment variable on your
 development machine (see pipenv docs for details).
 
