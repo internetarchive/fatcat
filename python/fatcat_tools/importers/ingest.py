@@ -480,9 +480,9 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
     def try_update(self, wc):
 
-        # check for existing edits-in-progress with same file hash
+        # check for existing edits-in-progress with same URL
         for other in self._entity_queue:
-            if other.sha1 == wc.sha1:
+            if other.original_url == wc.original_url:
                 self.counts['skip-in-queue'] += 1
                 return False
 
@@ -501,9 +501,9 @@ class IngestWebResultImporter(IngestFileResultImporter):
             self.counts['skip-release-has-webcapture'] += 1
             return False
 
-        # TODO: for now, never update
-        self.counts['skip-update-disabled'] += 1
-        return False
+        # Ok, if we got here then no existing web capture for (first) release,
+        # so go ahead and insert!
+        return True
 
     def insert_batch(self, batch):
         self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebcaptureAutoBatch(
