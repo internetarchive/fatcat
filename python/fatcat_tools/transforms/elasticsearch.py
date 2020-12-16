@@ -76,14 +76,14 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
 
     t.update(dict(
         is_oa = None,
-        is_preserved = None,
         is_longtail_oa = None,
-        in_kbart = None,
-        in_jstor = False,
+        is_preserved = None,
         in_web = False,
         in_dweb = False,
         in_ia = False,
         in_ia_sim = False,
+        in_kbart = None,
+        in_jstor = False,
         in_shadows = False,
     ))
 
@@ -250,20 +250,21 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     t['container_id'] = container.ident
     t['container_issnl'] = container.issnl
     t['container_type'] = container.container_type
-    t['in_kbart'] = None
     if container.extra:
         c_extra = container.extra
         if c_extra.get('kbart') and release_year:
-            t['in_jstor'] = check_kbart(release_year, c_extra['kbart'].get('jstor'))
-            t['in_kbart'] = t['in_kbart'] or t['in_jstor']
+            if check_kbart(release_year, c_extra['kbart'].get('jstor')):
+                t['in_jstor'] = True
+            if t.get('in_kbart') or t.get('in_jstor'):
+                t['in_kbart'] = True
             for archive in ('portico', 'lockss', 'clockss', 'pkp_pln',
                             'hathitrust', 'scholarsportal', 'cariniana'):
-                t['in_kbart'] = t['in_kbart'] or check_kbart(release_year, c_extra['kbart'].get(archive))
+                t['in_kbart'] = t.get('in_kbart') or check_kbart(release_year, c_extra['kbart'].get(archive))
                 # recent KBART coverage is often not updated for the
                 # current year. So for current-year publications, consider
                 # coverage from *last* year to also be included in the
                 # Keeper
-                if not t['in_kbart'] and release_year == this_year:
+                if not t.get('in_kbart') and release_year == this_year:
                     t['in_kbart'] = check_kbart(this_year - 1, c_extra['kbart'].get(archive))
 
         if c_extra.get('ia'):
@@ -295,8 +296,12 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
 def _rte_content_helper(release: ReleaseEntity) -> dict:
     """
     File/FileSet/WebCapture sub-section of release_to_elasticsearch()
+
+    The current priority order for "best_pdf_url" is:
+    - internet archive urls (archive.org or web.archive.org)
+    - other webarchive or repository URLs
+    - any other URL
     """
-    files = release.files or []
     t = dict(
         file_count = len(release.files or []),
         fileset_count = len(release.filesets or []),
@@ -308,34 +313,60 @@ def _rte_content_helper(release: ReleaseEntity) -> dict:
     best_pdf_url = None
     ia_pdf_url = None
 
-    for f in files:
+    for f in release.files or []:
         if f.extra and f.extra.get('shadows'):
             t['in_shadows'] = True
         is_pdf = 'pdf' in (f.mimetype or '')
         for release_url in (f.urls or []):
+            # first generic flags
+            t.update(_rte_url_helper(release_url))
+
+            # then PDF specific stuff (for generating "best URL" fields)
             if not f.mimetype and 'pdf' in release_url.url.lower():
                 is_pdf = True
-            if release_url.url.lower().startswith('http') or release_url.url.lower().startswith('ftp'):
-                t['in_web'] = True
-            if release_url.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
-                # not sure what rel will be for this stuff
-                t['in_dweb'] = True
             if is_pdf:
                 any_pdf_url = release_url.url
-            if is_pdf and release_url.rel in ('webarchive', 'repository') and is_pdf:
-                t['is_preserved'] = True
-                good_pdf_url = release_url.url
-            if '//www.jstor.org/' in release_url.url:
-                t['in_jstor'] = True
-            if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
-                t['in_ia'] = True
-                if is_pdf:
-                    best_pdf_url = release_url.url
-                    ia_pdf_url = release_url.url
+                if release_url.rel in ('webarchive', 'repository', 'repo'):
+                    good_pdf_url = release_url.url
+                if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
+                        best_pdf_url = release_url.url
+                        ia_pdf_url = release_url.url
 
-    # here is where we bake-in priority; IA-specific
+    # here is where we bake-in PDF url priority; IA-specific
     t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
     t['ia_pdf_url'] = ia_pdf_url
+
+    for fs in release.filesets or []:
+        for url_obj in (fs.urls or []):
+            t.update(_rte_url_helper(url_obj))
+
+    for wc in release.webcaptures or []:
+        for url_obj in (wc.archive_urls or []):
+            t.update(_rte_url_helper(url_obj))
+
+    return t
+
+def _rte_url_helper(url_obj) -> dict:
+    """
+    Takes a location URL ('url' and 'rel' keys) and returns generic preservation status.
+
+    Designed to work with file, webcapture, or fileset URLs.
+
+    Returns a dict; should *not* include non-True values for any keys because
+    these will be iteratively update() into the overal object.
+    """
+    t = dict()
+    if url_obj.rel in ('webarchive', 'repository', 'archive', 'repo'):
+        t['is_preserved'] = True
+    if '//web.archive.org/' in url_obj.url or '//archive.org/' in url_obj.url:
+        t['in_ia'] = True
+    if url_obj.url.lower().startswith('http') or url_obj.url.lower().startswith('ftp'):
+        t['in_web'] = True
+    if url_obj.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
+        # not sure what rel will be for this stuff
+        t['in_dweb'] = True
+    if '//www.jstor.org/' in url_obj.url:
+        t['in_jstor'] = True
     return t
 
 
