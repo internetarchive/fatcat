@@ -217,12 +217,18 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
             t[k] = bool(t[k])
 
     t['in_ia'] = bool(t['in_ia'])
-    t['is_preserved'] = bool(t['is_preserved'] or t['in_ia'] or t['in_kbart'] or t['in_jstor'] or t.get('pmcid') or t.get('arxiv_id'))
+    t['is_preserved'] = (
+        bool(t['is_preserved'])
+        or t['in_ia']
+        or t['in_kbart']
+        or t['in_jstor']
+        or t.get('pmcid')
+        or t.get('arxiv_id')
+    )
 
     if t['in_ia']:
         t['preservation'] = 'bright'
-    # XXX: simplify: elif t['is_preserved']
-    elif t['in_kbart'] or t['in_jstor'] or t.get('pmcid') or t.get('arxiv_id'):
+    elif t['is_preserved']:
         t['preservation'] = 'dark'
     elif t['in_shadows']:
         t['preservation'] = 'shadows_only'
@@ -244,12 +250,12 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     t['container_id'] = container.ident
     t['container_issnl'] = container.issnl
     t['container_type'] = container.container_type
+    t['in_kbart'] = None
     if container.extra:
         c_extra = container.extra
         if c_extra.get('kbart') and release_year:
             t['in_jstor'] = check_kbart(release_year, c_extra['kbart'].get('jstor'))
-            # XXX:
-            t['in_kbart'] = t['in_jstor']
+            t['in_kbart'] = t['in_kbart'] or t['in_jstor']
             for archive in ('portico', 'lockss', 'clockss', 'pkp_pln',
                             'hathitrust', 'scholarsportal', 'cariniana'):
                 t['in_kbart'] = t['in_kbart'] or check_kbart(release_year, c_extra['kbart'].get(archive))
@@ -309,8 +315,7 @@ def _rte_content_helper(release: ReleaseEntity) -> dict:
         for release_url in (f.urls or []):
             if not f.mimetype and 'pdf' in release_url.url.lower():
                 is_pdf = True
-            if release_url.url.lower().startswith('http'):
-                # XXX: also startswith('ftp')
+            if release_url.url.lower().startswith('http') or release_url.url.lower().startswith('ftp'):
                 t['in_web'] = True
             if release_url.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
                 # not sure what rel will be for this stuff
