@@ -329,8 +329,8 @@ def _rte_content_helper(release: ReleaseEntity) -> dict:
                 if release_url.rel in ('webarchive', 'repository', 'repo'):
                     good_pdf_url = release_url.url
                 if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
-                        best_pdf_url = release_url.url
-                        ia_pdf_url = release_url.url
+                    best_pdf_url = release_url.url
+                    ia_pdf_url = release_url.url
 
     # here is where we bake-in PDF url priority; IA-specific
     t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
