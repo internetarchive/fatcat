@@ -43,7 +43,7 @@ def test_rich_elasticsearch_convert():
                     "year_spans": [[1200, 1300]],
                 },
                 "jstor": {
-                    "year_spans": [[1950, 1960], [1980, 2005]],
+                    "year_spans": [[1000, 1300], [1950, 1960], [1980, 2005]],
                 },
             },
             "sherpa_romeo": {"color": "blue"},
@@ -63,16 +63,22 @@ def test_rich_elasticsearch_convert():
     )]
     es = release_to_elasticsearch(r)
     assert es['release_year'] == r.release_year
-    assert es['in_ia'] == True
-    assert es['in_jstor'] == False
-    assert es['in_ia_sim'] == False
-    assert es['in_ia'] == True
-    assert es['in_web'] == True
-    assert es['in_dweb'] == True
-    assert es['is_oa'] == True
-    assert es['is_longtail_oa'] == False
+    assert es['file_count'] == 1
+    assert es['fileset_count'] == 0
+    assert es['webcapture_count'] == 0
     assert es['ref_count'] == 2
     assert es['ref_linked_count'] == 1
+
+    assert es['preservation'] == "bright"
+    assert es['is_oa'] == True
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == True
+    assert es['in_web'] == True
+    assert es['in_dweb'] == True
+    assert es['in_ia'] == True
+    assert es['in_ia_sim'] == False
+    assert es['in_kbart'] == True
+    assert es['in_jstor'] == True
 
 def test_elasticsearch_release_from_json():
     r = entity_from_json(open('./tests/files/release_etodop5banbndg3faecnfm6ozi.json', 'r').read(), ReleaseEntity)
@@ -85,8 +91,59 @@ def test_elasticsearch_release_from_json():
     assert es['issue'] == "11"
     assert es['volume'] == "118"
     assert es['number'] == None
+
+    assert es['preservation'] == "dark"
+    assert es['is_oa'] == False
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == True
+    assert es['in_web'] == False
+    assert es['in_dweb'] == False
+    assert es['in_ia'] == False
     assert es['in_ia_sim'] == True
     assert es['in_kbart'] == True
+    assert es['in_jstor'] == False
+
+    # this release has a fileset, and no file
+    r = entity_from_json(open('./tests/files/release_3mssw2qnlnblbk7oqyv2dafgey.json', 'r').read(), ReleaseEntity)
+    es = release_to_elasticsearch(r)
+
+    assert es['title'] == "Jakobshavn Glacier Bed Elevation"
+    assert es['ident'] == "3mssw2qnlnblbk7oqyv2dafgey"
+    assert es['file_count'] == 0
+    assert es['fileset_count'] == 1
+    assert es['webcapture_count'] == 0
+
+    assert es['preservation'] == "dark"
+    assert es['is_oa'] == True
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == True
+    assert es['in_web'] == True
+    assert es['in_dweb'] == True
+    assert es['in_ia'] == False
+    assert es['in_ia_sim'] == False
+    assert es['in_kbart'] == False
+    assert es['in_jstor'] == False
+
+    # this release has a web capture, and no file (edited the JSON to remove file)
+    r = entity_from_json(open('./tests/files/release_mjtqtuyhwfdr7j2c3l36uor7uy.json', 'r').read(), ReleaseEntity)
+    es = release_to_elasticsearch(r)
+
+    assert es['title'] == "Rethinking Personal Digital Archiving, Part 1"
+    assert es['ident'] == "mjtqtuyhwfdr7j2c3l36uor7uy"
+    assert es['file_count'] == 0
+    assert es['fileset_count'] == 0
+    assert es['webcapture_count'] == 1
+
+    assert es['preservation'] == "bright"
+    assert es['is_oa'] == True
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == True
+    assert es['in_web'] == True
+    assert es['in_dweb'] == False
+    assert es['in_ia'] == True
+    assert es['in_ia_sim'] == False
+    assert es['in_kbart'] == False
+    assert es['in_jstor'] == False
 
 def test_elasticsearch_container_transform(journal_metadata_importer):
     with open('tests/files/journal_metadata.sample.json', 'r') as f:
@@ -164,9 +221,17 @@ def test_elasticsearch_release_kbart_year():
     )
     es = release_to_elasticsearch(r)
     assert es['release_year'] == this_year
-    assert es['in_ia'] == False
-    assert es['in_kbart'] == False
+
     assert es['preservation'] == "none"
+    assert es['is_oa'] == True
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == None
+    assert es['in_web'] == False
+    assert es['in_dweb'] == False
+    assert es['in_ia'] == False
+    assert es['in_ia_sim'] == False
+    assert es['in_kbart'] == False
+    assert es['in_jstor'] == False
 
     r.container = ContainerEntity(
         name="dummy journal",
@@ -180,6 +245,14 @@ def test_elasticsearch_release_kbart_year():
     )
     es = release_to_elasticsearch(r)
     assert es['release_year'] == this_year
-    assert es['in_ia'] == False
-    assert es['in_kbart'] == True
+
     assert es['preservation'] == "dark"
+    assert es['is_oa'] == True
+    assert es['is_longtail_oa'] == False
+    assert es['is_preserved'] == True
+    assert es['in_web'] == False
+    assert es['in_dweb'] == False
+    assert es['in_ia'] == False
+    assert es['in_ia_sim'] == False
+    assert es['in_kbart'] == True
+    assert es['in_jstor'] == False
