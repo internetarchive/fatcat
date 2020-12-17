@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ce27fb3fdb1fe62a6a5caaa93cd4bb3d8900c6b551035fd56e8769ef3c182b1d"
+            "sha256": "82800043a15f6106bed981f3c030576cdfc286b7952102e7d625a750e30f4aff"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -311,11 +311,11 @@
         },
         "fuzzycat": {
             "hashes": [
-                "sha256:10db412121d86532eba2136f7e79d9fa90ddada54cdf13f2db757175ac1a02c0",
-                "sha256:4bc290f5cd1dc78bc3241a386d5d1ecf96366ee8330618c78a7d026b9b9dc390"
+                "sha256:2c138aa710f5ab653b8c1cca02d506a123ba2a084dda2c7524e382f1c5e61228",
+                "sha256:f064eb04eaef859101aad7eac2a5427c56c35374cedc2cffd1aa8f525395fdfd"
             ],
             "index": "pypi",
-            "version": "==0.1.8"
+            "version": "==0.1.9"
         },
         "glom": {
             "hashes": [
