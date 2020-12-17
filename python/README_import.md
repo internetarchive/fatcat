@@ -133,3 +133,14 @@ Takes a few hours.
     export FATCAT_API_AUTH_TOKEN=... (FATCAT_AUTH_WORKER_DOAJ)
 
     zcat /srv/fatcat/datasets/doaj_article_data_2020-11-13_all.json.gz | pv -l | parallel -j12 --round-robin --pipe ./fatcat_import.py doaj-article --issn-map-file /srv/fatcat/datasets/ISSN-to-ISSN-L.txt -
+
+## dblp
+
+See `extra/dblp/README.md` for notes about first importing container metadata
+and getting a TSV mapping flie to help with import. This is needed because
+there is not (yet) a lookup mechanism for `dblp_prefix` as an identifier of
+container entities.
+
+    export FATCAT_AUTH_WORKER_DBLP=...
+    ./fatcat_import.py dblp-release --dblp-container-map-file /data/dblp/all_dblp_containers.tsv /data/dblp/dblp.xml
+

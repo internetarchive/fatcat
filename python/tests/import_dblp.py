@@ -9,8 +9,8 @@ from fixtures import *
 
 @pytest.fixture(scope="function")
 def dblp_importer(api):
-    with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield DblpReleaseImporter(api, issn_file, bezerk_mode=True, lookup_refs=True)
+    with open('tests/files/dblp_container_map.tsv', 'r') as tsv_file:
+        yield DblpReleaseImporter(api, tsv_file, bezerk_mode=True)
 
 @pytest.fixture(scope="function")
 def dblp_importer_existing(api):
@@ -44,6 +44,7 @@ def test_dblp_importer(dblp_importer):
     # check that entity name mangling was fixed on import
     eg = dblp_importer.api.get_editgroup(eg.editgroup_id)
     release = dblp_importer.api.get_release(eg.edits.releases[0].ident)
+    assert release.contribs[0].raw_name == "Moira C. Norrie"
     assert release.contribs[1].raw_name == "Michael H. Böhlen"
 
     last_index = dblp_importer.api.get_changelog(limit=1)[0].index
@@ -119,5 +120,5 @@ def test_dblp_xml_parse(dblp_importer):
     assert r1.issue == "11"
     assert r1.volume == "51"
     assert r1.release_year == 2008
-    assert r1.extra['container_name'] == "Commun. ACM"
+    #assert r1.extra['container_name'] == "Commun. ACM"
     assert r1.extra['dblp']['type'] == "article"

@@ -68,6 +68,7 @@ class DblpReleaseImporter(EntityImporter):
             if line.startswith("dblp_prefix") or len(line) == 0:
                 continue
             (prefix, container_id) = line.split()[0:2]
+            container_id = container_id.strip()
             assert len(container_id) == 26
             self._dblp_container_map[prefix] = container_id
         print("Got {} dblp container mappings.".format(len(self._dblp_container_map)), file=sys.stderr)
@@ -310,7 +311,7 @@ class DblpReleaseImporter(EntityImporter):
 
         # then try other ext_id lookups
         if not existing:
-            for extid_type in ('doi', 'wikidata_qid', 'isbn13', 'arxiv_id'):
+            for extid_type in ('doi', 'wikidata_qid', 'isbn13', 'arxiv'):
                 extid_val = getattr(re.ext_ids, extid_type)
                 if not extid_val:
                     continue
