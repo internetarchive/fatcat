@@ -326,6 +326,8 @@ class EntityUpdatesWorker(FatcatWorker):
             release_ids = []
             new_release_ids = []
             file_ids = []
+            fileset_ids = []
+            webcapture_ids = []
             container_ids = []
             work_ids = []
             release_edits = cle['editgroup']['edits']['releases']
@@ -337,6 +339,12 @@ class EntityUpdatesWorker(FatcatWorker):
             file_edits = cle['editgroup']['edits']['files']
             for e in file_edits:
                 file_ids.append(e['ident'])
+            fileset_edits = cle['editgroup']['edits']['filesets']
+            for e in fileset_edits:
+                fileset_ids.append(e['ident'])
+            webcapture_edits = cle['editgroup']['edits']['webcaptures']
+            for e in webcapture_edits:
+                webcapture_ids.append(e['ident'])
             container_edits = cle['editgroup']['edits']['containers']
             for e in container_edits:
                 container_ids.append(e['ident'])
@@ -348,8 +356,8 @@ class EntityUpdatesWorker(FatcatWorker):
             for ident in set(file_ids):
                 file_entity = self.api.get_file(ident, expand=None)
                 # update release when a file changes
-                # TODO: fetch old revision as well, and only update
-                # releases for which list changed
+                # TODO: also fetch old version of file and update any *removed*
+                # release idents (and same for filesets, webcapture updates)
                 release_ids.extend(file_entity.release_ids or [])
                 file_dict = self.api.api_client.sanitize_for_serialization(file_entity)
                 producer.produce(
@@ -358,6 +366,19 @@ class EntityUpdatesWorker(FatcatWorker):
                     key=ident.encode('utf-8'),
                     on_delivery=fail_fast,
                 )
+
+            # TODO: topic for fileset updates
+            for ident in set(fileset_ids):
+                fileset_entity = self.api.get_fileset(ident, expand=None)
+                # update release when a fileset changes
+                release_ids.extend(file_entity.release_ids or [])
+
+            # TODO: topic for webcapture updates
+            for ident in set(webcapture_ids):
+                webcapture_entity = self.api.get_webcapture(ident, expand=None)
+                # update release when a webcapture changes
+                release_ids.extend(webcapture_entity.release_ids or [])
+
             for ident in set(container_ids):
                 container = self.api.get_container(ident)
                 container_dict = self.api.api_client.sanitize_for_serialization(container)
@@ -367,6 +388,7 @@ class EntityUpdatesWorker(FatcatWorker):
                     key=ident.encode('utf-8'),
                     on_delivery=fail_fast,
                 )
+
             for ident in set(release_ids):
                 release = self.api.get_release(ident, expand="files,filesets,webcaptures,container")
                 if release.work_id:
@@ -378,7 +400,7 @@ class EntityUpdatesWorker(FatcatWorker):
                     key=ident.encode('utf-8'),
                     on_delivery=fail_fast,
                 )
-                # filter to "new" active releases with no matched files
+                # for ingest requests, filter to "new" active releases with no matched files
                 if release.ident in new_release_ids:
                     ir = release_ingest_request(release, ingest_request_source='fatcat-changelog')
                     if ir and not release.files and self.want_live_ingest(release, ir):

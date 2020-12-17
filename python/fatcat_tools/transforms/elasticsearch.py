@@ -1,10 +1,13 @@
 
 import datetime
+from typing import Optional
 
 import tldextract
 
+from fatcat_openapi_client import ReleaseEntity, ContainerEntity
 
-def check_kbart(year, archive):
+
+def check_kbart(year: int, archive: dict) -> Optional[bool]:
     if not archive or not archive.get('year_spans'):
         return None
     for span in archive['year_spans']:
@@ -12,7 +15,7 @@ def check_kbart(year, archive):
             return True
     return False
 
-def test_check_kbart():
+def test_check_kbart() -> None:
 
     assert check_kbart(1990, dict()) is None
     assert check_kbart(1990, dict(year_spans=[[2000, 2000]])) is False
@@ -21,9 +24,12 @@ def test_check_kbart():
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) is True
 
 
-def release_to_elasticsearch(entity, force_bool=True):
+def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> dict:
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
+
+    This is a large/complex transform, so subsets are split out into helper
+    functions.
 
     Returns: dict
     Raises exception on error (never returns None)
@@ -68,16 +74,18 @@ def release_to_elasticsearch(entity, force_bool=True):
         mag_id = release.ext_ids.mag,
     )
 
-    is_oa = None
-    is_preserved = None
-    is_longtail_oa = None
-    in_kbart = None
-    in_jstor = False
-    in_web = False
-    in_dweb = False
-    in_ia = False
-    in_ia_sim = False
-    in_shadows = False
+    t.update(dict(
+        is_oa = None,
+        is_longtail_oa = None,
+        is_preserved = None,
+        in_web = False,
+        in_dweb = False,
+        in_ia = False,
+        in_ia_sim = False,
+        in_kbart = None,
+        in_jstor = False,
+        in_shadows = False,
+    ))
 
     release_year = release.release_year
     if release.release_date:
@@ -116,55 +124,8 @@ def release_to_elasticsearch(entity, force_bool=True):
     # TODO: mapping... probably by lookup?
     t['affiliation_rors'] = None
 
-    this_year = datetime.date.today().year
-    container = release.container
-    if container:
-        t['publisher'] = container.publisher
-        t['container_name'] = container.name
-        # this is container.ident, not release.container_id, because there may
-        # be a redirect involved
-        t['container_id'] = container.ident
-        t['container_issnl'] = container.issnl
-        t['container_type'] = container.container_type
-        if container.extra:
-            c_extra = container.extra
-            if c_extra.get('kbart') and release_year:
-                in_jstor = check_kbart(release_year, c_extra['kbart'].get('jstor'))
-                in_kbart = in_jstor
-                for archive in ('portico', 'lockss', 'clockss', 'pkp_pln',
-                                'hathitrust', 'scholarsportal', 'cariniana'):
-                    in_kbart = in_kbart or check_kbart(release_year, c_extra['kbart'].get(archive))
-                    # recent KBART coverage is often not updated for the
-                    # current year. So for current-year publications, consider
-                    # coverage from *last* year to also be included in the
-                    # Keeper
-                    if not in_kbart and release_year == this_year:
-                        in_kbart = check_kbart(this_year - 1, c_extra['kbart'].get(archive))
-
-            if c_extra.get('ia'):
-                if c_extra['ia'].get('sim') and release_year:
-                    in_ia_sim = check_kbart(release_year, c_extra['ia']['sim'])
-                if c_extra['ia'].get('longtail_oa'):
-                    is_longtail_oa = True
-            if c_extra.get('sherpa_romeo'):
-                if c_extra['sherpa_romeo'].get('color') == 'white':
-                    is_oa = False
-            if c_extra.get('default_license') and c_extra.get('default_license').startswith('CC-'):
-                is_oa = True
-            if c_extra.get('doaj'):
-                if c_extra['doaj'].get('as_of'):
-                    is_oa = True
-            if c_extra.get('road'):
-                if c_extra['road'].get('as_of'):
-                    is_oa = True
-            if c_extra.get('szczepanski'):
-                if c_extra['szczepanski'].get('as_of'):
-                    is_oa = True
-            if c_extra.get('country'):
-                t['country_code'] = c_extra['country']
-                t['country_code_upper'] = c_extra['country'].upper()
-            if c_extra.get('publisher_type'):
-                t['publisher_type'] = c_extra['publisher_type']
+    if release.container:
+        t.update(_rte_container_helper(release.container, release_year))
 
     # fall back to release-level container metadata if container not linked or
     # missing context
@@ -174,70 +135,36 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['container_name'] = release.extra.get('container_name')
 
     if release.ext_ids.jstor or (release.ext_ids.doi and release.ext_ids.doi.startswith('10.2307/')):
-        in_jstor = True
+        t['in_jstor'] = True
 
-    files = release.files or []
-    t['file_count'] = len(files)
-    t['fileset_count'] = len(release.filesets or [])
-    t['webcapture_count'] = len(release.webcaptures or [])
-    any_pdf_url = None
-    good_pdf_url = None
-    best_pdf_url = None
-    ia_pdf_url = None
-    for f in files:
-        if f.extra and f.extra.get('shadows'):
-            # TODO: shadow check goes here
-            in_shadows = True
-        is_pdf = 'pdf' in (f.mimetype or '')
-        for release_url in (f.urls or []):
-            if not f.mimetype and 'pdf' in release_url.url.lower():
-                is_pdf = True
-            if release_url.url.lower().startswith('http'):
-                in_web = True
-            if release_url.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
-                # not sure what rel will be for this stuff
-                in_dweb = True
-            if is_pdf:
-                any_pdf_url = release_url.url
-            if is_pdf and release_url.rel in ('webarchive', 'repository') and is_pdf:
-                is_preserved = True
-                good_pdf_url = release_url.url
-            if '//www.jstor.org/' in release_url.url:
-                in_jstor = True
-            if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
-                in_ia = True
-                if is_pdf:
-                    best_pdf_url = release_url.url
-                    ia_pdf_url = release_url.url
-    # here is where we bake-in priority; IA-specific
-    t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
-    t['ia_pdf_url'] = ia_pdf_url
+    # transform file/fileset/webcapture related fields
+    t.update(_rte_content_helper(release))
 
     if release.ext_ids.doaj:
-        is_oa = True
+        t['is_oa'] = True
 
     if release.license_slug:
         # TODO: more/better checks here, particularly strict *not* OA licenses
         if release.license_slug.startswith("CC-"):
-            is_oa = True
+            t['is_oa'] = True
         if release.license_slug.startswith("ARXIV-"):
-            is_oa = True
+            t['is_oa'] = True
 
     extra = release.extra or dict()
     if extra:
         if extra.get('is_oa'):
             # NOTE: not actually setting this anywhere... but could
-            is_oa = True
+            t['is_oa'] = True
         if extra.get('longtail_oa'):
             # sometimes set by GROBID/matcher
-            is_oa = True
-            is_longtail_oa = True
+            t['is_oa'] = True
+            t['is_longtail_oa'] = True
         if not t.get('container_name'):
             t['container_name'] = extra.get('container_name')
         if extra.get('crossref'):
             if extra['crossref'].get('archive'):
                 # all crossref archives are KBART, I believe
-                in_kbart = True
+                t['in_kbart'] = True
         # backwards compatible subtitle fetching
         if not t['subtitle'] and extra.get('subtitle'):
             if type(extra['subtitle']) == list:
@@ -254,7 +181,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         # TODO: non-numerical first pages
 
     t['ia_microfilm_url'] = None
-    if in_ia_sim:
+    if t['in_ia_sim']:
         # TODO: determine URL somehow? I think this is in flux. Will probably
         # need extra metadata in the container extra field.
         # special case as a demo for now.
@@ -280,40 +207,166 @@ def release_to_elasticsearch(entity, force_bool=True):
     if t['doi']:
         t['doi_prefix'] = t['doi'].split('/')[0]
 
-    if is_longtail_oa:
-        is_oa = True
+    if t['is_longtail_oa']:
+        t['is_oa'] = True
 
+    # optionally coerce all flags from Optional[bool] to bool
     if force_bool:
-        t['is_oa'] = bool(is_oa)
-        t['is_longtail_oa'] = bool(is_longtail_oa)
-        t['in_kbart'] = bool(in_kbart)
-        t['in_ia_sim'] = bool(in_ia_sim)
-        t['in_jstor'] = bool(in_jstor)
-        t['in_web'] = bool(in_web)
-        t['in_dweb'] = bool(in_dweb)
-        t['in_shadows'] = bool(in_shadows)
-    else:
-        t['is_oa'] = is_oa
-        t['is_longtail_oa'] = is_longtail_oa
-        t['in_kbart'] = in_kbart
-        t['in_ia_sim'] = in_ia_sim
-        t['in_jstor'] = in_jstor
-        t['in_web'] = in_web
-        t['in_dweb'] = in_dweb
-        t['in_shadows'] = in_shadows
+        for k in ('is_oa', 'is_longtail_oa', 'in_kbart', 'in_ia_sim',
+                  'in_jstor', 'in_web', 'in_dweb', 'in_shadows'):
+            t[k] = bool(t[k])
 
-    t['in_ia'] = bool(in_ia)
-    t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor or t.get('pmcid') or t.get('arxiv_id'))
+    t['in_ia'] = bool(t['in_ia'])
+    t['is_preserved'] = (
+        bool(t['is_preserved'])
+        or t['in_ia']
+        or t['in_kbart']
+        or t['in_jstor']
+        or t.get('pmcid')
+        or t.get('arxiv_id')
+    )
 
-    if in_ia:
+    if t['in_ia']:
         t['preservation'] = 'bright'
-    elif in_kbart or in_jstor or t.get('pmcid') or t.get('arxiv_id'):
+    elif t['is_preserved']:
         t['preservation'] = 'dark'
-    elif in_shadows:
+    elif t['in_shadows']:
         t['preservation'] = 'shadows_only'
     else:
         t['preservation'] = 'none'
 
+    return t
+
+def _rte_container_helper(container: ContainerEntity, release_year: Optional[int]) -> dict:
+    """
+    Container metadata sub-section of release_to_elasticsearch()
+    """
+    this_year = datetime.date.today().year
+    t = dict()
+    t['publisher'] = container.publisher
+    t['container_name'] = container.name
+    # this is container.ident, not release.container_id, because there may
+    # be a redirect involved
+    t['container_id'] = container.ident
+    t['container_issnl'] = container.issnl
+    t['container_type'] = container.container_type
+    if container.extra:
+        c_extra = container.extra
+        if c_extra.get('kbart') and release_year:
+            if check_kbart(release_year, c_extra['kbart'].get('jstor')):
+                t['in_jstor'] = True
+            if t.get('in_kbart') or t.get('in_jstor'):
+                t['in_kbart'] = True
+            for archive in ('portico', 'lockss', 'clockss', 'pkp_pln',
+                            'hathitrust', 'scholarsportal', 'cariniana'):
+                t['in_kbart'] = t.get('in_kbart') or check_kbart(release_year, c_extra['kbart'].get(archive))
+                # recent KBART coverage is often not updated for the
+                # current year. So for current-year publications, consider
+                # coverage from *last* year to also be included in the
+                # Keeper
+                if not t.get('in_kbart') and release_year == this_year:
+                    t['in_kbart'] = check_kbart(this_year - 1, c_extra['kbart'].get(archive))
+
+        if c_extra.get('ia'):
+            if c_extra['ia'].get('sim') and release_year:
+                t['in_ia_sim'] = check_kbart(release_year, c_extra['ia']['sim'])
+            if c_extra['ia'].get('longtail_oa'):
+                t['is_longtail_oa'] = True
+        if c_extra.get('sherpa_romeo'):
+            if c_extra['sherpa_romeo'].get('color') == 'white':
+                t['is_oa'] = False
+        if c_extra.get('default_license') and c_extra.get('default_license').startswith('CC-'):
+            t['is_oa'] = True
+        if c_extra.get('doaj'):
+            if c_extra['doaj'].get('as_of'):
+                t['is_oa'] = True
+        if c_extra.get('road'):
+            if c_extra['road'].get('as_of'):
+                t['is_oa'] = True
+        if c_extra.get('szczepanski'):
+            if c_extra['szczepanski'].get('as_of'):
+                t['is_oa'] = True
+        if c_extra.get('country'):
+            t['country_code'] = c_extra['country']
+            t['country_code_upper'] = c_extra['country'].upper()
+        if c_extra.get('publisher_type'):
+            t['publisher_type'] = c_extra['publisher_type']
+    return t
+
+def _rte_content_helper(release: ReleaseEntity) -> dict:
+    """
+    File/FileSet/WebCapture sub-section of release_to_elasticsearch()
+
+    The current priority order for "best_pdf_url" is:
+    - internet archive urls (archive.org or web.archive.org)
+    - other webarchive or repository URLs
+    - any other URL
+    """
+    t = dict(
+        file_count = len(release.files or []),
+        fileset_count = len(release.filesets or []),
+        webcapture_count = len(release.webcaptures or []),
+    )
+
+    any_pdf_url = None
+    good_pdf_url = None
+    best_pdf_url = None
+    ia_pdf_url = None
+
+    for f in release.files or []:
+        if f.extra and f.extra.get('shadows'):
+            t['in_shadows'] = True
+        is_pdf = 'pdf' in (f.mimetype or '')
+        for release_url in (f.urls or []):
+            # first generic flags
+            t.update(_rte_url_helper(release_url))
+
+            # then PDF specific stuff (for generating "best URL" fields)
+            if not f.mimetype and 'pdf' in release_url.url.lower():
+                is_pdf = True
+            if is_pdf:
+                any_pdf_url = release_url.url
+                if release_url.rel in ('webarchive', 'repository', 'repo'):
+                    good_pdf_url = release_url.url
+                if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
+                    best_pdf_url = release_url.url
+                    ia_pdf_url = release_url.url
+
+    # here is where we bake-in PDF url priority; IA-specific
+    t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
+    t['ia_pdf_url'] = ia_pdf_url
+
+    for fs in release.filesets or []:
+        for url_obj in (fs.urls or []):
+            t.update(_rte_url_helper(url_obj))
+
+    for wc in release.webcaptures or []:
+        for url_obj in (wc.archive_urls or []):
+            t.update(_rte_url_helper(url_obj))
+
+    return t
+
+def _rte_url_helper(url_obj) -> dict:
+    """
+    Takes a location URL ('url' and 'rel' keys) and returns generic preservation status.
+
+    Designed to work with file, webcapture, or fileset URLs.
+
+    Returns a dict; should *not* include non-True values for any keys because
+    these will be iteratively update() into the overal object.
+    """
+    t = dict()
+    if url_obj.rel in ('webarchive', 'repository', 'archive', 'repo'):
+        t['is_preserved'] = True
+    if '//web.archive.org/' in url_obj.url or '//archive.org/' in url_obj.url:
+        t['in_ia'] = True
+    if url_obj.url.lower().startswith('http') or url_obj.url.lower().startswith('ftp'):
+        t['in_web'] = True
+    if url_obj.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
+        # not sure what rel will be for this stuff
+        t['in_dweb'] = True
+    if '//www.jstor.org/' in url_obj.url:
+        t['in_jstor'] = True
     return t
 
 
