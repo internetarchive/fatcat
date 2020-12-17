@@ -3,6 +3,7 @@ import json
 import datetime
 
 import pytest
+import elasticsearch
 import fatcat_openapi_client
 
 from fatcat_tools.importers import DoajArticleImporter, JsonLinePusher
@@ -11,14 +12,22 @@ from fixtures import *
 
 
 @pytest.fixture(scope="function")
-def doaj_importer(api):
+def doaj_importer(api, mocker):
+    es_client = elasticsearch.Elasticsearch("mockbackend")
+    mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield DoajArticleImporter(api, issn_file, bezerk_mode=True)
+        yield DoajArticleImporter(
+            api,
+            issn_file,
+            bezerk_mode=True,
+            es_client=es_client,
+        )
 
 def test_doaj_importer(doaj_importer):
     last_index = doaj_importer.api.get_changelog(limit=1)[0].index
     with open("tests/files/example_doaj_articles.json", "r") as f:
         doaj_importer.bezerk_mode = True
+        doaj_importer.do_fuzzy_match = False
         counts = JsonLinePusher(doaj_importer, f).run()
     assert counts["insert"] == 5
     assert counts["exists"] == 0
@@ -60,6 +69,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = False
+        doaj_importer.do_fuzzy_match = False
         counts = JsonLinePusher(doaj_importer, f).run()
     print(counts)
     assert counts["insert"] == 4
@@ -72,6 +82,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = True
+        doaj_importer.do_fuzzy_match = False
         counts = JsonLinePusher(doaj_importer, f).run()
     print(counts)
     assert counts["insert"] == 0
@@ -84,6 +95,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = True
+        doaj_importer.do_fuzzy_match = False
         counts = JsonLinePusher(doaj_importer, f).run()
     print(counts)
     assert counts["insert"] == 0
