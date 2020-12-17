@@ -1,8 +1,9 @@
 
+import io
 import pytest
 from bs4 import BeautifulSoup
 
-from fatcat_tools.importers import DblpReleaseImporter, Bs4XmlLargeFilePusher
+from fatcat_tools.importers import DblpReleaseImporter, DblpContainerImporter, Bs4XmlLargeFilePusher, JsonLinePusher
 from fixtures import *
 
 
@@ -13,15 +14,21 @@ def dblp_importer(api):
 
 @pytest.fixture(scope="function")
 def dblp_importer_existing(api):
-    with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield DblpReleaseImporter(api, issn_file, bezerk_mode=False, lookup_refs=True)
+    with open('tests/files/dblp_container_map.tsv', 'r') as tsv_file:
+        yield DblpReleaseImporter(api, tsv_file, bezerk_mode=False)
+
+@pytest.fixture(scope="function")
+def dblp_container_importer(api):
+    with open('tests/files/dblp_container_map.tsv', 'r') as tsv_file:
+        with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
+            yield DblpContainerImporter(api, issn_file, tsv_file, io.StringIO(), bezerk_mode=True)
 
 def test_dblp_importer(dblp_importer):
     last_index = dblp_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/example_dblp.xml', 'rb') as f:
         dblp_importer.bezerk_mode = True
         counts = Bs4XmlLargeFilePusher(dblp_importer, f, dblp_importer.ELEMENT_TYPES, use_lxml=True).run()
-    print(counts)
+    #print(counts)
     assert counts['insert'] == 3
     assert counts['exists'] == 0
     assert counts['skip'] == 1
@@ -44,11 +51,55 @@ def test_dblp_importer(dblp_importer):
         dblp_importer.bezerk_mode = False
         dblp_importer.reset()
         counts = Bs4XmlLargeFilePusher(dblp_importer, f, dblp_importer.ELEMENT_TYPES, use_lxml=True).run()
-    print(counts)
+    #print(counts)
     assert counts['insert'] == 0
     assert counts['exists'] == 3
     assert counts['skip'] == 1
     assert last_index == dblp_importer.api.get_changelog(limit=1)[0].index
+
+def test_dblp_container_importer(dblp_container_importer):
+    last_index = dblp_container_importer.api.get_changelog(limit=1)[0].index
+    output_tsv_map = io.StringIO()
+    with open('tests/files/example_dblp_containers.json', 'r') as f:
+        dblp_container_importer.bezerk_mode = True
+        dblp_container_importer.dblp_container_map_output = output_tsv_map
+        counts = JsonLinePusher(dblp_container_importer, f).run()
+    assert counts['insert'] == 10
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
+
+    # fetch most recent editgroup
+    change = dblp_container_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
+    assert eg.description
+    assert "dblp" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.DblpContainerImporter" in eg.extra['agent']
+
+    # check that entity name mangling was fixed on import
+    eg = dblp_container_importer.api.get_editgroup(eg.editgroup_id)
+    container = dblp_container_importer.api.get_container(eg.edits.containers[0].ident)
+    assert container.name == "Atlantis Thinking Machines"
+    assert container.issnl == "1877-3273"
+    assert container.container_type == "book-series"
+    assert container.extra['dblp']['prefix'] == "series/atlantis"
+    assert container.extra['urls'] == ["http://link.springer.com/bookseries/10077"]
+
+    last_index = dblp_container_importer.api.get_changelog(limit=1)[0].index
+    output_tsv_map.seek(0)
+    print(output_tsv_map.read())
+    output_tsv_map.seek(0)
+    with open('tests/files/example_dblp_containers.json', 'r') as f:
+        dblp_container_importer.reset()
+        dblp_container_importer.bezerk_mode = False
+        dblp_container_importer.dblp_container_map_output = io.StringIO()
+        dblp_container_importer.read_dblp_container_map_file(output_tsv_map)
+        counts = JsonLinePusher(dblp_container_importer, f).run()
+    print(counts)
+    assert counts['insert'] == 0
+    assert counts['exists'] == 10
+    assert counts['skip'] == 0
+    assert last_index == dblp_container_importer.api.get_changelog(limit=1)[0].index
 
 def test_dblp_xml_parse(dblp_importer):
     with open('tests/files/example_dblp_article.xml', 'r') as f:

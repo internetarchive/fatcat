@@ -32,3 +32,4 @@ from .shadow import ShadowLibraryImporter
 from .file_meta import FileMetaImporter
 from .doaj_article import DoajArticleImporter
 from .dblp_release import DblpReleaseImporter
+from .dblp_container import DblpContainerImporter

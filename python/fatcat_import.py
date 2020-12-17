@@ -274,18 +274,28 @@ def run_doaj_article(args):
         JsonLinePusher(dai, args.json_file).run()
 
 def run_dblp_release(args):
-    dwi = DblpReleaseImporter(args.api,
+    dri = DblpReleaseImporter(args.api,
         dblp_container_map_file=args.dblp_container_map_file,
         edit_batch_size=args.batch_size,
         do_updates=args.do_updates,
         dump_json_mode=args.dump_json_mode,
     )
     Bs4XmlLargeFilePusher(
-        dwi,
+        dri,
         args.xml_file,
         DblpReleaseImporter.ELEMENT_TYPES,
         use_lxml=True,
     ).run()
+
+def run_dblp_container(args):
+    dci = DblpContainerImporter(args.api,
+        args.issn_map_file,
+        dblp_container_map_file=args.dblp_container_map_file,
+        dblp_container_map_output=args.dblp_container_map_output,
+        edit_batch_size=args.batch_size,
+        do_updates=args.do_updates,
+    )
+    JsonLinePusher(dci, args.json_file).run()
 
 def run_file_meta(args):
     # do_updates defaults to true for this importer
@@ -672,6 +682,28 @@ def main():
         help="print release entities to stdout instead of importing")
     sub_dblp_release.set_defaults(
         func=run_dblp_release,
+        auth_var="FATCAT_AUTH_WORKER_DBLP",
+    )
+
+    sub_dblp_container = subparsers.add_parser('dblp-container',
+        help="import dblp container metadata")
+    sub_dblp_container.add_argument('json_file',
+        help="File with DBLP container JSON to import from (see extra/dblp/)",
+        default=sys.stdin, type=argparse.FileType('rb'))
+    sub_dblp_container.add_argument('--dblp-container-map-file',
+        help="file path to dblp pre-existing prefix to container_id TSV file",
+        default=None, type=argparse.FileType('r'))
+    sub_dblp_container.add_argument('--dblp-container-map-output',
+        help="file path to output new dblp container map TSV to",
+        default=None, type=argparse.FileType('w'))
+    sub_dblp_container.add_argument('--issn-map-file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_dblp_container.add_argument('--do-updates',
+        action='store_true',
+        help="update any pre-existing container entities")
+    sub_dblp_container.set_defaults(
+        func=run_dblp_container,
         auth_var="FATCAT_AUTH_WORKER_DBLP",
     )
 
