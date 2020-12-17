@@ -45,6 +45,13 @@ ES_CONTAINER_RANDOM_RESP = {
     'took': 50
 }
 
+ES_RELEASE_EMPTY_RESP = {
+    'timed_out': False,
+    'hits': {'total': 0, 'hits': [], 'max_score': 0.0},
+    '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},
+    'took': 50
+}
+
 @pytest.fixture
 def full_app(mocker):
     load_dotenv(dotenv_path="./example.env")

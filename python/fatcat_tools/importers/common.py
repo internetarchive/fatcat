@@ -7,16 +7,23 @@ import sqlite3
 import datetime
 import subprocess
 from collections import Counter
-from confluent_kafka import Consumer, KafkaException
+from typing import Optional, Tuple
 import xml.etree.ElementTree as ET
 
+import elasticsearch
 from bs4 import BeautifulSoup
+from confluent_kafka import Consumer, KafkaException
 
 import fatcat_openapi_client
+from fatcat_openapi_client import ReleaseEntity
 from fatcat_openapi_client.rest import ApiException
+from fuzzycat.matching import match_release_fuzzy
+import fuzzycat.common
+import fuzzycat.verify
 
 # TODO: refactor so remove need for this (re-imports for backwards compatibility)
 from fatcat_tools.normal import (clean_str as clean, is_cjk, b32_hex, LANG_MAP_MARC) # noqa: F401
+from fatcat_tools.transforms import entity_to_dict
 
 DATE_FMT = "%Y-%m-%d"
 SANE_MAX_RELEASES = 200
@@ -145,18 +152,24 @@ class EntityImporter:
 
         self.api = api
         self.do_updates = bool(kwargs.get('do_updates', True))
+        self.do_fuzzy_match = kwargs.get('do_fuzzy_match', True)
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
         self.submit_mode = kwargs.get('submit_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)
         self.editgroup_description = kwargs.get('editgroup_description')
         self.editgroup_extra = eg_extra
-        self.reset()
+
+        self.es_client = kwargs.get('es_client')
+        if not self.es_client:
+            self.es_client = elasticsearch.Elasticsearch("https://search.fatcat.wiki")
 
         self._issnl_id_map = dict()
         self._orcid_id_map = dict()
         self._orcid_regex = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
         self._doi_id_map = dict()
         self._pmid_id_map = dict()
+
+        self.reset()
 
     def reset(self):
         self.counts = Counter({'total': 0, 'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
@@ -432,6 +445,53 @@ class EntityImporter:
 
         existing.urls = [u for u in existing.urls if u.url not in redundant_urls]
         return existing
+
+    def match_existing_release_fuzzy(self, release: ReleaseEntity) -> Optional[Tuple[str, ReleaseEntity]]:
+        """
+        This helper function uses fuzzycat (and elasticsearch) to look for
+        existing release entities with similar metadata.
+
+        Returns None if there was no match of any kind, or a single tuple
+        (status: str, existing: ReleaseEntity) if there was a match.
+
+        Status string is one of the fuzzycat.common.Status, with "strongest
+        match" in this sorted order:
+
+        - EXACT
+        - STRONG
+        - WEAK
+        - AMBIGUOUS
+
+        Eg, if there is any EXACT match that is always returned; an AMBIGIOUS
+        result is only returned if all the candidate matches were ambiguous.
+        """
+
+        # this map used to establish priority order of verified matches
+        STATUS_SORT = {
+            fuzzycat.common.Status.TODO: 0,
+            fuzzycat.common.Status.EXACT: 10,
+            fuzzycat.common.Status.STRONG: 20,
+            fuzzycat.common.Status.WEAK: 30,
+            fuzzycat.common.Status.AMBIGUOUS: 40,
+            fuzzycat.common.Status.DIFFERENT: 60,
+        }
+
+        # TODO: the size here is a first guess; what should it really be?
+        candidates = match_release_fuzzy(release, size=10, es=self.es_client)
+        if not candidates:
+            return None
+
+        release_dict = entity_to_dict(release, api_client=self.api.api_client)
+        verified = [(fuzzycat.verify.verify(release_dict, entity_to_dict(c, api_client=self.api.api_client)), c) for c in candidates]
+
+        # chose the "closest" match
+        closest = sorted(verified, key=lambda v: STATUS_SORT[v[0].status])[0]
+        if closest[0].status == fuzzycat.common.Status.DIFFERENT:
+            return None
+        elif closest[0].status == fuzzycat.common.Status.TODO:
+            raise NotImplementedError("fuzzycat verify hit a Status.TODO")
+        else:
+            return (closest[0].status.name, closest[1])
 
 
 class RecordPusher:
