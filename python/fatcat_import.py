@@ -275,9 +275,10 @@ def run_doaj_article(args):
 
 def run_dblp_release(args):
     dwi = DblpReleaseImporter(args.api,
-        args.issn_map_file,
+        dblp_container_map_file=args.dblp_container_map_file,
         edit_batch_size=args.batch_size,
         do_updates=args.do_updates,
+        dump_json_mode=args.dump_json_mode,
     )
     Bs4XmlLargeFilePusher(
         dwi,
@@ -660,12 +661,15 @@ def main():
     sub_dblp_release.add_argument('xml_file',
         help="File with DBLP XML to import from",
         default=sys.stdin, type=argparse.FileType('rb'))
-    sub_dblp_release.add_argument('--issn-map-file',
-        help="ISSN to ISSN-L mapping file",
+    sub_dblp_release.add_argument('--dblp-container-map-file',
+        help="file path to dblp prefix to container_id TSV file",
         default=None, type=argparse.FileType('r'))
     sub_dblp_release.add_argument('--do-updates',
         action='store_true',
         help="update any pre-existing release entities")
+    sub_dblp_release.add_argument('--dump-json-mode',
+        action='store_true',
+        help="print release entities to stdout instead of importing")
     sub_dblp_release.set_defaults(
         func=run_dblp_release,
         auth_var="FATCAT_AUTH_WORKER_DBLP",

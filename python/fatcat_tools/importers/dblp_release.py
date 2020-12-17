@@ -8,22 +8,25 @@ and passed to `parse_record()`.
 """
 
 import sys  # noqa: F401
+import json
 import warnings
 import datetime
 from typing import List, Optional, Any
 
 import fatcat_openapi_client
+
 from fatcat_tools.normal import (clean_doi, clean_str, parse_month,
     clean_orcid,
     clean_arxiv_id, clean_wikidata_qid, clean_isbn13)
 from fatcat_tools.importers.common import EntityImporter
+from fatcat_tools.transforms import entity_to_dict
 
 
 class DblpReleaseImporter(EntityImporter):
 
     def __init__(self,
                  api,
-                 issn_map_file,
+                 dblp_container_map_file=None,
                  **kwargs):
 
         eg_desc = kwargs.get(
@@ -36,13 +39,13 @@ class DblpReleaseImporter(EntityImporter):
         # ensure default is to not do updates with this worker (override super() default)
         kwargs['do_updates'] = kwargs.get("do_updates", False)
         super().__init__(api,
-                         issn_map_file=issn_map_file,
                          editgroup_description=eg_desc,
                          editgroup_extra=eg_extra,
                          **kwargs)
 
+        self.dump_json_mode = kwargs.get("dump_json_mode", False)
         self.this_year = datetime.datetime.now().year
-        self.read_issn_map_file(issn_map_file)
+        self.read_dblp_container_map_file(dblp_container_map_file)
 
     ELEMENT_TYPES = [
         "article",
@@ -54,6 +57,25 @@ class DblpReleaseImporter(EntityImporter):
         "www",
         #"data",  # no instances in 2020-11 dump
     ]
+
+    def read_dblp_container_map_file(self, dblp_container_map_file) -> None:
+        self._dblp_container_map = dict()
+        if not dblp_container_map_file:
+            print("Not loading a dblp prefix container map file; entities will fail to import", file=sys.stderr)
+            return
+        print("Loading dblp prefix container map file...", file=sys.stderr)
+        for line in dblp_container_map_file:
+            if line.startswith("dblp_prefix") or len(line) == 0:
+                continue
+            (prefix, container_id) = line.split()[0:2]
+            assert len(container_id) == 26
+            self._dblp_container_map[prefix] = container_id
+        print("Got {} dblp container mappings.".format(len(self._dblp_container_map)), file=sys.stderr)
+
+    def lookup_dblp_prefix(self, prefix):
+        if not prefix:
+            return None
+        return self._dblp_container_map.get(prefix)
 
     def want(self, xml_elem):
         if not xml_elem.name in self.ELEMENT_TYPES:
@@ -175,12 +197,8 @@ class DblpReleaseImporter(EntityImporter):
 
         container_id = None
         if dblp_prefix:
-            # XXX: container lookup by dblp_prefix, from local something
-            pass
-            #container_id = self.lookup_dblp_prefix(dblp_prefix)
-            #if not container_id:
-            #    self.counts['skip-dblp-prefix-lookup'] += 1
-            #    return False
+            container_id = self.lookup_dblp_prefix(dblp_prefix)
+            # note: we will skip later if couldn't find prefix
 
         publisher = clean_str(xml_elem.publisher and xml_elem.publisher.text)
         volume = clean_str(xml_elem.volume and xml_elem.volume.text)
@@ -233,7 +251,7 @@ class DblpReleaseImporter(EntityImporter):
             dblp_extra['booktitle'] = booktitle
 
         if release_year and release_month:
-            # TODO: schema migration
+            # TODO: release_month schema migration
             extra['release_month'] = release_month
 
         if dblp_extra:
@@ -259,6 +277,17 @@ class DblpReleaseImporter(EntityImporter):
             extra=extra,
         )
         re = self.biblio_hacks(re)
+
+        if self.dump_json_mode:
+            re_dict = entity_to_dict(re, api_client=self.api.api_client)
+            re_dict['_dblp_ee_urls'] = self.dblp_ext_urls(xml_elem)
+            re_dict['_dblp_prefix'] = dblp_prefix
+            print(json.dumps(re_dict, sort_keys=True))
+            return False
+
+        if not re.container_id:
+            self.counts["skip-dblp-container-missing"] += 1
+            return False
         return re
 
     @staticmethod
@@ -442,3 +471,30 @@ class DblpReleaseImporter(EntityImporter):
             wikidata_qid=wikidata_qid,
             arxiv=arxiv_id,
         )
+
+    def dblp_ext_urls(self, xml_elem: Any) -> List[str]:
+        """
+        Takes a full XML object and returns a list of possible-fulltext URLs.
+
+        Used only in JSON dump mode, with the intent of transforming into
+        sandcrawler ingest requests.
+        """
+        EXTID_PATTERNS = [
+            '://doi.acm.org/',
+            '://doi.ieeecomputersociety.org/',
+            'doi.org/10.',
+            'wikidata.org/entity/Q',
+            '://arxiv.org/abs/',
+        ]
+        urls = []
+        for ee in xml_elem.find_all('ee'):
+            url = ee.text
+            skip = False
+            for pattern in EXTID_PATTERNS:
+                if pattern in url:
+                    skip = True
+                    break
+            if skip:
+                break
+            urls.append(url)
+        return urls
