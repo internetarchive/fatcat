@@ -36,5 +36,5 @@ SHA1, and attempted URL. You can check for errors (and potentially try) with:
 
 Or, count status codes:
 
-    cut -f1 fetch_status.log | sort | uniq -c | sort -nr
+    awk '{s[$1]++} END {for(k in s){print k, s[k]}}' fetch_status.log | sort -nrk2
 
