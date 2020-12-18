@@ -5,6 +5,20 @@ Importer for DBLP release-level (article/paper/etc) XML metadata.
 Works similarly to PubMed XML importer: expects to have a large XML file
 iterated over quickly, with individual elements re-parsed into smaller objects
 and passed to `parse_record()`.
+
+There are two valuable pieces of relationship metadata in dblp:
+
+- container linkages, especially to conferences which do not have ISSNs, and
+  thus no existing fatcat containers
+- author disambiguation, which is a work in progress but anecdotally higher
+  quality than MAG, Semantic Scholar, etc
+
+We are not going to do author (creator) ingest at this time. For containers,
+import would be made much easier if we updated the database schema to include
+dblp_prefix as a lookup key, but this is more difficult for containers than
+with releases, so we are going to skip it for now. This leaves us with a
+brittle/unreliable TSV lookup mechanism for prefix-to-container_id (as of
+December 2020).
 """
 
 import sys  # noqa: F401

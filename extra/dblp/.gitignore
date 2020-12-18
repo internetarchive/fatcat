@@ -1,3 +1,6 @@
 conf/
 journals/
 series/
+Pipfile.lock
+*.json
+*.html

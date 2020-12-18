@@ -1,6 +1,12 @@
 
 This file describes hacks used to import dblp container metadata.
 
+As of December 2020 this is part of the dblp release metadata import pipeline:
+we must have conference and other non-ISSN containers created before running
+the release import. dblp does not publish container-level metadata in a
+structured format (eg, in their dumps), so scraping the HTML is unfortunately
+necessary.
+
 
 ## Quick Bootstrap Commands
 
@@ -12,9 +18,12 @@ and dump release entities in JSON; this takes some time:
 Next extract the unique set of dblp identifier prefixes, which will be used as
 container identifiers:
 
-    cat /data/dblp/dblp_releases.json | jq ._dblp_prefix | grep -v ^none | sort -u > /data/dblp/prefix_list.txt
+    cat /data/dblp/dblp_releases.json | jq ._dblp_prefix -r | grep -v ^null | sort -u > /data/dblp/prefix_list.txt
 
-Then fetch HTML documents from dblp.org for each prefix:
+Then fetch HTML documents from dblp.org for each prefix. Note that currently
+only single-level containers will download successfully, and only journals,
+conf, and series sections. Books, Tech Reports, etc may be nice to include in
+the future.
 
     mkdir -p journals
     mkdir -p conf
@@ -27,7 +36,7 @@ Then fetch HTML documents from dblp.org for each prefix:
 
 Using the python script in this directory, extract metadata from these HTML documents:
 
-    fd .html | ./dblp_html_extract.py | pv -l > dblp_container_meta.json
+    fd html conf/ journals/ series/ | ./dblp_html_extract.py | pv -l > dblp_container_meta.json
 
 This can be imported into fatcat using the dblp-container importer:
 
