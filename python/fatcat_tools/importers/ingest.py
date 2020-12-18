@@ -37,6 +37,7 @@ class IngestFileResultImporter(EntityImporter):
             's2-corpus',
             's2',
             'doaj',
+            'dblp',
         ]
         if kwargs.get('skip_source_allowlist', False):
             self.ingest_request_source_allowlist = []
@@ -128,7 +129,7 @@ class IngestFileResultImporter(EntityImporter):
             release_ident = fatcat.get('release_ident')
         elif request.get('ext_ids'):
             # if no fatcat ident, try extids
-            for extid_type in ('doi', 'pmid', 'pmcid', 'arxiv'):
+            for extid_type in ('doi', 'pmid', 'pmcid', 'arxiv', 'doaj', 'dblp'):
                 extid = request['ext_ids'].get(extid_type)
                 if not extid:
                     continue
