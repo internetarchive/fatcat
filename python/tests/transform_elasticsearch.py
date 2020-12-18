@@ -225,7 +225,7 @@ def test_elasticsearch_release_kbart_year():
     assert es['preservation'] == "none"
     assert es['is_oa'] == True
     assert es['is_longtail_oa'] == False
-    assert es['is_preserved'] == None
+    assert es['is_preserved'] == False
     assert es['in_web'] == False
     assert es['in_dweb'] == False
     assert es['in_ia'] == False
