@@ -329,7 +329,14 @@ class DblpReleaseImporter(EntityImporter):
                         return False
                     break
 
-        # TODO: in the future could do fuzzy match here, eg using elasticsearch
+        if not existing and self.do_fuzzy_match:
+            fuzzy_result = self.match_existing_release_fuzzy(re)
+            # TODO: in the future, could assign work_id for clustering, or for
+            # "EXACT" match, set existing and allow (optional) update code path
+            # to run
+            if fuzzy_result is not None:
+                self.counts["exists-fuzzy"] += 1
+                return False
 
         # create entity
         if not existing:
