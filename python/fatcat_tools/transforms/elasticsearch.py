@@ -217,8 +217,8 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
             t[k] = bool(t[k])
 
     t['in_ia'] = bool(t['in_ia'])
-    t['is_preserved'] = (
-        bool(t['is_preserved'])
+    t['is_preserved'] = bool(
+        t['is_preserved']
         or t['in_ia']
         or t['in_kbart']
         or t['in_jstor']
