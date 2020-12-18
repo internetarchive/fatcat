@@ -13,6 +13,8 @@ This file should not turn in to a TODO list!
 
 Updated ORCIDs from 2020 dump. About 2.4 million new `creator` entities.
 
+Imported DOAJ article metadata from a 2020-11 dump.
+
 ## 2020-03
 
 Started harvesting both Arxiv and Pubmed metadata daily and importing to
