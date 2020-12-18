@@ -338,13 +338,17 @@ class DblpReleaseImporter(EntityImporter):
                 self.counts["exists-fuzzy"] += 1
                 return False
 
-        # create entity
+        # if no existing, then create entity
         if not existing:
             return True
 
-        # other logic could go here about skipping updates
         if not self.do_updates or existing.ext_ids.dblp:
             self.counts['exists'] += 1
+            return False
+
+        # logic for whether to do update or skip
+        if (existing.container_id and existing.release_type and existing.release_stage) or existing.ext_ids.arxiv_id:
+            self.counts['skip-update'] += 1
             return False
 
         # fields to copy over for update
