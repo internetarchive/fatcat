@@ -63,11 +63,11 @@ def test_fuzzy_match_different(entity_importer, mocker) -> None:
     match_raw = mocker.patch('fatcat_tools.importers.common.match_release_fuzzy')
     match_raw.side_effect = [[r3, r2, r3, r2]]
     resp = entity_importer.match_existing_release_fuzzy(r1)
-    assert resp == ("STRONG", r2)
+    assert (resp[0], resp[2]) == ("STRONG", r2)
 
     match_raw.side_effect = [[r2, r2, r3, r1]]
     resp = entity_importer.match_existing_release_fuzzy(r1)
-    assert resp == ("EXACT", r1)
+    assert (resp[0], resp[2]) == ("EXACT", r1)
 
     match_raw.side_effect = [[r3]]
     resp = entity_importer.match_existing_release_fuzzy(r1)

@@ -446,13 +446,13 @@ class EntityImporter:
         existing.urls = [u for u in existing.urls if u.url not in redundant_urls]
         return existing
 
-    def match_existing_release_fuzzy(self, release: ReleaseEntity) -> Optional[Tuple[str, ReleaseEntity]]:
+    def match_existing_release_fuzzy(self, release: ReleaseEntity) -> Optional[Tuple[str, str, ReleaseEntity]]:
         """
         This helper function uses fuzzycat (and elasticsearch) to look for
         existing release entities with similar metadata.
 
         Returns None if there was no match of any kind, or a single tuple
-        (status: str, existing: ReleaseEntity) if there was a match.
+        (status: str, reason: str, existing: ReleaseEntity) if there was a match.
 
         Status string is one of the fuzzycat.common.Status, with "strongest
         match" in this sorted order:
@@ -491,7 +491,7 @@ class EntityImporter:
         elif closest[0].status == fuzzycat.common.Status.TODO:
             raise NotImplementedError("fuzzycat verify hit a Status.TODO")
         else:
-            return (closest[0].status.name, closest[1])
+            return (closest[0].status.name, closest[0].reason.value, closest[1])
 
 
 class RecordPusher:
