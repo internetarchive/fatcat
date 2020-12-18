@@ -36,6 +36,7 @@ class IngestFileResultImporter(EntityImporter):
             'unpaywall',
             's2-corpus',
             's2',
+            'doaj',
         ]
         if kwargs.get('skip_source_allowlist', False):
             self.ingest_request_source_allowlist = []
@@ -84,7 +85,7 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['skip-ingest_request_source'] += 1
             return False
 
-        if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi', 'mag', 's2'):
+        if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi', 'mag', 's2', 'doaj'):
             self.counts['skip-link-source'] += 1
             return False
 
