@@ -361,7 +361,7 @@ class DblpReleaseImporter(EntityImporter):
             return False
 
         # logic for whether to do update or skip
-        if (existing.container_id and existing.release_type and existing.release_stage) or existing.ext_ids.arxiv_id:
+        if (existing.container_id and existing.release_type and existing.release_stage) or existing.ext_ids.arxiv:
             self.counts['skip-update'] += 1
             return False
 
