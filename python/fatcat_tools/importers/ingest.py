@@ -86,7 +86,7 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['skip-ingest_request_source'] += 1
             return False
 
-        if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi', 'mag', 's2', 'doaj'):
+        if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi', 'mag', 's2', 'doaj', 'dblp'):
             self.counts['skip-link-source'] += 1
             return False
 
