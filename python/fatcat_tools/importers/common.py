@@ -164,7 +164,7 @@ class EntityImporter:
 
         self.es_client = kwargs.get('es_client')
         if not self.es_client:
-            self.es_client = elasticsearch.Elasticsearch("https://search.fatcat.wiki")
+            self.es_client = elasticsearch.Elasticsearch("https://search.fatcat.wiki", timeout=120)
 
         self._issnl_id_map = dict()
         self._orcid_id_map = dict()
