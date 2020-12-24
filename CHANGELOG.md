@@ -14,17 +14,28 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## [Unreleased]
 
-This is a patch release containing many web interface features and tweaks. No
-changes to API.
+## [0.3.3] - 2020-12-24
+
+Minor additions to the API schema: new external identifiers for release
+entities, for `doaj`, `dblp`, and `oai`. Database schema (SQL) not changed.
 
 ### Added
 
+- three new release external identifiers: `doaj`, `dblp`, and `oai` (all
+  article-level). These are API changes, but backwards compatible.
+- DOAJ release import
+- dblp container and release import
 - free-form "coverage search" page, allowing visualization of coverage based on
-  elasticsearch query
-- editing of all entity types using TOML markup
+  elasticsearch query (web interface)
+- editing of all entity types using TOML markup (via web interface)
 - basic sitemap XML generation
+- initial integration of fuzzycat library to prevent duplicate release entity
+  creation at import time
+- import of HTML webcaptures from sandcrawler ingest
+- kafka publishing of updated work entities (transitively of release updates as
+  part of the work), to enable work-level entity update pipeline for archive
+  scholar index
 
 ### Changed
 
@@ -38,16 +49,6 @@ changes to API.
 - several datacite metadata import bugs
 - several other bugfixes to web interface and importer code, not reported here
   granularly
-
-## [0.3.3] - 2020-11-16
-
-Minor additions to the API schema: new external identifiers for release
-entities, for `doaj`, `dblp`, and `oai`. Database schema (SQL) not changed.
-
-### Added
-
-- two new release external identifiers: `doaj`, `dblp`, and `oai` (all
-  article-level). These are API changes, but backwards compatible.
 
 ## [0.3.2] - 2020-04-08
 
