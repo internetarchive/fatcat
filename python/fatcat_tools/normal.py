@@ -94,6 +94,9 @@ def clean_arxiv_id(raw):
     - 'arxiv:' prefix
 
     Works with versioned or un-versioned arxiv identifiers.
+
+    TODO: version of this function that only works with versioned identifiers?
+    That is the behavior of fatcat API
     """
     if not raw:
         return None
@@ -116,6 +119,7 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("math.CA/0611800v2") == "math.CA/0611800v2"
     assert clean_arxiv_id("math.CA/0611800") == "math.CA/0611800"
     assert clean_arxiv_id("0806.2878v1 ") == "0806.2878v1"
+    assert clean_arxiv_id("cs/0207047") == "cs/0207047"
 
     assert clean_arxiv_id("https://arxiv.org/abs/0806.2878v1") == "0806.2878v1"
     assert clean_arxiv_id("arxiv:0806.2878v1") == "0806.2878v1"
