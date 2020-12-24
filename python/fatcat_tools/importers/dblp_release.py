@@ -323,6 +323,15 @@ class DblpReleaseImporter(EntityImporter):
             if err.status != 404:
                 raise err
 
+        # Just skip all releases with an arxiv_id for now. Have not decided
+        # what to do about grouping works and lookup of un-versioned arxiv_id
+        # yet. Note that this means we will lack coverage of some works which
+        # have an arxiv preprint, but in those cases we will presumably at
+        # least have the pre-print copy/record.
+        if re.ext_ids.arxiv:
+            self.counts["skip-arxiv"] += 1
+            return False
+
         # then try other ext_id lookups
         if not existing:
             for extid_type in ('doi', 'wikidata_qid', 'isbn13', 'arxiv'):
