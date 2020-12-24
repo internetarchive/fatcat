@@ -21,7 +21,7 @@ uuid = "0.6"
 log = { version = "*", features = ["max_level_info", "release_max_level_info"] }
 data-encoding = "2.1"
 regex = "1"
-lazy_static = "1.0"
+lazy_static = "1"
 sha1 = { version = "0.6", features = ["std"] }
 macaroon = { git = "https://github.com/bnewbold/libmacaroon-rs", branch = "bnewbold-broken" }
 rand = "*"
@@ -50,4 +50,4 @@ cadence = "^0.16"
 # Command-line tools
 crossbeam-channel = "0.2"
 num_cpus = "1"
-env_logger = "*"
+env_logger = "0.8"

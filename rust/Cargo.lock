@@ -274,7 +274,7 @@ dependencies = [
  "cookie",
  "failure",
  "idna 0.1.5",
- "log 0.4.6",
+ "log 0.4.11",
  "publicsuffix",
  "serde 1.0.117",
  "serde_json 1.0.38",
@@ -542,13 +542,13 @@ dependencies = [
 
 [[package]]
 name = "env_logger"
-version = "0.6.0"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afb070faf94c85d17d50ca44f6ad076bce18ae92f0037d350947240a36e9d42e"
+checksum = "f26ecb66b4bdca6c1409b40fb255eefc2bd4f6d135dab3c3124f80ffa2a9661e"
 dependencies = [
  "atty",
  "humantime",
- "log 0.4.6",
+ "log 0.4.11",
  "regex 1.4.2",
  "termcolor",
 ]
@@ -624,7 +624,7 @@ dependencies = [
  "iron-slog",
  "iron-test",
  "lazy_static 1.4.0",
- "log 0.4.6",
+ "log 0.3.9",
  "macaroon",
  "num_cpus",
  "rand 0.6.5",
@@ -655,8 +655,8 @@ dependencies = [
  "futures",
  "hyper 0.10.15",
  "iron 0.6.0",
- "lazy_static 0.2.11",
- "log 0.3.9",
+ "lazy_static 1.4.0",
+ "log 0.4.11",
  "multipart",
  "router",
  "serde 1.0.117",
@@ -753,7 +753,7 @@ dependencies = [
  "futures",
  "http",
  "indexmap",
- "log 0.4.6",
+ "log 0.4.11",
  "slab",
  "string",
  "tokio-io",
@@ -784,12 +784,9 @@ checksum = "494b4d60369511e7dea41cf646832512a94e542f68bb9c49e54518e0f468eb47"
 
 [[package]]
 name = "humantime"
-version = "1.2.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ca7e5f2e110db35f93b837c81797f3714500b81d517bf20c431b16d3ca4f114"
-dependencies = [
- "quick-error",
-]
+checksum = "3c1ad908cc71012b7bea4d0c53ba96a8cba9962f048fa68d143376143d863b7a"
 
 [[package]]
 name = "hyper"
@@ -824,7 +821,7 @@ dependencies = [
  "httparse",
  "iovec",
  "itoa 0.4.3",
- "log 0.4.6",
+ "log 0.4.11",
  "net2",
  "time",
  "tokio",
@@ -1034,14 +1031,14 @@ version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 dependencies = [
- "log 0.4.6",
+ "log 0.4.11",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.6"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c84ec4b527950aa83a329754b01dbe3f58361d1c5efacd1f6d68c494d08a17c6"
+checksum = "4fabed175da42fed1fa0746b0ea71f412aa9d35e76e95e59b192c64b9dc2bf8b"
 dependencies = [
  "cfg-if 0.1.6",
 ]
@@ -1168,7 +1165,7 @@ dependencies = [
  "kernel32-sys",
  "lazycell",
  "libc",
- "log 0.4.6",
+ "log 0.4.11",
  "miow",
  "net2",
  "slab",
@@ -1462,12 +1459,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quick-error"
-version = "1.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
-
-[[package]]
 name = "quote"
 version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1498,7 +1489,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d746fc8a0dab19ccea7ff73ad535854e90ddb3b4b8cdce953dd5cd0b2e7bd22"
 dependencies = [
  "antidote",
- "log 0.4.6",
+ "log 0.4.11",
  "scheduled-thread-pool",
 ]
 
@@ -1732,7 +1723,7 @@ dependencies = [
  "futures",
  "http",
  "hyper 0.12.23",
- "log 0.4.6",
+ "log 0.4.11",
  "mime 0.3.13",
  "mime_guess 2.0.3",
  "serde 1.0.117",
@@ -1846,7 +1837,7 @@ dependencies = [
  "httpdate",
  "im",
  "lazy_static 1.4.0",
- "log 0.4.6",
+ "log 0.4.11",
  "rand 0.6.5",
  "regex 1.4.2",
  "reqwest",
@@ -2298,7 +2289,7 @@ checksum = "b53aeb9d3f5ccf2ebb29e19788f96987fa1355f8fe45ea193928eaaaf3ae820f"
 dependencies = [
  "bytes",
  "futures",
- "log 0.4.6",
+ "log 0.4.11",
 ]
 
 [[package]]
@@ -2310,7 +2301,7 @@ dependencies = [
  "crossbeam-utils 0.6.5",
  "futures",
  "lazy_static 1.4.0",
- "log 0.4.6",
+ "log 0.4.11",
  "mio",
  "num_cpus",
  "parking_lot 0.7.1",
@@ -2344,7 +2335,7 @@ dependencies = [
  "crossbeam-deque",
  "crossbeam-utils 0.6.5",
  "futures",
- "log 0.4.6",
+ "log 0.4.11",
  "num_cpus",
  "rand 0.6.5",
  "slab",
@@ -2636,7 +2627,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "797464475f30ddb8830cc529aaaae648d581f99e2036a928877dfde027ddf6b3"
 dependencies = [
  "futures",
- "log 0.4.6",
+ "log 0.4.11",
  "try-lock",
 ]
 

@@ -30,8 +30,8 @@ swagger = "0.7"
 #
 bodyparser = {version = "0.8", optional = true}
 url = "1.5"
-lazy_static = "0.2"
-log = "0.3.0"
+lazy_static = "1"
+log = "0.4"
 multipart = {version = "0.13", optional = true}
 router = {version = "0.6", optional = true}
 serde = "1.0"
