@@ -13,7 +13,14 @@ This file should not turn in to a TODO list!
 
 Updated ORCIDs from 2020 dump. About 2.4 million new `creator` entities.
 
-Imported DOAJ article metadata from a 2020-11 dump.
+Imported DOAJ article metadata from a 2020-11 dump. Crawled and imported
+several hundred thousand file entities matched by DOAJ identifier. Updated
+journal metadata using chocula took (before the release ingest). Filtered out
+fuzzy-matching papers before importing.
+
+Imported dblp from a 2020 snapshot, both containers (primarily for conferences
+lacking an ISSN) and release entities (primarily conference papers). Filtered
+out fuzzy-matching papers before importing.
 
 ## 2020-03
 
