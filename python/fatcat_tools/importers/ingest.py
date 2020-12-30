@@ -437,7 +437,9 @@ class IngestWebResultImporter(IngestFileResultImporter):
         if 'revisit_cdx' in row:
             terminal_cdx = row['revisit_cdx']
         assert terminal_cdx['surt']
-        assert terminal_cdx['url'] == terminal['terminal_url']
+        if terminal_cdx['url'] != terminal['terminal_url']:
+            self.counts['skip-terminal-url-mismatch'] += 1
+            return None
 
         wc_cdx = []
         # primary resource first
