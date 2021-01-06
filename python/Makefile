@@ -13,12 +13,12 @@ dep: ## Create local virtualenv using pipenv
 	pipenv install --dev
 
 .PHONY: lint
-lint: ## Run lints (eg, flake8, mypy)
+lint: ## Run lints (eg, flake8)
 	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --select=E9,F63,F7,F82
 	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --exit-zero
 
-.PHONY: mypy
-mypy: ## Run mypy type checks (not part of regular lint yet)
+.PHONY: lint-mypy
+lint-mypy: ## Run mypy type checks (not part of regular lint yet)
 	pipenv run mypy *.py fatcat_web/ fatcat_tools/ --ignore-missing-imports
 
 # Not ready for 'black' yet
@@ -27,7 +27,7 @@ mypy: ## Run mypy type checks (not part of regular lint yet)
 #	pipenv run black *.py fatcat_web/ fatcat_tools/ tests/
 
 .PHONY: test
-test: lint ## Run all tests and lints
+test: ## Run all tests and lints
 	@curl --silent localhost:9411/v0/changelog > /dev/null || (echo "API not running locally, bailing early from tests" && exit 1)
 	pipenv run pytest
 
@@ -39,6 +39,6 @@ coverage: ## Run all tests with coverage
 test-cli: ## Run CLI commands. WARNING: may mutate local database
 	pipenv run ./tests/cli.sh > /dev/null
 
-.PHONY: dev
-dev: ## Run web service locally, with reloading
+.PHONY: serve
+serve: ## Run web service locally, with reloading
 	pipenv run ./fatcat_webface.py --debug
