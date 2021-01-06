@@ -12,8 +12,8 @@ help: ## Print info about all commands
 test: ## Run all tests and lints
 	cargo test -- --test-threads 1
 
-.PHONY: dev
-dev: ## Run web service locally, with reloading
+.PHONY: serve
+serve: ## Run web service locally, with reloading
 	#./target/debug/fatcatd
 	cargo run --bin fatcatd
 
