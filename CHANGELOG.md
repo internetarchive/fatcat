@@ -14,6 +14,11 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## [Unreleased]
+
+### Changes
+
+- require Python 3.8 (upgrade from Python 3.7)
 
 ## [0.3.3] - 2020-12-24
 
