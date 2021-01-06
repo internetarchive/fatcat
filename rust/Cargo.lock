@@ -646,7 +646,7 @@ dependencies = [
 
 [[package]]
 name = "fatcat-openapi"
-version = "0.3.1"
+version = "0.3.3"
 dependencies = [
  "bodyparser",
  "chrono 0.4.6",
