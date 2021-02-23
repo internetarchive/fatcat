@@ -72,6 +72,8 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         jstor_id = release.ext_ids.jstor,
         ark_id = release.ext_ids.ark,
         mag_id = release.ext_ids.mag,
+        dblp_id = release.ext_ids.dblp,
+        doaj_id = release.ext_ids.doaj,
     )
 
     t.update(dict(
@@ -84,6 +86,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         in_ia_sim = False,
         in_kbart = None,
         in_jstor = False,
+        in_doaj= bool(release.ext_ids.doaj),
         in_shadows = False,
     ))
 
@@ -280,6 +283,7 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
         if c_extra.get('doaj'):
             if c_extra['doaj'].get('as_of'):
                 t['is_oa'] = True
+                t['in_doaj'] = True
         if c_extra.get('road'):
             if c_extra['road'].get('as_of'):
                 t['is_oa'] = True

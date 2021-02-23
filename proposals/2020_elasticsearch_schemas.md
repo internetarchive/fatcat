@@ -1,5 +1,5 @@
 
-status: planning
+status: implemented
 
 This document tracks "easy" elasticsearch schema and behavior changes that
 could be made while being backwards compatible with the current v0.3 schema and
