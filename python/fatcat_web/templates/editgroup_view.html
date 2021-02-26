@@ -51,33 +51,6 @@
 
 {# extended by changelog_entry #}
 {% block editgroupheader %}
-{% if not editgroup.changelog_index %}
-  <div class="ui right floated center aligned segment">
-    {% if auth_to.accept %}
-      <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/accept">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <button class="ui orange button">Accept Edits</button>
-      </form><br>
-    {% endif %}
-    {% if auth_to.submit %}
-      {% if editgroup.submitted %}
-        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/unsubmit">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button class="ui button">Un-Submit</button>
-        </form><br>
-        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button class="ui button">Re-Submit</button>
-        </form>
-      {% else %}
-        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button class="ui primary button">Submit</button>
-        </form>
-      {% endif %}
-    {% endif %}
-  </div>
-{% endif %}
 
 <h1 class="ui header">Editgroup
 <span class="sub header"><code>editgroup_{{ editgroup.editgroup_id }}</code></span></h1>
@@ -91,6 +64,73 @@
   <p>An editgroup is a set of entity edits, bundled together into a coherent, reviewable bundle.
 </div>
 {% endif %}
+
+<div class="ui three top attached ordered steps">
+
+  {% if editgroup.changelog_index %}
+    {% set editing_status = "completed" %}
+    {% set submit_status = "completed" %}
+    {% set accept_status = "completed" %}
+  {% elif editgroup.submitted %}
+    {% set editing_status = "completed" %}
+    {% set submit_status = "completed" %}
+    {% set accept_status = "active" %}
+  {% else %}
+    {% set editing_status = "completed" %}
+    {% set submit_status = "active" %}
+    {% set accept_status = "" %}
+  {% endif %}
+
+  <div class="{{ editing_status }} step">
+    <div class="content">
+      <div class="title">
+        {% if not editgroup.changelog_index and auth_to.submit and editgroup.submitted %}
+          <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/unsubmit">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button class="ui primary compact small button" type="submit">Edit</button>
+          </form>
+        {% else %}
+          Edit
+        {% endif %}
+      </div>
+      <div class="description">Make changes to entities</div>
+    </div>
+  </div>
+
+  <div class="{{ submit_status }} step">
+    <div class="content">
+      <div class="title">
+        {% if not editgroup.changelog_index and auth_to.submit and not editgroup.submitted %}
+          <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button class="ui primary compact small button" type="submit">Submit</button>
+          </form>
+        {% else %}
+          Submitted
+        {% endif %}
+      </div>
+      <div class="description">For review and feedback from others</div>
+    </div>
+  </div>
+
+  <div class="{{ accept_status }} step">
+    <div class="content">
+      <div class="title">
+        {% if not editgroup.changelog_index and auth_to.accept %}
+          <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/accept">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button class="ui primary compact small button" type="submit">Accept</button>
+          </form>
+        {% else %}
+          Accepted
+        {% endif %}
+      </div>
+      <div class="description">Changes added to catalog</div>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}
 
 <table class="ui fixed compact small definition table">
@@ -195,7 +235,7 @@
       </div>
       <i>Markdown is allowed</i>
       <button class="ui right floated primary button">
-        <i class="icon edit"></i> Submit
+        <i class="icon edit"></i> Post
       </button>
       <br>
     </form><br>
