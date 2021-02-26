@@ -52,3 +52,9 @@
   <div class="csl-entry" style="margin-bottom: 1em;">“Citation Style Language.” <i>Citation Style Language</i>. Accessed March 11, 2019. https://citationstyles.org/.</div>
   <div class="csl-entry">“Open Archives Initiative Protocol for Metadata Harvesting.” Accessed March 11, 2019. https://www.openarchives.org/pmh/.</div>
 </div>
+
+<!--
+
+Embargo, Tasini, and “Opted Out”: How Many Journal Articles Are Missing from Full-Text Databases. Xiaotian Chen
+
+-->
