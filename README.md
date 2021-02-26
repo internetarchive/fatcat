@@ -12,6 +12,7 @@
 </div>
 
 `fatcat`: Perpetual Access to the Scholarly Record
+==================================================
 
 [![pipeline status](https://gitlab.com/bnewbold/fatcat/badges/master/pipeline.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 [![coverage report](https://gitlab.com/bnewbold/fatcat/badges/master/coverage.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
