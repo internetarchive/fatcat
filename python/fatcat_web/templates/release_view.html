@@ -79,23 +79,16 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
 
-{% if release.abstracts != [] %}
-<h3>Abstract</h3>
-<p><span itemprop="description">{{ release.abstracts[0].content }}</span>
-<br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
-{% endif %}
-
-<div class="ui accordion">
 <div class="title" itemprop="isPartOf" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
   {% if release.release_stage == 'published' %}
-    <i class="dropdown icon"></i>Published
+    Published
     {% if release.container.ident %}
       in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
     {% elif release.extra and release.extra.container_name %}
       in <span itemprop="name">{{ release.extra.container_name }}</span>
     {% endif %}
   {% else %}
-    <i class="dropdown icon"></i>Released
+    Released
     {% if release.release_type %}
       as a <i>{{ release.release_type }}</i>
     {% endif %}
@@ -105,84 +98,41 @@
   {% endif %}
   {% if release.publisher %}
     by <span itemprop="publisher">{{ release.publisher }}</span>
-  {% endif %}
-</div><div class="content" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
-  <table class="ui definition single line fixed compact small collapsing unstackable table" style="width: 100%;">
-  <tbody>
-    {% if release.number != None %}
-      <tr><td class="three wide right aligned">Number</td>
-          <td class="seven wide">{{ release.number }}
-    {% endif %}
-    {% if release.version != None %}
-      <tr><td class="three wide right aligned">Version</td>
-          <td class="seven wide">{{ release.version }}
-    {% endif %}
-    {% if release.container != None and release.container.issnl != None %}
-      <tr><td class="three wide right aligned">ISSN-L</td>
-          <td class="seven wide" itemprop="issn">{{ release.container.issnl }}
-    {% endif %}
-    {% if release.volume != None %}
-      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume">
-          <td class="right aligned">Volume</td>
-          <td class="" itemprop="volumeNumber">{{ release.volume }}
-    {% endif %}
-    {% if release.issue != None %}
-      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationIssue">
-          <td class="right aligned">Issue</td>
-          <td class="" itemprop="issueNumber">{{ release.issue }}
-    {% endif %}
-    {% if release.pages != None %}
-      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationIssue">
-          <td class="right aligned">Page(s)</td>
-          <td class="" itemprop="pagination">{{ release.pages }}
-    {% endif %}
-    {% if release.release_date != None %}
-      <tr><td class="right aligned">Release Date</td>
-          <td class="">{{ release.release_date }}
-    {% elif release.release_year != None %}
-      <tr><td class="three wide right aligned">Release Year</td>
-          <td class="seven wide">{{ release.release_year }}
-    {% endif %}
-    {% if release.container != None and release.container.container_type != None %}
-      <tr><td class="right aligned">Container Type</td>
-          <td class="">{{ release.container.container_type }}
-    {% endif %}
-    {% if release.publisher != None %}
-      <tr><td class="three wide right aligned">Publisher</td>
-          <td class="seven wide">{{ release.publisher }}
-    {% endif %}
-    {% if release.language != None %}
-      <tr><td class="right aligned">Primary Language</td>
-          <td class=""><code>{{ release.language }}</code>
-          (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup</a>)
-    {% endif %}
+  {% endif %}.
 
-  </tbody>
-  </table>
+  <p>
+  {% if release.volume != None %}
+    Volume {{ release.volume }}
+    {%- if release.issue != None %}, {% endif %}
+  {% endif %}
+  {% if release.issue != None %}
+    Issue {{ release.issue}}
+  {% endif %}
+  {% if release.pages != None %}
+    {% if release.pages[0].isdigit() %}p{% endif -%}
+    {{ release.pages }}
+  {% endif %}
+  {% if release.release_year != None %}
+    ({{ release.release_year }})
+  {% endif %}
 </div>
-</div>
+
+{% if release.abstracts != [] %}
+  <h3>Abstract</h3>
+  <p><span itemprop="description">{{ release.abstracts[0].content }}</span>
+  <br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
+{% endif %}
 
 {% if entity.state == 'active' %}
-<h3>Known Files and URLs</h3>
+<h3>Archived Files and Locations</h3>
 {% if entity.files != [] %}
 <table class="ui compact fixed table">
-<!--
-  <thead>
-    <tr><th>SHA-1
-        <th>Size (bytes)
-        <th>File Type
-        <th>Links
-  </thead>
--->
   <tbody>
   {% for file in entity.files %}
   <tr><td>{% if file.mimetype != None %}{{ file.mimetype }}&nbsp;&nbsp;{% endif %}
           {% if file.size != None %}{{ file.size|filesizeformat }}{% endif %}
       <br><small><code><a href="/file/{{ file.ident }}">
-            {% if file.sha1 != None %}sha1:{{ file.sha1[:20] + "..." }}
-            {% elif file.sha256!= None %}sha256:{{ file.md5[:20] + "..." }}
-            {% elif file.md5 != None %}md5:{{ file.md5[:20] + "..." }}
-            {% endif %}
+            file_{{ file.ident }}
         </a></code></small>
       <td class="single line">
         {% for url in file.urls[:5] %}
@@ -208,7 +158,7 @@ accessible version.
   <tbody>
   {% for fileset in entity.filesets %}
   <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset._total_size|filesizeformat }}
-      <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
+      <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset_{{ fileset.ident }}</a></code></small>
       <td class="single line">
         {% for url in fileset.urls[:5] %}
           {% if url.rel == "dweb" %}
@@ -234,7 +184,7 @@ accessible version.
   {% for webcapture in entity.webcaptures %}
   <tr><td><b><a href="{{ webcapture.original_url }}" style="color: black;">{{ webcapture.original_url }}</a></b>
       <br>{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }} | {{ webcapture.cdx|count }} resources
-      <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
+      <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture_{{ webcapture.ident }}</a></code></small>
       <td class="single line">
         {% for url in webcapture.archive_urls[:5] %}
           <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture._wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
@@ -247,41 +197,42 @@ accessible version.
 </table>
 {% endif %}
 {% endif %}
-
-
 </div>
+
+
 <div class="column" style="flex: 0 0 24em;">
 
-{% if entity.state == 'active' and entity._es and entity._es.best_pdf_url %}
-<a href="{{ entity._es.best_pdf_url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Read Full Text</a>
+{% if entity.state == 'active' and entity._es and entity._es.ia_pdf_url %}
+  <a href="{{ entity._es.ia_pdf_url }}" class="ui top attached fluid huge black button" style="text-decoration: underline;">
+    <i class="file pdf outline icon"></i>Read Archived PDF
+  </a>
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
-<a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
-{% elif entity.state == 'active' %}
-<span class="ui top attached fluid huge grey button"><i class="ban icon"></i>No Full Text Available</span>
+  <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui fluid huge black button" style="text-decoration: underline;">
+    <i class="university icon"></i>Visit Web Archive
+  </a>
+{% endif %}
 
-<a href="/release/{{ release.ident }}/save" class="ui attached fluid huge blue button">
-  <i class="cloud download icon"></i>"Save Paper Now"
-  <div style="margin-top: 0.8em; font-size: smaller; text-align: left;">
-    Know of a fulltext copy of on the public web? Submit a URL and we will archive it
-  </div>
-</a>
+{% if entity.state == 'active' and entity._es %}
+  {% if entity._es.preservation == 'bright' %}
+    <div class="ui top attached fluid compact green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #2ca048;">
+      <b>Archived</b>
+    </div>
+  {% elif entity._es.preservation == 'dark' %}
+    <div class="ui top attached fluid large green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: ##6e7b71;">
+      <b>"Dark" Archived</b>
+    </div>
+  {% else %}
+    <div class="ui top attached fluid large red inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #b71818;">
+      <b>Not Preserved</b>
+    </div>
 
-{# alternative SPN
-<div class="ui segment attached">
-  <center>
-    <a class="ui blue huge button" href="/release/{{ release.ident }}/save" title="save paper now">Save Paper Now</a>
-  </center>
-  <p style="margin-top: 0.5em;">Know of a fulltext copy on the public web? Submit a URL and we'll archive it
-</div>
-#}
-
-{# alternative SPN
-<div class="ui segment attached yellow inverted accordion">
-  <b><a href="/release/{{ release.ident }}/save" title="save paper now" style="color: black;">Save Paper Now</a></b>
-  <br>know of a fulltext copy on the public web? submit a URL and we'll archive it
-</div>
-#}
-
+    <div class="ui segment attached">
+      <a href="/release/{{ release.ident }}/save">
+        <b><i class="cloud download icon"></i>Save Paper Now!</b>
+      </a>
+      <p>Know of a fulltext copy of on the public web? Submit a URL and we will archive it
+    </div>
+  {% endif %}
 {% endif %}
 
 {% if release.release_type or release.release_stage or release.release_year %}
@@ -304,6 +255,10 @@ accessible version.
   {% endif %}
   {% if release.version %}
     <b>Version</b> &nbsp; <code>{{ release.version }}</code><br>
+  {% endif %}
+  {% if release.language != None %}
+    <b>Language</b> &nbsp; <code>{{ release.language}}</code>
+      <sup><a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">?</a></sup>
   {% endif %}
   </div>
 {% endif %}
@@ -357,7 +312,19 @@ accessible version.
 
 {% if release.container != None and release.container._es %}
 <div class="ui segment attached">
-<b>Container Metadata</b><br>
+<b><a href="/container/{{ release.container.ident }}">
+{% if release.container.container_type == "journal" %}
+  Journal Metadata
+{% elif release.container.container_type == "proceedings" %}
+  Proceedings Metadata
+{% elif release.container.container_type == "book-series" %}
+  Book Series Metadata
+{% elif release.container.container_type == "blog" %}
+  Blog Metadata
+{% else %}
+  Container Metadata
+{% endif %}
+</a></b><br>
 {% if release.container._es.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
 {% endif %}
@@ -370,7 +337,9 @@ accessible version.
   {% if release.container._es.in_road == True %}
     <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ release.container.issnl }}">ISSN ROAD</a><br>
   {% elif release.container._es.in_road == False %}
+    {# skip 'not in ROAD' display, to reduce UI clutter
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
+    #}
   {% endif %}
   {% if release.container._es.any_kbart == True %}
     <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ release.container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a><br>
@@ -380,19 +349,18 @@ accessible version.
 {% if release.container.issnl != None %}
   <i class="icon linkify"></i>ISSN-L: &nbsp;<code>{{ release.container.issnl }}</code><br>
 {% endif %}
-  <a href="/container/{{ release.container.ident }}" title="container {{ release.container.ident }}"><i class="icon share"></i>Fatcat Entry</a>
 </div>
 {% endif %}
 
-<div class="ui segment attached accordion">
+<div class="ui segment attached">
   <b><a href="/work/{{ release.work_id }}" title="work {{ release.work_id }}">Work Entity</a></b>
-  <br>grouping other versions (eg, pre-print) and variants of this release
+  <br>access all versions, variants, and formats of this works (eg, pre-prints)
 </div>
 
 {% if release.state == "active" and release._can_citeproc %}
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;">
-    <i class="dropdown icon"></i><b>Cite This Release</b>
+    <i class="dropdown icon"></i><b>Cite This</b>
   </div>
   <div class="content">
     <a href="/release/{{ release.ident }}.bib">BibTeX</a>
