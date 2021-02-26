@@ -139,7 +139,7 @@
 <b>Preservation Holdings</b><br>
 {%- if container.extra and container.extra.kbart %}
   {% for k, v in container.extra.kbart.items() %}
-    <p><span style="text-transform: uppercase;">{{ k }}:</span>
+    <br><span style="text-transform: uppercase;">{{ k }}:</span>
     {% for span in v.year_spans %}
       {% if span|length >= 2 %}
         {{ span[0] }}-{{ span[1] }}
