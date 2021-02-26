@@ -20,7 +20,7 @@
             <br>
             <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="submit" value="[delete]" style="background:none; color: red; border: none; padding:9;font-weight:bold;cursor:pointer;"></input>
+                <input type="submit" value="[delete]" style="background:none; color: red; border: none; font-weight:bold; cursor:pointer; padding: 0;"></input>
             </form>
           {% endif %}
         </div>
@@ -81,14 +81,17 @@
 
 <h1 class="ui header">Editgroup
 <span class="sub header"><code>editgroup_{{ editgroup.editgroup_id }}</code></span></h1>
-{% endblock %}
 
+{% if not auth_to.submit %}
+<br clear="all">
 <div class="ui info small message">
   <div class="header">
     What is an editgroup?
   </div>
   <p>An editgroup is a set of entity edits, bundled together into a coherent, reviewable bundle.
 </div>
+{% endif %}
+{% endblock %}
 
 <table class="ui fixed compact small definition table">
   <tbody>
