@@ -35,6 +35,7 @@
     {{ search_macros.top_results(query, found) }}
 
     {% for entity in found.results %}
+      {{ entity_macros.container_search_result_row(entity) }}
       <div>
         <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;">
           <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>

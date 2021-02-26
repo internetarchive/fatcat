@@ -265,6 +265,26 @@
 </div>
 {% endmacro %}
 
+
+{% macro container_search_result_row(entity) -%}
+  <div>
+    <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;">
+      <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>
+      {% if entity.is_oa %}<i class="icon unlock orange small"></i>{% endif %}
+    </h4>
+    {% if entity.publisher %}
+      <h5 style="margin-top: 4px; margin-bottom: 0px; font-size: 1em;">{{ entity.publisher }}</h5>
+    {% endif %}
+    {% if entity.issnl %}
+      <a href="https://portal.issn.org/resource/ISSN/{{entity.issnl }}" style="color: green;">issn:{{ entity.issnl }}</a>
+    {% endif %}
+    {% if entity.container_type %}
+      &nbsp;{{ entity.container_type }}
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
 {% macro progress_color(frac) -%}
 {% if frac >= 1 %}
 green
