@@ -685,7 +685,7 @@ def generic_search():
 
     if len(query.split()) != 1:
         # multi-term? must be a real search
-        return redirect(url_for('release_search', q=query))
+        return redirect(url_for('release_search', q=query, generic=1))
 
     if clean_doi(query):
         return redirect(url_for('release_lookup', doi=clean_doi(query)))
@@ -704,7 +704,7 @@ def generic_search():
     if clean_orcid(query):
         return redirect(url_for('creator_lookup', orcid=clean_orcid(query)))
 
-    return redirect(url_for('release_search', q=query))
+    return redirect(url_for('release_search', q=query, generic=1))
 
 @app.route('/release/search', methods=['GET', 'POST'])
 def release_search():
@@ -712,12 +712,21 @@ def release_search():
     if 'q' not in request.args.keys():
         return render_template('release_search.html', query=ReleaseQuery(), found=None)
 
+    container_found = None
+    if request.args.get('generic'):
+        container_query = GenericQuery.from_args(request.args)
+        container_query.limit = 1
+        try:
+            container_found = do_container_search(container_query)
+        except Exception:
+            pass
+
     query = ReleaseQuery.from_args(request.args)
     try:
         found = do_release_search(query)
     except FatcatSearchError as fse:
         return render_template('release_search.html', query=query, es_error=fse), fse.status_code
-    return render_template('release_search.html', query=query, found=found)
+    return render_template('release_search.html', query=query, found=found, container_found=container_found)
 
 @app.route('/container/search', methods=['GET', 'POST'])
 def container_search():
