@@ -2,6 +2,9 @@
 {% extends "base.html" %}
 
 {% block body %}
+
+{{ edit_macros.edit_link_bar(entity_type, existing_ident, 'delete') }}
+
 {% block edit_form_prefix %}
   <div class="ui segment">
   <h1 class="ui header">Delete Entity</h1>

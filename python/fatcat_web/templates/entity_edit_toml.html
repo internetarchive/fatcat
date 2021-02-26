@@ -2,15 +2,14 @@
 {% extends "base.html" %}
 
 {% block body %}
+
 {% block edit_form_prefix %}
+  {{ edit_macros.edit_link_bar(entity_type, existing_ident, 'toml') }}
   <div class="ui segment">
-  <h1 class="ui header">Edit Entity (TOML mode)</h1>
+  <h1 class="ui header">Edit Entity</h1>
 
   <form class="ui form" id="edit_toml_form" method="POST" action="{% if editgroup and editgroup.editgroup_id %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}/edit/toml">
 
-  {% if not editgroup %}
-    <p>You can also <a href="/{{ entity_type }}/{{ existing_ident }}/delete">delete this entity</a>.
-  {% endif %}
 {% endblock %}
 
   <p>See <a href="https://guide.fatcat.wiki/entity_release.html">the catalog
