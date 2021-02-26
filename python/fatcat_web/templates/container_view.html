@@ -46,14 +46,8 @@
 </div>
 <div class="column" style="flex: 0 0 24em;">
 
-{% if container._es and container._es.is_oa == True %}
-<div class="ui segment top attached">
-  <i class="icon unlock huge orange"></i><b>Open Access Publication</b>
-</div>
-{% endif %}
-
 {% if container._stats %}
-<div class="ui segment attached">
+<div class="ui segment top attached">
   <div style="text-align: center;">
     <div class="ui small statistic">
       <div class="value">{{ "{:,}".format(container._stats.total) }}</div>
@@ -61,6 +55,13 @@
     </div>
   </div>
 </div>
+
+{% if container._es and container._es.is_oa == True %}
+<div class="ui segment center aligned attached">
+  <i class="icon unlock large orange"></i><b>Open Access Publication</b>
+</div>
+
+{% endif %}
 {% if container._stats.total >= 1 %}
   <div class="ui segment attached">
     <b>Preservation Status</b><br>
@@ -122,7 +123,8 @@
   {% endif %}
 
   {% if container._es.any_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a><br>
+    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a>
+    <br>
   {% elif container._es.any_kbart == False %}
     <i class="icon times grey"></i> Not in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
   {% endif %}
@@ -132,6 +134,23 @@
   {% endif %}
 </div>
 {% endif %}
+
+<div class="ui segment attached">
+<b>Preservation Holdings</b><br>
+{%- if container.extra and container.extra.kbart %}
+  {% for k, v in container.extra.kbart.items() %}
+    <p><span style="text-transform: uppercase;">{{ k }}:</span>
+    {% for span in v.year_spans %}
+      {% if span|length >= 2 %}
+        {{ span[0] }}-{{ span[1] }}
+      {% elif span|length == 1 %}
+        {{ span[0] }}
+      {% endif %}
+      {{ ", " if not loop.last }}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+</div>
 
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
