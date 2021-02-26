@@ -24,7 +24,7 @@
         </div>
         <div class="ui checkbox" style="float: right; margin: 1em;">
           <input type="checkbox" name="fulltext_only" id="fulltext_only" value="true" {% if query.fulltext_only %}checked{% endif %}>
-          <label for="fulltext_only">Fulltext Available Only</label>
+          <label for="fulltext_only">Only public full-text</label>
         </div>
         <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search for <b><a href="/container/search?q={{ query.q or "" }}">containers</a></b> (eg, journals).
       </div>
@@ -34,6 +34,16 @@
 
 <div class="ui container text">
 <br>
+
+{% if container_found and container_found.results %}
+  <div class="ui tiny info floating message" style="margin: 0em auto; max-width: 40em;">
+    <div class="header">Were you looking for this journal, instead of publications?</div>
+    <div style="padding-left: 0.5em;">
+      {{ entity_macros.container_search_result_row(container_found.results[0]) }}
+    </div>
+  </div>
+  <br clear="all">
+{% endif %}
 
 {% if found %}
   {% if found.results %}

@@ -1,4 +1,17 @@
 
+{% macro edit_link_bar(entity_type, existing_ident, view) -%}
+  {% set has_form = entity_type in ['release', 'file', 'container'] %}
+  <div class="ui {% if has_form %}four{% else %}three{% endif %} item menu">
+    <a class="item" href="/{{ entity_type }}/{{ existing_ident }}">View</a>
+    {% if has_form %}
+      <a class="item {% if view == 'form' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/edit">Edit Form</a>
+    {% endif %}
+    <a class="item {% if view == 'toml' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/edit/toml">Edit TOML</a>
+    <a class="red item {% if view == 'delete' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/delete">Delete</a>
+  </div>
+{% endmacro %}
+
+
 {% macro form_field_errors(field) -%}
   {% if field.errors %}
     <div class="ui pointing red label">
@@ -71,7 +84,7 @@
           <div class="menu">
             {% for peg in potential_editgroups %}
               <div class="item" data-value="{{ peg.editgroup_id }}">
-                  <div class="right floated">{{ peg.created }}</div>
+                  <div class="right floated">{{ peg.created.strftime('%Y-%m-%d %X') }}</div>
                   <code><b>editgroup_{{ peg.editgroup_id }}</b></code>
                   {% if peg.description %}
                     <br>{{ peg.description[:200] }}

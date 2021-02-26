@@ -32,17 +32,17 @@
     <div class="row">
       <div class="four wide mobile three wide center aligned column">
         <a href="/stats" style="color: black;">
-          <h4>110,814,532<br>Papers</h4>
+          <h4>116,741,069<br>Papers</h4>
         </a>
       </div>
       <div class="four wide mobile three wide center aligned column">
         <a href="/stats" style="color: black;">
-          <h4>26,173,743<br>Fulltext</h4>
+          <h4>28,751,063<br>Accessible</h4>
         </a>
       </div>
       <div class="four wide mobile three wide center aligned column">
         <a href="/stats" style="color: black;">
-          <h4>151,707<br>Journals</h4>
+          <h4>177,158<br>Journals</h4>
         </a>
       </div>
     </div>
@@ -53,21 +53,39 @@
 <div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em;">
   <div class="ui text container" style="max-width: 800px!important;">
   <div class="ui centered grid">
-    <div class="row">
+    <div class="stackable row">
       <div class="four wide column">
         <!-- TODO: don't let it scale down -->
         <img src="/static/paper_man_confused.gif" width="130" alt="confused paper man">
       </div>
       <div class="twelve wide column" style="font-size: 1.2rem;">
-        <p><b>Fatcat is a versioned, user-editable catalog of research
+        <p>Fatcat is a versioned, user-editable catalog of research
         publications including journal articles, conference proceedings, and
-        datasets</b>
+        datasets.
         <p>Features include archival file-level metadata (verified digests and
-        long-term copies), an
-        <b><a href="https://api.{{ config.FATCAT_DOMAIN }}">open, documented API</a></b>,
-        and work/release indexing (eg, distinguishing between and linking
-        pre-prints, manuscripts, and version-of-record).
+        long-term copies), a <b><a href="/coverage/search">preservation coverage visualizer</a></b>, work/edition grouping, an
+        <b><a href="https://api.{{ config.FATCAT_DOMAIN }}">open API</a></b>,
+        and public metadata dumps.
         &nbsp;<a href="/about">Read more...</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em;">
+  <div class="ui text container" style="max-width: 1200px!important;">
+  <div class="ui middle aligned divided centered grid">
+    <div class="stackable row">
+      <div class="eight wide column" style="font-size: 1.6rem; text-align: center;">
+        <p>Our goal is to ensure long-term access to research content on the
+        "scholarly web" by tracking holes in preservation coverage across
+        digital preservation efforts
+      </div>
+      <div class="seven wide column">
+        <a href="/coverage/search?q=is_oa%3Atrue+year%3A%3E1995+year%3A%3C%3D2019+%28type%3Aarticle-journal+OR+type%3Aarticle+OR+type%3Apaper-conference%29+%21doi_prefix%3A10.5281+%21doi_prefix%3A10.6084">
+          <img alt="coverage visualization tool" src="/static/fatcat_oa_preservation_jan2021.svg" style="width: 100%;">
+        </a>
       </div>
     </div>
   </div>
@@ -77,19 +95,39 @@
 <div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em; background-color: #F5F5F5;">
   <div class="ui text container" style="max-width: 800px!important;">
   <div class="ui centered grid">
-    <div class="row">
+    <div class="stackable row">
       <div class="twelve wide column" style="font-size: 1.2rem;">
         <p>This service is hosted at the <b><a
         href="https://archive.org">Internet Archive</a></b>, a US
         non-profit digital library dedicated to providing Universal Access to All Knowledge.
         <a href="https://archive.org/donate/">Donations welcome!</a>
-        <p>Development funding comes from
-        <b><a href="https://blog.archive.org/2018/03/05/andrew-w-mellon-foundation-awards-grant-to-the-internet-archive-for-long-tail-journal-preservation/">The Andrew Mellon Foundation</a></b>
-        to improve preservation and access to "long-tail" open access works on
+        <p>Development for this project funding comes from
+        <b><a href="https://blog.archive.org/2018/03/05/andrew-w-mellon-foundation-awards-grant-to-the-internet-archive-for-long-tail-journal-preservation/">The Andrew Mellon Foundation</a></b>,
+        specifically to capture "long-tail" open access works on
         the public web which might otherwise be lost.
       </div>
       <div class="four wide column">
         <img src="/static/ia_logo_text.png" width="140" alt="IA logo">
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em;">
+  <div class="ui text container" style="max-width: 800px!important;">
+  <div class="ui centered grid">
+    <div class="stackable row">
+      <div class="four wide column">
+        <a href="https://scholar-qa.archive.org">
+          <img src="/static/scholar-vaporwave-logo-small.png" width="170" alt="IA scholar logo">
+        </a>
+      </div>
+      <div class="twelve wide column" style="font-size: 1.2rem;">
+        <p><b><a href="https://scholar-qa.archive.org">Internet Archive Scholar</a></b>
+        is a sibling service, built on the Fatcat catalog, providing end-user
+        access to and full-text search over research content across the
+        Internet Archive's various holdings.
       </div>
     </div>
   </div>
@@ -110,6 +148,8 @@
   </div>
 </div>
 
+</div>
+
 <div class="ui center aligned container">
 
 <br>
@@ -118,7 +158,6 @@
 </h2>
 
 <br>
-
 {# this div makes the table scrollable on mobile #}
 <div style="max-width: 100%; overflow-x: auto;">
 <table class="ui single line unstackable table centered" style="max-width: 800px; font-size: 1.1rem; margin-right: auto; margin-left: auto;">

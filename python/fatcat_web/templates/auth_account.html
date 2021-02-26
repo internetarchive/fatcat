@@ -8,17 +8,23 @@
   <i class="settings icon"></i>
   Account Settings
 </h1>
+<h1 class="ui header">
+  <span class="sub header"><code>editor_{{ current_user.editor_id }}</code></span></h1>
+</h1>
 
-<p><b>Username:</b> <code>{{ current_user.username }}</code>
-<p><b>Editor Id:</b> <code><a href="/editor/{{ current_user.editor_id }}">{{ current_user.editor_id }}</a></code>
+<a href="/editor/{{ current_user.editor_id }}/editgroups">Edit History</a> -
+<a href="/editor/{{ current_user.editor_id }}/annotations">Comments and Annotation History</a>
 
 <br>
+
+<div class="ui raised segments" style="max-width: 30em; margin-top: 2em; margin-bottom: 2em;">
+
 <div class="ui segment">
-<h3 class="ui header">Change Username</h3>
+<h4 class="ui header">Change Username</h4>
 <form class="" role="change_username" action="/auth/change_username" method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <div class="ui form">
-    <div class="ui action input medium">
+    <div class="ui action input">
       <input type="text" name="username" value="{{ current_user.username }}" aria-label="account username">
       <button class="ui red button">Update</button>
     </div>
@@ -27,7 +33,7 @@
 </div>
 
 <div class="ui segment">
-<h3 class="ui header">Create API Token</h3>
+<h4 class="ui header">Create API Token</h4>
 <form class="" role="change_username" action="/auth/create_token" method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <div class="ui form">
@@ -40,10 +46,14 @@
 </form>
 </div>
 
-<br>
-<p>In the future, you will be able to...
-<ul>
-  <li>Create and manage bot accounts
-</ul>
+</div>
 
+<div class="ui info small message">
+  <div class="header">
+    In the future, you will be able to...
+  </div>
+  <ul>
+    <li>Create and manage bot accounts
+  </ul>
+</div>
 {% endblock %}

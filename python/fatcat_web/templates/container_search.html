@@ -1,3 +1,4 @@
+{% import "entity_macros.html" as entity_macros %}
 {% import "search_macros.html" as search_macros %}
 {% extends "base.html" %}
 
@@ -18,7 +19,7 @@
     <form class="" role="search" action="/container/search" method="get">
       <div class="ui form">
         <div class="ui action input huge fluid">
-          <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="search container metadata"> <button class="ui button">Search</button>
+          <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="search container metadata"> <button class="ui primary button">Search</button>
         </div>
         <br>Can also lookup by <b><a href="/container/lookup">identifier</a></b> or search <b><a href="/release/search?q={{ query.q or "" }}">releases</a></b>.
       </div>
@@ -35,6 +36,7 @@
     {{ search_macros.top_results(query, found) }}
 
     {% for entity in found.results %}
+      {{ entity_macros.container_search_result_row(entity) }}
       <div>
         <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;">
           <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>

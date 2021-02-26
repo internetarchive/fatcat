@@ -738,11 +738,12 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
     buckets = resp.aggregations.volume_preservation.buckets
     volume_nums = set([int(h['key']['volume']) for h in buckets if h['key']['volume'].isdigit()])
     volume_dicts = dict()
-    for num in range(min(volume_nums), max(volume_nums)+1):
-        volume_dicts[num] = dict(volume=num, bright=0, dark=0, shadows_only=0, none=0)
-    for row in buckets:
-        if row['key']['volume'].isdigit():
-            volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
+    if volume_nums:
+        for num in range(min(volume_nums), max(volume_nums)+1):
+            volume_dicts[num] = dict(volume=num, bright=0, dark=0, shadows_only=0, none=0)
+        for row in buckets:
+            if row['key']['volume'].isdigit():
+                volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
     if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
         for k in volume_dicts.keys():
             volume_dicts[k]['none'] += volume_dicts[k]['shadows_only']

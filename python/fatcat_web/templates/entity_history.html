@@ -3,9 +3,9 @@
 
 {% block entity_main %}
 
-<h3 class="ui header">Edit History</h3>
+<h3 class="ui header">Entity Edit History</h3>
 
-This table only shows <i>merged</i> edits, not work-in-progress.
+This table only shows <i>accepted</i> edits included in the catalog, not any work-in-progress.
 
 <table class="ui table">
   <thead><tr><th>Changelog
@@ -17,7 +17,7 @@ This table only shows <i>merged</i> edits, not work-in-progress.
           <br>{{ entry.changelog_entry.timestamp.strftime("%Y-%m-%d %H:%M") }}
       <td>
         {% if entry.editgroup.editor.is_bot %}
-          <i class="icon bug"></i>
+          <i class="icon server"></i>
         {% else %}
           <i class="icon user"></i>
         {% endif %}
@@ -34,5 +34,9 @@ This table only shows <i>merged</i> edits, not work-in-progress.
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>
+<div style="float: right; font-size: smaller;">
+  <a href="{{ config.FATCAT_API_HOST }}/{{ entity_type }}/{{ entity.ident }}/history">As JSON via API</a>
+</div>
+
 
 {% endblock %}

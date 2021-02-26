@@ -5,15 +5,15 @@
   <div class="ui segment pink inverted attached">
   {% if editgroup.changelog_index %}
     <b>Accepted Edit Version</b>
-    <p>This is the version of the entity as of a specific merged editgroup:
+    <p>This is the version of the entity as of a specific point in time:
   {% elif editgroup.submitted %}
     <b>Submitted Edit Version</b>
-    <p>This is a version of the entity that has been submitted for approval as part of an editgroup:
+    <p>This is a version of the entity that has been submitted for approval as part of:
   {% else %}
     <b>Edit In Progress</b>
-    <p>This is a version of the entity that has not yet been submitted for approval, part of an editgroup:
+    <p>This is a version of the entity that has not yet been submitted for approval. Part of:
   {% endif %}
-  <b><a href="/editgroup/{{ editgroup.editgroup_id }}" style="color: white; font-weight: bold;">{{ editgroup.editgroup_id }}</a></b>
+  <a href="/editgroup/{{ editgroup.editgroup_id }}" style="color: white; font-weight: bold; font-size: smaller;"><code>editgroup_{{ editgroup.editgroup_id }}</code></a>
   </div>
 {% elif entity.state == None and entity.ident == None %}
 <div class="ui segment pink inverted attached">
@@ -27,17 +27,15 @@
 </div>
 {% endif %}
 
-<div class="ui segment attached">
-  <b>Fatcat Bits</b>
-  <p>
-  {% if entity.state %}
-    State is "{{ entity.state }}".
+<div class="ui segment attached" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+  <b>Catalog Record</b>
+  {% if entity.state and entity.state != "active" %}
+    <br>State: <code>{{ entity.state }}</code>
   {% endif %}
   {% if entity.revision %}
-    Revision:
-    <br><small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
+    <br>Revision: <small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
   {% endif %}
-  <br><a href="
+  <br>API URL: <a href="
   {%- if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' -%}
     http://localhost:9411
   {%- else -%}
@@ -52,7 +50,7 @@
     /{{ entity_type }}/rev/{{ entity.revision }}
   {% endif %}
   {% if expand %}?expand={{ expand}}{% endif %}">
-  As JSON object via API
+  JSON
   </a>
 </div>
 
@@ -180,11 +178,20 @@
 
   </h4>
 
-  {% if paper.best_pdf_url %}
   <div style="float: right; padding: 4px;">
-  &nbsp;&nbsp;<a href="{{ paper.best_pdf_url }}" class="ui violet tag label"><i class="file icon"></i>fulltext</a>
+    &nbsp;&nbsp;
+    {% if paper.preservation == "bright" %}
+      {% if paper.best_pdf_url %}
+        <a href="{{ paper.best_pdf_url }}" class="ui green label" style="background-color: #2ca048;"><i class="file icon"></i>bright archive</a>
+      {% else %}
+        <span class="ui green label" style="background-color: #2ca048;">bright archive</span>
+      {% endif %}
+    {% elif paper.preservation == "dark" %}
+      <span class="ui green label" style="background-color: #6e7b71;">dark archive</span>
+    {% else %}
+      <span class="ui grey label" style="background-color: #b71818;">no archive</span>
+    {% endif %}
   </div>
-  {% endif %}
 
   {# ### AUTHOR ROW #}
   {% if paper.contrib_names %}
@@ -232,14 +239,22 @@
   {% if paper.doi %}
     <a href="https://doi.org/{{paper.doi }}" style="color: green;">doi:{{ paper.doi }}</a> &nbsp;
   {% endif %}
-  {% if paper.pmid %}
-    <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{paper.pmid }}" style="color: green;">pmid:{{ paper.pmid }}</a> &nbsp;
-  {% endif %}
   {% if paper.pmcid %}
     <a href="https://pubmed.ncbi.nlm.nih.gov/{{paper.pmcid }}/" style="color: green;">pmcid:{{ paper.pmcid }}</a> &nbsp;
+  {% elif paper.pmid %}
+    <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{paper.pmid }}" style="color: green;">pmid:{{ paper.pmid }}</a> &nbsp;
   {% endif %}
   {% if paper.arxiv_id %}
     <a href="https://arxiv.org/abs/{{paper.arxiv_id }}" style="color: green;">arXiv:{{ paper.arxiv_id }}</a> &nbsp;
+  {% endif %}
+  {% if paper.jstor_id %}
+    <a href="https://jstor.org/stable/{{paper.jstor_id }}/" style="color: green;">jstor:{{ paper.jstor_id }}</a> &nbsp;
+  {% endif %}
+  {% if paper.doaj_id %}
+    <a href="https://doaj.org/article/{{paper.doaj_id }}/" style="color: green;">doaj:{{ paper.doaj_id }}</a> &nbsp;
+  {% endif %}
+  {% if paper.doaj_id %}
+    <a href="https://dblp.org/rec/{{ paper.dblp_id }}.html" style="color: green;">dblp:{{ paper.dblp_id }}</a> &nbsp;
   {% endif %}
 
 {# WIP: elastic release work grouping searches
@@ -249,6 +264,26 @@
 
 </div>
 {% endmacro %}
+
+
+{% macro container_search_result_row(entity) -%}
+  <div>
+    <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;">
+      <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>
+      {% if entity.is_oa %}<i class="icon unlock orange small"></i>{% endif %}
+    </h4>
+    {% if entity.publisher %}
+      <h5 style="margin-top: 4px; margin-bottom: 0px; font-size: 1em;">{{ entity.publisher }}</h5>
+    {% endif %}
+    {% if entity.issnl %}
+      <a href="https://portal.issn.org/resource/ISSN/{{entity.issnl }}" style="color: green;">issn:{{ entity.issnl }}</a>
+    {% endif %}
+    {% if entity.container_type %}
+      &nbsp;{{ entity.container_type }}
+    {% endif %}
+  </div>
+{% endmacro %}
+
 
 {% macro progress_color(frac) -%}
 {% if frac >= 1 %}

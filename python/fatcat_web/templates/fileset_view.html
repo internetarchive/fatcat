@@ -8,14 +8,20 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
 
-<h3>Releases</h3>
+<h3>Associated Releases</h3>
 {% if entity.releases != [] %}
   {{ entity_macros.release_list(entity.releases) }}
 {% else %}
   <p>
   This File Set is not associated with any fatcat release.
 {% endif %}
- 
+
+<h3>Public Access URLs</h3>
+{% if entity.urls %}
+  {{ entity_macros.url_list(entity.urls) }}
+{% else %}
+No known public URL, mirror, or archive for this File Set.
+{% endif %}
 
 <h3>File Manifest ({{ fileset.manifest|count }})</h3>
 {% if fileset.manifest %}
@@ -39,14 +45,6 @@
 This File Set is empty (contains no files).
 {% endif %}
 
-
-<br>
-<h3>Base URLs</h3>
-{% if entity.urls %}
-  {{ entity_macros.url_list(entity.urls) }}
-{% else %}
-No known public URL, mirror, or archive for this File Set.
-{% endif %}
 
 </div>
 <div class="column" style="flex: 0 0 24em;">

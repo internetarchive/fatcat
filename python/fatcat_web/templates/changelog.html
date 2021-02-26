@@ -7,9 +7,11 @@
 <h1 class="ui header">Recent Changes
 <div class="sub header"><code>changelog</code></div></h1>
 
-Limited to the most recent entries.
+<p>This is a feed of all the changes to the catalog, in the order that they are
+accepted. Only the most recent entries are shown, but the API can be used to
+inspect every change all the way back to the start.
 
-<table class="ui table">
+<table class="ui small table">
   <thead><tr><th>Changelog<br>Index
              <th>Editgroup
              <th>Description
@@ -19,7 +21,7 @@ Limited to the most recent entries.
           <br>{{ entry.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
       <td>
         {% if entry.editgroup.editor.is_bot %}
-          <i class="icon bug"></i>
+          <i class="icon server"></i>
         {% else %}
           <i class="icon user"></i>
         {% endif %}
@@ -28,10 +30,14 @@ Limited to the most recent entries.
         </a></code>
         <br>
         <small><code><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">
-          {{ entry.editgroup.editgroup_id }}
+          editgroup_{{ entry.editgroup.editgroup_id }}
         </a></code></small>
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>
+
+<div style="float: right; font-size: smaller;">
+  <a href="{{ config.FATCAT_API_HOST }}/changelog">As JSON via API</a>
+</div>
 
 {% endblock %}

@@ -1,4 +1,4 @@
-
+<!--
               __       _            _   
              / _| __ _| |_ ___ __ _| |_ 
             | |_ / _` | __/ __/ _` | __|
@@ -6,16 +6,22 @@
             |_|  \__,_|\__\___\__,_|\__|
 
        perpetual access to the scholarly record
+-->
+<div align="center">
+  <img src="python/fatcat_web/static/fatcat.jpg" alt="photo of a cat and cup of coffee, by Quinn Kampschroer [CC-0]">
+</div>
 
+`fatcat`: Perpetual Access to the Scholarly Record
+==================================================
 
 [![pipeline status](https://gitlab.com/bnewbold/fatcat/badges/master/pipeline.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 [![coverage report](https://gitlab.com/bnewbold/fatcat/badges/master/coverage.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 
 This repository contains source code for **fatcat**, an editable catalog of
-published written works (mostly journal articles), with a focus on tracking the
-location and status of full-text copies to ensure "perpetual access". The
-primary public instance runs at [fatcat.wiki](https://fatcat.wiki). Both the
-software project and primary instance are a project of the [Internet
+published research (mostly journal articles), with a focus on tracking the
+location and status of full-text copies on the public web, to ensure long term
+access. The primary public instance runs at [fatcat.wiki](https://fatcat.wiki).
+Both the software project and primary instance are a project of the [Internet
 Archive](https://archive.org).
 
 Some resources for learning more about the aims, goals, and structure of this
@@ -25,7 +31,7 @@ overall project:
 * **["How the Internet Archive is Ensuring Permanent Access to Open Access Journal Articles"](https://blog.archive.org/2020/09/15/how-the-internet-archive-is-ensuring-permanent-access-to-open-access-journal-articles/)**: archive.org blog post (September 2020)
 * **[guide.fatcat.wiki](https://guide.fatcat.wiki)**: project documentation,
   including schema overview, HOWTOs, policies, and more
-* **[Fatcat RFC](./fatcat-rfc.md)**: original project design proposal
+* **[Fatcat "Request for Comment" (RFC)](./fatcat-rfc.md)**: original project design proposal
 
 
 ## Getting Started for Developers
@@ -81,3 +87,9 @@ released, while the API server and web interface are strong copyleft (AGPLv3).
 For software developers, the "help wanted" tag in Github Issues is a way to
 discover bugs and tasks that external folks could contribute to.
 
+
+## Thanks!
+
+The "cat with coffee" photo at the top of this README is by <a
+href="http://www.kampschroer.com/photography.html">Quinn Kampschroer</a>,
+released under a CC-0 license (public domain).

@@ -101,14 +101,17 @@
 <main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;" {% block main_extra_attr %}{% endblock %}>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <div class="ui message">
+    <div class="ui info message" style="margin: 1em auto; max-width: 45em;">
     {# Needs more javascript: <i class="close icon"></i> #}
-    <div class="header">Flash Message!</div>
-    <ul class="list">
-    {% for message in messages %}
-      <li>{{ message|safe }}
-    {% endfor %}
-    </ul>
+    {% if messages|length == 1 %}
+      <div class="header">{{ messages[0]|safe }}</div>
+    {% else %}
+      <ul class="list">
+      {% for message in messages %}
+        <li>{{ message|safe }}
+      {% endfor %}
+      </ul>
+    {% endif %}
     </div>
   {% endif %}
 {% endwith %}
