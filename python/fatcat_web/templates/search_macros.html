@@ -9,7 +9,7 @@
   {% endif %}
 
   {{ found.offset + found.count_returned }}
-  out of {{ found.count_found }} results
+  out of {{ '{0:,}'.format(found.count_found) }} results
 </i>
 
 {%- endmacro %}
@@ -28,7 +28,7 @@
 {% endif %}
 
 &nbsp;&nbsp;<i>Showing results {{ found.offset }} &mdash; {{ found.offset +
-found.count_returned }} out of {{ found.count_found }} results</i>&nbsp;&nbsp;
+found.count_returned }} out of {{ '{0:,}'.format(found.count_found) }} results</i>&nbsp;&nbsp;
 
 {% if found.offset + found.limit < found.count_found and found.offset + found.limit < found.deep_page_limit %}
   <a href="{{ url_for(endpoint, q=query.q, offset=found.offset + found.limit) }}">Next &#xbb;</a>
