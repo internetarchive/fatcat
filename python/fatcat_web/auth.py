@@ -40,7 +40,11 @@ def handle_token_login(token):
     session['api_token'] = token
     session['editor'] = editor.to_dict()
     login_user(load_user(editor.editor_id))
-    return redirect("/auth/account")
+    rp = "/auth/account"
+    if session.get('next'):
+        rp = session['next']
+        session.pop('next')
+    return redirect(rp)
 
 # This will need to login/signup via fatcatd API, then set token in session
 def handle_oauth(remote, token, user_info):
@@ -71,13 +75,6 @@ def handle_oauth(remote, token, user_info):
         editor = resp.editor
         api_token = resp.token
 
-        if http_status == 201:
-            flash("Welcome to Fatcat! An account has been created for you with a temporary username; you may wish to change it under account settings")
-            flash("You must use the same mechanism ({}) to login in the future".format(remote.name))
-            flash("Check out 'The Guide' (linked above) for an editing quickstart tutorial")
-        else:
-            flash("Welcome back {}!".format(editor.username))
-
         # write token and username to session
         session.permanent = True
         session['api_token'] = api_token
@@ -85,7 +82,11 @@ def handle_oauth(remote, token, user_info):
 
         # call login_user(load_user(editor_id))
         login_user(load_user(editor.editor_id))
-        return redirect("/auth/account")
+        rp = "/auth/account"
+        if session.get('next'):
+            rp = session['next']
+            session.pop('next')
+        return redirect(rp)
 
     # XXX: what should this actually be?
     raise Exception("didn't receive OAuth user_info")

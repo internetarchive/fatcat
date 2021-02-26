@@ -3,7 +3,7 @@ import os
 import json
 import citeproc_styles
 from flask import render_template, make_response, send_from_directory, \
-    request, url_for, abort, redirect, jsonify, session, flash, Response
+    request, url_for, abort, redirect, jsonify, session, Response
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
@@ -986,7 +986,7 @@ def health_json():
 def login():
     # show the user a list of login options
     if not priv_api:
-        flash("This web interface not configured with credentials to actually allow login (other than via token)")
+        app.log.warn("This web interface not configured with credentials to actually allow login (other than via token)")
     return render_template('auth_login.html')
 
 @app.route('/auth/ia/login', methods=['GET', 'POST'])
@@ -1026,7 +1026,6 @@ def change_username():
     # update our session
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
-    flash("Username updated successfully")
     return redirect('/auth/account')
 
 @app.route('/auth/create_token', methods=['POST'])

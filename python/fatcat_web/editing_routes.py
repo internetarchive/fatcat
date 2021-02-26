@@ -137,11 +137,7 @@ def form_editgroup_get_or_create(api, edit_form):
         except ApiException as ae:
             app.log.warning(ae)
             raise ae
-        # set this session editgroup_id
-        flash('Started new editgroup <a href="/editgroup/{}">{}</a>'.format(
-            eg.editgroup_id,
-            eg.editgroup_id,
-        ))
+        # set this session editgroup_id (TODO)
     return eg
 
 def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template):

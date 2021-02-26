@@ -60,6 +60,9 @@ class Config(object):
     WTF_CSRF_CHECK_DEFAULT = False
     WTF_CSRF_TIME_LIMIT = None
 
+    # for login redirects
+    USE_SESSION_FOR_NEXT = True
+
     if FATCAT_DOMAIN == "dev.fatcat.wiki":
         # "Even more verbose" debug options
         #SQLALCHEMY_ECHO = True
