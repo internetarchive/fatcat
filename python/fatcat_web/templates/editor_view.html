@@ -6,11 +6,20 @@
 
 <h1 class="ui header">{{ editor.username }}
 <div class="sub header">
-  <code>editor {{ editor.editor_id }}</code>
+  <code>editor_{{ editor.editor_id }}</code>
 </div>
 </h1>
 
-<p><b><a href="/editor/{{ editor.editor_id }}/editgroups">Edit History</a></b>
-<p><b><a href="/editor/{{ editor.editor_id }}/annotations">Comments and Annotation History</a></b>
+<a href="/editor/{{ editor.editor_id }}/editgroups">Edit History</a> - 
+<a href="/editor/{{ editor.editor_id }}/annotations">Comments and Annotation History</a>
+
+<br>
+<br>
+<div class="ui small info message">
+  <div class="header">
+    This page is intentionally bare
+  </div>
+  <p>We don't have much to share about individual editors.
+</div>
 
 {% endblock %}

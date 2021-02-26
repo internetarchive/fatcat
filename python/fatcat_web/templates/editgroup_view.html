@@ -12,9 +12,20 @@
   <div class="ui divided list">
     {% for edit in edits %}
     <div class="item">
-      <div class="content">
+      <div class="content" style="padding-bottom: 0.5em;">
+        <div style="float: right; font-weight: bold;">
+          <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view]</a>
+          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
+            <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
+            <br>
+            <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="submit" value="[delete]" style="background:none; color: red; border: none; padding:9;font-weight:bold;cursor:pointer;"></input>
+            </form>
+          {% endif %}
+        </div>
         <div class="header">
-          <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}/{{ edit.ident }}</a>
+          <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}_{{ edit.ident }}</a>
           {% if edit.redirect_ident %}
             =&gt; redirect to <a href="/{{ entity_type }}/{{ edit.redirect_ident }}">{{ entity_type }}/{{ edit.redirect_ident }}</a>
           {% elif not edit.revision %}
@@ -23,14 +34,6 @@
             created
           {% else %}
             updated
-          {% endif %}
-          <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view edit]</a>
-          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
-            <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
-            <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="submit" value="[delete-edit]" style="background:none; color: red; border: none; padding:9;font-weight:bold;cursor:pointer;"></input>
-            </form>
           {% endif %}
         </div>
         {% if edit.revision %}
@@ -77,36 +80,54 @@
 {% endif %}
 
 <h1 class="ui header">Editgroup
-<span class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></span></h1>
+<span class="sub header"><code>editgroup_{{ editgroup.editgroup_id }}</code></span></h1>
 {% endblock %}
 
-<p><b>What is an editgroup?</b>
-An editgroup is a set of entity edits, bundled together into a coherent,
-reviewable bundle.
-<br>
+<div class="ui info small message">
+  <div class="header">
+    What is an editgroup?
+  </div>
+  <p>An editgroup is a set of entity edits, bundled together into a coherent, reviewable bundle.
+</div>
 
-<br><b>Status:</b>
-{% if editgroup.changelog_index %}
-  Merged (<a href="/changelog/{{ editgroup.changelog_index }}">Changelog #{{ editgroup.changelog_index }}</a>)
-{% elif editgroup.submitted %}
-  Submitted ({{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }})
-{% else %}
-  Not Submitted
-{% endif %}
+<table class="ui fixed compact small definition table">
+  <tbody>
+    <tr>
+      <td class="three wide right aligned">Status</td>
+      <td class="seven wide">
+        {% if editgroup.changelog_index %}
+          Merged (<a href="/changelog/{{ editgroup.changelog_index }}">Changelog #{{ editgroup.changelog_index }}</a>)
+        {% elif editgroup.submitted %}
+          Submitted ({{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }})
+        {% else %}
+          Not Submitted
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td class="right aligned">Editor</td>
+      <td>
+        <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
+      </td>
+    </tr>
+    <tr>
+      <td class="right aligned">Description</td>
+      <td>
+        {% if editgroup.description %}
+          {{ editgroup.description }}
+        {% else %}
+          <i>none</i>
+        {% endif %}
+      </td>
+    </tr>
+</tbody></table>
 
-<br><b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
-<br><b>Description:</b>
-{% if editgroup.description %}
-  {{ editgroup.description }}
-{% else %}
-  <i>none</i>
-{% endif %}
 {% if editgroup.extra %}
   <h4>Extra Metadata (raw JSON)</h4>
   {{ entity_macros.extra_metadata(editgroup.extra) }}
 {% endif %}
-<br><br style="clear: both;">
 
+<h3 class="ui header">All Entity Changes</h3>
 <div class="ui styled fluid accordion">
   {{ edit_list(auth_to, editgroup, editgroup.edits.releases, "release", "Release") }}
   {{ edit_list(auth_to, editgroup, editgroup.edits.works, "work", "Work") }}
@@ -116,14 +137,17 @@ reviewable bundle.
   {{ edit_list(auth_to, editgroup, editgroup.edits.filesets, "fileset", "File Set") }}
   {{ edit_list(auth_to, editgroup, editgroup.edits.webcaptures, "webcapture", "Web Capture") }}
 </div>
+<div style="float: right; font-size: smaller;">
+  <a href="{{ config.FATCAT_API_HOST }}/editgroup/{{ editgroup.editgroup_id }}">As JSON via API</a>
+</div>
 
 <br>
-<h2 class="ui header">Comments and Annotations</h2>
+<h3 class="ui header">Comments and Annotations</h3>
 {% for annotation in editgroup.annotations|reverse %}
   <div class="ui segments">
     <div class="ui top attached secondary segment">
       {% if annotation.editor.is_bot %}
-        <i class="icon bug"></i>
+        <i class="icon server"></i>
       {% else %}
         <i class="icon user"></i>
       {% endif %}

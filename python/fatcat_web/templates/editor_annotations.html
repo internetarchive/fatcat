@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1 class="ui header">Comments and Annotations
+<h1 class="ui header">{{ editor.username }}: Comments and Annotations
 <div class="sub header">
-    <code>editor
-      <a href="/editor/{{editor.editor_id}}">{{ editor.username }}</a>
-    </code>
-  </a>
+  <code>editor_{{ editor.editor_id }}</code>
 </div>
 </h1>
+<a href="/editor/{{ editor.editor_id }}/editgroups">Edit History</a> - 
+<a href="/editor/{{ editor.editor_id }}/annotations">Comments and Annotation History</a>
 
+<br>
 <br>
 {% for annotation in annotations %}
   <div class="ui segments">
@@ -29,7 +29,7 @@
     </div>
   </div>
 {% else %}
-  <i>None!</i>
+  <i>No comments or annotations for this editor!</i>
 {% endfor %}
 
 {% endblock %}
