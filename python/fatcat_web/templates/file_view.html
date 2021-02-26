@@ -8,23 +8,23 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
 
-<h3>Releases</h3>
+<h3>Associated Releases</h3>
 {% if entity.releases != [] %}
   {{ entity_macros.release_list(entity.releases) }}
 {% else %}
   <p>
-  This file is not associated with any fatcat release.
+  This file is not associated with any release entity! This makes a is a stub entry in the catalog.
 {% endif %}
 
 
-<h3>URLs</h3>
+<h3>Public Access URLs</h3>
 {% if file.urls != None %}
   {{ entity_macros.url_list(file.urls) }}
 {% else %}
-No known public URL, mirror, or archive for this file.
+No known archives or mirrors of this file.
 {% endif %}
 
-<h3>Checksums</h3>
+<h3>Data Integrity Checksums</h3>
 <table class="ui definition single line fixed compact small unstackable table">
   <tbody>
     {% if file.sha1 != None %}
@@ -45,22 +45,23 @@ No known public URL, mirror, or archive for this file.
 <div class="column" style="flex: 0 0 24em;">
 
 {% if file._es and file._es.best_url %}
-<a href="{{ file._es.best_url }}" class="ui top attached fluid huge green button"><i class="file icon"></i>Download File</a>
+  {# TODO: this currently shows *any* file, though prefers archive.org #}
+  <a href="{{ file._es.best_url }}" class="ui fluid huge black button" style="text-decoration: underline;">
+    <i class="file icon"></i>View Archived File
+  </a>
 {% else %}
-<span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Download Available</span>
+  <span class="ui fluid huge grey segment"><i class="file cross icon"></i>No Public URL</span>
 {% endif %}
+<br>
 
-{% if file.size != None %}
-<div class="ui segment attached">
-  <p><b>Size</b> &nbsp;{{ file.size|filesizeformat }}
+<div class="ui top segment attached">
+  {% if file.size != None %}
+    <b>Size</b> &nbsp;{{ file.size|filesizeformat }}<br>
+  {% endif %}
+  {% if file.mimetype != None %}
+    <b>MIME Type</b> &nbsp;<code>{{ file.mimetype }}</code><br>
+  {% endif %}
 </div>
-{% endif %}
-
-{% if file.mimetype != None %}
-<div class="ui segment attached">
-  <p><b>File Type</b> &nbsp;<code>{{ file.mimetype }}</code>
-</div>
-{% endif %}
 
 {{ entity_macros.fatcat_bits(entity, "file", "", editgroup) }}
 

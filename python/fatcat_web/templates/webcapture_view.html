@@ -8,7 +8,7 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
 
-<h3>Releases</h3>
+<h3>Associated Releases</h3>
 {% if entity.releases != [] %}
   {{ entity_macros.release_list(entity.releases) }}
 {% else %}
@@ -16,8 +16,7 @@
   This Web Capture is not associated with any fatcat release.
 {% endif %}
 
-<br>
-<h3>Archive URLs</h3>
+<h3>Public Archive URLs</h3>
 {% if webcapture.archive_urls != None %}
   <table class="ui very basic compact single line fixed table">
   <tbody>
@@ -42,7 +41,7 @@ No known public archive for this webcapture.
 {% endif %}
 
 
-<h3>CDX Rows ({{ webcapture.cdx|count }})</h3>
+<h3>Captured Resources ({{ webcapture.cdx|count }})</h3>
 {% if webcapture.cdx %}
   <div class="ui celled list">
     {% for row in webcapture.cdx %}
@@ -53,7 +52,7 @@ No known public archive for this webcapture.
         </div>
         <div style="margin-left: 1em;">
           {{ row.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
-          {% if row.mimetype %}| {{ row.mimetype }} {% endif %}
+          {% if row.mimetype %}| <code style="font-size: smaller;">{{ row.mimetype }}</code> {% endif %}
           {% if row.size %}| {{ row.size|filesizeformat }} {% endif %}
           <br>
           <code><small style="color: #666;">
@@ -73,11 +72,13 @@ This web capture is empty (contains no resources).
 <div class="column" style="flex: 0 0 24em;">
 
 {% if webcapture.state == 'active' and webcapture.archive_urls != [] and webcapture.archive_urls[0].rel == "wayback" %}
-<a href="{{ webcapture.archive_urls[0].url }}{{ webcapture._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
+  <a href="{{ webcapture.archive_urls[0].url }}{{ webcapture._wayback_suffix }}" class="ui fluid huge black button" style="text-decoration: underline;">
+    <i class="university icon"></i>View Web Archive
+  </a>
 {% endif %}
 
 {% if webcapture.timestamp != None %}
-<div class="ui segment attached">
+<div class="ui segment top attached">
   <p><b>Capture Time</b> &nbsp;{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
 </div>
 {% endif %}
