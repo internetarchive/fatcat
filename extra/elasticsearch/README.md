@@ -42,26 +42,26 @@ Drop and rebuild the schema:
     http delete :9200/fatcat_container
     http delete :9200/fatcat_file
     http delete :9200/fatcat_changelog
-    http put :9200/fatcat_release < release_schema.json
-    http put :9200/fatcat_container < container_schema.json
-    http put :9200/fatcat_file < file_schema.json
-    http put :9200/fatcat_changelog < changelog_schema.json
+    http put :9200/fatcat_release?include_type_name=true < release_schema.json
+    http put :9200/fatcat_container?include_type_name=true < container_schema.json
+    http put :9200/fatcat_file?include_type_name=true < file_schema.json
+    http put :9200/fatcat_changelog?include_type_name=true < changelog_schema.json
 
 Put a single object (good for debugging):
 
-    head -n1 examples.json | http post :9200/fatcat_release/release/0
-    http get :9200/fatcat_release/release/0
+    head -n1 examples.json | http post :9200/fatcat_release/_doc/0
+    http get :9200/fatcat_release/_doc/0
 
 Bulk insert from a file on disk:
 
-    esbulk -verbose -id ident -index fatcat_release -type release examples.json
+    esbulk -verbose -id ident -index fatcat_release -type _doc examples.json
 
 Or, in a bulk production live-stream conversion:
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release -type release
-    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container -type container
-    time zcat /srv/fatcat/snapshots/file_export.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file -type file
+    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release -type _doc
+    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container -type _doc
+    time zcat /srv/fatcat/snapshots/file_export.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file -type _doc
 
 ## Index Aliases
 
@@ -94,7 +94,7 @@ To do an atomic swap from one alias to a new one ("zero downtime"):
 A generic full-text "query string" query look like this (replace "blood" with
 actual query string, and "size" field with the max results to return):
 
-    GET /fatcat_release/release/_search
+    GET /fatcat_release/_search
     {
       "query": {
         "query_string": {
