@@ -29,6 +29,7 @@
 "mappings": {
     "_doc": {
         "properties": {
+            "doc_index_ts":     { "type": "date" },
             "index":            { "type": "integer" },
             "editgroup_id":     { "type": "keyword", "normalizer": "default", "doc_values": false },
             "timestamp":        { "type": "date" },

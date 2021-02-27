@@ -100,6 +100,11 @@
       "target_csl": {
         "type": "object",
         "enabled": false
+      },
+
+      "doc_index_ts": {
+        "type": "alias",
+        "path": "indexed_ts"
       }
     }
   }
