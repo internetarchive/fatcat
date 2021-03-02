@@ -98,7 +98,7 @@
   {% endif %}
   {% if release.publisher %}
     by <span itemprop="publisher">{{ release.publisher }}</span>
-  {% endif %}.
+  {%- endif %}.
 
   <p>
   {% if release.volume != None %}
@@ -218,7 +218,7 @@ accessible version.
       <b>Archived</b>
     </div>
   {% elif entity._es.preservation == 'dark' %}
-    <div class="ui top attached fluid large green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: ##6e7b71;">
+    <div class="ui top attached fluid large green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #6e7b71;">
       <b>"Dark" Archived</b>
     </div>
   {% else %}
