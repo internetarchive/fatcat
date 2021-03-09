@@ -49,8 +49,11 @@ No known archives or mirrors of this file.
   <a href="{{ file._es.best_url }}" class="ui fluid huge black button" style="text-decoration: underline;">
     <i class="file icon"></i>View Archived File
   </a>
-{% else %}
-  <span class="ui fluid huge grey segment"><i class="file cross icon"></i>No Public URL</span>
+{% elif file.state and file.state == "active" %}
+  <span class="ui fluid huge grey button">
+    <i class="file cross icon"></i>
+    No Public URL
+  </span>
 {% endif %}
 <br>
 
