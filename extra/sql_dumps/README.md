@@ -64,7 +64,8 @@ In production:
     time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_full_dbdump_${DATESLUG}.tar.gz
 
 In production (as of 2019-04-24, with a 283 GByte PostgreSQL database), this
-takes 1h40m.
+takes 1h40m. As of 2021-03-06, with a 705.19G PostgreSQL database (172 GByte
+compressed dump), it takes 2h40m.
 
 NOTE: by using the "directory" export (along with `--file`) instead of "tar"
 export, it would be possible to use parallel dumping. However, this would put
