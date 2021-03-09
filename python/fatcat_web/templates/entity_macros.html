@@ -48,8 +48,8 @@
     /{{ entity_type }}/{{ entity.ident }}
   {%- elif entity.revision -%}
     /{{ entity_type }}/rev/{{ entity.revision }}
-  {% endif %}
-  {% if expand %}?expand={{ expand}}{% endif %}">
+  {%- endif -%}
+  {%- if expand -%}?expand={{ expand}}{%- endif %}">
   JSON
   </a>
 </div>
