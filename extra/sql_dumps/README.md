@@ -39,6 +39,9 @@ Or, in production:
 
 Then usually move all these files to `/srv/fatcat/snapshots/`.
 
+As of March 2021, all these entity dumps serially take almost 40 hours, which
+is pretty slow.
+
 ## HOWTO: Dump abstracts, release identifiers, file hashes, etc
 
 These are run as regular old commands, and can run across the network in a
