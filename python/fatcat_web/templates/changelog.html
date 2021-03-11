@@ -37,7 +37,11 @@ inspect every change all the way back to the start.
 </table>
 
 <div style="float: right; font-size: smaller;">
-  <a href="{{ config.FATCAT_API_HOST }}/changelog">As JSON via API</a>
+  {% if config.FATCAT_DOMAIN == "fatcat.wiki" %}
+    <a href="https://api.fatcat.wiki/v0/changelog">As JSON via API</a>
+  {% else %}
+    <a href="{{ config.FATCAT_API_HOST }}/changelog">As JSON via API</a>
+  {% endif %}
 </div>
 
 {% endblock %}
