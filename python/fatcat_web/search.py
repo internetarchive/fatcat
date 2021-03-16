@@ -130,7 +130,7 @@ def wrap_es_execution(search: Search) -> Any:
         # all other errors
         print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
         description = None
-        if e.info.get("error", {}).get("root_cause", {}):
+        if e.info and e.info.get("error", {}).get("root_cause", {}):
             description = str(e.info["error"]["root_cause"][0].get("reason"))
         raise FatcatSearchError(e.status_code, str(e.error), description)
     return resp
