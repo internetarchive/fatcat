@@ -1,0 +1,106 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 12,
+      "number_of_replicas": 0,
+      "analysis": {
+        "normalizer": {
+          "default": {
+            "type": "custom",
+            "char_filter": [],
+            "filter": [
+              "lowercase"
+            ]
+          },
+          "caseSensitive": {
+            "type": "custom",
+            "char_filter": [],
+            "filter": []
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "indexed_ts": {
+        "type": "date"
+      },
+      "source_release_ident": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "source_work_ident": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "source_wikipedia_article": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "source_release_stage": {
+        "type": "keyword",
+        "normalizer": "default",
+        "doc_values": false
+      },
+      "source_release_year": {
+        "type": "integer"
+      },
+      "ref_index": {
+        "type": "integer",
+        "doc_values": false,
+        "index": false
+      },
+      "ref_key": {
+        "type": "keyword",
+        "normalizer": "default",
+        "doc_values": false,
+        "index": false
+      },
+      "ref_locator": {
+        "type": "keyword",
+        "normalizer": "default",
+        "doc_values": false,
+        "index": false
+      },
+      "target_release_ident": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "target_work_ident": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "target_openlibrary_work": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "target_url_surt": {
+        "type": "keyword",
+        "normalizer": "default",
+        "doc_values": false
+      },
+      "match_provenance": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "match_status": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "match_reason": {
+        "type": "keyword",
+        "normalizer": "default"
+      },
+      "target_unstructured": {
+        "type": "text",
+        "doc_values": false,
+        "index": false
+      },
+      "target_csl": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
