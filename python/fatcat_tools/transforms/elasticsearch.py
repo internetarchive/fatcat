@@ -296,6 +296,8 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
             t['country_code_upper'] = c_extra['country'].upper()
         if c_extra.get('publisher_type'):
             t['publisher_type'] = c_extra['publisher_type']
+        if c_extra.get('discipline'):
+            t['discipline'] = c_extra['discipline']
     return t
 
 def _rte_content_helper(release: ReleaseEntity) -> dict:
