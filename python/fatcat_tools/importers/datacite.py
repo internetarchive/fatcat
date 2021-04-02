@@ -869,8 +869,7 @@ class DataciteImporter(EntityImporter):
 
                 if given_name:
                     given_name = clean(given_name)
-                if surname:
-                    surname = clean(surname)
+                surname = clean(surname)
 
                 # Perform a final assertion that name does not reduce to zero
                 # (e.g. whitespace only name).
