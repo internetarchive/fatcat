@@ -8,7 +8,7 @@ After a container dump, as `fatcat` user on prod server:
     /srv/fatcat/src/extra/sitemap/container_url_lists.sh $DATE /srv/fatcat/snapshots/container_export.json.gz
     /srv/fatcat/src/extra/sitemap/release_url_lists.sh $DATE /srv/fatcat/snapshots/release_export_expanded.json.gz
     # delete old sitemap url lists
-    /srv/fatcat/src/extra/sitemap/generate_sitemap_indices.py
+    python3.8 /srv/fatcat/src/extra/sitemap/generate_sitemap_indices.py
 
 ## Background
 

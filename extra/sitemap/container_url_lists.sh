@@ -15,6 +15,7 @@ DATE="$1"
 # eg, container_export.json.gz
 EXPORT_FILE_GZ="$2"
 
+# TODO: remove stubs? only if we have releases?
 zcat $EXPORT_FILE_GZ \
     | jq .ident -r \
     | awk '{print "https://fatcat.wiki/container/" $1 }' \
