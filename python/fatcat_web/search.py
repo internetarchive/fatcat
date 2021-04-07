@@ -424,7 +424,7 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
 
     return stats
 
-def get_elastic_container_stats(ident, issnl=None):
+def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None, merge_shadows=None):
     """
     Returns dict:
         ident
@@ -435,7 +435,14 @@ def get_elastic_container_stats(ident, issnl=None):
         preserved
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    if not es_client:
+        es_client = app.es_client
+    if not es_index:
+        es_index = app.config['ELASTICSEARCH_RELEASE_INDEX']
+    if merge_shadows is None:
+        merge_shadows = app.config['FATCAT_MERGE_SHADOW_PRESERVATION']
+
+    search = Search(using=es_client, index=es_index)
     search = search.query(
         'term',
         container_id=ident,
@@ -479,7 +486,7 @@ def get_elastic_container_stats(ident, issnl=None):
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+    if merge_shadows:
         preservation_bucket['none'] += preservation_bucket['shadows_only']
         preservation_bucket['shadows_only'] = 0
     release_type_bucket = agg_to_dict(resp.aggregations.release_type)

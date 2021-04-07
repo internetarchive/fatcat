@@ -165,6 +165,16 @@ def test_container_stats(app, mocker):
     ]
     rv = app.get('/container/issnl/1234-5678/stats.json')
     assert rv.status_code == 200
+    stats = rv.json
+    assert isinstance(stats['total'], int)
+    assert isinstance(stats['release_type'], dict)
+    assert isinstance(stats['preservation']['total'], int)
+    assert isinstance(stats['preservation']['bright'], int)
+    assert isinstance(stats['preservation']['dark'], int)
+    assert isinstance(stats['preservation']['none'], int)
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaam/stats.json')
     assert rv.status_code == 200
+    stats = rv.json
+    assert isinstance(stats['total'], int)
+    assert stats['ident'] == "aaaaaaaaaaaaaeiraaaaaaaaam"
