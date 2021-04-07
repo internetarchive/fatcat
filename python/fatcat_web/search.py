@@ -88,6 +88,16 @@ class SearchHits:
     query_time_ms: int
     results: List[Any]
 
+def _hits_total_int(val: Any) -> int:
+    """
+    Compatibility hack between ES 6.x and 7.x. In ES 6x, total is returned as
+    an int in many places, in ES 7 as a dict (JSON object) with 'value' key
+    """
+    if isinstance(val, int):
+        return val
+    else:
+        return int(val['value'])
+
 
 def results_to_dict(response: elasticsearch_dsl.response.Response) -> List[dict]:
     """
@@ -173,13 +183,14 @@ def do_container_search(
         offset = deep_page_limit
 
     search = search[offset : (offset + limit)]
+    search = search.params(track_total_hits=True)
 
     resp = wrap_es_execution(search)
     results = results_to_dict(resp)
 
     return SearchHits(
         count_returned=len(results),
-        count_found=int(resp.hits.total),
+        count_found=_hits_total_int(resp.hits.total),
         offset=offset,
         limit=limit,
         deep_page_limit=deep_page_limit,
@@ -241,6 +252,7 @@ def do_release_search(
         offset = deep_page_limit
 
     search = search[offset : (offset + limit)]
+    search = search.params(track_total_hits=True)
 
     resp = wrap_es_execution(search)
     results = results_to_dict(resp)
@@ -253,7 +265,7 @@ def do_release_search(
 
     return SearchHits(
         count_returned=len(results),
-        count_found=int(resp.hits.total),
+        count_found=_hits_total_int(resp.hits.total),
         offset=offset,
         limit=limit,
         deep_page_limit=deep_page_limit,
@@ -310,7 +322,7 @@ def get_elastic_entity_stats() -> dict:
     resp = wrap_es_execution(search)
 
     stats['release'] = {
-        "total": int(resp.hits.total),
+        "total": _hits_total_int(resp.hits.total),
         "refs_total": int(resp.aggregations.release_ref_count.value),
     }
 
@@ -344,7 +356,7 @@ def get_elastic_entity_stats() -> dict:
     resp = wrap_es_execution(search)
     buckets = resp.aggregations.paper_like.buckets
     stats['papers'] = {
-        'total': resp.hits.total,
+        'total': _hits_total_int(resp.hits.total),
         'in_web': buckets.in_web.doc_count,
         'is_oa': buckets.is_oa.doc_count,
         'in_kbart': buckets.in_kbart.doc_count,
@@ -363,7 +375,7 @@ def get_elastic_entity_stats() -> dict:
     search = search.params(request_cache=True)
     resp = wrap_es_execution(search)
     stats['container'] = {
-        "total": resp.hits.total,
+        "total": _hits_total_int(resp.hits.total),
     }
 
     return stats
@@ -398,7 +410,7 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
     resp = wrap_es_execution(search)
 
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
-    preservation_bucket['total'] = resp.hits.total
+    preservation_bucket['total'] = _hits_total_int(resp.hits.total)
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
@@ -406,7 +418,7 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
         preservation_bucket['none'] += preservation_bucket['shadows_only']
         preservation_bucket['shadows_only'] = 0
     stats = {
-        'total': resp.hits.total,
+        'total': _hits_total_int(resp.hits.total),
         'preservation': preservation_bucket,
     }
 
@@ -463,7 +475,7 @@ def get_elastic_container_stats(ident, issnl=None):
 
     container_stats = resp.aggregations.container_stats.buckets
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
-    preservation_bucket['total'] = resp.hits.total
+    preservation_bucket['total'] = _hits_total_int(resp.hits.total)
     for k in ('bright', 'dark', 'shadows_only', 'none'):
         if not k in preservation_bucket:
             preservation_bucket[k] = 0
@@ -474,7 +486,7 @@ def get_elastic_container_stats(ident, issnl=None):
     stats = {
         'ident': ident,
         'issnl': issnl,
-        'total': resp.hits.total,
+        'total': _hits_total_int(resp.hits.total),
         'in_web': container_stats['in_web']['doc_count'],
         'in_kbart': container_stats['in_kbart']['doc_count'],
         'is_preserved': container_stats['is_preserved']['doc_count'],

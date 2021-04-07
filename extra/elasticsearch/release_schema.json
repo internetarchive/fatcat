@@ -2,6 +2,8 @@
 "settings": {
     "index": {
         "analysis": {
+        "number_of_shards": 6,
+        "number_of_replicas": 0,
             "analyzer": {
                 "default": {
                     "type": "custom",
@@ -37,7 +39,7 @@
     }
 },
 "mappings": {
-    "release": {
+    "_doc": {
         "properties": {
             "ident":          { "type": "keyword", "normalizer": "default", "doc_values": false },
             "state":          { "type": "keyword", "normalizer": "default" },

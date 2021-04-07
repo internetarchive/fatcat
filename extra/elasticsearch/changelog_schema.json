@@ -1,6 +1,8 @@
 {
 "settings": {
     "index": {
+        "number_of_shards": 2,
+        "number_of_replicas": 0,
         "analysis": {
             "analyzer": {
                 "default": {
@@ -25,7 +27,7 @@
     }
 },
 "mappings": {
-    "changelog": {
+    "_doc": {
         "properties": {
             "index":            { "type": "integer" },
             "editgroup_id":     { "type": "keyword", "normalizer": "default", "doc_values": false },
