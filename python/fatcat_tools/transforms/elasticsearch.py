@@ -377,7 +377,7 @@ def _rte_url_helper(url_obj) -> dict:
     return t
 
 
-def container_to_elasticsearch(entity, force_bool=True):
+def container_to_elasticsearch(entity, force_bool=True, stats=None):
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 
@@ -411,9 +411,12 @@ def container_to_elasticsearch(entity, force_bool=True):
         entity.extra = dict()
     for key in ('country', 'languages', 'mimetypes', 'original_name',
                 'first_year', 'last_year', 'aliases', 'abbrev', 'region',
-                'discipline'):
+                'discipline', 'publisher_type'):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
+
+    if entity.extra.get('dblp') and entity.extra['dblp'].get('prefix'):
+        t['dblp_prefix'] = entity.extra['dblp']['prefix']
 
     if 'country' in t:
         t['country_code'] = t.pop('country')
@@ -432,6 +435,7 @@ def container_to_elasticsearch(entity, force_bool=True):
     any_kbart = None
     any_jstor = None
     any_ia_sim = None
+    keepers = []
 
     extra = entity.extra
     if extra.get('doaj'):
@@ -455,6 +459,9 @@ def container_to_elasticsearch(entity, force_bool=True):
         any_kbart = True
         if extra['kbart'].get('jstor'):
             any_jstor = True
+        for k, v in extra['kbart'].items():
+            if v and isinstance(v, dict):
+                keepers.append(k)
     if extra.get('ia'):
         if extra['ia'].get('sim'):
             any_ia_sim = True
@@ -462,6 +469,7 @@ def container_to_elasticsearch(entity, force_bool=True):
             is_longtail_oa = True
     t['is_superceded'] = bool(extra.get('superceded'))
 
+    t['keepers'] = keepers
     t['in_doaj'] = bool(in_doaj)
     t['in_road'] = bool(in_road)
     t['any_kbart'] = bool(any_kbart)
@@ -475,6 +483,14 @@ def container_to_elasticsearch(entity, force_bool=True):
         t['is_longtail_oa'] = is_longtail_oa
         t['any_jstor'] = any_jstor
         t['any_ia_sim'] = any_ia_sim
+
+    # mix in stats, if provided
+    if stats:
+        t['releases_total'] = stats['total']
+        t['preservation_bright'] = stats['preservation']['bright']
+        t['preservation_dark'] = stats['preservation']['dark']
+        t['preservation_shadows_only'] = stats['preservation']['shadows_only']
+        t['preservation_none'] = stats['preservation']['none']
     return t
 
 

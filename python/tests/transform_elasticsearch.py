@@ -147,11 +147,48 @@ def test_elasticsearch_release_from_json():
 
 def test_elasticsearch_container_transform(journal_metadata_importer):
     with open('tests/files/journal_metadata.sample.json', 'r') as f:
-        raw = json.loads(f.readline())
-        c = journal_metadata_importer.parse_record(raw)
-    c.state = 'active'
-    es = container_to_elasticsearch(c)
-    assert es['publisher'] == c.publisher
+        raw1 = json.loads(f.readline())
+        raw2 = json.loads(f.readline())
+        c1 = journal_metadata_importer.parse_record(raw1)
+        c1.state = 'active'
+        c2 = journal_metadata_importer.parse_record(raw2)
+        c2.state = 'active'
+
+    c1.extra['publisher_type'] = "big5"
+    c1.extra['discipline'] = "history"
+    es = container_to_elasticsearch(c1)
+    assert es['publisher'] == c1.publisher
+    assert es['discipline'] == c1.extra['discipline']
+    assert es['publisher_type'] == c1.extra['publisher_type']
+    assert es['keepers'] == []
+
+    stats = {
+        "ident": "en4qj5ijrbf5djxx7p5zzpjyoq",
+        "in_kbart": 11136,
+        "in_web": 9501,
+        "is_preserved": 11136,
+        "issnl": "2050-084X",
+        "preservation": {
+            "bright": 9501,
+            "dark": 1635,
+            "none": 0,
+            "shadows_only": 0,
+            "total": 11136
+        },
+        "release_type": {
+            "_unknown": 9,
+            "article-journal": 11124,
+            "editorial": 2,
+            "letter": 1
+        },
+        "total": 11136
+    }
+    es = container_to_elasticsearch(c2, stats=stats)
+    assert es['name'] == c2.name
+    assert es['publisher'] == c2.publisher
+    assert es['keepers'] == list(c2.extra['kbart'].keys()) == ["portico"]
+    assert es['any_kbart'] == True
+
 
 def test_elasticsearch_file_transform(matched_importer):
     f = entity_from_json(open('./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json', 'r').read(), FileEntity)
