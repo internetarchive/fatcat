@@ -46,7 +46,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
     # First, the easy ones (direct copy)
     release = entity
     t = dict(
-        doc_index_ts=datetime.datetime.utcnow(),
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = release.ident,
         state = release.state,
         revision = release.revision,
@@ -395,7 +395,7 @@ def container_to_elasticsearch(entity, force_bool=True, stats=None):
 
     # First, the easy ones (direct copy)
     t = dict(
-        doc_index_ts=datetime.datetime.utcnow(),
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = entity.ident,
         state = entity.state,
         revision = entity.revision,
@@ -515,7 +515,7 @@ def changelog_to_elasticsearch(entity):
 
     editgroup = entity.editgroup
     t = dict(
-        doc_index_ts=datetime.datetime.utcnow(),
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         index=entity.index,
         editgroup_id=entity.editgroup_id,
         timestamp=entity.timestamp.isoformat(),
@@ -579,7 +579,7 @@ def file_to_elasticsearch(entity):
 
     # First, the easy ones (direct copy)
     t = dict(
-        doc_index_ts=datetime.datetime.utcnow(),
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = entity.ident,
         state = entity.state,
         revision = entity.revision,
