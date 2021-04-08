@@ -16,9 +16,30 @@ See also:
 
 ## [Unreleased]
 
+Mostly infrastructure changes: Python, Elasticsearch, and other dependencies
+changed.
+
 ### Changes
 
 - require Python 3.8 (upgrade from Python 3.7)
+- require Elasticsearch 7.10 (upgrade from 6.x). Queries (reads) will work
+  against ES 6.x, writes will not. 7.10 is the last upstream "open source"
+  version of Elasticsearch, and we intend to stick with it until a community
+  open source fork emerges
+- update all Elasticsearch schemas to v03c. All at least include
+  `doc_index_ts`, and small other changes
+- container Elasticsearch schema includes aggregated release preservation
+  numbers, as well as total count. Indexing pipeline updated to (optionally)
+  query these stats at index-time
+- several improvements to web editing workflow: clearer design of editgroup web
+  view, etc
+- change web UI and labeling on release and file views to emphasize
+  preservation status and archival access
+
+### Added
+
+- display preservation holdings summary on container view page
+
 
 ## [0.3.3] - 2020-12-24
 
