@@ -46,6 +46,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
     # First, the easy ones (direct copy)
     release = entity
     t = dict(
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = release.ident,
         state = release.state,
         revision = release.revision,
@@ -295,6 +296,8 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
             t['country_code_upper'] = c_extra['country'].upper()
         if c_extra.get('publisher_type'):
             t['publisher_type'] = c_extra['publisher_type']
+        if c_extra.get('discipline'):
+            t['discipline'] = c_extra['discipline']
     return t
 
 def _rte_content_helper(release: ReleaseEntity) -> dict:
@@ -374,7 +377,7 @@ def _rte_url_helper(url_obj) -> dict:
     return t
 
 
-def container_to_elasticsearch(entity, force_bool=True):
+def container_to_elasticsearch(entity, force_bool=True, stats=None):
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 
@@ -392,6 +395,7 @@ def container_to_elasticsearch(entity, force_bool=True):
 
     # First, the easy ones (direct copy)
     t = dict(
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = entity.ident,
         state = entity.state,
         revision = entity.revision,
@@ -407,9 +411,12 @@ def container_to_elasticsearch(entity, force_bool=True):
         entity.extra = dict()
     for key in ('country', 'languages', 'mimetypes', 'original_name',
                 'first_year', 'last_year', 'aliases', 'abbrev', 'region',
-                'discipline'):
+                'discipline', 'publisher_type'):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
+
+    if entity.extra.get('dblp') and entity.extra['dblp'].get('prefix'):
+        t['dblp_prefix'] = entity.extra['dblp']['prefix']
 
     if 'country' in t:
         t['country_code'] = t.pop('country')
@@ -428,6 +435,7 @@ def container_to_elasticsearch(entity, force_bool=True):
     any_kbart = None
     any_jstor = None
     any_ia_sim = None
+    keepers = []
 
     extra = entity.extra
     if extra.get('doaj'):
@@ -451,6 +459,9 @@ def container_to_elasticsearch(entity, force_bool=True):
         any_kbart = True
         if extra['kbart'].get('jstor'):
             any_jstor = True
+        for k, v in extra['kbart'].items():
+            if v and isinstance(v, dict):
+                keepers.append(k)
     if extra.get('ia'):
         if extra['ia'].get('sim'):
             any_ia_sim = True
@@ -458,6 +469,7 @@ def container_to_elasticsearch(entity, force_bool=True):
             is_longtail_oa = True
     t['is_superceded'] = bool(extra.get('superceded'))
 
+    t['keepers'] = keepers
     t['in_doaj'] = bool(in_doaj)
     t['in_road'] = bool(in_road)
     t['any_kbart'] = bool(any_kbart)
@@ -471,6 +483,14 @@ def container_to_elasticsearch(entity, force_bool=True):
         t['is_longtail_oa'] = is_longtail_oa
         t['any_jstor'] = any_jstor
         t['any_ia_sim'] = any_ia_sim
+
+    # mix in stats, if provided
+    if stats:
+        t['releases_total'] = stats['total']
+        t['preservation_bright'] = stats['preservation']['bright']
+        t['preservation_dark'] = stats['preservation']['dark']
+        t['preservation_shadows_only'] = stats['preservation']['shadows_only']
+        t['preservation_none'] = stats['preservation']['none']
     return t
 
 
@@ -495,6 +515,7 @@ def changelog_to_elasticsearch(entity):
 
     editgroup = entity.editgroup
     t = dict(
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         index=entity.index,
         editgroup_id=entity.editgroup_id,
         timestamp=entity.timestamp.isoformat(),
@@ -558,6 +579,7 @@ def file_to_elasticsearch(entity):
 
     # First, the easy ones (direct copy)
     t = dict(
+        doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = entity.ident,
         state = entity.state,
         revision = entity.revision,

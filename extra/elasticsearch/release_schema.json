@@ -41,6 +41,7 @@
 "mappings": {
     "_doc": {
         "properties": {
+            "doc_index_ts":   { "type": "date" },
             "ident":          { "type": "keyword", "normalizer": "default", "doc_values": false },
             "state":          { "type": "keyword", "normalizer": "default" },
             "revision":       { "type": "keyword", "normalizer": "default", "doc_values": false },
@@ -83,6 +84,7 @@
             "container_id":         { "type": "keyword", "normalizer": "default" },
             "container_issnl":      { "type": "keyword", "normalizer": "default" },
             "container_type":       { "type": "keyword", "normalizer": "default" },
+            "discipline":           { "type": "keyword", "normalizer": "default" },
             "contrib_count":        { "type": "integer" },
             "contrib_names":        { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "affiliations":         { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },

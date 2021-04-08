@@ -1,4 +1,6 @@
 
+import sys
+
 from flask import Flask
 from flask.logging import create_logger
 from flask_uuid import FlaskUUID
@@ -56,10 +58,10 @@ def auth_api(token):
     return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
 if Config.FATCAT_API_AUTH_TOKEN:
-    print("Found and using privileged token (eg, for account signup)")
+    print("Found and using privileged token (eg, for account signup)", file=sys.stderr)
     priv_api = auth_api(Config.FATCAT_API_AUTH_TOKEN)
 else:
-    print("No privileged token found")
+    print("No privileged token found", file=sys.stderr)
     priv_api = None
 
 # TODO: refactor integration so this doesn't always need to be defined. If

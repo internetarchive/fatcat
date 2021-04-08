@@ -9,11 +9,14 @@ import sys
 import json
 import argparse
 
+import elasticsearch
 from fatcat_openapi_client import ReleaseEntity, ContainerEntity, FileEntity, ChangelogEntry
+
 from fatcat_tools import entity_from_json, \
     release_to_elasticsearch, container_to_elasticsearch, \
     file_to_elasticsearch, changelog_to_elasticsearch, public_api, \
     release_to_csl, citeproc_csl
+from fatcat_web.search import get_elastic_container_stats
 
 
 def run_elasticsearch_releases(args):
@@ -28,6 +31,8 @@ def run_elasticsearch_releases(args):
             json.dumps(release_to_elasticsearch(entity)) + '\n')
 
 def run_elasticsearch_containers(args):
+    es_client = elasticsearch.Elasticsearch(args.fatcat_elasticsearch_url)
+    es_release_index = "fatcat_release"
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -35,8 +40,21 @@ def run_elasticsearch_containers(args):
         entity = entity_from_json(line, ContainerEntity, api_client=args.api.api_client)
         if entity.state != 'active':
             continue
-        args.json_output.write(
-            json.dumps(container_to_elasticsearch(entity)) + '\n')
+
+        if args.query_stats:
+            es_doc = container_to_elasticsearch(
+                entity,
+                stats=get_elastic_container_stats(
+                    entity.ident,
+                    es_client=es_client,
+                    es_index=es_release_index,
+                    merge_shadows=True,
+                ),
+            )
+        else:
+            es_doc = container_to_elasticsearch(entity)
+
+        args.json_output.write(json.dumps(es_doc) + '\n')
 
 def run_elasticsearch_files(args):
     for line in args.json_input:
@@ -77,6 +95,9 @@ def main():
     parser.add_argument('--fatcat-api-url',
         default="http://localhost:9411/v0",
         help="connect to this host/port")
+    parser.add_argument('--fatcat-elasticsearch-url',
+        default="http://localhost:9200",
+        help="connect to this host/port")
     subparsers = parser.add_subparsers()
 
     sub_elasticsearch_releases = subparsers.add_parser('elasticsearch-releases',
@@ -98,6 +119,9 @@ def main():
     sub_elasticsearch_containers.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
+    sub_elasticsearch_containers.add_argument('--query-stats',
+        action='store_true',
+        help="whether to query release search index for container stats")
 
     sub_elasticsearch_files = subparsers.add_parser('elasticsearch-files',
         help="convert fatcat file JSON schema to elasticsearch file schema")

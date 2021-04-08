@@ -29,6 +29,7 @@
 "mappings": {
     "_doc": {
         "properties": {
+            "doc_index_ts":     { "type": "date" },
             "ident":            { "type": "keyword", "normalizer": "default", "doc_values": false },
             "state":            { "type": "keyword", "normalizer": "default" },
             "revision":         { "type": "keyword", "normalizer": "default", "doc_values": false },

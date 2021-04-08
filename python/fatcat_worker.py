@@ -44,6 +44,8 @@ def run_elasticsearch_release(args):
 def run_elasticsearch_container(args):
     consume_topic = "fatcat-{}.container-updates".format(args.env)
     worker = ElasticsearchContainerWorker(args.kafka_hosts, consume_topic,
+        query_stats=args.query_stats,
+        elasticsearch_release_index="fatcat_release",
         elasticsearch_backend=args.elasticsearch_backend,
         elasticsearch_index=args.elasticsearch_index)
     worker.run()
@@ -99,6 +101,9 @@ def main():
     sub_elasticsearch_container.add_argument('--elasticsearch-index',
         help="elasticsearch index to push into",
         default="fatcat_container")
+    sub_elasticsearch_container.add_argument('--query-stats',
+        action='store_true',
+        help="whether to query release search index for container stats")
 
     sub_elasticsearch_changelog = subparsers.add_parser('elasticsearch-changelog',
         help="consume changelog kafka feed, transform and push to search")
