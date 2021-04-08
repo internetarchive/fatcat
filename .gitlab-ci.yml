@@ -36,6 +36,8 @@ unified_test:
         python3.8 python3.8-dev python3.8-venv python3.8-distutils
         python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest pipenv
     - diesel --version || cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres
+    - wget --continue https://archive.org/download/ia-deb-pkgs/pipenv_11.15-0ia1_all.deb
+    - apt install ./pipenv_11.15-0ia1_all.deb
     - pipenv --version
   script:
     - rustc --version && cargo --version && diesel --version
