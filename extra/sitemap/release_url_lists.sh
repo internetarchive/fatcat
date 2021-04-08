@@ -19,6 +19,8 @@ EXPORT_FILE_GZ="$2"
 zcat $EXPORT_FILE_GZ \
     | rg '"release_ids"' \
     | rg 'archive.org/' \
+    | rg 'application/pdf' \
+    | rg '"url":' \
     | rg -v '"stub"' \
     | jq -r '[.work_id, .ident] | @tsv' \
     | uniq -w 26 \
