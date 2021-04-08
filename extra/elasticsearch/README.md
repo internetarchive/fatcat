@@ -27,7 +27,8 @@ from it's `files`.
 
 ## Setting Up Elasticsearch
 
-We use elasticsearch version 6.x, with the `analysis-icu` plugin installed:
+We use elasticsearch version 7.10 (the final "open source" release), with the
+`analysis-icu` plugin installed:
 
     sudo /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-icu
     sudo service elasticsearch restart
@@ -42,10 +43,12 @@ Drop and rebuild the schema:
     http delete :9200/fatcat_container
     http delete :9200/fatcat_file
     http delete :9200/fatcat_changelog
+    http delete :9200/fatcat_ref
     http put :9200/fatcat_release?include_type_name=true < release_schema.json
     http put :9200/fatcat_container?include_type_name=true < container_schema.json
     http put :9200/fatcat_file?include_type_name=true < file_schema.json
     http put :9200/fatcat_changelog?include_type_name=true < changelog_schema.json
+    http put :9200/fatcat_ref?include_type_name=true < ref_schema.json
 
 Put a single object (good for debugging):
 
