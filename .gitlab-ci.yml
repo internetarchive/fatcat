@@ -24,7 +24,7 @@ unified_test:
     DATABASE_URL: "postgres://fatcat_user:fatcat_pw@postgres/fatcat_test"
     TEST_DATABASE_URL: "postgres://fatcat_user:fatcat_pw@postgres/fatcat_test"
   services:
-    - "postgres:11"
+    - "postgres:13"
   before_script:
     - export PATH="$PATH:$CARGO_HOME/bin"
     - apt update -qy

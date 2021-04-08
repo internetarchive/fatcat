@@ -1,5 +1,6 @@
 -- written for Postgres 9.6 with OSSP extension for UUIDs
 -- ... but actually runs on Postgres 11 in qa/production/tests
+-- ... and now Postgres 13
 
 -- Previously VARCHAR and fixed-size CHAR was used in this schema for specific
 -- columns (especially fixed-size external identifiers, and hashes). This was

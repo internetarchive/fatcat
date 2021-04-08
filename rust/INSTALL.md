@@ -7,7 +7,7 @@ directions are likely to end up out-of-date.
 To install manually, on a bare server, as root:
 
     adduser fatcat
-    apt install postgresql-11 postgresql-contrib postgresql-client-11 \
+    apt install postgresql-13 postgresql-contrib postgresql-client-13 \
         nginx build-essential git pkg-config libssl-dev libpq-dev \
         htop screen
     mkdir -p /srv/fatcat
