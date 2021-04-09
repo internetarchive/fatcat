@@ -292,6 +292,7 @@ def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
     search = search[:int(limit)]
 
     search = search.params(request_cache=True)
+    # not needed: search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
     results = results_to_dict(resp)
 
@@ -319,6 +320,7 @@ def get_elastic_entity_stats() -> dict:
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
     search = search.params(request_cache=True)
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     stats['release'] = {
@@ -353,6 +355,7 @@ def get_elastic_entity_stats() -> dict:
     search = search[:0]
 
     search = search.params(request_cache=True)
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
     buckets = resp.aggregations.paper_like.buckets
     stats['papers'] = {
@@ -373,6 +376,7 @@ def get_elastic_entity_stats() -> dict:
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
     search = search.params(request_cache=True)
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
     stats['container'] = {
         "total": _hits_total_int(resp.hits.total),
@@ -407,6 +411,7 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
     search = search[:0]
 
     search = search.params(request_cache=True)
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
@@ -478,6 +483,7 @@ def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None
     search = search[:0]
 
     search = search.params(request_cache=True)
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     container_stats = resp.aggregations.container_stats.buckets
@@ -551,6 +557,7 @@ def get_elastic_container_histogram_legacy(ident) -> List:
     search = search[:0]
 
     search = search.params(request_cache='true')
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_in_ia.buckets
@@ -618,6 +625,7 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
     )
     search = search[:0]
     search = search.params(request_cache='true')
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_preservation.buckets
@@ -695,6 +703,7 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
     )
     search = search[:0]
     search = search.params(request_cache='true')
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.date_preservation.buckets
@@ -752,6 +761,7 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
     )
     search = search[:0]
     search = search.params(request_cache='true')
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.volume_preservation.buckets
@@ -824,6 +834,7 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
     )
     search = search[:0]
     search = search.params(request_cache='true')
+    search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.type_preservation.buckets

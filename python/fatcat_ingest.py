@@ -28,6 +28,7 @@ def _init_search(args):
 
     client = elasticsearch.Elasticsearch(args.elasticsearch_endpoint)
     search = Search(using=client, index=args.elasticsearch_index)
+    search = search.params(track_total_hits=True)
     return search
 
 
