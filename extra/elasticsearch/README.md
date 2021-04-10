@@ -44,10 +44,10 @@ Drop and rebuild the schema:
     http delete :9200/fatcat_file
     http delete :9200/fatcat_changelog
     http delete :9200/fatcat_ref
-    http put :9200/fatcat_release?include_type_name=true < release_schema.json
-    http put :9200/fatcat_container?include_type_name=true < container_schema.json
-    http put :9200/fatcat_file?include_type_name=true < file_schema.json
-    http put :9200/fatcat_changelog?include_type_name=true < changelog_schema.json
+    http put :9200/fatcat_release_v03c?include_type_name=true < release_schema.json
+    http put :9200/fatcat_container_v03c?include_type_name=true < container_schema.json
+    http put :9200/fatcat_file_v03c?include_type_name=true < file_schema.json
+    http put :9200/fatcat_changelog_v03c?include_type_name=true < changelog_schema.json
     http put :9200/fatcat_ref?include_type_name=true < ref_schema.json
 
 Put a single object (good for debugging):
@@ -59,12 +59,20 @@ Bulk insert from a file on disk:
 
     esbulk -verbose -id ident -index fatcat_release -type _doc examples.json
 
-Or, in a bulk production live-stream conversion:
+Or, in a bulk production bootstrap indexing (NOTE: `--tmpdir` is important for
+large indexes with small rootfs partitions):
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release -type _doc
-    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container -type _doc
-    time zcat /srv/fatcat/snapshots/file_export.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file -type _doc
+    time zcat /srv/fatcat/snapshots/2021-03-08/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container_v03c
+    time zcat /srv/fatcat/snapshots/2021-03-08/release_export_expanded.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release_v03c
+    time zcat /srv/fatcat/snapshots/2021-03-08/file_export.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file_v03c
+
+    http put :9200/fatcat_release_v03c/_alias/fatcat_release
+    http put :9200/fatcat_container_v03c/_alias/fatcat_container
+    http put :9200/fatcat_file_v03c/_alias/fatcat_file
+    http put :9200/fatcat_changelog_v03c/_alias/fatcat_changelog
+
+As of April 2021, the release indexing process takes about 6 hours.
 
 ## Index Aliases
 
