@@ -28,7 +28,6 @@ def _init_search(args):
 
     client = elasticsearch.Elasticsearch(args.elasticsearch_endpoint)
     search = Search(using=client, index=args.elasticsearch_index)
-    search = search.params(track_total_hits=True)
     return search
 
 
@@ -69,6 +68,7 @@ def _run_search_dump(args, search):
             ])
 
     counts = Counter({'ingest_request': 0, 'elasticsearch_release': 0, 'estimate': 0})
+    search = search.params(track_total_hits=True)
     counts['estimate'] = search.count()
     print("Expecting {} release objects in search queries".format(counts['estimate']), file=sys.stderr)
 
