@@ -59,6 +59,8 @@ No known archives or mirrors of this file.
 <div class="ui top attached segment">
   {% if file.size != None %}
     <b>Size</b> &nbsp;{{ file.size|filesizeformat }}<br>
+  {% else %}
+    <b>Size</b> &nbsp;<i>(unknown)</i><br>
   {% endif %}
   {% if file.mimetype != None %}
     <b>MIME Type</b> &nbsp;<code>{{ file.mimetype }}</code><br>
