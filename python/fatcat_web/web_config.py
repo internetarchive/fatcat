@@ -22,6 +22,10 @@ class Config(object):
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="dev.fatcat.wiki")
     FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
     FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default="https://{}/v0".format(FATCAT_DOMAIN))
+    public_host_default = f"https://{FATCAT_DOMAIN}/v0"
+    if FATCAT_DOMAIN == "dev.fatcat.wiki":
+        public_host_default = FATCAT_API_HOST
+    FATCAT_PUBLIC_API_HOST = os.environ.get("FATCAT_PUBLIC_API_HOST", default=public_host_default)
 
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
