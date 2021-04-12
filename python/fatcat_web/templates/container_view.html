@@ -91,7 +91,7 @@
 {% if container.issnl != None or container.wikidata_qid != None %}
 <div class="ui segment attached">
   {% if container.issnl != None %}
-    <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
+    <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b>
     &nbsp;<code>{{ container.issnl }}</code>
   {% endif %}
   {% if container.extra != None and container.extra.issnp != None and (container.extra.issnp|length > 0) %}
@@ -135,22 +135,34 @@
 </div>
 {% endif %}
 
+{%- if container.extra and container.extra.kbart %}
 <div class="ui segment attached">
 <b>Preservation Holdings</b><br>
-{%- if container.extra and container.extra.kbart %}
   {% for k, v in container.extra.kbart.items() %}
-    <br><span style="text-transform: uppercase;">{{ k }}:</span>
+    {% if k == "lockss" %}
+      <a href="https://www.lockss.org/">LOCKSS</a>:
+    {% elif k == "clockss" %}
+      <a href="https://clockss.org/">CLOCKSS</a>:
+    {% elif k == "hathitrust" and container.issnl %}
+      <a href="https://catalog.hathitrust.org/Search/Home?lookfor={{ container.issnl }}&searchtype=isn&ft=&setft=false">HathiTrust</a>:
+    {% elif k == "portico" and container.issnl %}
+      <a href="https://www.portico.org/coverage/titles/?keyword={{ container.issnl }}">Portico</a>:
+    {% else %}
+      <span style="text-transform: uppercase;">{{ k }}:</span>
+    {% endif %}
+    years
     {% for span in v.year_spans %}
-      {% if span|length >= 2 %}
-        {{ span[0] }}-{{ span[1] }}
-      {% elif span|length == 1 %}
-        {{ span[0] }}
-      {% endif %}
-      {{ ", " if not loop.last }}
+      {% if span|length >= 2 -%}
+        {{ span[0] }}-{{ span[1] -}}
+      {% elif span|length == 1 -%}
+        {{ span[0] -}}
+      {% endif -%}
+      {{- ", " if not loop.last }}
     {% endfor %}
+    <br>
   {% endfor %}
-{% endif %}
 </div>
+{% endif %}
 
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
