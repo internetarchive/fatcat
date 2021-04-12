@@ -118,7 +118,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                 else:
                     key = entity.ident
 
-                if entity.state == 'wip':
+                if self.entity_type != ChangelogEntry and entity.state == 'wip':
                     print(f"WARNING: skipping state=wip entity: {self.entity_type.__name__} {entity.ident}", file=sys.stderr)
                     continue
 
@@ -138,6 +138,10 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     "index": { "_id": key, },
                 }))
                 bulk_actions.append(json.dumps(doc_dict))
+
+            # if only WIP entities, then skip
+            if not bulk_actions:
+                continue
 
             print("Upserting, eg, {} (of {} {} in elasticsearch)".format(key, len(batch), self.entity_type.__name__), file=sys.stderr)
             elasticsearch_endpoint = "{}/{}/_bulk".format(
