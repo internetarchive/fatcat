@@ -141,6 +141,8 @@ class ElasticsearchReleaseWorker(FatcatWorker):
 
             # if only WIP entities, then skip
             if not bulk_actions:
+                for msg in batch:
+                    consumer.store_offsets(message=msg)
                 continue
 
             print("Upserting, eg, {} (of {} {} in elasticsearch)".format(key, len(batch), self.entity_type.__name__), file=sys.stderr)
