@@ -203,7 +203,7 @@ accessible version.
 <div class="column" style="flex: 0 0 24em;">
 
 {% if entity.state == 'active' and entity._es and entity._es.ia_pdf_url %}
-  <a href="{{ entity._es.ia_pdf_url }}" class="ui top attached fluid huge black button" style="text-decoration: underline;">
+  <a href="{{ entity._es.ia_pdf_url }}" class="ui fluid huge black button" style="text-decoration: underline;">
     <i class="file pdf outline icon"></i>Read Archived PDF
   </a>
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
