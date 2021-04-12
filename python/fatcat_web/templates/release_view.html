@@ -225,7 +225,9 @@ accessible version.
     <div class="ui top attached fluid large red inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #b71818;">
       <b>Not Preserved</b>
     </div>
+  {% endif %}
 
+  {% if entity._es.preservation != 'bright' %}
     <div class="ui segment attached">
       <a href="/release/{{ release.ident }}/save">
         <b><i class="cloud download icon"></i>Save Paper Now!</b>
