@@ -52,6 +52,11 @@ class Config(object):
     IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
+    # analytics; used in production
+    ENABLE_GOATCOUNTER = bool(os.environ.get("ENABLE_GOATCOUNTER", default=False))
+    GOATCOUNTER_ENDPOINT = os.environ.get("GOATCOUNTER_ENDPOINT", default="https://goatcounter.fatcat.wiki/count")
+    GOATCOUNTER_SCRIPT_URL = os.environ.get("GOATCOUNTER_SCRIPT_URL", default="https://goatcounter.fatcat.wiki/count.js")
+
     # controls granularity of "shadow_only" preservation category
     FATCAT_MERGE_SHADOW_PRESERVATION = os.environ.get("FATCAT_MERGE_SHADOW_PRESERVATION", default=False)
 
