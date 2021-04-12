@@ -4,8 +4,8 @@
 This tutorial describes how to make edits to the Fatcat catalog using the web
 interface. We will add a new `file` to an existing `release`, then update the
 release to point at a different `container`. You can follow these directions on
-either the [QA](https://qa.fatcat.wiki) or [production](https://fatcat.wiki)
-public catalogs. You will:
+either the [QA](https://qa.fatcat.wiki) (NOTE: QA not available as of Spring
+2021) or [production](https://fatcat.wiki) public catalogs. You will:
 
 - create an editor account and log-in
 - create a new `file` entity

@@ -7,7 +7,7 @@ A declarative specification of all API endpoints, JSON data models, and
 response types is available in OpenAPI 2.0 format. Code generation tools are
 used to generate both server-side type-safe endpoint routes and client-side
 libraries. Auto-generated reference documentation is, for now, available at
-<https://api.qa.fatcat.wiki>.
+<https://api.fatcat.wiki>.
 
 All API traffic is over HTTPS; there is no HTTP endpoint, even for read-only
 operations. All endpoints accept and return only JSON serialized content.
@@ -67,7 +67,7 @@ metadata, it is possible to include linked entities in responses using the
 includes an optional `container_id` field which points to a container entity.
 If the `expand` parameter is set:
 
-    https://api.qa.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=container
+    https://api.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=container
 
 Then the full container model will be included under the `container` field.
 Multiple expand parameters can be passed, comma-separated.

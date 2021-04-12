@@ -31,6 +31,8 @@ info:
     their scripts and tools against the QA instance before running against
     production.
 
+    NOTE: as of Spring 2021, the QA server is temporarily unavailable.
+
     Fatcat is made available as a gratis (no cost) and libre (freedom
     preserving) service to the public, with limited funding and resources. We
     welcome new and unforseen uses and contributions, but may need to impose
@@ -52,10 +54,10 @@ info:
     Cross-origin requests are allowed for the API service, to enable third
     parties to build in-browser applications.
 
-    A metadata search service is available at <https://search.fatcat.wiki> (and
-    <https://search.qa.fatcat.wiki>). The API is currently the raw
-    elasticsearch API, with only GET (read) requests allowed. This public
-    service is experimental and may be removed or limited in the future.
+    A metadata search service is available at <https://search.fatcat.wiki>.
+    The API is currently the raw elasticsearch API, with only GET (read)
+    requests allowed. This public service is experimental and may be removed or
+    limited in the future.
 
     ## Authentication
 
