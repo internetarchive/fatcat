@@ -113,10 +113,13 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
     contrib_affiliations = []
     creator_ids = []
     for c in (release.contribs or []):
-        if c.raw_name:
+        if c.creator and c.creator.display_ame:
+            contrib_names.append(c.creator.display_ame)
+        elif c.raw_name:
             contrib_names.append(c.raw_name)
         elif c.surname:
             contrib_names.append(c.surname)
+
         if c.creator_id:
             creator_ids.append(c.creator_id)
         if c.raw_affiliation:

@@ -65,8 +65,8 @@
           <p style="font-size: larger;">
           {% if entity._authors and entity._authors != [] %} by
             {% for contrib in entity._authors[:12] %}
-              {% if contrib.creator_id %}
-                <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
+              {% if contrib.creator_id and contrib.creator and contrib.creator.display_name %}
+                <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.creator.display_name }}</a></b>{% if not loop.last %}, {% endif %}
               {% else %}
                 {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
               {% endif %}
