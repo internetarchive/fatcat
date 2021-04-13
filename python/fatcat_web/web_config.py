@@ -22,6 +22,10 @@ class Config(object):
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="dev.fatcat.wiki")
     FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
     FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default="https://{}/v0".format(FATCAT_DOMAIN))
+    public_host_default = f"https://{FATCAT_DOMAIN}/v0"
+    if FATCAT_DOMAIN == "dev.fatcat.wiki":
+        public_host_default = FATCAT_API_HOST
+    FATCAT_PUBLIC_API_HOST = os.environ.get("FATCAT_PUBLIC_API_HOST", default=public_host_default)
 
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
@@ -51,6 +55,11 @@ class Config(object):
     IA_XAUTH_URI = "https://archive.org/services/xauthn/"
     IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
+
+    # analytics; used in production
+    ENABLE_GOATCOUNTER = bool(os.environ.get("ENABLE_GOATCOUNTER", default=False))
+    GOATCOUNTER_ENDPOINT = os.environ.get("GOATCOUNTER_ENDPOINT", default="https://goatcounter.fatcat.wiki/count")
+    GOATCOUNTER_SCRIPT_URL = os.environ.get("GOATCOUNTER_SCRIPT_URL", default="https://goatcounter.fatcat.wiki/count.js")
 
     # controls granularity of "shadow_only" preservation category
     FATCAT_MERGE_SHADOW_PRESERVATION = os.environ.get("FATCAT_MERGE_SHADOW_PRESERVATION", default=False)

@@ -44,6 +44,12 @@ def test_dblp_importer(dblp_importer):
     # check that entity name mangling was fixed on import
     eg = dblp_importer.api.get_editgroup(eg.editgroup_id)
     release = dblp_importer.api.get_release(eg.edits.releases[0].ident)
+    for r_edit in eg.edits.releases:
+        release = dblp_importer.api.get_release(r_edit.ident)
+        #print(release.ext_ids.dblp)
+        if release.ext_ids.dblp == "conf/er/Norrie08":
+            break
+    assert release.ext_ids.dblp == "conf/er/Norrie08"
     assert release.contribs[0].raw_name == "Moira C. Norrie"
     assert release.contribs[1].raw_name == "Michael H. Böhlen"
 
@@ -79,7 +85,10 @@ def test_dblp_container_importer(dblp_container_importer):
 
     # check that entity name mangling was fixed on import
     eg = dblp_container_importer.api.get_editgroup(eg.editgroup_id)
-    container = dblp_container_importer.api.get_container(eg.edits.containers[0].ident)
+    for c_edit in eg.edits.containers:
+        container = dblp_container_importer.api.get_container(c_edit.ident)
+        if container.issnl == "1877-3273":
+            break
     assert container.name == "Atlantis Thinking Machines"
     assert container.issnl == "1877-3273"
     assert container.container_type == "book-series"
@@ -88,7 +97,7 @@ def test_dblp_container_importer(dblp_container_importer):
 
     last_index = dblp_container_importer.api.get_changelog(limit=1)[0].index
     output_tsv_map.seek(0)
-    print(output_tsv_map.read())
+    #print(output_tsv_map.read())
     output_tsv_map.seek(0)
     with open('tests/files/example_dblp_containers.json', 'r') as f:
         dblp_container_importer.reset()

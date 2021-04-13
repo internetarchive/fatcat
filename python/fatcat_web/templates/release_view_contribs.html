@@ -12,12 +12,17 @@
 {% for contrib in release.contribs %}
   <tr><td class="collapsing">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
       <td><span itemprop="author">
-      {% if contrib.creator_id %}
-        <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
+      {% if contrib.creator_id and contrib.creator and contrib.creator.display_name %}
+        <a href="/creator/{{contrib.creator_id}}">{{ contrib.creator.display_name }}</a>
       {% else %}
         {{ contrib.raw_name or '' }}
       {% endif %}
-      {% if contrib.surname %}
+
+      {% if contrib.creator and contrib.creator.surname %}
+        <code>&nbsp;
+          ({{ contrib.creator.surname }}{% if contrib.creator.given_name %}, {{ contrib.creator.given_name }}{% endif %})
+        </code>
+      {% elif contrib.surname %}
         <code>&nbsp;
           ({{ contrib.surname }}{% if contrib.given_name %}, {{ contrib.given_name }}{% endif %})
         </code>

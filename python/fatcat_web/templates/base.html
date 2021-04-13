@@ -153,6 +153,16 @@
   integrity="sha256-9H3HWYnPJ2bEHgkOrw+48KheOqYzTvJd1hbeU9sEDFk="
   crossorigin="anonymous">
 </script>
+{% if config.ENABLE_GOATCOUNTER -%}
+  <script>
+    window.goatcounter = {
+        /* title leaks search query, so don't report it */
+        title: "",
+        {# to allow localhost connections (dev) to be collected, set: allow_local: true #}
+    };
+  </script>
+  <script data-goatcounter="{{ config.GOATCOUNTER_ENDPOINT }}" async src="{{ config.GOATCOUNTER_SCRIPT_URL }}"></script>
+{%- endif %}
 {% block postscript %}{% endblock %}
 
 </body>

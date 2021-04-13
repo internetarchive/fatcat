@@ -36,12 +36,7 @@
     <br>Revision: <small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
   {% endif %}
   <br>API URL: <a href="
-  {%- if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' -%}
-    http://localhost:9411
-  {%- else -%}
-    https://api.{{ config.FATCAT_DOMAIN }}
-  {%- endif -%}
-  /v0
+  {{ config.FATCAT_PUBLIC_API_HOST -}}
   {%- if editgroup and entity.ident -%}
     /editgroup/{{ editgroup.editgroup_id }}{# /{{ entity_type }}/{{ entity.ident }} #}
   {%- elif entity.ident -%}

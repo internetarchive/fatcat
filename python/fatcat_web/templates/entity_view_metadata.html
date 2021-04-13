@@ -7,7 +7,7 @@
 <h3>Entity Metadata (schema)</h3>
 {{ entity_macros.extra_metadata(entity._metadata) }}
 <div style="float: right;">
-  <a href="{{ config.FATCAT_API_HOST }}/{{ entity_type }}/{{ entity.ident }}">As JSON via API</a>
+  <a href="{{ config.FATCAT_PUBLIC_API_HOST }}/{{ entity_type }}/{{ entity.ident }}">As JSON via API</a>
 </div>
 
 {% if entity.extra %}

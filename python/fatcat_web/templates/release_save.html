@@ -46,11 +46,17 @@
   we will attempt to crawl, process, and verify the content and add it to the
   catalog.
 
+  {% if release and release.ext_ids.doi %}
+    {% set syp_suffix = release.ext_ids.doi %}
+  {% else %}
+    {% set syp_suffix = "" %}
+  {% endif %}
+
   <p style="margin-top: 1em; margin-bottom: 1em;">If you are the author of this
   work, and the published version is not publicly available, another option is
   to upload an version to an institutional or discipline repository. The
-  <a href="https://shareyourpaper.org/">Share Your Paper</a> tool can help with
-  this process.
+  <a href="https://shareyourpaper.org/{{ syp_suffix }}">Share Your Paper</a>
+  tool can help with this process.
 
   <p style="margin-top: 1em; margin-bottom: 1em;"><b>Important:</b>
   double-check the publication stage of the file you are submitting. We
