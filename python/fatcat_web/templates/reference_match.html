@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% import "entity_macros.html" as entity_macros %}
+{% import "edit_macros.html" as edit_macros %}
+
+{% block body %}
+
+<h1>Reference Fuzzy Match Tool</h1>
+
+<form class="ui form" id="reference_match" method="POST" action="/reference/match">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+  <h3>Parse Citation</h3>
+
+  <p>Enter a citation string here and we will try to parse it (using GROBID)
+  into a structured format, then match against the catalog.
+
+  {{ edit_macros.form_field_basic(form.raw_citation) }}
+
+  <button class="ui primary submit button right floated" type="submit" name="submit_type" value="parse">
+    Parse
+  </button>
+
+  <br clear="all">
+  {% if grobid_status == "success" and grobid_dict %}
+    <div class="ui positive message">
+      <div class="header">Parsed successfully! See match results below</div>
+      {{ entity_macros.extra_metadata(grobid_dict) }}
+    </div>
+  {% endif %}
+
+  <br>
+  <hr>
+  <h3>Fuzzy Match Metadata</h3>
+
+  <p>Enter whatever bibliographic metadata fields you know, and we will try to
+  match to catalog entries.
+
+  <p><b>NOTE:</b> if you already know a persistent identifier (like a DOI), you
+  should use the <a href="/release/lookup">lookup tool</a> instead.
+
+    {{ edit_macros.form_field_inline(form.title) }}
+    {{ edit_macros.form_field_inline(form.first_author) }}
+
+    <br>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.year) }}
+      {{ edit_macros.form_field_basic(form.journal) }}
+    </div>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.volume) }}
+      {{ edit_macros.form_field_basic(form.issue) }}
+      {{ edit_macros.form_field_basic(form.pages) }}
+    </div>
+
+  <button class="ui primary submit button right floated" type="submit" name="submit_type" value="match">
+    Match
+  </button>
+  <br clear="all">
+
+</form>
+
+{% if matches is defined %}
+  <br>
+  <hr>
+  <h3>Match Results</h3>
+  <table class="ui very basic celled table">
+  <tbody>
+  {% for match in matches %}
+    <tr><td class="collapsing center aligned">
+          <br><b>{{ match.status.name }}</b>
+          <br>{{ match.reason.name }}
+        <td class="">
+          {{ entity_macros.release_summary(match.release) }}
+        <td class="">
+          {% if match.access_options %}
+            <a href="{{ match.access_options[0].access_url}}" class="ui tiny green active button">{{ match.access_options[0].access_type.name }}</a>
+            {% endif %}
+  {% endfor %}
+  </tbody>
+  </table>
+  {% if not matches %}
+    <p><i>None!</i>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

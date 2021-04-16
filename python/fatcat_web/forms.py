@@ -482,3 +482,44 @@ class EntityTomlForm(EntityEditForm):
 
         etf.toml.data = entity_to_toml(entity, pop_fields=pop_fields)
         return etf
+
+class ReferenceMatchForm(FlaskForm):
+
+    submit_type = SelectField('submit_type',
+        [validators.DataRequired()],
+        choices=['parse', 'match'])
+
+    raw_citation = TextAreaField("Citation String", render_kw={'rows':'3'})
+
+    title = StringField("Title")
+    journal = StringField("Journal or Conference")
+    first_author = StringField("First Author")
+    #year = IntegerField('Year Released',
+    #    [validators.Optional(True), valid_year])
+    year = StringField("Year Released")
+    volume = StringField("Volume")
+    issue = StringField("Issue")
+    pages = StringField("Pages")
+
+    @staticmethod
+    def from_grobid_parse(parse_dict, raw_citation):
+        """
+        Initializes form from GROBID extraction
+        """
+        rmf = ReferenceMatchForm()
+        rmf.raw_citation.data = raw_citation
+
+        direct_fields = ['title', 'journal', 'volume', 'issue', 'pages']
+        for k in direct_fields:
+            if parse_dict.get(k):
+                a = getattr(rmf, k)
+                a.data = parse_dict[k]
+
+        date = parse_dict.get('date')
+        if date and len(date) >= 4 and date[0:4].isdigit():
+            rmf.year.data = int(date[0:4])
+
+        if parse_dict.get('authors'):
+            rmf.first_author.data = parse_dict['authors'][0].get('name')
+
+        return rmf
