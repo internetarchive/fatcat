@@ -22,7 +22,6 @@ import sys
 import json
 import datetime
 import argparse
-from enum import Enum
 from typing import Optional, List, Any, Dict
 
 from pydantic import BaseModel
@@ -31,7 +30,7 @@ from elasticsearch_dsl import Search, Q
 from fatcat_openapi_client import ReleaseEntity
 
 from fatcat_tools import public_api
-
+from fatcat_tools.transforms.access import release_access_options, AccessOption
 
 
 class BiblioRef(BaseModel):
@@ -81,29 +80,6 @@ class BiblioRef(BaseModel):
     target_unstructured: Optional[str]
     target_csl: Optional[Dict[str, Any]]
 
-class AccessType(str, Enum):
-    """describes type of access URL"""
-
-    wayback = "wayback"
-    ia_file = "ia_file"
-    ia_microfilm = "ia_microfilm"
-    repository = "repository"
-
-class AccessOption(BaseModel):
-
-    access_type: AccessType
-
-    # note: for `target_url` refs, would do a CDX lookup and this URL would be
-    # a valid/HTTP-200 web.archive.org capture URL
-    access_url: str
-
-    # application/pdf, text/html, etc
-    # blank for landing pages
-    mimetype: Optional[str]
-
-    size_bytes: Optional[int]
-    thumbnail_url: Optional[str]
-
 class CslBiblioRef(BaseModel):
     # an "enriched" version of BiblioRef with metadata about the source or
     # target entity. would be "hydrated" via a lookup to, eg, the
@@ -122,7 +98,7 @@ class FatcatBiblioRef(BaseModel):
     # the full release entity.
     ref: BiblioRef
     release: Optional[ReleaseEntity]
-    csl: Optional[Dict[str, Any]]
+    #csl: Optional[Dict[str, Any]]
     access: List[AccessOption]
 
     class Config:
@@ -290,31 +266,6 @@ def count_inbound_refs(
 
     return search.count()
 
-def _release_access(release: ReleaseEntity) -> List[AccessOption]:
-    """
-    Extracts access options from a release.
-    """
-    options = []
-    for f in (release.files or []):
-        for u in (f.urls or []):
-            if '://web.archive.org/' in u.url:
-                return [AccessOption(
-                    access_type="wayback",
-                    access_url=u.url,
-                    mimetype=f.mimetype,
-                    size_bytes=f.size,
-                    thumbnail_url=None
-                )]
-            elif '://archive.org/' in u.url:
-                return [AccessOption(
-                    access_type="ia_file",
-                    access_url=u.url,
-                    mimetype=f.mimetype,
-                    size_bytes=f.size,
-                    thumbnail_url=None
-                )]
-    return options
-
 # run elasticsearch mget query for all ref idents and include "enriched" refs when possible
 # for outbound URL refs, would do wayback CDX fetches to find a direct wayback URL
 # TODO: for openlibrary, would this query openlibrary.org API? or some fatcat-specific index?
@@ -329,14 +280,14 @@ def enrich_inbound_refs_fatcat(refs: List[BiblioRef], fatcat_api_client: Any, hi
             release = fatcat_api_client.get_release(ref.source_release_ident, hide=hide, expand=expand)
             enriched.append(FatcatBiblioRef(
                 ref=ref,
-                csl=None,
-                access=_release_access(release),
+                #csl=None,
+                access=release_access_options(release),
                 release=release,
             ))
         else:
             enriched.append(FatcatBiblioRef(
                 ref=ref,
-                csl=None,
+                #csl=None,
                 access=[],
                 release=None,
             ))
@@ -349,14 +300,14 @@ def enrich_outbound_refs_fatcat(refs: List[BiblioRef], fatcat_api_client: Any, h
             release = fatcat_api_client.get_release(ref.target_release_ident, hide=hide, expand=expand)
             enriched.append(FatcatBiblioRef(
                 ref=ref,
-                csl=None,
-                access=_release_access(release),
+                #csl=None,
+                access=release_access_options(release),
                 release=release,
             ))
         else:
             enriched.append(FatcatBiblioRef(
                 ref=ref,
-                csl=None,
+                #csl=None,
                 access=[],
                 release=None,
             ))
