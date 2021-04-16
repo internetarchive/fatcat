@@ -18,7 +18,7 @@ from fatcat_web.forms import *
 from fatcat_web.entity_helpers import *
 
 
-@app.route('/release/<string(length=26):ident>/refs/inbound', methods=['GET'])
+@app.route('/release/<string(length=26):ident>/inbound-refs', methods=['GET'])
 def release_view_refs_inbound(ident):
 
     # lookup release ident, ensure it exists
@@ -35,7 +35,7 @@ def release_view_refs_inbound(ident):
 
     return render_template('release_view_fuzzy_refs.html', direction="inbound", entity=release, hits=hits, enriched_refs=enriched_refs), 200
 
-@app.route('/release/<string(length=26):ident>/refs/outbound', methods=['GET'])
+@app.route('/release/<string(length=26):ident>/outbound-refs', methods=['GET'])
 def release_view_refs_outbound(ident):
 
     # lookup release ident, ensure it exists

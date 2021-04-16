@@ -1,5 +1,5 @@
 {% set release = entity %}
-{% set entity_view = "references" %}
+{% set entity_view = "{{ direction }}-refs" %}
 {% set entity_type = "release" %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}

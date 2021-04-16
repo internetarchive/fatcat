@@ -86,6 +86,10 @@
             {% elif entity_type == "release" and entity.state != 'deleted' %}
               {{ entity_tab("contribs", "Authors", "/contribs", entity._authors|count ) }}
               {{ entity_tab("references", "References", "/references", entity.refs|count) }}
+              {% if  entity.state == 'active' %}
+                {{ entity_tab("inbound-refs", "Inbound", "/inbound-refs") }}
+                {{ entity_tab("outbound-refs", "Outbound", "/outbound-refs") }}
+              {% endif %}
             {% endif %}
             {{ entity_tab("metadata", "Metadata", "/metadata") }}
           </div>
