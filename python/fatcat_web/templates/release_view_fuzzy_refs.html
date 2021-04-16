@@ -1,0 +1,95 @@
+{% set release = entity %}
+{% set entity_view = "references" %}
+{% set entity_type = "release" %}
+{% import "entity_macros.html" as entity_macros %}
+{% extends "entity_base.html" %}
+
+{% block entity_main %}
+
+{% if direction == "inbound" %}
+  <h3>Inbound Matched References</h3>
+  <i>Other releases citing this one</i>
+{% elif direction == "outbound" %}
+  <h3>Outbound Matched References</h3>
+  <i>This release citing other releases</i>
+{% endif %}
+
+<p>Found {{ hits.count_total }} references in {{ hits.query_wall_time_ms }}ms.
+{% if hits.count_total != hits.count_returned %}
+  Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }}
+  {% if hits.offset + hits.limit < hits.count_total %}
+    &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next...</a>
+  {% endif %}
+{% endif %}
+
+<table class="ui very basic celled table">
+<tbody>
+{% for ref in enriched_refs %}
+  {% set release = ref.release %}
+  <tr><td class="collapsing center aligned">
+        {% if direction == "outbound" %}
+          {% if ref.ref.ref_key %}
+            <code>[{{ ref.ref.ref_key }}]</code>
+          {% endif %}
+        {% endif %}
+        <br><b>{{ ref.ref.match_status }}</b>
+        <br>{{ ref.ref.match_provenance }}
+      <td class="">
+        <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+          {% if release.release_type not in ["article-journal", "conference-paper"] %}
+            <b>[{{ release.release_type or "unknown-type" }}]</b>
+          {% endif %}
+        <br>
+          {% for contrib in release.contribs[:5] %}
+            {% if contrib.creator %}
+              {{ contrib.creator.display_name }}
+            {% else %}
+              {{ contrib.raw_name }}
+            {% endif %}
+            {% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {% if release.contribs | length > 5 %}(+ more) {%endif %}
+        <br>
+          {% if release.release_year %}{{ release.release_year }} &nbsp;{% endif %}
+          {% if release.container %}
+            <i>{{ release.container.name }}</i>
+          {% elif release.extra and release.extra.container_name %}
+            <i>{{ release.extra.container_name }}</i>
+          {% endif %}
+          {% if release.release_stage != "published" %}
+            &nbsp;<span style="color: brown; font-weight: bold;">{{ release.release_stage or "unpublished" }}</span>
+          {% endif %}
+        </small>
+        <br>
+          {% if release.version %}
+            <span style="color:green">version:{{ release.release_year }}</span>&nbsp;
+          {% endif %}
+          {% if release.number %}
+            <span style="color:green">number:{{ release.number }}</span>&nbsp;
+          {% endif %}
+          {% if release.ext_ids.doi %}
+            <a href="https://doi.org/{{ release.ext_ids.doi }}" style="color:green;">doi:{{ release.ext_ids.doi }}</a>&nbsp;
+          {% endif %}
+          {# TODO: links #}
+          {% if release.ext_ids.arxiv %}
+            <a href="#" style="color:green;">arXiv:{{ release.ext_ids.arxiv }}</a>&nbsp;
+          {% endif %}
+          {% if release.ext_ids.pmcid %}
+            <a href="#" style="color:green;">pmcid:{{ release.ext_ids.pmcid }}</a>&nbsp;
+          {% endif %}
+          {% if release.ext_ids.pmid %}
+            <a href="#" style="color:green;">pmid:{{ release.ext_ids.pmid }}</a>&nbsp;
+          {% endif %}
+          {% if release.ext_ids.dblp %}
+            <a href="#" style="color:green;">dblp:{{ release.ext_ids.dblp }}</a>&nbsp;
+          {% endif %}
+        <td class="">
+          {% if ref.access %}
+            <a href="{{ ref.access[0].access_url}}" class="ui tiny green active button">{{ ref.access[0].access_type.name }}</a>
+          {% endif %}
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+
