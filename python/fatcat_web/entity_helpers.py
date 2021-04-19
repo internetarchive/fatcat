@@ -116,7 +116,7 @@ def generic_get_entity(entity_type, ident):
         elif entity_type == 'webcapture':
             return enrich_webcapture_entity(api.get_webcapture(ident, expand="releases"))
         elif entity_type == 'release':
-            return enrich_release_entity(api.get_release(ident, expand="container,files,filesets,webcaptures"))
+            return enrich_release_entity(api.get_release(ident, expand="container,creators,files,filesets,webcaptures"))
         elif entity_type == 'work':
             return enrich_work_entity(api.get_work(ident))
         else:
