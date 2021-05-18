@@ -30,3 +30,22 @@ bad MAG match:
     https://fatcat.wiki/release/b65rjfixxbh4zjd3zxcjdz2b6e
     https://academic.microsoft.com/paper/2535407850
     MAG has wrong metadata? have not corrected in fatcat
+
+
+## Long-Tail Content
+
+humanities journal; content in SIM and Proquest, no Keepers, no DOIs:
+
+    Clio: A Journal of Literature, History, and the Philosophy of History
+    https://fatcat.wiki/container/bsn7fpeyx5ep7eyjgxxd5oygsa
+
+### Examples from Twitter
+
+Thread from 2021: <https://twitter.com/internetarchive/status/1361329860254130181>
+
+- Granta Magazine
+- Punk Planet (in IA?)
+- Black Clock (https://en.wikipedia.org/wiki/Black_Clock)
+- Le Grand Jeu
+- ILK Journal (in wayback: http://web.archive.org/web/20160331182524/http://ilkjournal.com/journal/issue-fourteen/roberto-montes/)
+
