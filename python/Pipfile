@@ -21,7 +21,7 @@ flake8 = "==3.*"
 [packages]
 fatcat-openapi-client = {path = "./../python_openapi_client"}
 python-dotenv = "*"
-Flask = "==1.*"
+Flask = "==2.*"
 flask-uuid = "*"
 flask-debugtoolbar = "*"
 flask-login = "*"
