@@ -54,3 +54,9 @@ def test_rich_ingest_release():
     assert ir['base_url'] == 'https://doi.org/10.123/456'
     assert ir['ext_ids']['doi'] == '10.123/456'
     assert ir['ext_ids'].get('pmcid') is None
+    assert ir['ingest_type'] == 'pdf'
+
+    # check ingest type ("d-lib")
+    r.container_id = "ugbiirfvufgcjkx33r3cmemcuu"
+    ir = release_ingest_request(r)
+    assert ir['ingest_type'] == 'html'

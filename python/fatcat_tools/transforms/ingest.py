@@ -1,4 +1,19 @@
 
+INGEST_TYPE_CONTAINER_MAP = {
+    # Optica
+    "twtpsm6ytje3nhuqfu3pa7ca7u": "html",
+    # Optics Express
+    "cg4vcsfty5dfvgmat5wm62wgie": "html",
+    # First Monday
+    "svz5ul6qozdjhjhk7d627avuja": "html",
+    # D-Lib Magazine
+    "ugbiirfvufgcjkx33r3cmemcuu": "html",
+    # Distill (distill.pub)
+    "lx7svdzmc5dl3ay4zncjjrql7i": "html",
+    # NLM technical bulletin
+    "lovwr7ladjagzkhmoaszg7efqu": "html",
+}
+
 def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=None):
     """
     Takes a full release entity object and returns an ingest request (as dict),
@@ -15,7 +30,8 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
     if release.state != 'active':
         return None
 
-    # TODO: infer ingest type based on release_type or container metadata?
+    if (not ingest_type) and release.container_id:
+        ingest_type = INGEST_TYPE_CONTAINER_MAP.get(release.container_id)
     if not ingest_type:
         ingest_type = 'pdf'
 
