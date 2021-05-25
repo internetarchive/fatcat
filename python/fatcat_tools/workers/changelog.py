@@ -371,7 +371,7 @@ class EntityUpdatesWorker(FatcatWorker):
             for ident in set(fileset_ids):
                 fileset_entity = self.api.get_fileset(ident, expand=None)
                 # update release when a fileset changes
-                release_ids.extend(file_entity.release_ids or [])
+                release_ids.extend(fileset_entity.release_ids or [])
 
             # TODO: topic for webcapture updates
             for ident in set(webcapture_ids):
