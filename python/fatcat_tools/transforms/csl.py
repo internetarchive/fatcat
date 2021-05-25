@@ -33,7 +33,7 @@ def release_to_csl(entity):
         if contrib.creator:
             # Default to "local" (publication-specific) metadata; fall back to
             # creator-level
-            family = contrib.creator.surname or contrib.surname  or (contrib.raw_name and contrib.raw_name.split()[-1])
+            family = contrib.creator.surname or contrib.surname or (contrib.raw_name and contrib.raw_name.split()[-1])
             if not family:
                 # CSL requires some surname (family name)
                 continue

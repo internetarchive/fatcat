@@ -143,7 +143,7 @@ class HarvestCrossrefWorker:
                 # Datacite API returned HTTP 200, but JSON seemed unparseable.
                 # It might be a glitch, so we retry.
                 print("failed to decode body from {}: {}".format(http_resp.url, resp_body), file=sys.stderr)
-                raise
+                raise exc
             items = self.extract_items(resp)
             count += len(items)
             print("... got {} ({} of {}), HTTP fetch took {}".format(len(items), count,

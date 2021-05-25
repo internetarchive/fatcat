@@ -104,7 +104,7 @@ def handle_ia_xauth(email, password):
     if resp.status_code == 401 or (not resp.json().get('success')):
         try:
             flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
-        except:
+        except Exception:
             app.log.warning("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
     elif resp.status_code != 200:
