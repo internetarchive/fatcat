@@ -14,10 +14,12 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## [Unreleased]
+## [0.3.4] - 2021-05-25
 
 Mostly infrastructure changes: Python, Elasticsearch, and other dependencies
 changed.
+
+No changes to schema, so API remains v0.3.3.
 
 ### Changes
 
@@ -35,6 +37,7 @@ changed.
   view, etc
 - change web UI and labeling on release and file views to emphasize
   preservation status and archival access
+- update Flask to 2.x, and other related dependencies
 
 ### Added
 
