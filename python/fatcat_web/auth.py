@@ -36,7 +36,7 @@ def handle_token_login(token):
         abort(400)
     # fetch editor info
     editor = api.get_editor(editor_id)
-    session.permanent = True
+    session.permanent = True  # pylint: disable=assigning-non-slot
     session['api_token'] = token
     session['editor'] = editor.to_dict()
     login_user(load_user(editor.editor_id))
@@ -76,7 +76,7 @@ def handle_oauth(remote, token, user_info):
         api_token = resp.token
 
         # write token and username to session
-        session.permanent = True
+        session.permanent = True  # pylint: disable=assigning-non-slot
         session['api_token'] = api_token
         session['editor'] = editor.to_dict()
 
@@ -104,7 +104,7 @@ def handle_ia_xauth(email, password):
     if resp.status_code == 401 or (not resp.json().get('success')):
         try:
             flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
-        except:
+        except Exception:
             app.log.warning("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
     elif resp.status_code != 200:

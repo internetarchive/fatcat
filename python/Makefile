@@ -14,6 +14,7 @@ dep: ## Create local virtualenv using pipenv
 
 .PHONY: lint
 lint: ## Run lints (eg, flake8)
+	pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests/*.py
 	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --select=E9,F63,F7,F82
 	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --exit-zero
 

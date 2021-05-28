@@ -8,9 +8,7 @@ import datetime
 import subprocess
 from collections import Counter
 from typing import Optional, Tuple
-from confluent_kafka import Consumer, KafkaException
 import lxml
-import xml.parsers.expat
 import xml.etree.ElementTree as ET
 
 import elasticsearch
