@@ -54,7 +54,8 @@ pathlib2 = "==2.*"
 pycountry = "==19.8.18"
 tldextract = "==3.*"
 toml = "==0.10.*"
-fuzzycat = "==0.1.9"
+fuzzycat = "==0.1.20"
+dynaconf = "*"
 
 [requires]
 # As of Fall 2020, Internet Archive cluster VMs are split between Ubuntu Xenial
