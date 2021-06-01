@@ -68,7 +68,7 @@ def _run_search_dump(args, search):
             ])
 
     counts = Counter({'ingest_request': 0, 'elasticsearch_release': 0, 'estimate': 0})
-    search = search.params(track_total_hits=True)
+    search = search.params()
     counts['estimate'] = search.count()
     print("Expecting {} release objects in search queries".format(counts['estimate']), file=sys.stderr)
 
