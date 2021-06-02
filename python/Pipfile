@@ -54,7 +54,7 @@ pathlib2 = "==2.*"
 pycountry = "==19.8.18"
 tldextract = "==3.*"
 toml = "==0.10.*"
-fuzzycat = "==0.1.20"
+fuzzycat = "==0.1.21"
 dynaconf = "*"
 
 [requires]
