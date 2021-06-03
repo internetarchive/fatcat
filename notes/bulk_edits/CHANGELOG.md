@@ -16,7 +16,9 @@ chocula entities.
 
 Ran DOAJ import manually, yielding almost 130k new release entities.
 
-Running dblp import manually.
+Ran dblp import manually, resulting in about 17k new release entities, as well
+as 108 new containers. Note that 146k releases were not inserted due to
+`skip-dblp-container-missing` and 203k due to `exists-fuzzy`.
 
 ## 2020-12
 
