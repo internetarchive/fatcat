@@ -9,6 +9,15 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2021-06
+
+Created new containers via chocula pipeline. Did not update any existing
+chocula entities.
+
+Ran DOAJ import manually, yielding almost 130k new release entities.
+
+Running dblp import manually.
+
 ## 2020-12
 
 Updated ORCIDs from 2020 dump. About 2.4 million new `creator` entities.
