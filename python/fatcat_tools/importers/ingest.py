@@ -112,9 +112,9 @@ class IngestFileResultImporter(EntityImporter):
 
         The current logic is intentionally conservative as a first step.
         """
-        if not self.want_file(row):
-            return False
         if not self.want_ingest(row):
+            return False
+        if not self.want_file(row):
             return False
 
         return True
