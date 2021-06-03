@@ -13,11 +13,6 @@ def dblp_importer(api):
         yield DblpReleaseImporter(api, tsv_file, bezerk_mode=True)
 
 @pytest.fixture(scope="function")
-def dblp_importer_existing(api):
-    with open('tests/files/dblp_container_map.tsv', 'r') as tsv_file:
-        yield DblpReleaseImporter(api, tsv_file, bezerk_mode=False)
-
-@pytest.fixture(scope="function")
 def dblp_container_importer(api):
     with open('tests/files/dblp_container_map.tsv', 'r') as tsv_file:
         with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
@@ -98,7 +93,7 @@ def test_dblp_container_importer(dblp_container_importer):
     last_index = dblp_container_importer.api.get_changelog(limit=1)[0].index
     output_tsv_map.seek(0)
     #print(output_tsv_map.read())
-    output_tsv_map.seek(0)
+    #output_tsv_map.seek(0)
     with open('tests/files/example_dblp_containers.json', 'r') as f:
         dblp_container_importer.reset()
         dblp_container_importer.bezerk_mode = False
