@@ -22,13 +22,15 @@ def clean_doi(raw):
     - 'doi:' prefix
     - URL prefix
 
+    Lower-cases the DOI.
+
     Does not try to un-URL-encode
 
     Returns None if not a valid DOI
     """
     if not raw:
         return None
-    raw = raw.strip()
+    raw = raw.strip().lower()
     if '\u2013' in raw:
         # Do not attempt to normalize "en dash" and since FC does not allow
         # unicode in DOI, treat this as invalid.
@@ -84,6 +86,7 @@ def test_clean_doi():
     assert clean_doi("10.4025/diálogos.v17i2.36030") == None
     assert clean_doi("10.19027/jai.10.106‒115") == None
     assert clean_doi("10.15673/атбп2312-3125.17/2014.26332") == None
+    assert clean_doi("10.7326/M20-6817") == "10.7326/m20-6817"
 
 
 ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
