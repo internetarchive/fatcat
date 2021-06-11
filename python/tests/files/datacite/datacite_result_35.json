@@ -1,0 +1,30 @@
+{
+  "abstracts": [
+    {
+      "content": "1234567890",
+      "mimetype": "text/plain"
+    }
+  ],
+  "contribs": [
+    {
+      "given_name": "",
+      "index": 0,
+      "raw_name": "Paul Katz",
+      "role": "author"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.17912/micropub.biology.000143"
+  },
+  "extra": {
+    "datacite": {
+      "resourceTypeGeneral": "DataPaper"
+    },
+    "container_name": "microPublication Biology"
+  },
+  "refs": [],
+  "release_stage": "published",
+  "release_year": 2019,
+  "publisher": "microPublication Biology",
+  "title": "Sample"
+}
