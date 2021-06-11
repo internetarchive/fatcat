@@ -1,0 +1,65 @@
+{
+  "id": "10.17912/micropub.biology.000143",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.17912/micropub.biology.000143",
+    "identifiers": null,
+    "creators": [
+      {
+        "name": "Paul Katz",
+        "givenName": "",
+        "familyName": "",
+        "affiliation": [],
+        "role": "author"
+      }
+    ],
+    "titles": [
+      {
+        "lang": "da"
+      },
+      {
+        "title": "Sample"
+      }
+    ],
+    "publisher": "microPublication Biology",
+    "publicationYear": 2019,
+    "types": {
+      "resourceTypeGeneral": "DataPaper"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [
+      {
+        "description": 1234567890,
+        "descriptionType": "Abstract"
+      }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://www.micropublication.org/journals/biology/micropub.biology.000143",
+    "created": "2019-08-19T14:43:08.000Z",
+    "registered": "2019-08-19T14:43:09.000Z",
+    "published": "2019",
+    "updated": "2019-11-09T12:32:02.000Z",
+    "contributors": [
+      {
+        "name": "Paul Katz",
+        "givenName": "",
+        "familyName": "",
+        "affiliation": [],
+        "role": "illustrator"
+      }
+    ]
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "caltech.micropub",
+        "type": "clients"
+      }
+    }
+  }
+}

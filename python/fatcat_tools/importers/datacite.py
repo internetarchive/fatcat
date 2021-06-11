@@ -1088,7 +1088,7 @@ def parse_datacite_titles(titles):
         for entry in titles:
             if not title and ('titleType' not in entry
                               or not entry.get('titleType')):
-                title = entry.get('title').strip()
+                title = (entry.get('title') or '').strip()
             if not subtitle and entry.get('titleType') == 'Subtitle':
                 subtitle = entry.get('title', '').strip()
             if not original_language_title:
