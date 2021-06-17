@@ -40,21 +40,18 @@
       },
       "source_release_stage": {
         "type": "keyword",
-        "normalizer": "default",
-        "doc_values": false
+        "normalizer": "default"
       },
-      "source_release_year": {
+      "source_year": {
         "type": "integer"
       },
       "ref_index": {
         "type": "integer",
-        "doc_values": false,
         "index": false
       },
       "ref_key": {
         "type": "keyword",
         "normalizer": "default",
-        "doc_values": false,
         "index": false
       },
       "ref_locator": {
