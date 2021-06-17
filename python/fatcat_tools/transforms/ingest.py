@@ -50,9 +50,9 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
         link_source = "pmc"
         link_source_id = release.ext_ids.pmcid
     elif release.ext_ids.doi:
-        url = "https://doi.org/{}".format(release.ext_ids.doi)
+        url = "https://doi.org/{}".format(release.ext_ids.doi.lower())
         link_source = "doi"
-        link_source_id = release.ext_ids.doi
+        link_source_id = release.ext_ids.doi.lower()
 
     if not url:
         return None

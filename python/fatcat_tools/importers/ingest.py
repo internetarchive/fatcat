@@ -133,6 +133,8 @@ class IngestFileResultImporter(EntityImporter):
                 extid = request['ext_ids'].get(extid_type)
                 if not extid:
                     continue
+                if extid_type == 'doi':
+                    extid = extid.lower()
                 try:
                     release = self.api.lookup_release(**{extid_type: extid})
                 except fatcat_openapi_client.rest.ApiException as err:
@@ -217,6 +219,8 @@ class IngestFileResultImporter(EntityImporter):
         if request.get('link_source') and request.get('link_source_id'):
             edit_extra['link_source'] = request['link_source']
             edit_extra['link_source_id'] = request['link_source_id']
+            if edit_extra['link_source'] == 'doi':
+                edit_extra['link_source_id'] = edit_extra['link_source_id'].lower()
 
         return edit_extra
 
