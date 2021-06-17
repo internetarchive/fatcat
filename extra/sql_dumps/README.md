@@ -50,10 +50,10 @@ couple different ways. We might not want database ports open to the network
 forwarding anyways.
 
     # Locally, or client running on a remote machine
-    psql fatcat < dump_abstracts.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | gzip > abstracts.json.gz
+    psql fatcat < dump_abstracts.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz > abstracts.json.gz
 
     # Run on database server, write to file on remote host
-    psql fatcat < dump_abstracts.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | gzip | ssh user@host 'cat > abstracts.json.gz'
+    psql fatcat < dump_abstracts.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz | ssh user@host 'cat > abstracts.json.gz'
 
 In production:
 
