@@ -23,7 +23,7 @@ def test_release_bibtex(app, api):
     json.loads(rv.data.decode('utf-8'))
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaam/citeproc?style=modern-language-association')
     assert rv.status_code == 200
-    assert rv.data.decode('utf-8').startswith('Ioannidis, John. “Why Most Published Research Findings Are False”. 2.8 (2005)')
+    assert rv.data.decode('utf-8').startswith('Ioannidis, J.. Why Most Published Research Findings Are False')
 
     # "dummy" demo entity; very minimal metadata
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai')

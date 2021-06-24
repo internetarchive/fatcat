@@ -55,8 +55,9 @@ def test_csl_pubmed_bibtex(crossref_importer):
   number={4}, 
   journal={Roczniki Panstwowego Zakladu Higieny}, 
   author={Mędrela-Kuder and Szymura}, 
-  year={2018}}
+  year={2018}
+  }
     """.strip()
     assert citeproc_csl(csl, 'harvard1', html=True).strip() == """
-    Mędrela-Kuder &amp; Szymura, 2018. Selected anti-health behaviours among women with osteoporosis. <i>Roczniki Panstwowego Zakladu Higieny</i>, 69`(4).
+    Mędrela-Kuder and Szymura (2018) ‘Selected anti-health behaviours among women with osteoporosis’, <i>Roczniki Panstwowego Zakladu Higieny</i>, 69`(4). doi: 10.32394/rpzh.2018.0046.
     """.strip()
