@@ -1,0 +1,72 @@
+
+Notes from fall 2020 
+
+## prefix counts
+
+    # of conferences: 5,329
+    # of journals: 1,724
+
+    zcat dblp.xml.gz | rg "key=" | rg "mdate=" | cut -f3 -d' ' | cut -f2 -d'"' | pv -l > keys.txt
+    => 8.00M
+
+    cat keys.txt | cut -f1 -d/ | sort | uniq -c | sort -nr
+    2764029 conf
+    2640949 homepages
+    2431614 journals
+      77682 phd
+      37402 books
+      27830 reference
+      19153 series
+        555 tr
+                tr/ibm/LILOG34
+                tr/sql/X3H2-90-292
+         16 persons
+         15 www
+                www/org/w3/TR/xquery
+                www/org/mitre/future
+          6 ms
+          3 dblpnote
+
+    cat keys.txt | cut -f1-2 -d/ | sort -u | cut -f1 -d/ | sort | uniq -c | sort -nr
+       5138 conf
+       1725 journals
+        291 homepages
+        125 phd
+         96 series
+         77 books
+         60 reference
+         16 persons
+          9 tr
+          6 ms
+          3 dblpnote
+          2 www
+
+Fetch all the HTML:
+
+    shuf prefixes.txt | pv -l | parallel -j1 wget -nc -q "https://dblp.org/db/{}/index.html" -O {}.html
+
+Got blocked; supposed to do only one per minute. Delete missing and try again with `-j1` not `-j4`:
+
+    find . -empty -type f -delete
+
+Roughly 500x in 2:38
+
+TODO: wrap this script so it iterates over filenames, instead of one-per-call
+
+## Dev Import Counts
+
+Counter({'total': 7953365, 'has-doi': 4277307, 'skip': 2953841, 'skip-key-type': 2640968, 'skip-arxiv-corr': 312872, 'skip-title': 1, 'insert': 0, 'update': 0, 'exists': 0})
+
+Container imports:
+
+    # blank database
+    Counter({'total': 6954, 'insert': 6944, 'skip-update': 10, 'skip': 0, 'update': 0, 'exists': 0})
+
+    # repeated
+    Counter({'total': 6954, 'insert': 5325, 'skip-update': 1629, 'skip': 0, 'update': 0, 'exists': 0})
+
+    # repeated with previous complete TSV file
+    Counter({'total': 6954, 'skip-update': 6954, 'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
+
+
+./fatcat_import.py dblp-release --dblp-container-map-file /data/dblp/all_dblp_containers.tsv /data/dblp/dblp.xml
