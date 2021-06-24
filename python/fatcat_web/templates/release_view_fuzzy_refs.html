@@ -33,56 +33,17 @@
           {% endif %}
         {% endif %}
         <br><b>{{ ref.ref.match_status }}</b>
-        <br>{{ ref.ref.match_provenance }}
+        {% if ref.ref.match_provenance %}
+          <br>{{ ref.ref.match_provenance }}
+        {% endif %}
       <td class="">
-        <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
-          {% if release.release_type not in ["article-journal", "conference-paper"] %}
-            <b>[{{ release.release_type or "unknown-type" }}]</b>
-          {% endif %}
-        <br>
-          {% for contrib in release.contribs[:5] %}
-            {% if contrib.creator %}
-              {{ contrib.creator.display_name }}
-            {% else %}
-              {{ contrib.raw_name }}
-            {% endif %}
-            {% if not loop.last %}, {% endif %}
-          {% endfor %}
-          {% if release.contribs | length > 5 %}(+ more) {%endif %}
-        <br>
-          {% if release.release_year %}{{ release.release_year }} &nbsp;{% endif %}
-          {% if release.container %}
-            <i>{{ release.container.name }}</i>
-          {% elif release.extra and release.extra.container_name %}
-            <i>{{ release.extra.container_name }}</i>
-          {% endif %}
-          {% if release.release_stage != "published" %}
-            &nbsp;<span style="color: brown; font-weight: bold;">{{ release.release_stage or "unpublished" }}</span>
-          {% endif %}
-        </small>
-        <br>
-          {% if release.version %}
-            <span style="color:green">version:{{ release.release_year }}</span>&nbsp;
-          {% endif %}
-          {% if release.number %}
-            <span style="color:green">number:{{ release.number }}</span>&nbsp;
-          {% endif %}
-          {% if release.ext_ids.doi %}
-            <a href="https://doi.org/{{ release.ext_ids.doi }}" style="color:green;">doi:{{ release.ext_ids.doi }}</a>&nbsp;
-          {% endif %}
-          {# TODO: links #}
-          {% if release.ext_ids.arxiv %}
-            <a href="#" style="color:green;">arXiv:{{ release.ext_ids.arxiv }}</a>&nbsp;
-          {% endif %}
-          {% if release.ext_ids.pmcid %}
-            <a href="#" style="color:green;">pmcid:{{ release.ext_ids.pmcid }}</a>&nbsp;
-          {% endif %}
-          {% if release.ext_ids.pmid %}
-            <a href="#" style="color:green;">pmid:{{ release.ext_ids.pmid }}</a>&nbsp;
-          {% endif %}
-          {% if release.ext_ids.dblp %}
-            <a href="#" style="color:green;">dblp:{{ release.ext_ids.dblp }}</a>&nbsp;
-          {% endif %}
+        {% if release %}
+          {% entity_macros.release_summary(release) %}
+        {% elif ref.ref.target_unstructured %}
+          <code>{{ ref.ref.target_unstructured }}</code>
+        {% else %}
+          <i>blank</i>
+        {% endif %}
         <td class="">
           {% if ref.access %}
             <a href="{{ ref.access[0].access_url}}" class="ui tiny green active button">{{ ref.access[0].access_type.name }}</a>

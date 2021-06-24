@@ -68,7 +68,7 @@ class BiblioRef(BaseModel):
     # skipped: target_wikipedia_article
 
     # crossref, pubmed, grobid, etc
-    match_provenance: str
+    match_provenance: Optional[str]
     # strong, weak, etc
     match_status: Optional[str]
     # TODO: "match_strength"?
