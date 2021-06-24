@@ -55,7 +55,9 @@ pycountry = "==19.8.18"
 tldextract = "==3.*"
 toml = "==0.10.*"
 fuzzycat = "==0.1.21"
-dynaconf = "*"
+dynaconf = ">=3"
+pydantic = "==1.*"
+surt = "==0.3.*"
 
 [requires]
 # As of Fall 2020, Internet Archive cluster VMs are split between Ubuntu Xenial
