@@ -21,11 +21,7 @@ from fatcat_web.entity_helpers import *
 @app.route('/release/<string(length=26):ident>/inbound-refs', methods=['GET'])
 def release_view_refs_inbound(ident):
 
-    # lookup release ident, ensure it exists
-    try:
-        release = api.get_release(ident)
-    except ApiException as ae:
-        abort(ae.status)
+    release = generic_get_entity("release", ident)
 
     offset = request.args.get('offset', '0')
     offset = max(0, int(offset)) if offset.isnumeric() else 0
@@ -38,11 +34,7 @@ def release_view_refs_inbound(ident):
 @app.route('/release/<string(length=26):ident>/outbound-refs', methods=['GET'])
 def release_view_refs_outbound(ident):
 
-    # lookup release ident, ensure it exists
-    try:
-        release = api.get_release(ident)
-    except ApiException as ae:
-        abort(ae.status)
+    release = generic_get_entity("release", ident)
 
     offset = request.args.get('offset', '0')
     offset = max(0, int(offset)) if offset.isnumeric() else 0

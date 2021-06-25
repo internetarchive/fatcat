@@ -4,53 +4,90 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
+{% macro pagination_row(hits) %}
+
+  {% if hits.offset %}
+    <a href="?offset={{ hits.offset - hits.limit }}">&laquo; prev</a> &nbsp;
+  {% endif %}
+  Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }} of {{ hits.count_total}} references (in {{ hits.query_wall_time_ms }}ms)
+  {% if hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
+    &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next &raquo;</a>
+  {% endif %}
+{% endmacro %}
+
 {% block entity_main %}
 
 {% if direction == "inbound" %}
-  <h3>Inbound Matched References</h3>
-  <i>Other releases citing this one</i>
+  <h3>Referenced By</h3>
+  <i>Citations to this release by other works.</i>
 {% elif direction == "outbound" %}
-  <h3>Outbound Matched References</h3>
-  <i>This release citing other releases</i>
+  <h3>References</h3>
+  <i>NOTE: currently batch computed and may include additional references sources, or be missing recent changes, compared to entity reference list.</i>
 {% endif %}
 
-<p>Found {{ hits.count_total }} references in {{ hits.query_wall_time_ms }}ms.
-{% if hits.count_total != hits.count_returned %}
-  Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }}
-  {% if hits.offset + hits.limit < hits.count_total %}
-    &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next...</a>
-  {% endif %}
-{% endif %}
-
-<table class="ui very basic celled table">
+{% if enriched_refs %}
+<table class="ui table">
+<thead>
+  <tr><th colspan="3">
+    {{ pagination_row(hits) }}
+</thead>
 <tbody>
-{% for ref in enriched_refs %}
-  {% set release = ref.release %}
-  <tr><td class="collapsing center aligned">
+{% for row in enriched_refs %}
+  {% set release = row.release %}
+  <tr><td class="collapsing left aligned top aligned">
+        {# TODO: ref_locator? #}
         {% if direction == "outbound" %}
-          {% if ref.ref.ref_key %}
-            <code>[{{ ref.ref.ref_key }}]</code>
+          {% if row.ref.ref_key %}
+            <code>[{{ row.ref.ref_key }}]</code><br>
           {% endif %}
         {% endif %}
-        <br><b>{{ ref.ref.match_status }}</b>
-        {% if ref.ref.match_provenance %}
-          <br>{{ ref.ref.match_provenance }}
+        <b>{{ row.ref.match_status }}</b><br>
+        {% if row.ref.match_provenance %}
+          via {{ row.ref.match_provenance }}
         {% endif %}
       <td class="">
         {% if release %}
-          {% entity_macros.release_summary(release) %}
-        {% elif ref.ref.target_unstructured %}
-          <code>{{ ref.ref.target_unstructured }}</code>
+          {{ entity_macros.release_summary(release) }}
+        {% elif row.ref.target_unstructured %}
+          <code>{{ row.ref.target_unstructured }}</code>
         {% else %}
           <i>blank</i>
         {% endif %}
-        <td class="">
-          {% if ref.access %}
-            <a href="{{ ref.access[0].access_url}}" class="ui tiny green active button">{{ ref.access[0].access_type.name }}</a>
-          {% endif %}
+      <td class="center aligned">
+        {% if row.access %}
+          {% for access in row.access %}
+            <a href="{{ access.access_url}}" class="ui tiny green active button">{{ access.access_type.name }}</a><br>
+          {% endfor %}
+        {% elif row.ref.target_unstructured %}
+          <form class="ui form" id="reference_match" method="POST" action="/reference/match">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="raw_citation" value="{{ row.ref.target_unstructured }}">
+            <button class="ui tiny primary submit button" type="submit" name="submit_type" value="parse">
+              parse
+            </button>
+          </form>
+        {% endif %}
+        
+        {# TODO: include these as access options instead #}
+        {% if row.ref.target_openlibrary_work %}
+          <a href="https://openlibrary.org/work/{{ row.ref.target_openlibrary_work }}" class="ui tiny green active button">openlibrary.org</a>
+        {% endif %}
+        {% if row.ref.target_url %}
+          <a href="{{ ref.target_url | safe }}" class="ui tiny green active button">web</a>
+          <br><a href="https://web.archive.org/web/*/{{ row.ref.target_url | safe }}" class="ui tiny green active button">wayback (?)</a>
+        {% endif %}
 {% endfor %}
 </tbody>
+{% if hits.count_total != hits.count_returned %}
+  <tfoot>
+    <tr><th colspan="3">
+      {{ pagination_row(hits) }}
+  </tfoot>
+{% endif %}
 </table>
+{% else %}
+  <br><br><p><b>None found</b>
+{% endif %}
 
 {% endblock %}
 

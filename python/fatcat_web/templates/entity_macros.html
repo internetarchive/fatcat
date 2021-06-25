@@ -394,30 +394,29 @@ yellow
   {% if release.release_type not in ["article-journal", "conference-paper"] %}
     <b>[{{ release.release_type or "unknown-type" }}]</b>
   {% endif %}
-<br>
+  {% if release.contribs %}<br>{% endif %}
   {% for contrib in release.contribs[:5] %}
     {% if contrib.creator %}
-      {{ contrib.creator.display_name }}
+      <a href="/contib/{{ contrib.creator.ident }}" style="color: black;">{{ contrib.creator.display_name }}</a>
     {% else %}
       {{ contrib.raw_name }}
-    {% endif %}
-    {% if not loop.last %}, {% endif %}
+    {%- endif %}
+    {%- if not loop.last %}, {% endif %}
   {% endfor %}
-  {% if release.contribs | length > 5 %}(+ more) {%endif %}
-<br>
+  {% if release.contribs | length > 5 %} <i>(+ more)</i> {%endif %}
+  {% if release.release_year or release.container or (release.extra and release.extra.container_name) %}<br>{% endif %}
   {% if release.release_year %}{{ release.release_year }} &nbsp;{% endif %}
   {% if release.container %}
-    <i>{{ release.container.name }}</i>
+    <a href="/container/{{ release.container.ident }}" style="color: black;"><i>{{ release.container.name }}</i></a>
   {% elif release.extra and release.extra.container_name %}
     <i>{{ release.extra.container_name }}</i>
   {% endif %}
   {% if release.release_stage != "published" %}
     &nbsp;<span style="color: brown; font-weight: bold;">{{ release.release_stage or "unpublished" }}</span>
   {% endif %}
-</small>
 <br>
   {% if release.version %}
-    <span style="color:green">version:{{ release.release_year }}</span>&nbsp;
+    <span style="color:green">version:{{ release.version }}</span>&nbsp;
   {% endif %}
   {% if release.number %}
     <span style="color:green">number:{{ release.number }}</span>&nbsp;
