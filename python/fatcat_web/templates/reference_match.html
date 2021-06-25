@@ -38,19 +38,22 @@
   <p><b>NOTE:</b> if you already know a persistent identifier (like a DOI), you
   should use the <a href="/release/lookup">lookup tool</a> instead.
 
-    {{ edit_macros.form_field_inline(form.title) }}
-    {{ edit_macros.form_field_inline(form.first_author) }}
-
-    <br>
-    <div class="ui equal width fields">
-      {{ edit_macros.form_field_basic(form.year) }}
-      {{ edit_macros.form_field_basic(form.journal) }}
-    </div>
-    <div class="ui equal width fields">
-      {{ edit_macros.form_field_basic(form.volume) }}
-      {{ edit_macros.form_field_basic(form.issue) }}
-      {{ edit_macros.form_field_basic(form.pages) }}
-    </div>
+  <br>
+  <div class="ui equal width fields">
+    {{ edit_macros.form_field_basic(form.title) }}
+  </div>
+  <div class="ui equal width fields">
+    {{ edit_macros.form_field_basic(form.first_author) }}
+  </div>
+  <div class="ui equal width fields">
+    {{ edit_macros.form_field_basic(form.journal) }}
+  </div>
+  <div class="ui equal width fields">
+    {{ edit_macros.form_field_basic(form.year) }}
+    {{ edit_macros.form_field_basic(form.volume) }}
+    {{ edit_macros.form_field_basic(form.issue) }}
+    {{ edit_macros.form_field_basic(form.pages) }}
+  </div>
 
   <button class="ui primary submit button right floated" type="submit" name="submit_type" value="match">
     Match
