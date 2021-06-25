@@ -80,6 +80,18 @@ class BiblioRef(BaseModel):
     target_unstructured: Optional[str]
     target_csl: Optional[Dict[str, Any]]
 
+    def hacks(self):
+        """
+        Temporary (?) hacks to work around schema/data issues
+        """
+        if self.target_openlibrary_work and self.target_openlibrary_work.startswith("/works/"):
+            self.target_openlibrary_work = self.target_openlibrary_work[7:]
+        if self.target_url_surt and not self.target_url:
+            # TODO: convert SURT to regular URL
+            pass
+        # TODO: if target_openlibrary_work, add an access option?
+        return self
+
 class CslBiblioRef(BaseModel):
     # an "enriched" version of BiblioRef with metadata about the source or
     # target entity. would be "hydrated" via a lookup to, eg, the
@@ -98,6 +110,7 @@ class FatcatBiblioRef(BaseModel):
     # the full release entity.
     ref: BiblioRef
     release: Optional[ReleaseEntity]
+    # TODO: openlibrary work?
     #csl: Optional[Dict[str, Any]]
     access: List[AccessOption]
 
@@ -144,7 +157,7 @@ def _execute_ref_query(search: Any, limit: int, offset: Optional[int] = None) ->
         # might be a list because of consolidation
         if isinstance(h._d_.get('source_work_ident'), list):
             h._d_['source_work_ident'] = h._d_['source_work_ident'][0]
-        result_refs.append(BiblioRef.parse_obj(h._d_))
+        result_refs.append(BiblioRef.parse_obj(h._d_).hacks())
 
     return RefHits(
         count_returned=len(result_refs),
@@ -179,9 +192,7 @@ def get_outbound_refs(
     else:
         raise ValueError("require a lookup key")
 
-    # TODO: schema doesn't support either of these currently
-    #search = search.sort("ref_index")
-    #search = search.sort("ref_key")
+    search = search.sort("ref_index")
 
     # re-sort by index
     hits = _execute_ref_query(search, limit=limit, offset=offset)
@@ -228,8 +239,7 @@ def get_inbound_refs(
     else:
         raise ValueError("require a lookup key")
 
-    # TODO: wrong type, not int? and maybe need to index differently?
-    #search = search.sort("source_year")
+    search = search.sort("-source_year")
 
     return _execute_ref_query(search, limit=limit, offset=offset)
 
