@@ -5,6 +5,7 @@ import datetime
 from bs4 import BeautifulSoup
 
 import fatcat_openapi_client
+from fatcat_tools.normal import clean_doi
 from .common import EntityImporter, clean, is_cjk, DATE_FMT
 
 
@@ -171,7 +172,7 @@ class JalcImporter(EntityImporter):
 
         doi = None
         if record.doi:
-            doi = record.doi.string.lower().strip()
+            doi = clean_doi(record.doi.string.strip().lower())
             if doi.startswith('http://dx.doi.org/'):
                 doi = doi.replace('http://dx.doi.org/', '')
             elif doi.startswith('https://dx.doi.org/'):
