@@ -280,7 +280,7 @@ accessible version.
   <b>PubMed</b> &nbsp;<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.ext_ids.pmid }}"><code>{{ release.ext_ids.pmid }}</code></a><br>
 {% endif %}
 {% if release.ext_ids.pmcid != None %}
-  <b>PMC</b> &nbsp;<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.ext_ids.pmcid }}"><code>{{ release.ext_ids.pmcid }}</code></a><br>
+  <b>PMC</b> &nbsp;<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.ext_ids.pmcid }}/"><code>{{ release.ext_ids.pmcid }}</code></a><br>
 {% endif %}
 {% if release.ext_ids.wikidata_qid != None %}
   <b>Wikidata</b> &nbsp;<a href="https://www.wikidata.org/wiki/{{ release.ext_ids.wikidata_qid }}"><code>{{ release.ext_ids.wikidata_qid }}</code></a><br>

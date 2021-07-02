@@ -235,7 +235,7 @@
     <a href="https://doi.org/{{paper.doi }}" style="color: green;">doi:{{ paper.doi }}</a> &nbsp;
   {% endif %}
   {% if paper.pmcid %}
-    <a href="https://pubmed.ncbi.nlm.nih.gov/{{paper.pmcid }}/" style="color: green;">pmcid:{{ paper.pmcid }}</a> &nbsp;
+    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ paper.pmcid }}/" style="color: green;">pmcid:{{ paper.pmcid }}</a> &nbsp;
   {% elif paper.pmid %}
     <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{paper.pmid }}" style="color: green;">pmid:{{ paper.pmid }}</a> &nbsp;
   {% endif %}
