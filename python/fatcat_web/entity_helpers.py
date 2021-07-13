@@ -161,7 +161,7 @@ def generic_deleted_entity(entity_type, ident):
     elif entity_type == 'webcapture':
         entity = WebcaptureEntity()
     elif entity_type == 'release':
-        entity = ReleaseEntity()
+        entity = ReleaseEntity(ext_ids=ReleaseExtIds())
     elif entity_type == 'work':
         entity = WorkEntity()
     else:
