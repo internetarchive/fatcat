@@ -14,6 +14,13 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Fixed
+
+- viewing deleted release entities no longer result in 500 error
+- mediawiki (wikipedia) OAuth logins (bytes/str bug in fatcat code)
+
 ## [0.3.4] - 2021-05-25
 
 Mostly infrastructure changes: Python, Elasticsearch, and other dependencies
