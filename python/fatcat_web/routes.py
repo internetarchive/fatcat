@@ -1091,7 +1091,10 @@ def wp_oauth_rewrite():
     """
     This is a dirty hack to rewrite '/auth/wikipedia/auth' to '/auth/wikipedia/oauth-callback'
     """
-    return redirect(b"/auth/wikipedia/oauth-callback?" + request.query_string, 307)
+    return redirect(
+        (b"/auth/wikipedia/oauth-callback?" + request.query_string).decode('utf-8'),
+        307,
+    )
 
 @app.route('/auth/wikipedia/finish-login')
 def wp_oauth_finish_login():
