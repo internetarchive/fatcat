@@ -95,8 +95,9 @@ class PubmedFTPWorker:
 
     def fetch_date(self, date):
         """
-        Fetch file for a given date and feed Kafka one article per message. If
-        the fetched XML does not contain a PMID, this method will fail.
+        Fetch file or files for a given date and feed Kafka one article per
+        message. If the fetched XML does not contain a PMID an exception is
+        raised.
 
         If no date file mapping is found, this will fail.
         """
