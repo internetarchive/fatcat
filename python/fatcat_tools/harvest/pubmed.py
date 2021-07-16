@@ -9,16 +9,17 @@ Assumptions:
 """
 
 import collections
+import ftplib
 import gzip
 import io
 import os
 import re
 import shutil
+import socket
 import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
-from ftplib import FTP
 from urllib.parse import urlparse
 
 import dateparser
@@ -168,15 +169,40 @@ def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
     """
     mapping = collections.defaultdict(set)
     pattern = re.compile(r'Filename: ([^ ]*.xml) -- Created: ([^<]*)')
-    ftp = FTP(host)
+    ftp = ftplib.FTP(host)
     ftp.login()
     filenames = ftp.nlst('/pubmed/updatefiles')
+    retries, retry_delay = 10, 60
 
     for name in filenames:
         if not name.endswith('.html'):
             continue
         sio = io.StringIO()
-        ftp.retrlines('RETR {}'.format(name), sio.write)
+        for i in range(retries):
+            try:
+                # Previously, from 2020-12-14 to 2021-06-30 everything worked
+                # fine, then a request for
+                # /pubmed/updatefiles/pubmed21n1328_stats.html would always
+                # fail with an EOFError, or when retried with a 32
+                # BrokenPipeError. Suspecting the server for some unknown
+                # reason dropped the connection.
+                #
+                # Using a fresh client, the exact same file would work just
+                # fine. So when we retry, we setup a new client here as well.
+                if i > 0:
+                    ftp = ftplib.FTP(host)
+                    ftp.login()
+                    sio.truncate(0)
+                ftp.retrlines('RETR {}'.format(name), sio.write)
+            except (EOFError, ftplib.error_temp, socket.gaierror, BrokenPipeError) as exc:
+                print("ftp retr on {} failed with {} ({}) ({} retries left)".format(
+                    name, exc, type(exc), retries - (i + 1)), file=sys.stderr)
+                if i + 1 == retries:
+                    raise
+                else:
+                    time.sleep(retry_delay)
+            else:
+                break
         contents = sio.getvalue()
         match = pattern.search(contents)
         if match is None:
@@ -205,7 +231,7 @@ def ftpretr(url):
     """
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
-    ftp = FTP(server)
+    ftp = ftplib.FTP(server)
     ftp.login()
     with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
         print('retrieving {} from {} to {} ...'.format(path, server, f.name), file=sys.stderr)
