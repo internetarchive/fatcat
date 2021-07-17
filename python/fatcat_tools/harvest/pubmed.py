@@ -20,6 +20,7 @@ import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
+import zlib
 from urllib.parse import urlparse
 
 import dateparser
@@ -94,8 +95,9 @@ class PubmedFTPWorker:
 
     def fetch_date(self, date):
         """
-        Fetch file for a given date and feed Kafka one article per message. If
-        the fetched XML does not contain a PMID, this method will fail.
+        Fetch file or files for a given date and feed Kafka one article per
+        message. If the fetched XML does not contain a PMID an exception is
+        raised.
 
         If no date file mapping is found, this will fail.
         """
@@ -114,8 +116,13 @@ class PubmedFTPWorker:
             url = "ftp://{}{}".format(self.host, path)
             filename = ftpretr(url)
             with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as decomp:
-                gzf = gzip.open(filename)
-                shutil.copyfileobj(gzf, decomp)
+                try:
+                    gzf = gzip.open(filename)
+                    shutil.copyfileobj(gzf, decomp)
+                except zlib.error as exc:
+                    print('[skip] retrieving {} failed with {} (maybe empty, missing or broken gzip)'.format(
+                        url, exc), file=sys.stderr)
+                    continue
 
             # Here, blob is the unparsed XML; we peek into it to use PMID as
             # message key. We need streaming, since some updates would consume
