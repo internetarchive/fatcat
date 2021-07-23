@@ -11,14 +11,14 @@ from fatcat_openapi_client.rest import ApiException
 from fuzzycat.grobid_unstructured import grobid_api_process_citation, transform_grobid_ref_xml, grobid_ref_to_release
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
 
-from fatcat_tools.references import enrich_inbound_refs_fatcat, enrich_outbound_refs_fatcat, get_inbound_refs, get_outbound_refs
+from fatcat_tools.references import enrich_inbound_refs, enrich_outbound_refs, get_inbound_refs, get_outbound_refs
 from fatcat_tools.transforms.access import release_access_options
 from fatcat_web import app, api, auth_api
 from fatcat_web.forms import *
 from fatcat_web.entity_helpers import *
 
 
-@app.route('/release/<string(length=26):ident>/inbound-refs', methods=['GET'])
+@app.route('/release/<string(length=26):ident>/refs/in', methods=['GET'])
 def release_view_refs_inbound(ident):
 
     release = generic_get_entity("release", ident)
@@ -27,11 +27,12 @@ def release_view_refs_inbound(ident):
     offset = max(0, int(offset)) if offset.isnumeric() else 0
 
     hits = get_inbound_refs(release_ident=ident, es_client=app.es_client, offset=offset, limit=30)
-    enriched_refs = enrich_inbound_refs_fatcat(hits.result_refs, fatcat_api_client=api, expand="container,files,webcaptures")
+    enriched_refs = enrich_inbound_refs(hits.result_refs, fatcat_api_client=api, expand="container,files,webcaptures")
 
-    return render_template('release_view_fuzzy_refs.html', direction="inbound", entity=release, hits=hits, enriched_refs=enriched_refs), 200
+    return render_template('release_view_fuzzy_refs.html', direction="in", entity=release, hits=hits, enriched_refs=enriched_refs), 200
 
-@app.route('/release/<string(length=26):ident>/outbound-refs', methods=['GET'])
+
+@app.route('/release/<string(length=26):ident>/refs/out', methods=['GET'])
 def release_view_refs_outbound(ident):
 
     release = generic_get_entity("release", ident)
@@ -40,9 +41,10 @@ def release_view_refs_outbound(ident):
     offset = max(0, int(offset)) if offset.isnumeric() else 0
 
     hits = get_outbound_refs(release_ident=ident, es_client=app.es_client, offset=offset, limit=30)
-    enriched_refs = enrich_outbound_refs_fatcat(hits.result_refs, fatcat_api_client=api, expand="container,files,webcaptures")
+    enriched_refs = enrich_outbound_refs(hits.result_refs, fatcat_api_client=api, expand="container,files,webcaptures")
 
-    return render_template('release_view_fuzzy_refs.html', direction="outbound", entity=release, hits=hits, enriched_refs=enriched_refs), 200
+    return render_template('release_view_fuzzy_refs.html', direction="out", entity=release, hits=hits, enriched_refs=enriched_refs), 200
+
 
 @app.route('/reference/match', methods=['GET', 'POST'])
 def reference_match():

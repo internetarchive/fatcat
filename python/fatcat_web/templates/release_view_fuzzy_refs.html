@@ -1,5 +1,5 @@
 {% set release = entity %}
-{% set entity_view = "{{ direction }}-refs" %}
+{% set entity_view = "refs-" + direction %}
 {% set entity_type = "release" %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
@@ -17,10 +17,10 @@
 
 {% block entity_main %}
 
-{% if direction == "inbound" %}
-  <h3>Referenced By</h3>
-  <i>Citations to this release by other works.</i>
-{% elif direction == "outbound" %}
+{% if direction == "in" %}
+  <h3>Cited By</h3>
+  <i>References to this release by other works.</i>
+{% elif direction == "out" %}
   <h3>References</h3>
   <i>NOTE: currently batch computed and may include additional references sources, or be missing recent changes, compared to entity reference list.</i>
 {% endif %}
@@ -36,7 +36,7 @@
   {% set release = row.release %}
   <tr><td class="collapsing left aligned top aligned">
         {# TODO: ref_locator? #}
-        {% if direction == "outbound" %}
+        {% if direction == "out" %}
           {% if row.ref.ref_key %}
             <code>[{{ row.ref.ref_key }}]</code><br>
           {% endif %}
