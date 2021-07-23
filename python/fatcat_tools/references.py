@@ -6,14 +6,13 @@ See bulk citation and citation API proposals for design documentation.
 """
 
 import sys
-import json
 import datetime
 import argparse
 from typing import Optional, List, Any, Dict, Union
 
 from pydantic import BaseModel
 import elasticsearch
-from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl import Search
 from fatcat_openapi_client import ReleaseEntity
 
 from fatcat_tools import public_api

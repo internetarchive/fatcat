@@ -3,17 +3,14 @@ Flask endpoints for reference (citation) endpoints. Eg, listing references
 "inbound" and "outbound" from a specific release or work.
 """
 
-from typing import Optional
-
-from flask import render_template, abort, redirect, request
+from flask import render_template, request
 from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
 from fuzzycat.grobid_unstructured import grobid_api_process_citation, transform_grobid_ref_xml, grobid_ref_to_release
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
 
 from fatcat_tools.references import enrich_inbound_refs, enrich_outbound_refs, get_inbound_refs, get_outbound_refs
 from fatcat_tools.transforms.access import release_access_options
-from fatcat_web import app, api, auth_api
+from fatcat_web import app, api
 from fatcat_web.forms import *
 from fatcat_web.entity_helpers import *
 

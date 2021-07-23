@@ -1,6 +1,6 @@
 
 from enum import Enum
-from typing import Optional, List, Any, Dict
+from typing import Optional, List
 
 from pydantic import BaseModel
 from fatcat_openapi_client import ReleaseEntity
