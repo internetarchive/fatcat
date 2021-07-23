@@ -192,9 +192,6 @@ def get_inbound_refs(
     es_index: str = "fatcat_ref",
 ) -> List[BiblioRef]:
 
-    if url and not url_surt:
-        url = surt_ify(url)
-
     search = Search(using=es_client, index=es_index)
 
     if consolidate_works:
@@ -242,9 +239,6 @@ def count_inbound_refs(
     """
     Same parameters as get_inbound_refs(), but returns just a count
     """
-
-    if url and not url_surt:
-        url = surt_ify(url)
 
     search = Search(using=es_client, index=es_index)
 
@@ -324,7 +318,7 @@ def run_ref_query(args) -> None:
     print(f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms")
 
     if args.enrich == "fatcat":
-        enriched = enrich_outbound_refs_fatcat(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
+        enriched = enrich_outbound_refs(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
         for ref in enriched:
             if ref.release:
                 print(f"{ref.ref.ref_index or '-'}\trelease_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}")
@@ -341,7 +335,7 @@ def run_ref_query(args) -> None:
     print(f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms")
 
     if args.enrich == "fatcat":
-        enriched = enrich_inbound_refs_fatcat(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
+        enriched = enrich_inbound_refs(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
         for ref in enriched:
             if ref.release:
                 print(f"release_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}")
