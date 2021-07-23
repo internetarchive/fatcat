@@ -1128,12 +1128,14 @@ def page_edit_conflict(e):
 
 @app.errorhandler(500)
 def page_server_error(e):
+    app.log.error(e)
     return render_template('500.html'), 500
 
 @app.errorhandler(502)
 @app.errorhandler(503)
 @app.errorhandler(504)
 def page_server_down(e):
+    app.log.error(e)
     return render_template('503.html'), 503
 
 @app.errorhandler(ApiException)
