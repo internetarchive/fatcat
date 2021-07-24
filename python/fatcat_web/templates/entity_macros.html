@@ -390,7 +390,7 @@ yellow
 
 {# this is useful for things like showing lists of releases in tables #}
 {% macro release_summary(release) %}
-<b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+  <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
   {% if release.release_type not in ["article-journal", "conference-paper"] %}
     <b>[{{ release.release_type or "unknown-type" }}]</b>
   {% endif %}
@@ -411,8 +411,13 @@ yellow
   {% elif release.extra and release.extra.container_name %}
     <i>{{ release.extra.container_name }}</i>
   {% endif %}
-  {% if release.release_stage != "published" %}
-    &nbsp;<span style="color: brown; font-weight: bold;">{{ release.release_stage or "unpublished" }}</span>
+
+  {% if release.release_stage == "submitted" %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">pre-print</b>
+  {% elif release.release_stage and release.release_stage != "published" %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">{{ release.release_stage }} version</b>
+  {% elif not release.release_stage %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">unpublished</b>
   {% endif %}
 <br>
   {% if release.version %}
@@ -436,5 +441,35 @@ yellow
   {% endif %}
   {% if release.ext_ids.dblp %}
     <a href="#" style="color:green;">dblp:{{ release.ext_ids.dblp }}</a>&nbsp;
+  {% endif %}
+{% endmacro %}
+
+{# similar to the release_summary above, but for CSL-JSON #}
+{% macro csl_summary(csl) %}
+  <b>{{ csl.title }}</b>
+  {% if csl.title and csl.author %}<br>{% endif %}
+  {% if csl.author %}
+    {% for author in csl.author[:5] %}
+      {# TODO: other name variants? #}
+      {{ author.name }}
+      {%- if not loop.last %}, {% endif %}
+    {% endfor %}
+    {% if csl.author | length > 5 %} <i>(+ more)</i> {%endif %}
+  {% endif %}
+
+  {% if csl.issued or csl["container-title"] %}<br>{% endif %}
+  {% if csl.issued and csl.issued.raw %}{{ csl.issued.raw }} &nbsp;{% endif %}
+  {% if csl["container-title"] %}
+    <i>{{ csl["container-title"] }}</i>
+  {% endif %}
+  <br>
+  {% if csl.volume %}
+    <span style="color:green">volume:{{ csl.volume}}</span>&nbsp;
+  {% endif %}
+  {% if csl.DOI %}
+    <a href="https://doi.org/{{ csl.DOI }}" style="color:green;">doi:{{ csl.DOI }}</a>&nbsp;
+  {% endif %}
+  {% if csl.URL %}
+    <a href="{{ csl.URL }}" style="color:green;">url:{{ csl.URL }}</a>&nbsp;
   {% endif %}
 {% endmacro %}

@@ -1,0 +1,86 @@
+{% import "entity_macros.html" as entity_macros %}
+
+{% macro pagination_row(hits, direction) %}
+
+  {% if hits.offset %}
+    <a href="?offset={{ hits.offset - hits.limit }}">&laquo; prev</a> &nbsp;
+  {% endif %}
+  Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }} of {{ hits.count_total}} references (in {{ hits.query_wall_time_ms }}ms)
+  {% if hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
+    &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next &raquo;</a>
+  {% endif %}
+{% endmacro %}
+
+{% macro refs_table(hits, direction) %}
+
+<table class="ui table">
+<thead>
+  <tr><th colspan="3">
+    {{ pagination_row(hits) }}
+</thead>
+<tbody>
+{% for row in hits.result_refs %}
+  {% set release = row.release %}
+  <tr><td class="collapsing left aligned top aligned">
+        {# TODO: ref_locator? #}
+        {% if direction == "out" %}
+          {% if row.ref.ref_key %}
+            <code title="index={{ row.ref.ref_index }}">[{{ row.ref.ref_key }}]</code><br>
+          {% endif %}
+        {% endif %}
+        <b>{{ row.ref.match_status }}</b><br>
+        {% if row.ref.match_provenance %}
+          via {{ row.ref.match_provenance }}
+        {% endif %}
+      <td class="">
+        {% if release %}
+          {{ entity_macros.release_summary(release) }}
+        {% elif row.ref.target_unstructured %}
+          <code>{{ row.ref.target_unstructured }}</code>
+          {% if row.ref.target_openlibrary_work %}
+            <br><a href="https://openlibrary.org/{{ row.ref.target_openlibrary_work }}" style="color:green;">openlibrary:{{ row.ref.target_openlibrary_work }}</a>&nbsp;
+          {% endif %}
+        {% elif row.ref.target_csl %}
+          {{ entity_macros.csl_summary(row.ref.target_csl) }}
+        {% else %}
+          <i>blank</i>
+        {% endif %}
+      <td class="center aligned">
+        {% if row.access %}
+          {% for access in row.access %}
+            <a href="{{ access.access_url}}" class="ui tiny green active button">
+              {%- if access.access_type.name == "wayback" %}
+                web.archive.org
+              {%- elif access.access_type.name == "ia_file" -%}
+                archive.org
+              {%- else -%}
+                {{ access.access_type.name }}
+              {%- endif -%}
+              {%- if access.mimetype == "application/pdf" %}
+                [PDF]
+              {%- elif access.mimetype == "text/html" %}
+                [HTML]
+              {%- endif -%}
+            </a>
+            <br>
+          {% endfor %}
+        {% elif direction == "out" and row.ref.target_unstructured %}
+          <form class="ui form" id="reference_match" method="POST" action="/reference/match">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="raw_citation" value="{{ row.ref.target_unstructured }}">
+            <button class="ui tiny primary submit button" type="submit" name="submit_type" value="parse">
+              parse
+            </button>
+          </form>
+        {% endif %}
+{% endfor %}
+</tbody>
+{% if hits.count_total != hits.count_returned %}
+  <tfoot>
+    <tr><th colspan="3">
+      {{ pagination_row(hits) }}
+  </tfoot>
+{% endif %}
+</table>
+{% endmacro %}
+
