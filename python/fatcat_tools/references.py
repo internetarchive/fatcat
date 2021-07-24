@@ -10,13 +10,14 @@ import datetime
 import argparse
 from typing import Optional, List, Any, Dict, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 import elasticsearch
 from elasticsearch_dsl import Search
 from fatcat_openapi_client import ReleaseEntity
 
 from fatcat_tools import public_api
 from fatcat_tools.transforms.access import release_access_options, AccessOption
+from fatcat_tools.transforms.entities import entity_to_dict
 
 
 class BiblioRef(BaseModel):
@@ -97,8 +98,17 @@ class EnrichedBiblioRef(BaseModel):
     # TODO: openlibrary work?
     access: List[AccessOption]
 
+    @validator('release')
+    def check_release(cls, v):
+        if v is not None and not isinstance(v, ReleaseEntity):
+            raise ValueError("expected a ReleaseEntity")
+        return v
+
     class Config:
         arbitrary_types_allowed = True
+        json_encoders = {
+            ReleaseEntity: entity_to_dict,
+        }
 
 
 class RefHits(BaseModel):
@@ -109,6 +119,11 @@ class RefHits(BaseModel):
     query_time_ms: int
     query_wall_time_ms: int
     result_refs: List[Union[BiblioRef,EnrichedBiblioRef]]
+
+    class Config:
+        json_encoders = {
+            ReleaseEntity: entity_to_dict,
+        }
 
 
 def _execute_ref_query(search: Any, limit: int, offset: Optional[int] = None) -> RefHits:
@@ -268,40 +283,58 @@ def count_inbound_refs(
 def enrich_inbound_refs(refs: List[BiblioRef], fatcat_api_client: Any, hide: Optional[str] = "refs", expand: Optional[str] = "container,files,webcaptures,filesets") -> List[EnrichedBiblioRef]:
     enriched = []
     for ref in refs:
+        release = None
+        access = []
         if ref.source_release_ident:
             release = fatcat_api_client.get_release(ref.source_release_ident, hide=hide, expand=expand)
-            enriched.append(EnrichedBiblioRef(
-                ref=ref,
-                #csl=None,
-                access=release_access_options(release),
-                release=release,
+            access = release_access_options(release)
+        if ref.source_wikipedia_article:
+            wiki_lang = ref.source_wikipedia.split(':')[0]
+            wiki_article = ':'.join(ref.source_wikipedia.split(':')[1:])
+            access.append(AccessOption(
+                access_type="wikipedia",
+                access_url=f"https://{wiki_lang}.wikipedia.org/wiki/{wiki_article}",
+                mimetype=None,
+                size_bytes=None,
+                thumbnail_url=None
             ))
-        else:
-            enriched.append(EnrichedBiblioRef(
-                ref=ref,
-                #csl=None,
-                access=[],
-                release=None,
-            ))
+        enriched.append(EnrichedBiblioRef(
+            ref=ref,
+            access=access,
+            release=release,
+        ))
     return enriched
 
 
 def enrich_outbound_refs(refs: List[BiblioRef], fatcat_api_client: Any, hide: Optional[str] = "refs", expand: Optional[str] = "container,files,webcaptures,filesets") -> List[EnrichedBiblioRef]:
     enriched = []
     for ref in refs:
+        release = None
+        access = []
         if ref.target_release_ident:
             release = fatcat_api_client.get_release(ref.target_release_ident, hide=hide, expand=expand)
-            enriched.append(EnrichedBiblioRef(
-                ref=ref,
-                access=release_access_options(release),
-                release=release,
+            access = release_access_options(release)
+        if ref.target_openlibrary_work:
+            access.append(AccessOption(
+                access_type="openlibrary",
+                access_url=f"https://openlibrary.org/works/{ref.target_openlibrary_work}",
+                mimetype=None,
+                size_bytes=None,
+                thumbnail_url=None
             ))
-        else:
-            enriched.append(EnrichedBiblioRef(
-                ref=ref,
-                access=[],
-                release=None,
+        if ref.target_url and '://web.archive.org/' in ref.target_url:
+            access.append(AccessOption(
+                access_type="wayback",
+                access_url=ref.target_url,
+                mimetype=None,
+                size_bytes=None,
+                thumbnail_url=None
             ))
+        enriched.append(EnrichedBiblioRef(
+            ref=ref,
+            access=access,
+            release=release,
+        ))
     return enriched
 
 

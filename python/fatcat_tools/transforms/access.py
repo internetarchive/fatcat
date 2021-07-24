@@ -13,6 +13,8 @@ class AccessType(str, Enum):
     ia_file = "ia_file"
     ia_microfilm = "ia_microfilm"
     repository = "repository"
+    openlibrary = "openlibrary"
+    wikipedia = "wikipedia"
 
 class AccessOption(BaseModel):
 
