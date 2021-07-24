@@ -175,21 +175,21 @@ operate (eg, replicas).
 
 Initial web endpoints, including unstable pseudo-APIs:
 
-    fatcat.wiki/release/{release_ident}/refs/in (and .json)
-    fatcat.wiki/release/{release_ident}/refs/out (and .json)
+    fatcat.wiki/release/{release_ident}/refs-in (and .json)
+    fatcat.wiki/release/{release_ident}/refs-out (and .json)
         &limit
         &offset
         &sort (for inbound)
         &filter_stage (for inbound)
 
-    fatcat.wiki/openlibrary/{openlibrary_ident}/refs/in (and .json)
+    fatcat.wiki/openlibrary/{openlibrary_ident}/refs-in (and .json)
         &limit
         &offset
         &sort
         &filter_stage
 
-    fatcat.wiki/web/refs/in (and .json)
-        &url=
+    fatcat.wiki/web/refs-in (and .json)
+        &url= (required)
         &limit
         &offset
         &sort (newest, oldest)
