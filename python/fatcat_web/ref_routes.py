@@ -18,7 +18,7 @@ from fatcat_web.entity_helpers import *
 def _refs_web(direction, release_ident=None, work_ident=None, openlibrary_id=None) -> RefHits:
     offset = request.args.get('offset', '0')
     offset = max(0, int(offset)) if offset.isnumeric() else 0
-    limit = request.args.get('offset', '30')
+    limit = request.args.get('limit', '30')
     limit = min(max(0, int(limit)), 100) if limit.isnumeric() else 30
     if direction == "in":
         hits = get_inbound_refs(
