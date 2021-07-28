@@ -395,7 +395,7 @@ yellow
     <b>[{{ release.release_type or "unknown-type" }}]</b>
   {% endif %}
   {% if release.contribs %}<br>{% endif %}
-  {% for contrib in release.contribs[:5] %}
+  {% for contrib in release.contribs[:8] %}
     {% if contrib.creator %}
       <a href="/contib/{{ contrib.creator.ident }}" style="color: black;">{{ contrib.creator.display_name }}</a>
     {% else %}
@@ -403,7 +403,7 @@ yellow
     {%- endif %}
     {%- if not loop.last %}, {% endif %}
   {% endfor %}
-  {% if release.contribs | length > 5 %} <i>(+ more)</i> {%endif %}
+  {% if release.contribs | length > 8 %} <i>(+ more)</i> {%endif %}
   {% if release.release_year or release.container or (release.extra and release.extra.container_name) %}<br>{% endif %}
   {% if release.release_year %}{{ release.release_year }} &nbsp;{% endif %}
   {% if release.container %}
@@ -449,12 +449,12 @@ yellow
   <b>{{ csl.title }}</b>
   {% if csl.title and csl.author %}<br>{% endif %}
   {% if csl.author %}
-    {% for author in csl.author[:5] %}
+    {% for author in csl.author[:8] %}
       {# TODO: other name variants? #}
       {{ author.name }}
       {%- if not loop.last %}, {% endif %}
     {% endfor %}
-    {% if csl.author | length > 5 %} <i>(+ more)</i> {%endif %}
+    {% if csl.author | length > 8 %} <i>(+ more)</i> {%endif %}
   {% endif %}
 
   {% if csl.issued or csl["container-title"] %}<br>{% endif %}
