@@ -3,7 +3,7 @@ Flask endpoints for reference (citation) endpoints. Eg, listing references
 "inbound" and "outbound" from a specific release or work.
 """
 
-from flask import render_template, request, jsonify, Response
+from flask import render_template, request, Response
 from fatcat_openapi_client import *
 from fuzzycat.grobid_unstructured import grobid_api_process_citation, transform_grobid_ref_xml, grobid_ref_to_release
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
@@ -154,7 +154,7 @@ def release_view_refs_inbound_json(ident):
 
 @app.route('/openlibrary/OL<int:id_num>W/refs-in.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
-def openlibrary_view_refs_inbound_json(ident):
+def openlibrary_view_refs_inbound_json(id_num):
     openlibrary_id = f"OL{id_num}W"
     hits = _refs_web("in", openlibrary_id=openlibrary_id)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")

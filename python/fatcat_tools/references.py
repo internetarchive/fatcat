@@ -99,6 +99,7 @@ class EnrichedBiblioRef(BaseModel):
     access: List[AccessOption]
 
     @validator('release')
+    @classmethod
     def check_release(cls, v):
         if v is not None and not isinstance(v, ReleaseEntity):
             raise ValueError("expected a ReleaseEntity")
