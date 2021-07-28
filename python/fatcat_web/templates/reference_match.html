@@ -9,63 +9,69 @@
 <form class="ui form" id="reference_match" method="POST" action="/reference/match">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-  <h3>Parse Citation</h3>
+  <div class="ui segment">
+    <h3>Parse Citation</h3>
 
-  <p>Enter a citation string here and we will try to parse it (using GROBID)
-  into a structured format, then match against the catalog.
+    <p>Enter a citation string here and we will try to parse it (using GROBID)
+    into a structured format, then match against the catalog.
 
-  {{ edit_macros.form_field_basic(form.raw_citation) }}
+    {{ edit_macros.form_field_basic(form.raw_citation) }}
 
-  <button class="ui primary submit button right floated" type="submit" name="submit_type" value="parse">
-    Parse
-  </button>
+    <button class="ui primary submit button right floated" type="submit" name="submit_type" value="parse">
+      Parse
+    </button>
+    <br clear="all">
+  </div>
 
-  <br clear="all">
   {% if grobid_status == "success" and grobid_dict %}
     <div class="ui positive message">
-      <div class="header">Parsed successfully! See match results below</div>
+      <div class="header">Parsed Citation String</div>
       {{ entity_macros.extra_metadata(grobid_dict) }}
+      <p><i>See below for fuzzy match results</i>
     </div>
   {% endif %}
 
-  <br>
-  <hr>
-  <h3>Fuzzy Match Metadata</h3>
+  <div class="ui segment">
+    <h3>Fuzzy Match Metadata</h3>
 
-  <p>Enter whatever bibliographic metadata fields you know, and we will try to
-  match to catalog entries.
+    <p>Enter whatever bibliographic metadata fields you know, and we will try to
+    match to catalog entries.
 
-  <p><b>NOTE:</b> if you already know a persistent identifier (like a DOI), you
-  should use the <a href="/release/lookup">lookup tool</a> instead.
+    <p><b>NOTE:</b> if you already know a persistent identifier (like a DOI), you
+    should use the <a href="/release/lookup">lookup tool</a> instead.
 
-  <br>
-  <div class="ui equal width fields">
-    {{ edit_macros.form_field_basic(form.title) }}
-  </div>
-  <div class="ui equal width fields">
-    {{ edit_macros.form_field_basic(form.first_author) }}
-  </div>
-  <div class="ui equal width fields">
-    {{ edit_macros.form_field_basic(form.journal) }}
-  </div>
-  <div class="ui equal width fields">
-    {{ edit_macros.form_field_basic(form.year) }}
-    {{ edit_macros.form_field_basic(form.volume) }}
-    {{ edit_macros.form_field_basic(form.issue) }}
-    {{ edit_macros.form_field_basic(form.pages) }}
-  </div>
+    <br>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.title) }}
+    </div>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.first_author) }}
+    </div>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.journal) }}
+    </div>
+    <div class="ui equal width fields">
+      {{ edit_macros.form_field_basic(form.year) }}
+      {{ edit_macros.form_field_basic(form.volume) }}
+      {{ edit_macros.form_field_basic(form.issue) }}
+      {{ edit_macros.form_field_basic(form.pages) }}
+    </div>
 
-  <button class="ui primary submit button right floated" type="submit" name="submit_type" value="match">
-    Match
-  </button>
-  <br clear="all">
+    <button class="ui primary submit button right floated" type="submit" name="submit_type" value="match">
+      Match
+    </button>
+    <br clear="all">
+  </div>
 
 </form>
 
 {% if matches is defined %}
-  <br>
-  <hr>
-  <h3>Match Results</h3>
+  <h3>Matched Releases</h3>
+
+  {% if not matches %}
+    <p><i>No matches found</i>
+  {% endif %}
+
   <table class="ui very basic celled table">
   <tbody>
   {% for match in matches %}
@@ -81,9 +87,7 @@
   {% endfor %}
   </tbody>
   </table>
-  {% if not matches %}
-    <p><i>None!</i>
-  {% endif %}
+
 {% endif %}
 
 {% endblock %}
