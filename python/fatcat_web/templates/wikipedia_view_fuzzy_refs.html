@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "refs_macros.html" as refs_macros %}
+
+{% block title %}Wikipedia Refs{% endblock %}
+
+{% block fullbody %}
+<h1 class="ui header">
+  [{{ wiki_lang }}] {{ wiki_article }}
+  <span class="sub header"><a href="{{ wiki_url }}"><code>{{ wiki_url }}</code></a></span>
+</h1>
+
+{% if direction == "in" %}
+  <h3>Cited By</h3>
+  <p>This page lists references to a wikipedia article, from other works (eg, journal articles).
+{% elif direction == "out" %}
+  <h3>References</h3>
+  <i>Refernces from wikipedia article to other entities.</i>
+{% endif %}
+
+{% if hits.result_refs %}
+  {{ refs_macros.refs_table(hits, direction) }}
+{% else %}
+  <br><br><p><b>None found</b>
+{% endif %}
+
+{% endblock %}
+

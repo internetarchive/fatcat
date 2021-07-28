@@ -15,7 +15,7 @@ from fatcat_web.cors import crossdomain
 from fatcat_web.forms import *
 from fatcat_web.entity_helpers import *
 
-def _refs_web(direction, release_ident=None, work_ident=None, openlibrary_id=None) -> RefHits:
+def _refs_web(direction, release_ident=None, work_ident=None, openlibrary_id=None, wikipedia_article=None) -> RefHits:
     offset = request.args.get('offset', '0')
     offset = max(0, int(offset)) if offset.isnumeric() else 0
     limit = request.args.get('limit', '30')
@@ -37,6 +37,7 @@ def _refs_web(direction, release_ident=None, work_ident=None, openlibrary_id=Non
     elif direction == "out":
         hits = get_outbound_refs(
             release_ident=release_ident,
+            wikipedia_article=wikipedia_article,
             work_ident=work_ident,
             es_client=app.es_client,
             offset=offset,
@@ -74,11 +75,22 @@ def release_view_refs_outbound(ident):
 @app.route('/openlibrary/OL<int:id_num>W/refs-in', methods=['GET'])
 def openlibrary_view_refs_inbound(id_num):
     if request.accept_mimetypes.best == "application/json":
-        return openlibrary_view_refs_inbound(id_num)
+        return openlibrary_view_refs_inbound_json(id_num)
 
     openlibrary_id = f"OL{id_num}W"
     hits = _refs_web("in", openlibrary_id=openlibrary_id)
     return render_template('openlibrary_view_fuzzy_refs.html', openlibrary_id=openlibrary_id, direction="in", hits=hits), 200
+
+@app.route('/wikipedia/<string(length=2):wiki_lang>:<string:wiki_article>/refs-out', methods=['GET'])
+def wikipedia_view_refs_outbound(wiki_lang: str, wiki_article: str):
+    if request.accept_mimetypes.best == "application/json":
+        return wikipedia_view_refs_outbound_json(wiki_lang, wiki_article)
+
+    wiki_url = f"https://{wiki_lang}.wikipedia.org/wiki/{wiki_article}"
+    wiki_article = wiki_article.replace('_', ' ')
+    wikipedia_article = wiki_lang + ":" + wiki_article
+    hits = _refs_web("out", wikipedia_article=wikipedia_article)
+    return render_template('wikipedia_view_fuzzy_refs.html', wiki_article=wiki_article, wiki_lang=wiki_lang, wiki_url=wiki_url, direction="out", hits=hits), 200
 
 
 @app.route('/reference/match', methods=['GET', 'POST'])
@@ -140,9 +152,17 @@ def release_view_refs_inbound_json(ident):
     hits = _refs_web("in", release_ident=ident)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")
 
-@app.route('/openlibrary/OL<int:id_num>W/refs-in', methods=['GET', 'OPTIONS'])
+@app.route('/openlibrary/OL<int:id_num>W/refs-in.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def openlibrary_view_refs_inbound_json(ident):
     openlibrary_id = f"OL{id_num}W"
     hits = _refs_web("in", openlibrary_id=openlibrary_id)
+    return Response(hits.json(exclude_unset=True), mimetype="application/json")
+
+@app.route('/wikipedia/<string(length=2):wiki_lang>:<string:wiki_article>/refs-out.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def wikipedia_view_refs_outbound_json(wiki_lang: str, wiki_article: str):
+    wiki_article = wiki_article.replace('_', ' ')
+    wikipedia_article = wiki_lang + ":" + wiki_article
+    hits = _refs_web("out", wikipedia_article=wikipedia_article)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")

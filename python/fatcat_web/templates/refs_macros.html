@@ -35,12 +35,26 @@
       <td class="">
         {% if release %}
           {{ entity_macros.release_summary(release) }}
-        {% elif row.ref.target_unstructured %}
+        {% elif direction == "in" and row.ref.source_wikipedia_article %}
+          {% set wiki_lang = row.ref.source_wikipedia_article.split(':')[0] %}
+          {% set wiki_article = ':'.join(row.ref.source_wikipedia_article.split(':')[1:]) %}
+          <b>
+            <a href="https://{{ wiki_lang }}.wikipedia.org/wiki/{{ wiki_article.replace(' ', '_') }}">
+              {{ wiki_article }}
+            </a>
+            [wikipedia]
+          </b>
+          <br>
+          <span style="color:green;">lang:{{ wiki_lang }}</span>&nbsp;
+          <a href="/wikipedia/{{ wiki_lang }}:{{ wiki_article.replace(' ', '_') }}/refs-out" style="color:green;">[references]</a>&nbsp;
+        {% elif direction == "out" and row.ref.target_unstructured %}
           <code>{{ row.ref.target_unstructured }}</code>
           {% if row.ref.target_openlibrary_work %}
-            <br><a href="https://openlibrary.org/{{ row.ref.target_openlibrary_work }}" style="color:green;">openlibrary:{{ row.ref.target_openlibrary_work }}</a>&nbsp;
+            <br>
+            <a href="https://openlibrary.org/{{ row.ref.target_openlibrary_work }}" style="color:green;">openlibrary:{{ row.ref.target_openlibrary_work }}</a>&nbsp;
+            <a href="/openlibrary/{{ row.ref.target_openlibrary_work}}/refs-in" style="color:green;">[cited-by]</a>&nbsp;
           {% endif %}
-        {% elif row.ref.target_csl %}
+        {% elif direction == "in" and row.ref.target_csl %}
           {{ entity_macros.csl_summary(row.ref.target_csl) }}
         {% else %}
           <i>blank</i>

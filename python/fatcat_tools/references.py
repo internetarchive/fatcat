@@ -289,8 +289,8 @@ def enrich_inbound_refs(refs: List[BiblioRef], fatcat_api_client: Any, hide: Opt
             release = fatcat_api_client.get_release(ref.source_release_ident, hide=hide, expand=expand)
             access = release_access_options(release)
         if ref.source_wikipedia_article:
-            wiki_lang = ref.source_wikipedia.split(':')[0]
-            wiki_article = ':'.join(ref.source_wikipedia.split(':')[1:])
+            wiki_lang = ref.source_wikipedia_article.split(':')[0]
+            wiki_article = ':'.join(ref.source_wikipedia_article.split(':')[1:]).replace(' ', '_')
             access.append(AccessOption(
                 access_type="wikipedia",
                 access_url=f"https://{wiki_lang}.wikipedia.org/wiki/{wiki_article}",
