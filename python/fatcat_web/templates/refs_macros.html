@@ -81,7 +81,7 @@
             <a href="https://openlibrary.org/{{ row.ref.target_openlibrary_work }}" style="color:green;">openlibrary:{{ row.ref.target_openlibrary_work }}</a>&nbsp;
             <a href="/openlibrary/{{ row.ref.target_openlibrary_work}}/refs-in" style="color:green;">[cited-by]</a>&nbsp;
           {% endif %}
-        {% elif direction == "in" and row.ref.target_csl %}
+        {% elif direction == "out" and row.ref.target_csl %}
           {{ entity_macros.csl_summary(row.ref.target_csl) }}
         {% else %}
           <i>blank</i>
