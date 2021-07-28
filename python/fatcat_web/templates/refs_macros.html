@@ -55,10 +55,7 @@
           {% set match_icon = "magic" %}
         {% endif %}
         <i class="{{ match_icon }} icon" title="{{ row.ref.match_status }} {{ row.ref.match_reason }}"></i><br>
-        {% if row.ref.match_provenance and row.ref.match_provenance == "fatcat-pubmed" %}
-          {# this is a common case and making the column render wide #}
-          via pubmed
-        {% elif row.ref.match_provenance %}
+        {% if row.ref.match_provenance %}
           via {{ row.ref.match_provenance }}<br>
         {% endif %}
 
