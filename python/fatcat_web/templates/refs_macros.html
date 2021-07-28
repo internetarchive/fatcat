@@ -1,37 +1,67 @@
 {% import "entity_macros.html" as entity_macros %}
 
-{% macro pagination_row(hits, direction) %}
-
-  {% if hits.offset %}
+{% macro pagination_row(hits, with_links=False) %}
+  {% if with_links and hits.offset %}
     <a href="?offset={{ hits.offset - hits.limit }}">&laquo; prev</a> &nbsp;
   {% endif %}
-  Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }} of {{ hits.count_total}} references (in {{ hits.query_wall_time_ms }}ms)
-  {% if hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
+  {% if hits.count_returned == 0 %}
+    Showing 0 references
+  {% else %}
+    Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }} of {{ hits.count_total}} references
+  {% endif %}
+  {% if with_links and hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
     &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next &raquo;</a>
   {% endif %}
 {% endmacro %}
 
 {% macro refs_table(hits, direction) %}
+<div class="ui warning message">
+  <div class="header">
+    Fuzzy reference matching is a work in progress!
+  </div>
+  Read more about quality, completeness, and caveats <a href="https://guide.fatcat.wiki/#TODO">in the fatcat guide</a>.
+</div>
 
 <table class="ui table">
 <thead>
   <tr><th colspan="3">
-    {{ pagination_row(hits) }}
+    {{ pagination_row(hits, with_links=False) }}
+    (in {{ hits.query_wall_time_ms }}ms)
 </thead>
 <tbody>
+{% if hits.count_total == 0 %}
+  <tr><td class="ui placeholder segment">
+    <div class="ui icon header">
+      <i class="unlink icon"></i>
+      No References Found
+    </div>
+{% endif %}
 {% for row in hits.result_refs %}
   {% set release = row.release %}
-  <tr><td class="collapsing left aligned top aligned">
+  <tr>
+      <td class="collapsing left aligned top aligned">
         {# TODO: ref_locator? #}
         {% if direction == "out" %}
           {% if row.ref.ref_key %}
             <code title="index={{ row.ref.ref_index }}">[{{ row.ref.ref_key }}]</code><br>
           {% endif %}
         {% endif %}
-        <b>{{ row.ref.match_status }}</b><br>
-        {% if row.ref.match_provenance %}
-          via {{ row.ref.match_provenance }}
+
+        {% if row.ref.match_status == "exact" %}
+          {% set match_icon = "linkify" %}
+        {% elif row.ref.match_status == "unmatched" %}
+          {% set match_icon = "question circle outline" %}
+        {% else %}
+          {% set match_icon = "magic" %}
         {% endif %}
+        <i class="{{ match_icon }} icon" title="{{ row.ref.match_status }} {{ row.ref.match_reason }}"></i><br>
+        {% if row.ref.match_provenance and row.ref.match_provenance == "fatcat-pubmed" %}
+          {# this is a common case and making the column render wide #}
+          via pubmed
+        {% elif row.ref.match_provenance %}
+          via {{ row.ref.match_provenance }}<br>
+        {% endif %}
+
       <td class="">
         {% if release %}
           {{ entity_macros.release_summary(release) }}
@@ -62,7 +92,7 @@
       <td class="center aligned">
         {% if row.access %}
           {% for access in row.access %}
-            <a href="{{ access.access_url}}" class="ui tiny green active button">
+            <a href="{{ access.access_url}}" class="ui green label" style="background-color: #2ca048;">
               {%- if access.access_type.name == "wayback" %}
                 web.archive.org
               {%- elif access.access_type.name == "ia_file" -%}
@@ -83,18 +113,23 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="hidden" name="raw_citation" value="{{ row.ref.target_unstructured }}">
             <button class="ui tiny primary submit button" type="submit" name="submit_type" value="parse">
-              parse
+              re-parse
             </button>
           </form>
         {% endif %}
 {% endfor %}
 </tbody>
-{% if hits.count_total != hits.count_returned %}
-  <tfoot>
-    <tr><th colspan="3">
-      {{ pagination_row(hits) }}
-  </tfoot>
-{% endif %}
+<tfoot>
+  <tr><th colspan="3">
+    <div style="float: right;">
+      <a href="{{ request.path }}.json?{{ request.query_string.decode() }}">JSON</a>
+    </div>
+    {% if hits.count_returned != hits.count_total %}
+      <center>
+        {{ pagination_row(hits, with_links=True) }}
+      </center>
+    {% endif %}
+</tfoot>
 </table>
 {% endmacro %}
 

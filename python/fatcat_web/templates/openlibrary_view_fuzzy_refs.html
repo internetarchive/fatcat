@@ -19,11 +19,7 @@
   <i>Refernces from this book to other entities.</i>
 {% endif %}
 
-{% if hits.result_refs %}
-  {{ refs_macros.refs_table(hits, direction) }}
-{% else %}
-  <br><br><p><b>None found</b>
-{% endif %}
+{{ refs_macros.refs_table(hits, direction) }}
 
 {% endblock %}
 

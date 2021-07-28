@@ -13,13 +13,15 @@
 {% elif direction == "out" %}
   <h3>References</h3>
   <i>NOTE: currently batch computed and may include additional references sources, or be missing recent changes, compared to entity reference list.</i>
+
+  {% if hits.count_total == 0 and release.refs %}
+    <div class="ui positive message">
+      <p>No <i>fuzzy</i> references found, but there are <a href="/release/{{ release.ident }}/references">{{ release.refs|count }} legacy references</a>
+    </div>
+  {% endif %}
 {% endif %}
 
-{% if hits.result_refs %}
-  {{ refs_macros.refs_table(hits, direction) }}
-{% else %}
-  <br><br><p><b>None found</b>
-{% endif %}
+{{ refs_macros.refs_table(hits, direction) }}
 
 {% endblock %}
 

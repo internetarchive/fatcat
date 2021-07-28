@@ -391,7 +391,7 @@ yellow
 {# this is useful for things like showing lists of releases in tables #}
 {% macro release_summary(release) %}
   <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
-  {% if release.release_type not in ["article-journal", "conference-paper"] %}
+  {% if release.release_type not in ["article-journal", "paper-conference"] %}
     <b>[{{ release.release_type or "unknown-type" }}]</b>
   {% endif %}
   {% if release.contribs %}<br>{% endif %}
@@ -405,7 +405,14 @@ yellow
   {% endfor %}
   {% if release.contribs | length > 8 %} <i>(+ more)</i> {%endif %}
   {% if release.release_year or release.container or (release.extra and release.extra.container_name) %}<br>{% endif %}
-  {% if release.release_year %}{{ release.release_year }} &nbsp;{% endif %}
+  {% if release.release_year %}
+    {% if release.release_date %}
+      <span title="{{ release.release_date }}">{{ release.release_year }}</span>
+    {% else %}
+      {{ release.release_year }}
+    {% endif %}
+    &nbsp;
+  {% endif %}
   {% if release.container %}
     <a href="/container/{{ release.container.ident }}" style="color: black;"><i>{{ release.container.name }}</i></a>
   {% elif release.extra and release.extra.container_name %}
