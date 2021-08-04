@@ -457,15 +457,31 @@ yellow
   {% if csl.title and csl.author %}<br>{% endif %}
   {% if csl.author %}
     {% for author in csl.author[:8] %}
-      {# TODO: other name variants? #}
-      {{ author.name }}
+      {% if author.literal %}
+        {{ author.literal }}
+      {% elif author.raw_name %}
+        {{ author.raw_name }}
+      {% elif author.family and author.given %}
+        {{ author.given }} {{ author.family }}
+      {% elif author.family %}
+        {{ author.family }}
+      {% elif author.name %}
+        {# DEPRECATED: was used by refs code path for a while. Delete in, eg, year 2022 #}
+        {{ author.name }}
+      {% endif %}
       {%- if not loop.last %}, {% endif %}
     {% endfor %}
     {% if csl.author | length > 8 %} <i>(+ more)</i> {%endif %}
   {% endif %}
 
   {% if csl.issued or csl["container-title"] %}<br>{% endif %}
-  {% if csl.issued and csl.issued.raw %}{{ csl.issued.raw }} &nbsp;{% endif %}
+  {% if csl.issued and csl.issued is mapping %}
+    {% if csl.issued['date-parts'] %}
+      {{ csl.issued['date-parts'][0][0] }} &nbsp;
+    {% elif csl.issued.raw %}
+      {{ csl.issued.raw }} &nbsp;
+    {% endif %}
+  {% endif %}
   {% if csl["container-title"] %}
     <i>{{ csl["container-title"] }}</i>
   {% endif %}

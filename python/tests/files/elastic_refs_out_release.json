@@ -152,11 +152,13 @@
             "accessed": {},
             "author": [
               {
-                "name": "Alatawi Eman"
+                "raw_name": "Alatawi Eman"
               }
             ],
             "container-title": "Symbolic Execution with Invariant Inlay: Evaluating the Potential. In 2018 25th Australasian Software Engineering Conference, ASWEC 2018.",
-            "issued": {}
+            "issued": {
+              "date-parts": [[2019]]
+            }
           }
         },
         "sort": [
@@ -185,7 +187,9 @@
               }
             ],
             "container-title": "Symbolic Path-Oriented Test Data Generation for Floating-Point Programs. In Sixth IEEE International Conference on Software Testing, Verification and Validation, ICST",
-            "issued": {}
+            "issued": {
+              "raw": "2000"
+            }
           }
         },
         "sort": [
