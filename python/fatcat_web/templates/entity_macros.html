@@ -387,3 +387,112 @@ yellow
   </table>
 
 {%- endmacro %}
+
+{# this is useful for things like showing lists of releases in tables #}
+{% macro release_summary(release) %}
+  <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+  {% if release.release_type not in ["article-journal", "paper-conference"] %}
+    <b>[{{ release.release_type or "unknown-type" }}]</b>
+  {% endif %}
+  {% if release.contribs %}<br>{% endif %}
+  {% for contrib in release.contribs[:8] %}
+    {% if contrib.creator %}
+      <a href="/contib/{{ contrib.creator.ident }}" style="color: black;">{{ contrib.creator.display_name }}</a>
+    {% else %}
+      {{ contrib.raw_name }}
+    {%- endif %}
+    {%- if not loop.last %}, {% endif %}
+  {% endfor %}
+  {% if release.contribs | length > 8 %} <i>(+ more)</i> {%endif %}
+  {% if release.release_year or release.container or (release.extra and release.extra.container_name) %}<br>{% endif %}
+  {% if release.release_year %}
+    {% if release.release_date %}
+      <span title="{{ release.release_date }}">{{ release.release_year }}</span>
+    {% else %}
+      {{ release.release_year }}
+    {% endif %}
+    &nbsp;
+  {% endif %}
+  {% if release.container %}
+    <a href="/container/{{ release.container.ident }}" style="color: black;"><i>{{ release.container.name }}</i></a>
+  {% elif release.extra and release.extra.container_name %}
+    <i>{{ release.extra.container_name }}</i>
+  {% endif %}
+
+  {% if release.release_stage == "submitted" %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">pre-print</b>
+  {% elif release.release_stage and release.release_stage != "published" %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">{{ release.release_stage }} version</b>
+  {% elif not release.release_stage %}
+    &nbsp;<b style="color: brown; text-transform: uppercase;">unpublished</b>
+  {% endif %}
+<br>
+  {% if release.version %}
+    <span style="color:green">version:{{ release.version }}</span>&nbsp;
+  {% endif %}
+  {% if release.number %}
+    <span style="color:green">number:{{ release.number }}</span>&nbsp;
+  {% endif %}
+  {% if release.ext_ids.doi %}
+    <a href="https://doi.org/{{ release.ext_ids.doi }}" style="color:green;">doi:{{ release.ext_ids.doi }}</a>&nbsp;
+  {% endif %}
+  {# TODO: links #}
+  {% if release.ext_ids.arxiv %}
+    <a href="#" style="color:green;">arXiv:{{ release.ext_ids.arxiv }}</a>&nbsp;
+  {% endif %}
+  {% if release.ext_ids.pmcid %}
+    <a href="#" style="color:green;">pmcid:{{ release.ext_ids.pmcid }}</a>&nbsp;
+  {% endif %}
+  {% if release.ext_ids.pmid %}
+    <a href="#" style="color:green;">pmid:{{ release.ext_ids.pmid }}</a>&nbsp;
+  {% endif %}
+  {% if release.ext_ids.dblp %}
+    <a href="#" style="color:green;">dblp:{{ release.ext_ids.dblp }}</a>&nbsp;
+  {% endif %}
+{% endmacro %}
+
+{# similar to the release_summary above, but for CSL-JSON #}
+{% macro csl_summary(csl) %}
+  <b>{{ csl.title }}</b>
+  {% if csl.title and csl.author %}<br>{% endif %}
+  {% if csl.author %}
+    {% for author in csl.author[:8] %}
+      {% if author.literal %}
+        {{ author.literal }}
+      {% elif author.raw_name %}
+        {{ author.raw_name }}
+      {% elif author.family and author.given %}
+        {{ author.given }} {{ author.family }}
+      {% elif author.family %}
+        {{ author.family }}
+      {% elif author.name %}
+        {# DEPRECATED: was used by refs code path for a while. Delete in, eg, year 2022 #}
+        {{ author.name }}
+      {% endif %}
+      {%- if not loop.last %}, {% endif %}
+    {% endfor %}
+    {% if csl.author | length > 8 %} <i>(+ more)</i> {%endif %}
+  {% endif %}
+
+  {% if csl.issued or csl["container-title"] %}<br>{% endif %}
+  {% if csl.issued and csl.issued is mapping %}
+    {% if csl.issued['date-parts'] %}
+      {{ csl.issued['date-parts'][0][0] }} &nbsp;
+    {% elif csl.issued.raw %}
+      {{ csl.issued.raw }} &nbsp;
+    {% endif %}
+  {% endif %}
+  {% if csl["container-title"] %}
+    <i>{{ csl["container-title"] }}</i>
+  {% endif %}
+  <br>
+  {% if csl.volume %}
+    <span style="color:green">volume:{{ csl.volume}}</span>&nbsp;
+  {% endif %}
+  {% if csl.DOI %}
+    <a href="https://doi.org/{{ csl.DOI }}" style="color:green;">doi:{{ csl.DOI }}</a>&nbsp;
+  {% endif %}
+  {% if csl.URL %}
+    <a href="{{ csl.URL }}" style="color:green;">url:{{ csl.URL }}</a>&nbsp;
+  {% endif %}
+{% endmacro %}

@@ -1,0 +1,132 @@
+{% import "entity_macros.html" as entity_macros %}
+
+{% macro pagination_row(hits, with_links=False) %}
+  {% if with_links and hits.offset %}
+    <a href="?offset={{ hits.offset - hits.limit }}">&laquo; prev</a> &nbsp;
+  {% endif %}
+  {% if hits.count_returned == 0 %}
+    Showing 0 references
+  {% else %}
+    Showing {{ "{:,}".format(hits.offset + 1) }} - {{ "{:,}".format(hits.offset + hits.count_returned) }} of {{ "{:,}".format(hits.count_total) }} references
+  {% endif %}
+  {% if with_links and hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
+    &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next &raquo;</a>
+  {% endif %}
+{% endmacro %}
+
+{% macro refs_table(hits, direction) %}
+<div class="ui warning message">
+  <div class="header">
+    Fuzzy reference matching is a work in progress!
+  </div>
+  Read more about quality, completeness, and caveats <a href="https://guide.fatcat.wiki/reference_graph.html">in the fatcat guide</a>.
+</div>
+
+<table class="ui table">
+<thead>
+  <tr><th colspan="3">
+    {{ pagination_row(hits, with_links=False) }}
+    (in {{ hits.query_wall_time_ms }}ms)
+</thead>
+<tbody>
+{% if hits.count_total == 0 %}
+  <tr><td class="ui placeholder segment">
+    <div class="ui icon header">
+      <i class="unlink icon"></i>
+      No References Found
+    </div>
+{% endif %}
+{% for row in hits.result_refs %}
+  {% set release = row.release %}
+  <tr>
+      <td class="collapsing left aligned top aligned">
+        {# TODO: ref_locator? #}
+        {% if direction == "out" %}
+          {% if row.ref.ref_key %}
+            <code title="index={{ row.ref.ref_index }}">[{{ row.ref.ref_key }}]</code><br>
+          {% endif %}
+        {% endif %}
+
+        {% if row.ref.match_status == "exact" %}
+          {% set match_icon = "linkify" %}
+        {% elif row.ref.match_status == "unmatched" %}
+          {% set match_icon = "question circle outline" %}
+        {% else %}
+          {% set match_icon = "magic" %}
+        {% endif %}
+        <i class="{{ match_icon }} icon" title="{{ row.ref.match_status }} {{ row.ref.match_reason }}"></i><br>
+        {% if row.ref.match_provenance %}
+          via {{ row.ref.match_provenance }}<br>
+        {% endif %}
+
+      <td class="">
+        {% if release %}
+          {{ entity_macros.release_summary(release) }}
+        {% elif direction == "in" and row.ref.source_wikipedia_article %}
+          {% set wiki_lang = row.ref.source_wikipedia_article.split(':')[0] %}
+          {% set wiki_article = ':'.join(row.ref.source_wikipedia_article.split(':')[1:]) %}
+          <b>
+            <a href="https://{{ wiki_lang }}.wikipedia.org/wiki/{{ wiki_article.replace(' ', '_') }}">
+              {{ wiki_article }}
+            </a>
+            [wikipedia]
+          </b>
+          <br>
+          <span style="color:green;">lang:{{ wiki_lang }}</span>&nbsp;
+          <a href="/wikipedia/{{ wiki_lang }}:{{ wiki_article.replace(' ', '_') }}/refs-out" style="color:green;">[references]</a>&nbsp;
+        {% elif direction == "out" and row.ref.target_unstructured %}
+          <code>{{ row.ref.target_unstructured }}</code>
+          {% if row.ref.target_openlibrary_work %}
+            <br>
+            <a href="https://openlibrary.org/{{ row.ref.target_openlibrary_work }}" style="color:green;">openlibrary:{{ row.ref.target_openlibrary_work }}</a>&nbsp;
+            <a href="/openlibrary/{{ row.ref.target_openlibrary_work}}/refs-in" style="color:green;">[cited-by]</a>&nbsp;
+          {% endif %}
+        {% elif direction == "out" and row.ref.target_csl %}
+          {{ entity_macros.csl_summary(row.ref.target_csl) }}
+        {% else %}
+          <i>blank</i>
+        {% endif %}
+      <td class="center aligned">
+        {% if row.access %}
+          {% for access in row.access %}
+            <a href="{{ access.access_url}}" class="ui green label" style="background-color: #2ca048;">
+              {%- if access.access_type.name == "wayback" %}
+                web.archive.org
+              {%- elif access.access_type.name == "ia_file" -%}
+                archive.org
+              {%- else -%}
+                {{ access.access_type.name }}
+              {%- endif -%}
+              {%- if access.mimetype == "application/pdf" %}
+                [PDF]
+              {%- elif access.mimetype == "text/html" %}
+                [HTML]
+              {%- endif -%}
+            </a>
+            <br>
+          {% endfor %}
+        {% elif direction == "out" and row.ref.target_unstructured %}
+          <form class="ui form" id="reference_match" method="POST" action="/reference/match">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="raw_citation" value="{{ row.ref.target_unstructured }}">
+            <button class="ui tiny primary submit button" type="submit" name="submit_type" value="parse">
+              re-parse
+            </button>
+          </form>
+        {% endif %}
+{% endfor %}
+</tbody>
+<tfoot>
+  <tr><th colspan="3">
+    <div style="float: right;">
+      <a href="{{ request.path }}.json?{{ request.query_string.decode() }}">JSON</a>
+    </div>
+    {% if hits.count_returned != hits.count_total %}
+      <center>
+        {{ pagination_row(hits, with_links=True) }}
+      </center>
+    {% endif %}
+</tfoot>
+</table>
+{% endmacro %}
+

@@ -14,3 +14,5 @@ notes=FIXME,XXX,DELETEME
 ignored-modules=responses
 # FileEntityForm' has no 'data' member (no-member) (etc)
 generated-members=data,errors
+# No name 'BaseModel' in module 'pydantic' (no-name-in-module) (etc)
+extension-pkg-allow-list=pydantic

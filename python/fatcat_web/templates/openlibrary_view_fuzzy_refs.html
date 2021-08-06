@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "refs_macros.html" as refs_macros %}
+
+{% block title %}Open Library Refs{% endblock %}
+
+{% block fullbody %}
+<h1 class="ui header">
+  {% if hits.result_refs and hits.result_refs[0].ref.target_unstructured %}
+    <i>{{ hits.result_refs[0].ref.target_unstructured }}</i>
+  {% endif %}
+  <span class="sub header"><a href="https://openlibrary.org/works/{{ openlibrary_id }}"><code>https://openlibrary.org/works/{{ openlibrary_id }}</code></a></span>
+</h1>
+
+{% if direction == "in" %}
+  <h3>Cited By</h3>
+  <p>This page lists references to this book from other works (eg, journal articles).
+{% elif direction == "out" %}
+  <h3>References</h3>
+  <i>Refernces from this book to other entities.</i>
+{% endif %}
+
+{{ refs_macros.refs_table(hits, direction) }}
+
+{% endblock %}
+

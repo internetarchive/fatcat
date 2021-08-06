@@ -16,6 +16,11 @@ See also:
 
 ## Unreleased
 
+### Added
+
+- reference graph views, based on fuzzy reference dataset in `cgraph` and
+  `fatcat-scholar` projects, stored in elasticsearch index
+
 ### Fixed
 
 - viewing deleted release entities no longer result in 500 error

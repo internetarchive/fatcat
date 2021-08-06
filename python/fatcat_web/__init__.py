@@ -76,7 +76,7 @@ app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 
 app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND)
 
-from fatcat_web import routes, editing_routes, auth, cors, forms
+from fatcat_web import routes, editing_routes, ref_routes, auth, cors, forms
 
 # TODO: blocking on ORCID support in loginpass
 if Config.ORCID_CLIENT_ID:

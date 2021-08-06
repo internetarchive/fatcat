@@ -1,0 +1,683 @@
+{
+  "took": 15,
+  "timed_out": false,
+  "_shards": {
+    "total": 6,
+    "successful": 6,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 34,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_1",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 1,
+          "ref_key": "e_1_3_2_1_2_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. GSL- GNU Scientific Library. https://www.gnu.org/software/gsl/.  Accessed: 2020-01-01. GSL- GNU Scientific Library. https://www.gnu.org/software/gsl/."
+        },
+        "sort": [
+          1
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_2",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 2,
+          "ref_key": "e_1_3_2_1_3_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. KLEE with floating point support. https://github.com/srg-imperial/klee-float.  Accessed: 2020-01-01. KLEE with floating point support. https://github.com/srg-imperial/klee-float."
+        },
+        "sort": [
+          2
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_3",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 3,
+          "ref_key": "e_1_3_2_1_4_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. LibTooling. https://clang.llvm.org/docs/LibTooling.html.  Accessed: 2020-01-01. LibTooling. https://clang.llvm.org/docs/LibTooling.html."
+        },
+        "sort": [
+          3
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_4",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 4,
+          "ref_key": "e_1_3_2_1_5_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. Meschach Library. https://www.netlib.org/c/meschach/readme.  Accessed: 2020-01-01. Meschach Library. https://www.netlib.org/c/meschach/readme."
+        },
+        "sort": [
+          4
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_5",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 5,
+          "ref_key": "e_1_3_2_1_6_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. Toyota: Software to blame for Prius brake problems. http://www.cnn.com/2010/WORLD/asiapcf/02/04/japan.prius.complaints/index.html.  Accessed: 2020-01-01. Toyota: Software to blame for Prius brake problems. http://www.cnn.com/2010/WORLD/asiapcf/02/04/japan.prius.complaints/index.html."
+        },
+        "sort": [
+          5
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_6",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 6,
+          "ref_key": "e_1_3_2_1_7_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Accessed: 2020-01-01. Z3. https://github.com/Z3Prover/z3.  Accessed: 2020-01-01. Z3. https://github.com/Z3Prover/z3."
+        },
+        "sort": [
+          6
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_7",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 7,
+          "ref_key": "e_1_3_2_1_8_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_csl": {
+            "accessed": {},
+            "author": [
+              {
+                "raw_name": "Alatawi Eman"
+              }
+            ],
+            "container-title": "Symbolic Execution with Invariant Inlay: Evaluating the Potential. In 2018 25th Australasian Software Engineering Conference, ASWEC 2018.",
+            "issued": {
+              "date-parts": [[2019]]
+            }
+          }
+        },
+        "sort": [
+          7
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_8",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 8,
+          "ref_key": "e_1_3_2_1_9_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_csl": {
+            "accessed": {},
+            "author": [
+              {
+                "name": "Bagnara Roberto"
+              }
+            ],
+            "container-title": "Symbolic Path-Oriented Test Data Generation for Floating-Point Programs. In Sixth IEEE International Conference on Software Testing, Verification and Validation, ICST",
+            "issued": {
+              "raw": "2000"
+            }
+          }
+        },
+        "sort": [
+          8
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_10",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 10,
+          "ref_key": "e_1_3_2_1_10_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "kf6qgd3e6vc3nhkpf3m32qehj4"
+        },
+        "sort": [
+          10
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_11",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 11,
+          "ref_key": "e_1_3_2_1_11_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "gynqpbv73jbdfcfpnzptsq4m64"
+        },
+        "sort": [
+          11
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_12",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:47Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 12,
+          "ref_key": "e_1_3_2_1_12_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "osmyp7kaxzbd3duf6hohrtuzvm"
+        },
+        "sort": [
+          12
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_14",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:40Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 14,
+          "ref_key": "e_1_3_2_1_14_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "sbxxyxrtxfe5fdukmcgjgjf6we"
+        },
+        "sort": [
+          14
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_15",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:46Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 15,
+          "ref_key": "e_1_3_2_1_15_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "aw5o7bbhnjef7fy3cg3prpune4"
+        },
+        "sort": [
+          15
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_16",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:49Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 16,
+          "ref_key": "e_1_3_2_1_16_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "sdmeosutrzgppilsibx5kbinba"
+        },
+        "sort": [
+          16
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_18",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:05:08Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 18,
+          "ref_key": "e_1_3_2_1_18_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "ae26aeacuvdi3mlgut3g32f42i"
+        },
+        "sort": [
+          18
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_19",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:52Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 19,
+          "ref_key": "e_1_3_2_1_19_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "bqsv52bbdnggxkls5cgdbubovm"
+        },
+        "sort": [
+          19
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_21",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:54Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 21,
+          "ref_key": "e_1_3_2_1_21_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "edpnjczcr5ebrppg5g5adrg5ty"
+        },
+        "sort": [
+          21
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_22",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:15:52Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 22,
+          "ref_key": "e_1_3_2_1_22_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "cropr6fte5dbtbnnlaau7fcp3a"
+        },
+        "sort": [
+          22
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_23",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:58Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 23,
+          "ref_key": "e_1_3_2_1_23_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "e7kzr7fvmrg2repjxglg6ptzz4"
+        },
+        "sort": [
+          23
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_24",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T03:08:24Z",
+          "match_reason": "unknown",
+          "match_status": "unmatched",
+          "ref_index": 24,
+          "ref_key": "e_1_3_2_1_25_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_unstructured": "Michael O. Lam Jeffrey K. Hollingsworth and G. W. Stewart. 2013. Dynamic floating-point cancellation detection. Parallel Comput. (2013).  Michael O. Lam Jeffrey K. Hollingsworth and G. W. Stewart. 2013. Dynamic floating-point cancellation detection. Parallel Comput. (2013)."
+        },
+        "sort": [
+          24
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_26",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:05:10Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 26,
+          "ref_key": "e_1_3_2_1_26_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "zwdzqlf4ivdlbg6f7hmccyig7u"
+        },
+        "sort": [
+          26
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_27",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:50Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 27,
+          "ref_key": "e_1_3_2_1_27_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "parh4accgzgbtahyxmm2sdfnzy"
+        },
+        "sort": [
+          27
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_28",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:05:08Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 28,
+          "ref_key": "e_1_3_2_1_28_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "br57toqbtnathfwbmkqyyva63i"
+        },
+        "sort": [
+          28
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_29",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:49Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 29,
+          "ref_key": "e_1_3_2_1_29_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "tlc4c3mwjnh25nnfjgpoic5r44"
+        },
+        "sort": [
+          29
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_30",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:52Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 30,
+          "ref_key": "e_1_3_2_1_30_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "z7rtkf2gljct5pvmlt6vitakri"
+        },
+        "sort": [
+          30
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_31",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:49Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 31,
+          "ref_key": "e_1_3_2_1_31_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "qhxmybpi2fgt3hqnxx4admuwwq"
+        },
+        "sort": [
+          31
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_32",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:49Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 32,
+          "ref_key": "e_1_3_2_1_32_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "xdbsyi37jvfidpfp36okylalzi"
+        },
+        "sort": [
+          32
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_34",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:43Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 34,
+          "ref_key": "e_1_3_2_1_34_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "pc5ynoopsnclvbiyzedr3swk34"
+        },
+        "sort": [
+          34
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_35",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:56Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 35,
+          "ref_key": "e_1_3_2_1_35_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "hnmreinbn5aehmz2hqqydfpeve"
+        },
+        "sort": [
+          35
+        ]
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "yfr23sa5rbfizoqjku7uwhq6ye_36",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T13:16:52Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 36,
+          "ref_key": "e_1_3_2_1_36_1",
+          "source_release_ident": "yfr23sa5rbfizoqjku7uwhq6ye",
+          "source_work_ident": "mkmq6ju4abaexcezpb44cpx5xa",
+          "source_year": "2020",
+          "target_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "target_work_ident": "abumc5tgazaahbjh4hb7t6k7qm"
+        },
+        "sort": [
+          36
+        ]
+      }
+    ]
+  }
+}

@@ -84,9 +84,9 @@
     Published
     {% if release.container.ident %}
       in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
-    {% elif release.extra and release.extra.container_name %}
+    {%- elif release.extra and release.extra.container_name %}
       in <span itemprop="name">{{ release.extra.container_name }}</span>
-    {% endif %}
+    {%- endif %}
   {% else %}
     Released
     {% if release.release_type %}
@@ -95,25 +95,26 @@
     {% if release.container %}
       in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
     {% endif %}
-  {% endif %}
+  {% endif -%}
   {% if release.publisher %}
     by <span itemprop="publisher">{{ release.publisher }}</span>
   {%- endif %}.
 
   <p>
+  {% set comma = joiner(", ") %}
+  {% if release.release_year != None %}
+    {{ release.release_year }} &nbsp;
+  {% endif %}
   {% if release.volume != None %}
-    Volume {{ release.volume }}
-    {%- if release.issue != None %}, {% endif %}
-  {% endif %}
-  {% if release.issue != None %}
-    Issue {{ release.issue}}
-  {% endif %}
-  {% if release.pages != None %}
+    {{- comma() }}Volume {{ release.volume -}}
+  {%- endif %}
+  {%- if release.issue != None %}
+    {{- comma() }}Issue {{ release.issue -}}
+  {%- endif %}
+  {%- if release.pages != None %}
+    {{- comma() }}
     {% if release.pages[0].isdigit() %}p{% endif -%}
     {{ release.pages }}
-  {% endif %}
-  {% if release.release_year != None %}
-    ({{ release.release_year }})
   {% endif %}
 </div>
 

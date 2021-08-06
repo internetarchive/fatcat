@@ -1,0 +1,27 @@
+{% set release = entity %}
+{% set entity_view = "refs-" + direction %}
+{% set entity_type = "release" %}
+{% import "refs_macros.html" as refs_macros %}
+{% extends "entity_base.html" %}
+
+
+{% block entity_main %}
+
+{% if direction == "in" %}
+  <h3>Cited By</h3>
+  <i>References to this release by other works.</i>
+{% elif direction == "out" %}
+  <h3>References</h3>
+  <i>NOTE: currently batch computed and may include additional references sources, or be missing recent changes, compared to entity reference list.</i>
+
+  {% if hits.count_total == 0 and release.refs %}
+    <div class="ui positive message">
+      <p>No <i>fuzzy</i> references found, but there are <a href="/release/{{ release.ident }}/references">{{ release.refs|count }} legacy references</a>
+    </div>
+  {% endif %}
+{% endif %}
+
+{{ refs_macros.refs_table(hits, direction) }}
+
+{% endblock %}
+

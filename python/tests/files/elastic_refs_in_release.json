@@ -1,0 +1,360 @@
+{
+  "took": 30,
+  "timed_out": false,
+  "_shards": {
+    "total": 6,
+    "successful": 6,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 69,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "rxy26aoognaytoeghum4ncmygq_30",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 30,
+          "ref_key": "BIB0030|jon779-cit-0030",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "3bggl3ls3fftvl3g6yg5qzy4yq",
+          "source_year": "2013",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "3bggl3ls3fftvl3g6yg5qzy4yq"
+          ]
+        },
+        "sort": [
+          2013
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "xew5r3gnxbaznhj3kevspu75yq_46",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 46,
+          "ref_key": "_bib46",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "dqfgm7p2urh3dd2ja2s5cleqr4",
+          "source_year": "2013",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "dqfgm7p2urh3dd2ja2s5cleqr4"
+          ]
+        },
+        "sort": [
+          2013
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "dyy6cr675zbivam4wldogvc7ue_23",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 23,
+          "ref_key": "BFmp2012104_CR23",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "7igrlb5tevgoxdeds2w2opwj7a",
+          "source_year": "2012",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "7igrlb5tevgoxdeds2w2opwj7a"
+          ]
+        },
+        "sort": [
+          2012
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "kbivvq4n5nhfpfl3dc7xq6bzbu_33",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-14T01:37:55Z",
+          "match_provenance": "fuzzy",
+          "match_reason": "jaccardauthors",
+          "match_status": "strong",
+          "ref_index": 33,
+          "ref_key": "b33",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "75yfavca2bbwbarcchkm7afhyy",
+          "source_year": "2012",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "75yfavca2bbwbarcchkm7afhyy"
+          ]
+        },
+        "sort": [
+          2012
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "2kemk2jdynacznanpixvqiytla_48",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 48,
+          "ref_key": "BFmp201237_CR48",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "7fu5n2crurex7isvfv5tnf3y2i",
+          "source_year": "2012",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "7fu5n2crurex7isvfv5tnf3y2i"
+          ]
+        },
+        "sort": [
+          2012
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "q3qy5z3htnd2likregg3dff23i_37",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 37,
+          "ref_key": "BFnpp2012215_CR37",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "hqk3tnlyvffoppkakajynn5x2u",
+          "source_year": "2012",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "hqk3tnlyvffoppkakajynn5x2u"
+          ]
+        },
+        "sort": [
+          2012
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "fzgecyr6cnggbinanrdyc44b4a_126",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "crossref",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 126,
+          "ref_key": "BFtp201234_CR126",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "hwtljgl3dvhojeusfwon6iba6q",
+          "source_year": "2012",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "hwtljgl3dvhojeusfwon6iba6q"
+          ]
+        },
+        "sort": [
+          2012
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "7lt5parryzcbhentd75sqgsuvu_15",
+        "_score": null,
+        "_source": {
+          "indexed_ts": "2021-07-10T11:47:48Z",
+          "match_provenance": "grobid",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "ref_index": 15,
+          "ref_key": "b14",
+          "source_release_ident": "aaaaaaaaaaaaarceaaaaaaaaam",
+          "source_work_ident": "xenzkonwivbl3bzirbtqohsb4q",
+          "source_year": "0",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "fields": {
+          "source_work_ident": [
+            "xenzkonwivbl3bzirbtqohsb4q"
+          ]
+        },
+        "sort": [
+          0
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      },
+      {
+        "_index": "fatcat_ref_v02_20210716",
+        "_type": "_doc",
+        "_id": "wikipedia_knxxa2djmeqem4tbnztw65i_cx2xdrrgt5cydcinttixgj4nxu",
+        "_score": null,
+        "_source": {
+          "match_provenance": "wikipedia",
+          "match_reason": "doi",
+          "match_status": "exact",
+          "source_wikipedia_article": "en:Sophia Frangou",
+          "target_release_ident": "cx2xdrrgt5cydcinttixgj4nxu",
+          "target_work_ident": "s45xqgdp5bftrbymxtsl32hcna"
+        },
+        "sort": [
+          -9223372036854776000
+        ],
+        "inner_hits": {
+          "source_more": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": null,
+              "hits": []
+            }
+          }
+        }
+      }
+    ]
+  }
+}

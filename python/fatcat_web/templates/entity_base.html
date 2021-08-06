@@ -85,7 +85,10 @@
               {{ entity_tab("coverage", "Coverage", "/coverage") }}
             {% elif entity_type == "release" and entity.state != 'deleted' %}
               {{ entity_tab("contribs", "Authors", "/contribs", entity._authors|count ) }}
-              {{ entity_tab("references", "References", "/references", entity.refs|count) }}
+              {% if  entity.state == 'active' %}
+                {{ entity_tab("refs-out", "References", "/refs-out") }}
+                {{ entity_tab("refs-in", "Cited By", "/refs-in") }}
+              {% endif %}
             {% endif %}
             {{ entity_tab("metadata", "Metadata", "/metadata") }}
           </div>
