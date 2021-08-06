@@ -7,7 +7,7 @@
   {% if hits.count_returned == 0 %}
     Showing 0 references
   {% else %}
-    Showing {{ hits.offset + 1 }} - {{ hits.offset + hits.count_returned }} of {{ hits.count_total}} references
+    Showing {{ "{:,}".format(hits.offset + 1) }} - {{ "{:,}".format(hits.offset + hits.count_returned) }} of {{ "{:,}".format(hits.count_total) }} references
   {% endif %}
   {% if with_links and hits.count_total != hits.count_returned and hits.offset + hits.limit < hits.count_total %}
     &nbsp;<a href="?offset={{ hits.offset + hits.limit }}">next &raquo;</a>
