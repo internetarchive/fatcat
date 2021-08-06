@@ -22,7 +22,7 @@
     - [Release](./entity_release.md)
     - [Work](./entity_work.md)
 - [Public API](./http_api.md)
-    - [Search API](./search_api.md)
+    - [Search Index](./search_api.md)
     - [Bulk Exports](./bulk_exports.md)
     - [Cookbook](./cookbook.md)
 - [Contributing](./contributing.md)

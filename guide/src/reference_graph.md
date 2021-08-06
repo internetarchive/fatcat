@@ -4,7 +4,7 @@
 Since 08/2021 references are available on an "inbound" and "outbound" basis in
 the web interface.
 
-The backend reference graph is available via the [Search API](./search_api.md)
+The backend reference graph is available via the [Search Index](./search_api.md)
 under the `fatcat_ref` index.
 
 ## Background and Mode of Operation
