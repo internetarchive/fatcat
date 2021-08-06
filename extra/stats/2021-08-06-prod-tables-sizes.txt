@@ -1,0 +1,46 @@
+Size:  741.01G
+
+              table_name               | table_size | indexes_size | total_size 
+---------------------------------------+------------+--------------+------------
+ "public"."release_contrib"            | 75 GB      | 59 GB        | 134 GB
+ "public"."release_rev"                | 74 GB      | 38 GB        | 112 GB
+ "public"."refs_blob"                  | 104 GB     | 2885 MB      | 106 GB
+ "public"."file_rev"                   | 32 GB      | 39 GB        | 71 GB
+ "public"."release_edit"               | 17 GB      | 23 GB        | 39 GB
+ "public"."work_edit"                  | 16 GB      | 22 GB        | 38 GB
+ "public"."file_edit"                  | 16 GB      | 20 GB        | 36 GB
+ "public"."file_rev_url"               | 25 GB      | 9059 MB      | 34 GB
+ "public"."abstracts"                  | 27 GB      | 2065 MB      | 29 GB
+ "public"."release_ident"              | 11 GB      | 16 GB        | 27 GB
+ "public"."work_ident"                 | 11 GB      | 15 GB        | 26 GB
+ "public"."file_rev_release"           | 8017 MB    | 14 GB        | 22 GB
+ "public"."file_ident"                 | 7383 MB    | 13 GB        | 20 GB
+ "public"."release_ref"                | 5792 MB    | 8201 MB      | 14 GB
+ "public"."work_rev"                   | 7176 MB    | 5825 MB      | 13 GB
+ "public"."release_rev_abstract"       | 3953 MB    | 5329 MB      | 9282 MB
+ "public"."creator_edit"               | 935 MB     | 1528 MB      | 2463 MB
+ "public"."creator_rev"                | 928 MB     | 1242 MB      | 2170 MB
+ "public"."editgroup"                  | 1273 MB    | 715 MB       | 1988 MB
+ "public"."webcapture_rev_cdx"         | 1520 MB    | 290 MB       | 1810 MB
+ "public"."creator_ident"              | 631 MB     | 1120 MB      | 1751 MB
+ "public"."release_rev_extid"          | 506 MB     | 750 MB       | 1256 MB
+ "public"."changelog"                  | 411 MB     | 351 MB       | 762 MB
+ "public"."container_rev"              | 167 MB     | 43 MB        | 210 MB
+ "public"."container_edit"             | 48 MB      | 59 MB        | 107 MB
+ "public"."webcapture_edit"            | 25 MB      | 17 MB        | 41 MB
+ "public"."container_ident"            | 13 MB      | 25 MB        | 38 MB
+ "public"."webcapture_rev_url"         | 20 MB      | 7040 kB      | 27 MB
+ "public"."webcapture_rev_release"     | 7352 kB    | 11 MB        | 19 MB
+ "public"."webcapture_rev"             | 14 MB      | 4552 kB      | 19 MB
+ "public"."webcapture_ident"           | 8248 kB    | 9040 kB      | 17 MB
+ "public"."editor"                     | 80 kB      | 120 kB       | 200 kB
+ "public"."auth_oidc"                  | 72 kB      | 104 kB       | 176 kB
+ "public"."editgroup_annotation"       | 56 kB      | 48 kB        | 104 kB
+ "public"."fileset_rev_file"           | 48 kB      | 32 kB        | 80 kB
+ "public"."fileset_edit"               | 16 kB      | 48 kB        | 64 kB
+ "public"."fileset_rev_url"            | 16 kB      | 32 kB        | 48 kB
+ "public"."fileset_rev_release"        | 8192 bytes | 32 kB        | 40 kB
+ "public"."fileset_ident"              | 8192 bytes | 32 kB        | 40 kB
+ "public"."fileset_rev"                | 16 kB      | 16 kB        | 32 kB
+ "public"."__diesel_schema_migrations" | 8192 bytes | 16 kB        | 24 kB
+(41 rows)
