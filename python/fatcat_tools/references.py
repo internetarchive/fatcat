@@ -210,7 +210,7 @@ def get_inbound_refs(
     work_ident: Optional[str] = None,
     openlibrary_work: Optional[str] = None,
     url: Optional[str] = None,
-    consolidate_works: bool = True,
+    consolidate_works: bool = False,
     filter_stage: List[str] = [],
     sort: Optional[str] = None,
     limit: int = 25,
