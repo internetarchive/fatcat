@@ -2,8 +2,6 @@
 
 [Welcome!](./welcome.md)
 
-[Editing Quickstart](./editing_quickstart.md)
-
 - [Fatcat Overview](./overview.md)
     - [Goals and Related Projects](./goals.md)
     - [Data Model](./data_model.md)
@@ -26,6 +24,7 @@
     - [Bulk Exports](./bulk_exports.md)
     - [Cookbook](./cookbook.md)
 - [Contributing](./contributing.md)
+    - [Editing Quickstart](./editing_quickstart.md)
 - [Policies](./policies.md)
     - [Code of Conduct](./code_of_conduct.md)
     - [Privacy](./privacy_policy.md)

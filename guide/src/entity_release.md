@@ -84,7 +84,7 @@
 - `refs` (array of ident strings): references (aka, citations) to other releases. References
   can only be linked to a specific target release (not a work), though it may
   be ambiguous which release of a work is being referenced if the citation is
-  not specific enough. Reference fields include:
+  not specific enough. IMPORTANT: release refs are distinct from the [reference graph](./reference_graph.md) API. Reference fields include:
     - `index` (integer, optional): reference lists and bibliographies almost
       always have an implicit order. Zero-indexed. Note that this is distinct
       from the `key` field.
