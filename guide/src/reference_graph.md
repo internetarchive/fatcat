@@ -119,8 +119,9 @@ only, and is missing many current references and citations. Additionally, only
 direct identifier lookups (eg, DOI matches) are used, not fuzzy metadata
 matching.
 
-Open Library "target" matches are based on a snapshot of Open Library works,
-and are matched either ISBN (extracted from citation string) or fuzzy metadata
+Open Library "target" matches are based on a
+[snapshot](https://openlibrary.org/developers/dumps) of Open Library works, and
+are matched either ISBN (extracted from citation string) or fuzzy metadata
 matching.
 
 Crossref references are extracted from a January 2021
@@ -128,7 +129,7 @@ Crossref references are extracted from a January 2021
 metadata, and do not include many updates to existing works.
 
 Hundreds of millions of raw citation strings ("unstructured") have not been
-parsed into a structured for for fuzzy matching. We plan to use GROBID to parse
+parsed into a structured for fuzzy matching. We plan to use GROBID to parse
 these citation strings, in addition to the current use of GROBID parsing for
 references from fulltext documents.
 
