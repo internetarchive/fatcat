@@ -61,7 +61,7 @@ exact matches are included in the graph.
 
 All the code for this process is available open source:
 
-- [cgraph](https://gitlab.com/internetarchive/cgraph): batch processing and matching pipeline, in Python and Go
+- [refcat](https://gitlab.com/internetarchive/refcat): batch processing and matching pipeline, in Python and Go
 - [fuzzycat](https://gitlab.com/internetarchive/fuzzycat): Python verification code and "live" fuzzy matching
 
 

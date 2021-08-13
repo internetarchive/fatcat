@@ -18,7 +18,7 @@ See also:
 
 ### Added
 
-- reference graph views, based on fuzzy reference dataset in `cgraph` and
+- reference graph views, based on fuzzy reference dataset in `refcat` and
   `fatcat-scholar` projects, stored in elasticsearch index
 
 ### Fixed
