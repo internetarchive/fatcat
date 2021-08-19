@@ -23,15 +23,6 @@
 2018-03-05 blog.archive.org - [Andrew W. Mellon Foundation Awards Grant to the Internet Archive for Long Tail Journal Preservation](https://blog.archive.org/2018/03/05/andrew-w-mellon-foundation-awards-grant-to-the-internet-archive-for-long-tail-journal-preservation/)
 
 
-# Background
-
-<!-- TODO: move these to bibliography instead? -->
-
-2020-09-08 sciencemag.org: [Dozens of scientific journals have vanished from the internet, and no one preserved them](https://www.sciencemag.org/news/2020/09/dozens-scientific-journals-have-vanished-internet-and-no-one-preserved-them)
-
-2020-09-10 nature.com: [More than 100 scientific journals have disappeared from the Internet](https://www.nature.com/articles/d41586-020-02610-z)
-
-
 # Background / Bibliography
 
 <!-- On zbib.org: https://zbib.org/d795a00c6b0447b7af24fa6cfbcec3f2 -->
