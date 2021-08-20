@@ -226,7 +226,7 @@ def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
     return mapping
 
 
-def ftpretr(url):
+def ftpretr(url, max_retries=10, retry_delay=1):
     """
     Note: This might move into a generic place in the future.
 
@@ -235,16 +235,29 @@ def ftpretr(url):
     local temporary file. Returns the name of the local, closed temporary file.
 
     It is the reponsibility of the caller to cleanup the temporary file.
+
+    Implements a basic retry mechanism, e.g. that became an issue in 08/2021,
+    when we encountered EOFError while talking to the FTP server. Retry delay in seconds.
     """
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
-    ftp = ftplib.FTP(server)
-    ftp.login()
-    with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
-        print('retrieving {} from {} to {} ...'.format(path, server, f.name), file=sys.stderr)
-        ftp.retrbinary('RETR %s' % path, f.write)
-    ftp.close()
-    return f.name
+    for i in range(max_retries):
+        try:
+            ftp = ftplib.FTP(server)
+            ftp.login()
+            with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
+                print('retrieving {} from {} to {} ...'.format(path, server, f.name), file=sys.stderr)
+                ftp.retrbinary('RETR %s' % path, f.write)
+            ftp.close()
+        except EOFError as exc:
+            print("ftp retrbinary on {} failed with {} ({}) ({} retries left)".format(
+                path, exc, type(exc), max_retries - (i + 1)), file=sys.stderr)
+            if i + 1 == max_retries:
+                raise
+            else:
+                time.sleep(retry_delay)
+        else:
+            return f.name
 
 
 def xmlstream(filename, tag, encoding='utf-8'):
