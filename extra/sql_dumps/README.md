@@ -109,8 +109,8 @@ Can also run using the remote/SSH options above.
 The `./ia_item_exports_readme.md` and `sqldump` files should be included as a
 `README.md` when appropriate:
 
-    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md
-    ia upload fatcat_sqldump_public_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md
+    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports
+    ia upload fatcat_sqldump_public_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports
 
 Uploads should can be `--no-derive` to save cluster time.
 
@@ -122,3 +122,6 @@ Metadata should be set as:
 - date: that the dump started (UTC)
 - title: "Fatcat Bulk Metadata Exports (YYYY-MM-DD)" or "Fatcat Public Database Snapshot (YYYY-MM-DD)"
 
+## HOWTO: Upload refcat to archive.org
+
+    ia upload refcat_YYYY-MM-DD -m collection:fatcat_snapshots_and_exports refcat-brefcombined-YYYY-MM-DD.json.zst
