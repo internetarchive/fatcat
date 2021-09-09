@@ -325,6 +325,14 @@ def run_file_meta(args):
     )
     JsonLinePusher(fmi, args.json_file).run()
 
+def run_fileset(args):
+    fmi = FilesetImporter(
+        args.api,
+        edit_batch_size=100,
+        skip_release_fileset_check=args.skip_release_fileset_check,
+    )
+    JsonLinePusher(fmi, args.json_file).run()
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -749,6 +757,19 @@ def main():
     sub_file_meta.add_argument('json_file',
         help="File with jsonlines from file_meta schema to import from",
         default=sys.stdin, type=argparse.FileType('r'))
+
+    sub_fileset = subparsers.add_parser('fileset',
+        help="generic fileset importer")
+    sub_fileset.set_defaults(
+        func=run_fileset,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_fileset.add_argument('json_file',
+        help="File with jsonlines of fileset entities to import",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_fileset.add_argument('--skip-release-fileset-check',
+        action='store_true',
+        help="create without checking if releases already have related filesets")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

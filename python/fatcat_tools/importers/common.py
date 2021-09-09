@@ -447,6 +447,10 @@ class EntityImporter:
         existing.urls = [u for u in existing.urls if u.url not in redundant_urls]
         return existing
 
+    @staticmethod
+    def generic_fileset_cleanups(existing):
+        return existing
+
     def match_existing_release_fuzzy(self, release: ReleaseEntity) -> Optional[Tuple[str, str, ReleaseEntity]]:
         """
         This helper function uses fuzzycat (and elasticsearch) to look for
