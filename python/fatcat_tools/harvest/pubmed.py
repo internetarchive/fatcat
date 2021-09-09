@@ -115,7 +115,7 @@ class PubmedFTPWorker:
         for path in paths:
             # Fetch and decompress file.
             url = "ftp://{}{}".format(self.host, path)
-            filename = ftpretr(url, use_lftp=True)
+            filename = ftpretr(url, proxy_hostport="159.69.240.245:15201") # TODO: proxy obsolete, when networking issue is resolved
             with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as decomp:
                 try:
                     gzf = gzip.open(filename)
@@ -227,7 +227,7 @@ def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
     return mapping
 
 
-def ftpretr(url, max_retries=10, retry_delay=1, use_lftp=False):
+def ftpretr(url, max_retries=10, retry_delay=1, proxy_hostport=None):
     """
     Note: This might move into a generic place in the future.
 
@@ -240,8 +240,8 @@ def ftpretr(url, max_retries=10, retry_delay=1, use_lftp=False):
     Implements a basic retry mechanism, e.g. that became an issue in 08/2021,
     when we encountered EOFError while talking to the FTP server. Retry delay in seconds.
     """
-    if use_lftp is True:
-        return ftpretr_lftp(url, max_retries=max_retries, retry_delay=retry_delay)
+    if proxy_hostport is not None:
+        return ftpretr_via_http_proxy(url, proxy_hostport, max_retries=max_retries, retry_delay=retry_delay)
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
     for i in range(max_retries):
@@ -263,30 +263,27 @@ def ftpretr(url, max_retries=10, retry_delay=1, use_lftp=False):
             return f.name
 
 
-def ftpretr_lftp(url, max_retries=10, retry_delay=1):
+def ftpretr_via_http_proxy(url, proxy_hostport="159.69.240.245:15201", max_retries=10, retry_delay=1):
     """
-    Same as ftpretr, but mirrors the relevant files beforehand, then picks out
-    the requested file. Requires a few GB spare space for the mirror.
-
-    Mirrors everything from `path` on `host` to `sync_dir`, which will be under
-    the system tempdir (cf. `systemctl status systemd-tmpfiles-clean.timer`) by default.
-
-    Workaround, since networking issues (probably internet2) limit our
-    bandwith; and we cannot hold a conn longer than about 90 seconds with the
-    python ftp lib or curl. Mitigation through a hopefully more resilient
-    client like lftp.
-
-    If this does not work, check available mirrors outside nih.gov.
+    Fetch file from FTP via external HTTP proxy, e.g. ftp.host.com:/a/b/c would
+    be retrievable via proxy.com/a/b/c.
     """
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
-    with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
-        print('retrieving [lftp] {} from {} to {} ...'.format(path, server, f.name), file=sys.stderr)
-        lftp_command = """ set net:max-retries {}; set net:reconnect-interval-base {}; pget -c {} -o {}; exit """.format(max_retries, retry_delay, path, f.name)
-        cmd = ["lftp", "-u", "anonymous,anonymous", "-e", lftp_command, "ftp.ncbi.nlm.nih.gov"]
-        result = subprocess.run(cmd)
-        result.check_returncode()
-        return f.name
+    for i in range(max_retries):
+        try:
+            url = "http://{}{}".format(proxy_hostport, path)
+            print("retrieving file via proxy (ftpup) from {}".format(url), file=sys.stderr)
+            with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
+                cmd = ["wget", "-c", url, "-O", f.name]
+                result = subprocess.run(cmd)
+                return f.name
+        except (subprocess.CalledProcessError, OSError, ValueError) as exc:
+            print("ftp fetch {} failed with {} ({}) ({} retries left)".format(
+                url, exc, type(exc), max_retries - (i + 1)), file=sys.stderr)
+            if i + 1 == max_retries:
+                raise
+            time.sleep(retry_delay)
 
 
 def xmlstream(filename, tag, encoding='utf-8'):
