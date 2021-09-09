@@ -51,4 +51,3 @@ def test_basic_refs(app, mocker):
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/refs-out')
     assert rv.status_code == 200
     assert b"No References Found" in rv.data
-
