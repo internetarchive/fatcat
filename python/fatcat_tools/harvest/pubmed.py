@@ -16,6 +16,7 @@ import os
 import re
 import shutil
 import socket
+import subprocess
 import sys
 import tempfile
 import time
@@ -114,7 +115,7 @@ class PubmedFTPWorker:
         for path in paths:
             # Fetch and decompress file.
             url = "ftp://{}{}".format(self.host, path)
-            filename = ftpretr(url)
+            filename = ftpretr(url, use_lftp=True)
             with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as decomp:
                 try:
                     gzf = gzip.open(filename)
@@ -226,7 +227,7 @@ def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
     return mapping
 
 
-def ftpretr(url, max_retries=10, retry_delay=1):
+def ftpretr(url, max_retries=10, retry_delay=1, use_lftp=False):
     """
     Note: This might move into a generic place in the future.
 
@@ -239,6 +240,8 @@ def ftpretr(url, max_retries=10, retry_delay=1):
     Implements a basic retry mechanism, e.g. that became an issue in 08/2021,
     when we encountered EOFError while talking to the FTP server. Retry delay in seconds.
     """
+    if use_lftp is True:
+        return ftpretr_lftp(url, max_retries=max_retries, retry_delay=retry_delay)
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
     for i in range(max_retries):
@@ -258,6 +261,32 @@ def ftpretr(url, max_retries=10, retry_delay=1):
                 time.sleep(retry_delay)
         else:
             return f.name
+
+
+def ftpretr_lftp(url, max_retries=10, retry_delay=1):
+    """
+    Same as ftpretr, but mirrors the relevant files beforehand, then picks out
+    the requested file. Requires a few GB spare space for the mirror.
+
+    Mirrors everything from `path` on `host` to `sync_dir`, which will be under
+    the system tempdir (cf. `systemctl status systemd-tmpfiles-clean.timer`) by default.
+
+    Workaround, since networking issues (probably internet2) limit our
+    bandwith; and we cannot hold a conn longer than about 90 seconds with the
+    python ftp lib or curl. Mitigation through a hopefully more resilient
+    client like lftp.
+
+    If this does not work, check available mirrors outside nih.gov.
+    """
+    parsed = urlparse(url)
+    server, path = parsed.netloc, parsed.path
+    with tempfile.NamedTemporaryFile(prefix='fatcat-ftp-tmp-', delete=False) as f:
+        print('retrieving [lftp] {} from {} to {} ...'.format(path, server, f.name), file=sys.stderr)
+        lftp_command = """ set net:max-retries {}; set net:reconnect-interval-base {}; pget -c {} -o {}; exit """.format(max_retries, retry_delay, path, f.name)
+        cmd = ["lftp", "-u", "anonymous,anonymous", "-e", lftp_command, "ftp.ncbi.nlm.nih.gov"]
+        result = subprocess.run(cmd)
+        result.check_returncode()
+        return f.name
 
 
 def xmlstream(filename, tag, encoding='utf-8'):
