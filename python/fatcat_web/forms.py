@@ -487,6 +487,10 @@ class EntityTomlForm(EntityEditForm):
 
 class ReferenceMatchForm(FlaskForm):
 
+    class Meta:
+        # this is an API, so disable CSRF
+        csrf = False
+
     submit_type = SelectField('submit_type',
         [validators.DataRequired()],
         choices=['parse', 'match'])
@@ -496,12 +500,20 @@ class ReferenceMatchForm(FlaskForm):
     title = StringField("Title")
     journal = StringField("Journal or Conference")
     first_author = StringField("First Author")
+    #author_names = StringField("Author Names")
     #year = IntegerField('Year Released',
     #    [validators.Optional(True), valid_year])
     year = StringField("Year Released")
+    date = StringField("Date Released")
     volume = StringField("Volume")
     issue = StringField("Issue")
     pages = StringField("Pages")
+    publisher = StringField("Publisher")
+    doi = StringField("DOI")
+    pmid = StringField("PubMed Identifier (PMID)")
+    arxiv_id = StringField("arxiv.org Identifier")
+    release_type = StringField("Release Type")
+    release_stage = StringField("Release Stage")
 
     @staticmethod
     def from_grobid_parse(parse_dict, raw_citation):
