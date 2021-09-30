@@ -37,7 +37,10 @@ def _run_search_dump(args, search):
         print("=== THIS IS A DRY RUN ===")
 
     kafka_producer = None
-    ingest_file_request_topic = "sandcrawler-{}.ingest-file-requests".format(args.env)
+    if args.kafka_request_topic:
+        ingest_file_request_topic = args.kafka_request_topic
+    else:
+        ingest_file_request_topic = "sandcrawler-{}.ingest-file-requests-daily".format(args.env)
     if args.enqueue_kafka:
         print("Will send ingest requests to kafka topic: {}".format(ingest_file_request_topic), file=sys.stderr)
         kafka_producer = simple_kafka_producer(args.kafka_hosts)
@@ -185,6 +188,8 @@ def main():
     parser.add_argument('--kafka-hosts',
         default="localhost:9092",
         help="list of Kafka brokers (host/port) to use")
+    parser.add_argument('--kafka-request-topic',
+        help="exact Kafka ingest request topic to use")
     parser.add_argument('--elasticsearch-endpoint',
         default="https://search.fatcat.wiki",
         help="elasticsearch API. internal endpoint preferred, but public is default")
