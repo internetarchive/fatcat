@@ -549,10 +549,13 @@ class DataciteImporter(EntityImporter):
                 lang = langdetect.detect(text)
             except (langdetect.lang_detect_exception.LangDetectException, TypeError) as err:
                 print('[{}] language detection failed with {} on {}'.format(doi, err, text), file=sys.stderr)
+            abstract_text = clean(text)
+            if not abstract_text:
+                continue
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
                     mimetype="text/plain",
-                    content=clean(text),
+                    content=abstract_text,
                     lang=lang,
                 ))
 
