@@ -324,7 +324,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileSavePaperNow')
         kwargs['submit_mode'] = submit_mode
-        kwargs['require_grobid'] = True
+        kwargs['require_grobid'] = False
         kwargs['do_updates'] = False
         super().__init__(api,
             editgroup_description=eg_desc,
@@ -333,9 +333,6 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
 
     def want(self, row):
 
-        if not self.want_file(row):
-            return False
-
         source = row['request'].get('ingest_request_source')
         if not source:
             self.counts['skip-ingest_request_source'] += 1
@@ -343,8 +340,12 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
         if not source.startswith('savepapernow'):
             self.counts['skip-not-savepapernow'] += 1
             return False
+
         if row.get('hit') != True:
             self.counts['skip-hit'] += 1
+            return False
+
+        if not self.want_file(row):
             return False
 
         return True
@@ -390,13 +391,12 @@ class IngestWebResultImporter(IngestFileResultImporter):
         if not self.want_ingest(row):
             return False
 
-        if not row.get('file_meta'):
-            self.counts['skip-file-meta'] += 1
-            return False
-
         # webcapture-specific filters
         if row['request'].get('ingest_type') != 'html':
             self.counts['skip-ingest-type'] += 1
+            return False
+        if not row.get('file_meta'):
+            self.counts['skip-file-meta'] += 1
             return False
         if row['file_meta'].get('mimetype') not in ("text/html", "application/xhtml+xml"):
             self.counts['skip-mimetype'] += 1
