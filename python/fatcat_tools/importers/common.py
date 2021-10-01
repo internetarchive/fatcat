@@ -732,8 +732,8 @@ class KafkaBs4XmlPusher(RecordPusher):
             batch = self.consumer.consume(
                 num_messages=self.consume_batch_size,
                 timeout=self.poll_interval)
-            print("... got {} kafka messages ({}sec poll interval)".format(
-                len(batch), self.poll_interval))
+            print("... got {} kafka messages ({}sec poll interval) {}".format(
+                len(batch), self.poll_interval, self.importer.counts))
             if not batch:
                 if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
                     # it has been some time, so flush any current editgroup
@@ -796,8 +796,8 @@ class KafkaJsonPusher(RecordPusher):
             batch = self.consumer.consume(
                 num_messages=self.consume_batch_size,
                 timeout=self.poll_interval)
-            print("... got {} kafka messages ({}sec poll interval)".format(
-                len(batch), self.poll_interval))
+            print("... got {} kafka messages ({}sec poll interval) {}".format(
+                len(batch), self.poll_interval, self.importer.counts))
             if not batch:
                 if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
                     # it has been some time, so flush any current editgroup
