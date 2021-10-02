@@ -159,6 +159,7 @@ def run_ingest_web(args):
             "fatcat-{}-ingest-web-result".format(args.kafka_env),
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
+            force_flush=True,
         ).run()
     else:
         JsonLinePusher(iwri, args.json_file).run()
@@ -176,6 +177,7 @@ def run_savepapernow_file(args):
             "fatcat-{}-savepapernow-file-result".format(args.kafka_env),
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
+            force_flush=True,
         ).run()
     else:
         JsonLinePusher(ifri, args.json_file).run()
@@ -193,6 +195,7 @@ def run_savepapernow_web(args):
             "fatcat-{}-savepapernow-web-result".format(args.kafka_env),
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
+            force_flush=True,
         ).run()
     else:
         JsonLinePusher(ifri, args.json_file).run()
