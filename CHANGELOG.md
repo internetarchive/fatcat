@@ -20,11 +20,14 @@ See also:
 
 - reference graph views, based on fuzzy reference dataset in `refcat` and
   `fatcat-scholar` projects, stored in elasticsearch index
+- savepapernow webcapture/html importer
 
 ### Fixed
 
 - viewing deleted release entities no longer result in 500 error
 - mediawiki (wikipedia) OAuth logins (bytes/str bug in fatcat code)
+- savepapernow ingest importer force flushes every 5 minutes; should fix a bug
+  with many SPN ingest requests not getting imported
 
 ## [0.3.4] - 2021-05-25
 
