@@ -222,6 +222,12 @@ class IngestFileResultImporter(EntityImporter):
             if edit_extra['link_source'] == 'doi':
                 edit_extra['link_source_id'] = edit_extra['link_source_id'].lower()
 
+        # GROBID metadata, for SPN requests (when there might not be 'success')
+        if request.get('ingest_type') == 'pdf':
+            if row.get('grobid') and row['grobid'].get('status') != 'success':
+                edit_extra['grobid_status_code'] = row['grobid']['status_code']
+                edit_extra['grobid_version'] = row['grobid'].get('grobid_version')
+
         return edit_extra
 
     def parse_record(self, row):
@@ -304,11 +310,19 @@ class IngestFileResultImporter(EntityImporter):
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
+        if self.submit_mode:
+            eg = self.api.create_editgroup(fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+                extra=self.editgroup_extra))
+            for fe in batch:
+                self.api.create_file(eg.editgroup_id, fe)
+            self.api.update_editgroup(eg.editgroup_id, eg, submit=True)
+        else:
+            self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description,
+                    extra=self.editgroup_extra),
+                entity_list=batch))
 
 
 class SavePaperNowFileImporter(IngestFileResultImporter):
@@ -324,7 +338,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileSavePaperNow')
         kwargs['submit_mode'] = submit_mode
-        kwargs['require_grobid'] = True
+        kwargs['require_grobid'] = False
         kwargs['do_updates'] = False
         super().__init__(api,
             editgroup_description=eg_desc,
@@ -333,9 +347,6 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
 
     def want(self, row):
 
-        if not self.want_file(row):
-            return False
-
         source = row['request'].get('ingest_request_source')
         if not source:
             self.counts['skip-ingest_request_source'] += 1
@@ -343,29 +354,15 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
         if not source.startswith('savepapernow'):
             self.counts['skip-not-savepapernow'] += 1
             return False
+
         if row.get('hit') != True:
             self.counts['skip-hit'] += 1
             return False
 
-        return True
+        if not self.want_file(row):
+            return False
 
-    def insert_batch(self, batch):
-        """
-        Usually running in submit_mode, so we can't use auto_batch method
-        """
-        if self.submit_mode:
-            eg = self.api.create_editgroup(fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra))
-            for fe in batch:
-                self.api.create_file(eg.editgroup_id, fe)
-            self.api.update_editgroup(eg.editgroup_id, eg, submit=True)
-        else:
-            self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
-                editgroup=fatcat_openapi_client.Editgroup(
-                    description=self.editgroup_description,
-                    extra=self.editgroup_extra),
-                entity_list=batch))
+        return True
 
 
 class IngestWebResultImporter(IngestFileResultImporter):
@@ -390,13 +387,12 @@ class IngestWebResultImporter(IngestFileResultImporter):
         if not self.want_ingest(row):
             return False
 
-        if not row.get('file_meta'):
-            self.counts['skip-file-meta'] += 1
-            return False
-
         # webcapture-specific filters
         if row['request'].get('ingest_type') != 'html':
             self.counts['skip-ingest-type'] += 1
+            return False
+        if not row.get('file_meta'):
+            self.counts['skip-file-meta'] += 1
             return False
         if row['file_meta'].get('mimetype') not in ("text/html", "application/xhtml+xml"):
             self.counts['skip-mimetype'] += 1
@@ -514,8 +510,66 @@ class IngestWebResultImporter(IngestFileResultImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebcaptureAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
+        if self.submit_mode:
+            eg = self.api.create_editgroup(fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+                extra=self.editgroup_extra))
+            for fe in batch:
+                self.api.create_webcapture(eg.editgroup_id, fe)
+            self.api.update_editgroup(eg.editgroup_id, eg, submit=True)
+        else:
+            self.api.create_webcapture_auto_batch(fatcat_openapi_client.WebcaptureAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description,
+                    extra=self.editgroup_extra),
+                entity_list=batch))
+
+class SavePaperNowWebImporter(IngestWebResultImporter):
+    """
+    Like SavePaperNowFileImporter, but for webcapture (HTML) ingest.
+    """
+
+    def __init__(self, api, submit_mode=True, **kwargs):
+
+        eg_desc = kwargs.pop('editgroup_description', None) or "Webcaptures crawled after a public 'Save Paper Now' request"
+        eg_extra = kwargs.pop('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestWebSavePaperNow')
+        kwargs['submit_mode'] = submit_mode
+        kwargs['do_updates'] = False
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra,
+            **kwargs)
+
+    def want(self, row):
+        """
+        Relatively custom want() here, a synthesis of other filters.
+
+        We do currently allow unknown-scope through for this specific code
+        path, which means allowing hit=false.
+        """
+
+        source = row['request'].get('ingest_request_source')
+        if not source:
+            self.counts['skip-ingest_request_source'] += 1
+            return False
+        if not source.startswith('savepapernow'):
+            self.counts['skip-not-savepapernow'] += 1
+            return False
+
+        # webcapture-specific filters
+        if row['request'].get('ingest_type') != 'html':
+            self.counts['skip-ingest-type'] += 1
+            return False
+        if not row.get('file_meta'):
+            self.counts['skip-file-meta'] += 1
+            return False
+        if row['file_meta'].get('mimetype') not in ("text/html", "application/xhtml+xml"):
+            self.counts['skip-mimetype'] += 1
+            return False
+
+        if row.get('status') not in ['success', 'unknown-scope']:
+            self.counts['skip-hit'] += 1
+            return False
+
+        return True

@@ -732,8 +732,8 @@ class KafkaBs4XmlPusher(RecordPusher):
             batch = self.consumer.consume(
                 num_messages=self.consume_batch_size,
                 timeout=self.poll_interval)
-            print("... got {} kafka messages ({}sec poll interval)".format(
-                len(batch), self.poll_interval))
+            print("... got {} kafka messages ({}sec poll interval) {}".format(
+                len(batch), self.poll_interval, self.importer.counts))
             if not batch:
                 if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
                     # it has been some time, so flush any current editgroup
@@ -779,10 +779,12 @@ class KafkaJsonPusher(RecordPusher):
         )
         self.poll_interval = kwargs.get('poll_interval', 5.0)
         self.consume_batch_size = kwargs.get('consume_batch_size', 100)
+        self.force_flush = kwargs.get('force_flush', False)
 
     def run(self):
         count = 0
         last_push = datetime.datetime.now()
+        last_force_flush = datetime.datetime.now()
         while True:
             # Note: this is batch-oriented, because underlying importer is
             # often batch-oriented, but this doesn't confirm that entire batch
@@ -796,13 +798,24 @@ class KafkaJsonPusher(RecordPusher):
             batch = self.consumer.consume(
                 num_messages=self.consume_batch_size,
                 timeout=self.poll_interval)
-            print("... got {} kafka messages ({}sec poll interval)".format(
-                len(batch), self.poll_interval))
+            print("... got {} kafka messages ({}sec poll interval) {}".format(
+                len(batch), self.poll_interval, self.importer.counts))
+            if self.force_flush:
+                # this flushing happens even if there have been 'push' events
+                # more recently. it is intended for, eg, importers off the
+                # ingest file stream *other than* the usual file importer. the
+                # web/HTML and savepapernow importers get frequent messages,
+                # but rare 'want() == True', so need an extra flush
+                if datetime.datetime.now() - last_force_flush > datetime.timedelta(minutes=5):
+                    self.importer.finish()
+                    last_push = datetime.datetime.now()
+                    last_force_flush = datetime.datetime.now()
             if not batch:
                 if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
                     # it has been some time, so flush any current editgroup
                     self.importer.finish()
                     last_push = datetime.datetime.now()
+                    last_force_flush = datetime.datetime.now()
                     #print("Flushed any partial import batch: {}".format(self.importer.counts))
                 continue
             # first check errors on entire batch...
