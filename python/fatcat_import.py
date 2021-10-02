@@ -180,6 +180,23 @@ def run_savepapernow_file(args):
     else:
         JsonLinePusher(ifri, args.json_file).run()
 
+def run_savepapernow_web(args):
+    ifri = SavePaperNowWebImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            ifri,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ingest-file-results",
+            "fatcat-{}-savepapernow-web-result".format(args.kafka_env),
+            kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size,
+        ).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
 def run_grobid_metadata(args):
     fmi = GrobidMetadataImporter(args.api,
         edit_batch_size=args.batch_size,
@@ -551,6 +568,19 @@ def main():
         help="ingest-file JSON file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_savepapernow_file.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+
+    sub_savepapernow_web = subparsers.add_parser('savepapernow-web-results',
+        help="add webcapture entities crawled due to async Save Paper Now request")
+    sub_savepapernow_web.set_defaults(
+        func=run_savepapernow_web,
+        auth_var="FATCAT_AUTH_WORKER_SAVEPAPERNOW",
+    )
+    sub_savepapernow_web.add_argument('json_file',
+        help="ingest-file JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_savepapernow_web.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
 
