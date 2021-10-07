@@ -49,3 +49,10 @@ Thread from 2021: <https://twitter.com/internetarchive/status/136132986025413018
 - Le Grand Jeu
 - ILK Journal (in wayback: http://web.archive.org/web/20160331182524/http://ilkjournal.com/journal/issue-fourteen/roberto-montes/)
 
+
+### Vanished Content
+
+"Abril"
+https://fatcat.wiki/container/stdnbbwbpzflzhp2syctupqtc4
+    in DOAJ
+    broken DOIs, but new website does exist?
