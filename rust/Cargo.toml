@@ -1,6 +1,6 @@
 [package]
 name = "fatcat"
-version = "0.3.3"
+version = "0.4.0"
 edition = "2018"
 authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "A scalable, versioned, API-oriented catalog for bibliographic entities and file metadata"
