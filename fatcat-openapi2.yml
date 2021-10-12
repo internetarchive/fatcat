@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   title: fatcat
-  version: 0.3.3
+  version: 0.4.0
   description: |
     Fatcat is a scalable, versioned, API-oriented catalog of bibliographic
     entities and file metadata.
@@ -382,6 +382,10 @@ definitions:
         type: string
         description: "Type of container, eg 'journal' or 'proceedings'. See Guide for list of valid types."
         example: "journal"
+      publication_status:
+        type: string
+        description: "Whether the container is active, discontinued, etc"
+        example: "active"
       publisher:
         type: string
         description: |
@@ -390,6 +394,14 @@ definitions:
         example: "Society of Curious Students"
       issnl:
         description: "Linking ISSN number (ISSN-L). Should be valid and registered with issn.org"
+        <<: *FATCATISSN
+        <<: *FATCATISSNEXAMPLE
+      issne:
+        description: "Electronic ISSN number (ISSN-E). Should be valid and registered with issn.org"
+        <<: *FATCATISSN
+        <<: *FATCATISSNEXAMPLE
+      issnp:
+        description: "Print ISSN number (ISSN-P). Should be valid and registered with issn.org"
         <<: *FATCATISSN
         <<: *FATCATISSNEXAMPLE
       wikidata_qid:
@@ -554,12 +566,15 @@ definitions:
       sha256:
         <<: *FATCATSHA256
         <<: *FATCATSHA256EXAMPLE
+      mimetype:
+        type: string
+        example: "application/pdf"
       extra:
         type: object
         additionalProperties: {}
         description: |
           Free-form additional metadata about this specific file in the set.
-          Eg, `mimetype`. See guide for nomative (but unenforced) schema
+          Eg, `original_url`. See guide for nomative (but unenforced) schema
           fields.
   webcapture_entity:
     type: object
@@ -908,6 +923,9 @@ definitions:
       oai:
         type: string
         description: "OAI-PMH identifier; only used when an OAI-PMH record is the only authoritative metadata (eg, journal OAI-PMH feeds w/o DOIs)"
+      hdl:
+        type: string
+        description: "Handle identifier. Do not put DOIs in this field"
   release_abstract:
     type: object
     properties:
@@ -1684,6 +1702,22 @@ paths:
         - name: issnl
           in: query
           required: false
+          description: "Linking ISSN (ISSN-L); will be one of either ISSN-E or ISSN-P"
+          <<: *FATCATISSN
+        - name: issne
+          in: query
+          required: false
+          description: "Electronic ISSN (ISSN-L)"
+          <<: *FATCATISSN
+        - name: issnp
+          in: query
+          required: false
+          description: "Print ISSN (ISSN-P)"
+          <<: *FATCATISSN
+        - name: issn
+          in: query
+          required: false
+          description: "Any of ISSN-L, ISSN-E, or ISSN-P"
           <<: *FATCATISSN
         - name: wikidata_qid
           in: query
@@ -3118,6 +3152,10 @@ paths:
           in: query
           type: string
           required: false
+        - name: hdl
+          in: query
+          type: string
+          required: false
         - name: expand
           in: query
           type: string
@@ -3615,6 +3653,37 @@ paths:
           schema:
             $ref: "#/definitions/error_response"
         <<: *AUTHRESPONSES
+  /editor/lookup:
+    get:
+      operationId: "lookup_editor"
+      tags: # TAGLINE
+        - editors # TAGLINE
+      description: |
+        Fetches editor by, eg, username.
+
+        One (and only one) lookup identifier should be specified per request.
+      parameters:
+        - name: username
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Found
+          schema:
+            $ref: "#/definitions/editor"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
 
   /editgroup:
     post:
