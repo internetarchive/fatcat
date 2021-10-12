@@ -7,23 +7,24 @@ Proposed schema changes for next fatcat iteration (v0.4? v0.5?).
 
 SQL (and API, and elasticsearch):
 
-- container:`container_status` as a string enum: eg, "stub",
-  "out-of-print"/"ended" (?), "active", "new"/"small" (?).  Particularly to
-  deal with disambiguation of multiple containers by the same title but
-  separate ISSN-L. For example, "The Lancet".
+- `db_get_range_for_editor` is slow when there are many editgroups for editor; add sorted index? meh.
 - release: `release_month` (to complement `release_date` and `release_year`)
 - file: `file_scope` as a string enum indicating how much content this file
   includes. Eg, `book`, `chapter`, `article`/`work`, `issue`, `volume`,
   `abstract`, `component`. Unclear how to initialize this field; default to
   `article`/`work`?
+- file: some way of marking bad/bogus files... by scope? type? status?
 - TODO: webcapture: lookup by primary URL sha1?
 - TODO: release: switch how pages work? first/last?
 - TODO: indication of peer-review process? at release or container level?
 - TODO: container: separate canonical and disambiguating titles (?)
 - TODO: container: "imprint" field?
+- TODO: container: "series" field? eg for conferences
 - TODO: release inter-references using SCHOLIX/Datacite schema
     https://zenodo.org/record/1120265
     https://support.datacite.org/docs/connecting-research-outputs#section-related-identifiers
+- TODO: fileset: some sort of lookup; hashes of hashes?
+- TODO: fileset: some indication/handling of git repositories
 
 API tweaks:
 
