@@ -760,6 +760,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_EDITOR_EDITGROUPS_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    // Create Mime objects for the response content types for LookupEditor
+    lazy_static! {
+        pub static ref LOOKUP_EDITOR_FOUND: Mime = mime!(Application / Json);
+    }
+    // Create Mime objects for the response content types for LookupEditor
+    lazy_static! {
+        pub static ref LOOKUP_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    // Create Mime objects for the response content types for LookupEditor
+    lazy_static! {
+        pub static ref LOOKUP_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    // Create Mime objects for the response content types for LookupEditor
+    lazy_static! {
+        pub static ref LOOKUP_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     // Create Mime objects for the response content types for UpdateEditor
     lazy_static! {
         pub static ref UPDATE_EDITOR_UPDATED_EDITOR: Mime = mime!(Application / Json);
@@ -1880,7 +1896,6 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-
 }
 
 pub mod requests {
@@ -1989,5 +2004,4 @@ pub mod requests {
     lazy_static! {
         pub static ref UPDATE_WORK: Mime = mime!(Application / Json);
     }
-
 }

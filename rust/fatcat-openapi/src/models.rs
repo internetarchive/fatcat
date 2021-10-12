@@ -120,6 +120,16 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wikidata_qid: Option<String>,
 
+    /// Print ISSN number (ISSN-P). Should be valid and registered with issn.org
+    #[serde(rename = "issnp")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issnp: Option<String>,
+
+    /// Electronic ISSN number (ISSN-E). Should be valid and registered with issn.org
+    #[serde(rename = "issne")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issne: Option<String>,
+
     /// Linking ISSN number (ISSN-L). Should be valid and registered with issn.org
     #[serde(rename = "issnl")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -129,6 +139,11 @@ pub struct ContainerEntity {
     #[serde(rename = "publisher")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
+
+    /// Whether the container is active, discontinued, etc
+    #[serde(rename = "publication_status")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub publication_status: Option<String>,
 
     /// Type of container, eg 'journal' or 'proceedings'. See Guide for list of valid types.
     #[serde(rename = "container_type")]
@@ -175,8 +190,11 @@ impl ContainerEntity {
     pub fn new() -> ContainerEntity {
         ContainerEntity {
             wikidata_qid: None,
+            issnp: None,
+            issne: None,
             issnl: None,
             publisher: None,
+            publication_status: None,
             container_type: None,
             name: None,
             edit_extra: None,
@@ -818,7 +836,11 @@ pub struct FilesetFile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
 
-    /// Free-form additional metadata about this specific file in the set. Eg, `mimetype`. See guide for nomative (but unenforced) schema fields.
+    #[serde(rename = "mimetype")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+
+    /// Free-form additional metadata about this specific file in the set. Eg, `original_url`. See guide for nomative (but unenforced) schema fields.
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
@@ -832,6 +854,7 @@ impl FilesetFile {
             md5: None,
             sha1: None,
             sha256: None,
+            mimetype: None,
             extra: None,
         }
     }
@@ -1245,6 +1268,11 @@ pub struct ReleaseExtIds {
     #[serde(rename = "oai")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub oai: Option<String>,
+
+    /// Handle identifier. Do not put DOIs in this field
+    #[serde(rename = "hdl")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hdl: Option<String>,
 }
 
 impl ReleaseExtIds {
@@ -1263,6 +1291,7 @@ impl ReleaseExtIds {
             doaj: None,
             dblp: None,
             oai: None,
+            hdl: None,
         }
     }
 }

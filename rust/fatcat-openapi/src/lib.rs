@@ -563,6 +563,18 @@ pub enum GetEditorEditgroupsResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum LookupEditorResponse {
+    /// Found
+    Found(models::Editor),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum UpdateEditorResponse {
     /// Updated Editor
     UpdatedEditor(models::Editor),
@@ -1383,6 +1395,9 @@ pub trait Api {
     fn lookup_container(
         &self,
         issnl: Option<String>,
+        issne: Option<String>,
+        issnp: Option<String>,
+        issn: Option<String>,
         wikidata_qid: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
@@ -1468,6 +1483,8 @@ pub trait Api {
         since: Option<chrono::DateTime<chrono::Utc>>,
         context: &Context,
     ) -> Box<dyn Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send>;
+
+    fn lookup_editor(&self, username: Option<String>, context: &Context) -> Box<dyn Future<Item = LookupEditorResponse, Error = ApiError> + Send>;
 
     fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<dyn Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
@@ -1560,6 +1577,7 @@ pub trait Api {
         doaj: Option<String>,
         dblp: Option<String>,
         oai: Option<String>,
+        hdl: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         context: &Context,
@@ -1649,6 +1667,9 @@ pub trait ApiNoContext {
     fn lookup_container(
         &self,
         issnl: Option<String>,
+        issne: Option<String>,
+        issnp: Option<String>,
+        issn: Option<String>,
         wikidata_qid: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
@@ -1723,6 +1744,8 @@ pub trait ApiNoContext {
         before: Option<chrono::DateTime<chrono::Utc>>,
         since: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Box<dyn Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send>;
+
+    fn lookup_editor(&self, username: Option<String>) -> Box<dyn Future<Item = LookupEditorResponse, Error = ApiError> + Send>;
 
     fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<dyn Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
@@ -1814,6 +1837,7 @@ pub trait ApiNoContext {
         doaj: Option<String>,
         dblp: Option<String>,
         oai: Option<String>,
+        hdl: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<dyn Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
@@ -1938,11 +1962,14 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
     fn lookup_container(
         &self,
         issnl: Option<String>,
+        issne: Option<String>,
+        issnp: Option<String>,
+        issn: Option<String>,
         wikidata_qid: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<dyn Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
-        self.api().lookup_container(issnl, wikidata_qid, expand, hide, &self.context())
+        self.api().lookup_container(issnl, issne, issnp, issn, wikidata_qid, expand, hide, &self.context())
     }
 
     fn update_container(&self, editgroup_id: String, ident: String, entity: models::ContainerEntity) -> Box<dyn Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
@@ -2059,6 +2086,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         since: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Box<dyn Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
         self.api().get_editor_editgroups(editor_id, limit, before, since, &self.context())
+    }
+
+    fn lookup_editor(&self, username: Option<String>) -> Box<dyn Future<Item = LookupEditorResponse, Error = ApiError> + Send> {
+        self.api().lookup_editor(username, &self.context())
     }
 
     fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<dyn Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
@@ -2219,11 +2250,29 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         doaj: Option<String>,
         dblp: Option<String>,
         oai: Option<String>,
+        hdl: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<dyn Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
-        self.api()
-            .lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core, arxiv, jstor, ark, mag, doaj, dblp, oai, expand, hide, &self.context())
+        self.api().lookup_release(
+            doi,
+            wikidata_qid,
+            isbn13,
+            pmid,
+            pmcid,
+            core,
+            arxiv,
+            jstor,
+            ark,
+            mag,
+            doaj,
+            dblp,
+            oai,
+            hdl,
+            expand,
+            hide,
+            &self.context(),
+        )
     }
 
     fn update_release(&self, editgroup_id: String, ident: String, entity: models::ReleaseEntity) -> Box<dyn Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {

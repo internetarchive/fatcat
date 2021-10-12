@@ -48,8 +48,9 @@ use crate::{
     GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse, GetReleaseFilesResponse,
     GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse, GetWebcaptureEditResponse,
     GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse, GetWorkRedirectsResponse,
-    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse,
-    UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupEditorResponse, LookupFileResponse, LookupReleaseResponse,
+    UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
+    UpdateWorkResponse,
 };
 
 header! { (Warning, "Warning") => [String] }
@@ -1631,11 +1632,17 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_issnl = query_params.get("issnl").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_issne = query_params.get("issne").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_issnp = query_params.get("issnp").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_issn = query_params.get("issn").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_wikidata_qid = query_params.get("wikidata_qid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_container(param_issnl, param_wikidata_qid, param_expand, param_hide, context).wait() {
+                match api
+                    .lookup_container(param_issnl, param_issne, param_issnp, param_issn, param_wikidata_qid, param_expand, param_hide, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         LookupContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4403,6 +4410,84 @@ where
             })
         },
         "GetEditorEditgroups",
+    );
+
+    let api_clone = api.clone();
+    router.get(
+        "/v0/editor/lookup",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_username = query_params.get("username").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.lookup_editor(param_username, context).wait() {
+                    Ok(rsp) => match rsp {
+                        LookupEditorResponse::Found(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_EDITOR_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        LookupEditorResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_EDITOR_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        LookupEditorResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_EDITOR_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        LookupEditorResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_EDITOR_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "LookupEditor",
     );
 
     let api_clone = api.clone();
@@ -8290,6 +8375,7 @@ where
                 let param_doaj = query_params.get("doaj").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_dblp = query_params.get("dblp").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_oai = query_params.get("oai").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hdl = query_params.get("hdl").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
@@ -8308,6 +8394,7 @@ where
                         param_doaj,
                         param_dblp,
                         param_oai,
+                        param_hdl,
                         param_expand,
                         param_hide,
                         context,

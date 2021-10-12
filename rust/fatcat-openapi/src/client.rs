@@ -46,8 +46,9 @@ use crate::{
     GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse, GetReleaseFilesResponse,
     GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse, GetWebcaptureEditResponse,
     GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse, GetWorkRedirectsResponse,
-    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse,
-    UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupEditorResponse, LookupFileResponse, LookupReleaseResponse,
+    UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
+    UpdateWorkResponse,
 };
 
 /// Convert input into a base path, e.g. "http://example:123". Also checks the scheme as it goes.
@@ -1245,6 +1246,9 @@ impl Api for Client {
     fn lookup_container(
         &self,
         param_issnl: Option<String>,
+        param_issne: Option<String>,
+        param_issnp: Option<String>,
+        param_issn: Option<String>,
         param_wikidata_qid: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
@@ -1252,14 +1256,20 @@ impl Api for Client {
     ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_issnl = param_issnl.map_or_else(String::new, |query| format!("issnl={issnl}&", issnl = query.to_string()));
+        let query_issne = param_issne.map_or_else(String::new, |query| format!("issne={issne}&", issne = query.to_string()));
+        let query_issnp = param_issnp.map_or_else(String::new, |query| format!("issnp={issnp}&", issnp = query.to_string()));
+        let query_issn = param_issn.map_or_else(String::new, |query| format!("issn={issn}&", issn = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/lookup?{issnl}{wikidata_qid}{expand}{hide}",
+            "{}/v0/container/lookup?{issnl}{issne}{issnp}{issn}{wikidata_qid}{expand}{hide}",
             self.base_path,
             issnl = utf8_percent_encode(&query_issnl, QUERY_ENCODE_SET),
+            issne = utf8_percent_encode(&query_issne, QUERY_ENCODE_SET),
+            issnp = utf8_percent_encode(&query_issnp, QUERY_ENCODE_SET),
+            issn = utf8_percent_encode(&query_issn, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
@@ -3196,6 +3206,69 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(GetEditorEditgroupsResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn lookup_editor(&self, param_username: Option<String>, context: &Context) -> Box<Future<Item = LookupEditorResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_username = param_username.map_or_else(String::new, |query| format!("username={username}&", username = query.to_string()));
+
+        let url = format!("{}/v0/editor/lookup?{username}", self.base_path, username = utf8_percent_encode(&query_username, QUERY_ENCODE_SET));
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Get, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<LookupEditorResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Editor>(&buf)?;
+
+                    Ok(LookupEditorResponse::Found(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(LookupEditorResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(LookupEditorResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(LookupEditorResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -5880,6 +5953,7 @@ impl Api for Client {
         param_doaj: Option<String>,
         param_dblp: Option<String>,
         param_oai: Option<String>,
+        param_hdl: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -5898,11 +5972,12 @@ impl Api for Client {
         let query_doaj = param_doaj.map_or_else(String::new, |query| format!("doaj={doaj}&", doaj = query.to_string()));
         let query_dblp = param_dblp.map_or_else(String::new, |query| format!("dblp={dblp}&", dblp = query.to_string()));
         let query_oai = param_oai.map_or_else(String::new, |query| format!("oai={oai}&", oai = query.to_string()));
+        let query_hdl = param_hdl.map_or_else(String::new, |query| format!("hdl={hdl}&", hdl = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{doaj}{dblp}{oai}{expand}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{doaj}{dblp}{oai}{hdl}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
@@ -5917,6 +5992,7 @@ impl Api for Client {
             doaj = utf8_percent_encode(&query_doaj, QUERY_ENCODE_SET),
             dblp = utf8_percent_encode(&query_dblp, QUERY_ENCODE_SET),
             oai = utf8_percent_encode(&query_oai, QUERY_ENCODE_SET),
+            hdl = utf8_percent_encode(&query_hdl, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );

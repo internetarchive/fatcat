@@ -22,9 +22,9 @@ use fatcat_openapi::{
     GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
     GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
     GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
-    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse,
-    UpdateWebcaptureResponse, UpdateWorkResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupEditorResponse,
+    LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse,
+    UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 
 #[derive(Copy, Clone)]
@@ -159,6 +159,9 @@ impl Api for Server {
     fn lookup_container(
         &self,
         issnl: Option<String>,
+        issne: Option<String>,
+        issnp: Option<String>,
+        issn: Option<String>,
         wikidata_qid: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
@@ -166,8 +169,11 @@ impl Api for Server {
     ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_container({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_container({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             issnl,
+            issne,
+            issnp,
+            issn,
             wikidata_qid,
             expand,
             hide,
@@ -441,6 +447,12 @@ impl Api for Server {
             since,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn lookup_editor(&self, username: Option<String>, context: &Context) -> Box<Future<Item = LookupEditorResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("lookup_editor({:?}) - X-Span-ID: {:?}", username, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -819,13 +831,14 @@ impl Api for Server {
         doaj: Option<String>,
         dblp: Option<String>,
         oai: Option<String>,
+        hdl: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             doi,
             wikidata_qid,
             isbn13,
@@ -839,6 +852,7 @@ impl Api for Server {
             doaj,
             dblp,
             oai,
+            hdl,
             expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()

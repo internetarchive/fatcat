@@ -23,9 +23,9 @@ use fatcat_openapi::{
     GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
     GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
     GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
-    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse,
-    UpdateWebcaptureResponse, UpdateWorkResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupEditorResponse,
+    LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse,
+    UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
@@ -64,6 +64,7 @@ fn main() {
                     "GetEditor",
                     "GetEditorAnnotations",
                     "GetEditorEditgroups",
+                    "LookupEditor",
                     "DeleteFile",
                     "DeleteFileEdit",
                     "GetFile",
@@ -212,6 +213,9 @@ fn main() {
             let result = client
                 .lookup_container(
                     Some("issnl_example".to_string()),
+                    Some("issne_example".to_string()),
+                    Some("issnp_example".to_string()),
+                    Some("issn_example".to_string()),
                     Some("wikidata_qid_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
@@ -346,6 +350,11 @@ fn main() {
 
         Some("GetEditorEditgroups") => {
             let result = client.get_editor_editgroups("editor_id_example".to_string(), Some(789), None, None).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("LookupEditor") => {
+            let result = client.lookup_editor(Some("username_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -561,6 +570,7 @@ fn main() {
                     Some("doaj_example".to_string()),
                     Some("dblp_example".to_string()),
                     Some("oai_example".to_string()),
+                    Some("hdl_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
                 )
@@ -690,6 +700,8 @@ fn main() {
         //     let result = client.update_work("editgroup_id_example".to_string(), "ident_example".to_string(), ???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        _ => panic!("Invalid operation provided"),
+        _ => {
+            panic!("Invalid operation provided")
+        }
     }
 }
