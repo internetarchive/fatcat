@@ -624,29 +624,44 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         # XXX: create URLs and rel for dataset ingest
         if not row.get('strategy'):
             return []
-        if row['strategy'].startswith('archiveorg') and row.get('archiveorg_item_name'):
-            return [
-                fatcat_openapi_client.FilesetUrl(
-                    url=f"https://archive.org/download/{row['archiveorg_item_name']}",
-                    rel="archive",
-                )
-            ]
-        elif row['strategy'].startswith('web') and row.get('web_base_url'):
-            return [
-                fatcat_openapi_client.FilesetUrl(
-                    url=f"https://web.archive.org/web/{row['web_base_url_dt']}/{row['web_base_url']}",
-                    rel="webarchive",
-                )
-            ]
-        elif row['strategy'] == 'web-file-bundle' and row.get('web_bundle_url'):
-            return [
-                fatcat_openapi_client.FilesetUrl(
-                    url=f"https://web.archive.org/web/{row['web_bundle_url_dt']}/{row['web_bundle_url']}",
-                    rel="webarchive",
-                )
-            ]
+        urls = []
+        if row['strategy'] == 'archiveorg-fileset' and row.get('archiveorg_item_name'):
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
+                rel="archive",
+            ))
+        elif row['strategy'] == 'archiveorg-file-hundle' and row.get('archiveorg_item_name'):
+            # XXX: what is the filename of bundle?
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
+                rel="archive",
+            ))
+        elif row['strategy'].startswith('web') and row.get('platform_base_url'):
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=f"https://web.archive.org/web/{row['web_base_url_dt']}/{row['web_base_url']}",
+                rel="webarchive",
+            ))
+        elif row['strategy'] == 'web-file-bundle' and row.get('platform_bundle_url'):
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=f"https://web.archive.org/web/{row['web_bundle_url_dt']}/{row['web_bundle_url']}",
+                rel="webarchive",
+            ))
         else:
+            # if no archival URLs, bail out
             return []
+
+        # add any additional / platform URLs here
+        if row.get('platform_bundle_url'):
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=row['platform_bundle_url'],
+                rel="repository-bundle",
+            ))
+        if row.get('platform_base_url'):
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=row['platform_bundle_url'],
+                rel="repository",
+            ))
+        return urls
 
     def parse_record(self, row):
 
