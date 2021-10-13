@@ -276,6 +276,39 @@ def test_clean_orcid():
     assert clean_orcid("0x23-4567-3456-6780") == None
 
 
+HDL_REGEX = re.compile(r"^\d+(\.\d+)*/\S+$")
+
+def clean_hdl(raw):
+    if not raw:
+        return None
+    raw = raw.strip().lower()
+    if raw.startswith("hdl:"):
+        raw = raw[4:]
+    if raw.startswith("http://"):
+        raw = raw[7:]
+    if raw.startswith("https://"):
+        raw = raw[8:]
+    if raw.startswith("hdl.handle.net/"):
+        raw = raw[15:]
+    if not HDL_REGEX.fullmatch(raw):
+        return None
+    if raw.startswith('10.'):
+        return None
+    return raw
+
+def test_clean_hdl():
+    assert clean_hdl("20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    assert clean_hdl("hdl:20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    assert clean_hdl("https://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    assert clean_hdl("http://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    assert clean_hdl("21.1234/aksjdfh") == "21.1234/aksjdfh"
+    assert clean_hdl("2381/12775") == "2381/12775"
+    assert clean_hdl("10.1234/aksjdfh") == None
+    assert clean_hdl("20.1234") == None
+    assert clean_hdl("20.1234/") == None
+    assert clean_hdl("20./asdf") == None
+
+
 def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
     """
     This function is appropriate to be called on any random, non-markup string,
