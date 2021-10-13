@@ -2107,15 +2107,28 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref extid) = entity.ext_ids.core {
                 check_core_id(extid)?;
             }
+            if let Some(ref extid) = entity.ext_ids.arxiv {
+                check_arxiv_id(extid)?;
+            }
             if let Some(ref extid) = entity.ext_ids.jstor {
                 check_jstor_id(extid)?;
-            }
-            if let Some(ref extid) = entity.ext_ids.mag {
-                check_mag_id(extid)?;
             }
             if let Some(ref extid) = entity.ext_ids.ark {
                 check_ark_id(extid)?;
             }
+            if let Some(ref extid) = entity.ext_ids.mag {
+                check_mag_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.doaj {
+                check_doaj_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.dblp {
+                check_dblp_key(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.oai {
+                check_oai_id(extid)?;
+            }
+
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
