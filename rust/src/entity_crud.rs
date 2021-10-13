@@ -797,10 +797,13 @@ impl EntityCrud for ContainerEntity {
 
         Ok(ContainerEntity {
             issnl: None,
+            issne: None,
+            issnp: None,
             wikidata_qid: None,
             publisher: None,
             name: None,
             container_type: None,
+            publication_status: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -829,10 +832,13 @@ impl EntityCrud for ContainerEntity {
 
         Ok(ContainerEntity {
             issnl: rev_row.issnl,
+            issne: rev_row.issne,
+            issnp: rev_row.issnp,
             wikidata_qid: rev_row.wikidata_qid,
             publisher: rev_row.publisher,
             name: Some(rev_row.name),
             container_type: rev_row.container_type,
+            publication_status: rev_row.publication_status,
             state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -851,6 +857,16 @@ impl EntityCrud for ContainerEntity {
             if let Some(ref extid) = entity.issnl {
                 check_issn(extid)?;
             }
+            if let Some(ref extid) = entity.issne {
+                check_issn(extid)?;
+            }
+            if let Some(ref extid) = entity.issnp {
+                check_issn(extid)?;
+            }
+
+            if let Some(ref status) = entity.publication_status {
+                check_publication_status(status)?;
+            }
         }
 
         if models.iter().any(|m| m.name.is_none()) {
@@ -868,8 +884,11 @@ impl EntityCrud for ContainerEntity {
                         name: model.name.clone().unwrap(), // unwrap checked above
                         publisher: model.publisher.clone(),
                         issnl: model.issnl.clone(),
+                        issnp: model.issnp.clone(),
+                        issne: model.issne.clone(),
                         wikidata_qid: model.wikidata_qid.clone(),
                         container_type: model.container_type.clone(),
+                        publication_status: model.publication_status.clone(),
                         extra_json: model.extra.clone(),
                     })
                     .collect::<Vec<ContainerRevNewRow>>(),
@@ -1292,6 +1311,7 @@ impl EntityCrud for FilesetEntity {
                 md5: r.md5,
                 sha1: r.sha1,
                 sha256: r.sha256,
+                mimetype: r.mimetype,
                 extra: r.extra_json,
             })
             .collect();
@@ -1374,6 +1394,7 @@ impl EntityCrud for FilesetEntity {
                             md5: f.md5.clone(),
                             sha1: f.sha1.clone(),
                             sha256: f.sha256.clone(),
+                            mimetype: f.mimetype.clone(),
                             extra_json: f.extra.clone(),
                         })
                         .collect();
@@ -1747,6 +1768,7 @@ impl EntityCrud for ReleaseEntity {
                 doaj: None,
                 dblp: None,
                 oai: None,
+                hdl: None,
             },
             refs: None,
             contribs: None,
@@ -2026,6 +2048,7 @@ impl EntityCrud for ReleaseEntity {
             doaj: None,
             dblp: None,
             oai: None,
+            hdl: None,
         };
 
         let extid_rows: Vec<ReleaseExtidRow> = release_rev_extid::table
@@ -2041,6 +2064,7 @@ impl EntityCrud for ReleaseEntity {
                 "doaj" => ext_ids.doaj = Some(extid_row.value),
                 "dblp" => ext_ids.dblp = Some(extid_row.value),
                 "oai" => ext_ids.oai = Some(extid_row.value),
+                "hdl" => ext_ids.hdl = Some(extid_row.value),
                 _ => (),
             }
         }
@@ -2127,6 +2151,9 @@ impl EntityCrud for ReleaseEntity {
             }
             if let Some(ref extid) = entity.ext_ids.oai {
                 check_oai_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.hdl {
+                check_hdl(extid)?;
             }
 
             if let Some(ref release_type) = entity.release_type {
@@ -2333,6 +2360,13 @@ impl EntityCrud for ReleaseEntity {
                     release_rev: *rev_id,
                     extid_type: "oai".to_string(),
                     value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.hdl {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "hdl".to_string(),
+                    value: extid.to_lowercase(),
                 });
             };
         }

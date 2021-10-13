@@ -104,35 +104,71 @@ impl Server {
         &self,
         conn: &DbConn,
         issnl: &Option<String>,
+        issne: &Option<String>,
+        issnp: &Option<String>,
+        issn: &Option<String>,
         wikidata_qid: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ContainerEntity> {
-        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = match (issnl, wikidata_qid) {
-            (Some(issnl), None) => {
-                check_issn(issnl)?;
-                container_ident::table
-                    .inner_join(container_rev::table)
-                    .filter(container_rev::issnl.eq(&issnl))
-                    .filter(container_ident::is_live.eq(true))
-                    .filter(container_ident::redirect_id.is_null())
-                    .first(conn)?
-            }
-            (None, Some(wikidata_qid)) => {
-                check_wikidata_qid(wikidata_qid)?;
-                container_ident::table
-                    .inner_join(container_rev::table)
-                    .filter(container_rev::wikidata_qid.eq(&wikidata_qid))
-                    .filter(container_ident::is_live.eq(true))
-                    .filter(container_ident::redirect_id.is_null())
-                    .first(conn)?
-            }
-            _ => {
-                return Err(
-                    FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
-                );
-            }
-        };
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) =
+            match (issnl, issnp, issne, issn, wikidata_qid) {
+                (Some(issnl), None, None, None, None) => {
+                    check_issn(issnl)?;
+                    container_ident::table
+                        .inner_join(container_rev::table)
+                        .filter(container_rev::issnl.eq(&issnl))
+                        .filter(container_ident::is_live.eq(true))
+                        .filter(container_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, Some(issnp), None, None, None) => {
+                    check_issn(issnp)?;
+                    container_ident::table
+                        .inner_join(container_rev::table)
+                        .filter(container_rev::issnp.eq(&issnp))
+                        .filter(container_ident::is_live.eq(true))
+                        .filter(container_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, Some(issne), None, None) => {
+                    check_issn(issne)?;
+                    container_ident::table
+                        .inner_join(container_rev::table)
+                        .filter(container_rev::issne.eq(&issne))
+                        .filter(container_ident::is_live.eq(true))
+                        .filter(container_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, Some(issn), None) => {
+                    check_issn(issn)?;
+                    container_ident::table
+                        .inner_join(container_rev::table)
+                        .filter(
+                            container_rev::issnl
+                                .eq(&issn)
+                                .or(container_rev::issnp.eq(&issn))
+                                .or(container_rev::issne.eq(&issn)),
+                        )
+                        .filter(container_ident::is_live.eq(true))
+                        .filter(container_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, None, Some(wikidata_qid)) => {
+                    check_wikidata_qid(wikidata_qid)?;
+                    container_ident::table
+                        .inner_join(container_rev::table)
+                        .filter(container_rev::wikidata_qid.eq(&wikidata_qid))
+                        .filter(container_ident::is_live.eq(true))
+                        .filter(container_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                _ => {
+                    return Err(
+                        FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                    );
+                }
+            };
 
         let mut entity = ContainerEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
         entity.db_expand(&conn, expand_flags)?;
@@ -264,6 +300,7 @@ impl Server {
         doaj: &Option<String>,
         dblp: &Option<String>,
         oai: &Option<String>,
+        hdl: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ReleaseEntity> {
@@ -281,8 +318,24 @@ impl Server {
             doaj,
             dblp,
             oai,
+            hdl,
         ) {
-            (Some(doi), None, None, None, None, None, None, None, None, None, None, None, None) => {
+            (
+                Some(doi),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ) => {
                 // DOIs always stored lower-case; lookups are case-insensitive
                 let doi = doi.to_lowercase();
                 check_doi(&doi)?;
@@ -307,6 +360,7 @@ impl Server {
                 None,
                 None,
                 None,
+                None,
             ) => {
                 check_wikidata_qid(wikidata_qid)?;
                 release_ident::table
@@ -320,6 +374,7 @@ impl Server {
                 None,
                 None,
                 Some(isbn13),
+                None,
                 None,
                 None,
                 None,
@@ -357,6 +412,7 @@ impl Server {
                 None,
                 None,
                 None,
+                None,
             ) => {
                 check_pmid(pmid)?;
                 release_ident::table
@@ -372,6 +428,7 @@ impl Server {
                 None,
                 None,
                 Some(pmcid),
+                None,
                 None,
                 None,
                 None,
@@ -403,6 +460,7 @@ impl Server {
                 None,
                 None,
                 None,
+                None,
             ) => {
                 check_core_id(core)?;
                 release_ident::table
@@ -420,6 +478,7 @@ impl Server {
                 None,
                 None,
                 Some(arxiv),
+                None,
                 None,
                 None,
                 None,
@@ -455,6 +514,7 @@ impl Server {
                 None,
                 None,
                 None,
+                None,
             ) => {
                 check_jstor_id(jstor)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
@@ -468,7 +528,22 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, Some(ark), None, None, None, None) => {
+            (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(ark),
+                None,
+                None,
+                None,
+                None,
+                None,
+            ) => {
                 check_ark_id(ark)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -481,7 +556,22 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, None, Some(mag), None, None, None) => {
+            (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(mag),
+                None,
+                None,
+                None,
+                None,
+            ) => {
                 check_mag_id(mag)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -506,6 +596,7 @@ impl Server {
                 None,
                 None,
                 Some(doaj),
+                None,
                 None,
                 None,
             ) => {
@@ -535,6 +626,7 @@ impl Server {
                 None,
                 Some(dblp),
                 None,
+                None,
             ) => {
                 check_dblp_key(dblp)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
@@ -548,7 +640,22 @@ impl Server {
                         .first(conn)?;
                 (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, None, None, None, None, Some(oai)) => {
+            (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(oai),
+                None,
+            ) => {
                 check_oai_id(oai)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
@@ -556,6 +663,35 @@ impl Server {
                         .inner_join(release_rev_extid::table)
                         .filter(release_rev_extid::extid_type.eq("oai".to_string()))
                         .filter(release_rev_extid::value.eq(oai))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
+            }
+            (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(hdl),
+            ) => {
+                let hdl = hdl.to_lowercase();
+                check_hdl(&hdl)?;
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("hdl".to_string()))
+                        .filter(release_rev_extid::value.eq(hdl))
                         .filter(release_ident::is_live.eq(true))
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?;

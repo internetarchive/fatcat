@@ -28,6 +28,7 @@ use uuid::Uuid;
 
 pub trait EditorCrud {
     fn db_get(conn: &DbConn, editor_id: FatcatId) -> Result<EditorRow>;
+    fn db_get_username(conn: &DbConn, username: &str) -> Result<EditorRow>;
     fn db_create(&self, conn: &DbConn) -> Result<EditorRow>;
     fn db_update_username(&self, conn: &DbConn, editor_id: FatcatId) -> Result<EditorRow>;
 }
@@ -38,6 +39,22 @@ impl EditorCrud for Editor {
             Err(diesel::result::Error::NotFound) => {
                 return Err(
                     FatcatError::NotFound("editor".to_string(), editor_id.to_string()).into(),
+                );
+            }
+            other => other?,
+        };
+        Ok(editor)
+    }
+
+    fn db_get_username(conn: &DbConn, username: &str) -> Result<EditorRow> {
+        let editor: EditorRow = match editor::table
+            .filter(editor::username.eq(username))
+            .get_result(conn)
+        {
+            Ok(ed) => ed,
+            Err(diesel::result::Error::NotFound) => {
+                return Err(
+                    FatcatError::NotFound("editor".to_string(), username.to_string()).into(),
                 );
             }
             other => other?,

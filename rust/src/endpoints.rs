@@ -8,7 +8,7 @@
 #![allow(clippy::redundant_closure_call)]
 
 use crate::auth::FatcatRole;
-use crate::database_models::EntityEditRow;
+use crate::database_models::{EditorRow, EntityEditRow};
 use crate::editing::*;
 use crate::editing_crud::{EditgroupAnnotationCrud, EditgroupCrud, EditorCrud};
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
@@ -657,12 +657,6 @@ impl Api for Server {
     );
 
     wrap_lookup_handler!(
-        lookup_container,
-        lookup_container_handler,
-        LookupContainerResponse,
-        issnl
-    );
-    wrap_lookup_handler!(
         lookup_creator,
         lookup_creator_handler,
         LookupCreatorResponse,
@@ -695,6 +689,46 @@ impl Api for Server {
         GetCreatorReleasesResponse
     );
     wrap_fcid_handler!(get_editor, get_editor_handler, GetEditorResponse);
+
+    fn lookup_container(
+        &self,
+        issnl: Option<String>,
+        issne: Option<String>,
+        issnp: Option<String>,
+        issn: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+        _context: &Context,
+    ) -> Box<dyn Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let expand_flags = match expand {
+            None => ExpandFlags::none(),
+            Some(param) => ExpandFlags::from_str(&param).unwrap(),
+        };
+        let hide_flags = match hide {
+            None => HideFlags::none(),
+            Some(param) => HideFlags::from_str(&param).unwrap(),
+        };
+        // No transaction for GET
+        let ret = match self
+            .lookup_container_handler(
+                &conn,
+                &issnl,
+                &issne,
+                &issnp,
+                &issn,
+                &wikidata_qid,
+                expand_flags,
+                hide_flags,
+            )
+            .map_err(|e| FatcatError::from(e))
+        {
+            Ok(entity) => LookupContainerResponse::FoundEntity(entity),
+            Err(fe) => generic_err_responses!(fe, LookupContainerResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
 
     fn lookup_file(
         &self,
@@ -740,6 +774,7 @@ impl Api for Server {
         doaj: Option<String>,
         dblp: Option<String>,
         oai: Option<String>,
+        hdl: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -770,6 +805,7 @@ impl Api for Server {
                 &doaj,
                 &dblp,
                 &oai,
+                &hdl,
                 expand_flags,
                 hide_flags,
             )
@@ -878,6 +914,27 @@ impl Api for Server {
         {
             Ok(annotations) => GetEditorAnnotationsResponse::Success(annotations),
             Err(fe) => generic_err_responses!(fe, GetEditorAnnotationsResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn lookup_editor(
+        &self,
+        username: Option<String>,
+        _context: &Context,
+    ) -> Box<dyn Future<Item = LookupEditorResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| match username {
+            Some(username) => {
+                let row: EditorRow = Editor::db_get_username(&conn, &username)?;
+                Ok(row.into_model())
+            }
+            None => Err(FatcatError::MissingOrMultipleExternalId(
+                "in lookup".to_string(),
+            )),
+        }) {
+            Ok(editor) => LookupEditorResponse::Found(editor),
+            Err(fe) => generic_err_responses!(fe, LookupEditorResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }

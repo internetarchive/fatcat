@@ -445,8 +445,8 @@ fn test_check_oai_id() {
     assert!(check_oai_id("oai:wibble.org:ab cd").is_err()); // space not permitted (must be escaped as %20)
     assert!(check_oai_id("oai:wibble.org:ab#cd").is_err()); // # not permitted
     assert!(check_oai_id("oai:wibble.org:ab<cd").is_err()); // < not permitted
-    // the "official" regex used above allows this case
-    //assert!(check_oai_id("oai:wibble.org:ab%3ccd").is_err()); // < must be escaped at %3C not %3c
+                                                            // the "official" regex used above allows this case
+                                                            //assert!(check_oai_id("oai:wibble.org:ab%3ccd").is_err()); // < must be escaped at %3C not %3c
 
     assert!(check_oai_id("oai:arXiv.org:hep-th/9901001").is_ok());
     assert!(check_oai_id("oai:foo.org:some-local-id-53").is_ok());
@@ -455,6 +455,46 @@ fn test_check_oai_id() {
     assert!(check_oai_id("oai:foo.org:Some-Local-Id-54").is_ok());
     assert!(check_oai_id("oai:wibble.org:ab%20cd").is_ok());
     assert!(check_oai_id("oai:wibble.org:ab?cd").is_ok());
+}
+
+pub fn check_hdl(raw: &str) -> Result<()> {
+    // currently strict about only allowing a fixed set of prefixes
+    // should explicitly not allow DOIs, even though DOIs are themselves handles
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^(20|11|21|84).\d{1,6}(.\d{1,6})?/\S+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "Handle (expected, eg, '20.500.23456/ABC/trs12')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_hdl() {
+    assert!(check_hdl("20.500.23456/ABC/DUMMY").is_ok());
+    assert!(check_hdl("20.500.12690/RIN/IDDOAH/BTNH25").is_ok());
+    assert!(check_hdl("20.500.12690/rin/iddoah/btnh25").is_ok());
+    assert!(check_hdl("20.1234/aksjdfh").is_ok());
+    assert!(check_hdl("21.1234/aksjdfh").is_ok());
+    assert!(check_hdl("11.1234/aksjdfh").is_ok());
+    assert!(check_hdl("20.500.23456/ABC/trs12").is_ok());
+    assert!(check_hdl("20.500/ABC/trs12").is_ok());
+
+    assert!(check_hdl("10.1234/aksjdfh").is_err());
+    assert!(check_hdl("0.1234/aksjdfh").is_err());
+    assert!(check_hdl("20.1234/ßs").is_err());
+    assert!(check_hdl("20.1234/aksjdfh ").is_err());
+    assert!(check_hdl("20.1234/ak sjdfh").is_err());
+    assert!(check_hdl("20.1234/aks\tjdfh").is_err());
+    assert!(check_hdl("20.1234/ ").is_err());
+    assert!(check_hdl("20.1234.sdf").is_err());
+    assert!(check_hdl("20.1234/\naksjdfh").is_err());
+    assert!(check_hdl("20.1234").is_err());
+    assert!(check_hdl("20.1234/").is_err());
 }
 
 pub fn check_issn(raw: &str) -> Result<()> {
@@ -766,4 +806,35 @@ fn test_check_contrib_role() {
     assert!(check_contrib_role("chair").is_err());
     assert!(check_contrib_role("EDITOR").is_err());
     assert!(check_contrib_role("editor ").is_err());
+}
+
+pub fn check_publication_status(raw: &str) -> Result<()> {
+    let valid_types = vec![
+        // Didn't have a controlled vocab so made one up
+        "active",
+        "suspended",
+        "discontinued",
+        "vanished",
+        "never",
+        "one-time",
+    ];
+    for good in valid_types {
+        if raw == good {
+            return Ok(());
+        }
+    }
+    Err(FatcatError::NotInControlledVocabulary(
+        "publication_status (controlled vocabulary)".to_string(),
+        raw.to_string(),
+    ))?
+}
+
+#[test]
+fn test_check_publication_status() {
+    assert!(check_publication_status("active").is_ok());
+    assert!(check_publication_status("discontinued").is_ok());
+    assert!(check_publication_status("boondogle").is_err());
+    assert!(check_publication_status("").is_err());
+    assert!(check_publication_status("active ").is_err());
+    assert!(check_publication_status("Active").is_err());
 }
