@@ -77,13 +77,17 @@
             "s2_id":          { "type": "keyword", "normalizer": "default", "doc_values": false },
             "dblp_id":        { "type": "keyword", "normalizer": "default", "doc_values": false },
             "doaj_id":        { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "hdl":            { "type": "keyword", "normalizer": "default", "doc_values": false },
             "license":        { "type": "keyword", "normalizer": "default" },
+            "version":        { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
             "publisher":            { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
             "publisher_type":       { "type": "keyword", "normalizer": "default" },
             "container_name":       { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "container_id":         { "type": "keyword", "normalizer": "default" },
+            "container_issns":      { "type": "keyword", "normalizer": "default" },
             "container_issnl":      { "type": "keyword", "normalizer": "default" },
             "container_type":       { "type": "keyword", "normalizer": "default" },
+            "container_publication_status": { "type": "keyword", "normalizer": "default" },
             "discipline":           { "type": "keyword", "normalizer": "default" },
             "contrib_count":        { "type": "integer" },
             "contrib_names":        { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
@@ -117,7 +121,9 @@
             "in_shadows":           { "type": "boolean" },
             "is_superceded":        { "type": "boolean" },
             "is_retracted":         { "type": "boolean" },
+            "is_work_alias":        { "type": "boolean" },
             "preservation":         { "type": "keyword", "normalizer": "default" },
+            "tags":                 { "type": "keyword", "normalizer": "default" },
 
             "affiliation":    { "type": "alias", "path": "affiliations" },
             "ror":            { "type": "alias", "path": "affiliation_rors" },
@@ -127,7 +133,7 @@
             "journal":        { "type": "alias", "path": "container_name" },
             "date":           { "type": "alias", "path": "release_date" },
             "year":           { "type": "alias", "path": "release_year" },
-            "issn":           { "type": "alias", "path": "container_issnl" },
+            "issn":           { "type": "alias", "path": "container_issn" },
             "oa":             { "type": "alias", "path": "is_oa" },
             "longtail":       { "type": "alias", "path": "is_longtail_oa" },
             "lang":           { "type": "alias", "path": "language" },
@@ -136,7 +142,8 @@
             "stage":          { "type": "alias", "path": "release_stage" },
             "type":           { "type": "alias", "path": "release_type" },
             "retracted":      { "type": "alias", "path": "is_retracted" },
-            "is_kept":        { "type": "alias", "path": "in_kbart" }
+            "is_kept":        { "type": "alias", "path": "in_kbart" },
+            "tag":            { "type": "alias", "path": "tags" }
         }
     }
 }

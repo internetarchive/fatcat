@@ -52,6 +52,7 @@
             "aliases":        { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "publisher_type": { "type": "keyword", "normalizer": "default" },
             "container_type": { "type": "keyword", "normalizer": "default" },
+            "publication_status": { "type": "keyword", "normalizer": "default" },
             "issnl":          { "type": "keyword", "normalizer": "default" },
             "issns":          { "type": "keyword", "normalizer": "default" },
             "wikidata_qid":   { "type": "keyword", "normalizer": "default" },
@@ -82,6 +83,7 @@
             "preservation_dark":        { "type": "integer" },
             "preservation_shadows_only":{ "type": "integer" },
             "preservation_none":        { "type": "integer" },
+            "tags":                 { "type": "keyword", "normalizer": "default" },
 
             "year":           { "type": "alias", "path": "first_year" },
             "type":           { "type": "alias", "path": "container_type" },
@@ -89,7 +91,8 @@
             "release_count":  { "type": "alias", "path": "releases_total" },
             "releases_count": { "type": "alias", "path": "releases_total" },
             "oa":             { "type": "alias", "path": "is_oa" },
-            "longtail":       { "type": "alias", "path": "is_longtail_oa" }
+            "longtail":       { "type": "alias", "path": "is_longtail_oa" },
+            "tag":            { "type": "alias", "path": "tags" }
         }
     }
 }
