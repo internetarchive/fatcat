@@ -144,11 +144,18 @@ complete or correct in more obscure cases.
   should *always* be stored will be needed.
 - `core` (string): external identifier for the [CORE] open access
   aggregator. These identifiers are integers, but stored in string format.
-- `arxiv` (string) external identifier to a (version-specific) [arxiv.org][]
+- `arxiv` (string): external identifier to a (version-specific) [arxiv.org][]
   work. For releases, must always include the `vN` suffix (eg, `v3`).
-- `jstor` (string) external identifier for works in JSTOR.
-- `ark` (string) ARK identifer
-- `mag` (string) Microsoft Academic Graph identifier
+- `jstor` (string): external identifier for works in JSTOR.
+- `ark` (string): ARK identifer
+- `mag` (deprecated; string): Microsoft Academic Graph identifier. Never used,
+  may be deleted in the future
+- `doaj` (string): [DOAJ](https://doaj.org) article-level identifier
+- `dblp` (string): [dblp](https://dblp.org) article-level identifier
+- `oai` (string): OAI-PMH record id. Only use if no other identifier is available
+- `hdl` (string): [handle.net](https://handle.net) identifier. While DOIs are
+  technically handles, do not put DOIs in this field. Handles are transformed
+  to lower-case in database.
 
 [arxiv.org]: https://arxiv.org
 
@@ -170,6 +177,10 @@ complete or correct in more obscure cases.
   should be referenced/indicated instead. Intended as a temporary hint until
   proper work-based search is implemented. As an example use, all arxiv release
   versions except for the most recent get this set.
+- `is_work_alias` (boolean): if true, then this release is an alias or pointer to
+  the entire work, or the most recent version of the work. For example, some
+  data repositories have separate DOIs for each version of the dataset, then an
+  additional DOI that points to the "lastest" version/DOI.
 
 #### `release_type` Vocabulary
 
@@ -199,7 +210,8 @@ with a small number of (proposed) extensions:
 - `post-weblog` for blog entries
 - `report`
 - `review`, for things like book reviews, not the "literature review" form of
-  `article-journal`, nor peer reviews (see `peer_review`)
+  `article-journal`, nor peer reviews (see `peer_review`). Note `review-book`
+  for book reviews specifically.
 - `speech` can be used for eg, slides and recorded conference presentations
   themselves, as distinct from `paper-conference`
 - `thesis`
@@ -216,8 +228,8 @@ with a small number of (proposed) extensions:
 - `stub` (fatcat extension) for releases which have notable external
   identifiers, and thus are included "for completeness", but don't seem to
   represent a "full work".
-- `component` (fatcat extension) for sub-components of a full paper (or other
-  work). Eg, figures or tables.
+- `component` (fatcat extension) for sub-components of a full paper or other
+  work. Eg, tables, or individual files as part of a dataset.
   
 An example of a `stub` might be a paper that gets an extra DOI by accident; the
 primary DOI should be a full release, and the accidental DOI can be a `stub`

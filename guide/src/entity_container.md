@@ -10,16 +10,20 @@
   below)
 - `container_type` (string): eg, journal vs. conference vs. book series.
   Controlled vocabulary is described below.
+- `publication_status` (string): whether actively publishing, never published
+  anything, or discontinued. Controlled vocabularity is described below.
 - `publisher` (string): The name of the publishing organization. Eg, "Society
   of Curious Students".
 - `issnl` (string): an external identifier, with registration controlled by the
   [ISSN organization](http://www.issn.org/). Registration is relatively
   inexpensive and easy to obtain (depending on world region), so almost all
   serial publications have one. The ISSN-L ("linking ISSN") is one of either
-  the print ("ISSNp") or electronic ("ISSNe") identifiers for a serial
+  the print (`issp`) or electronic (`issne`) identifiers for a serial
   publication; not all publications have both types of ISSN, but many do, which
   can cause confusion. The ISSN master list is not gratis/public, but the
   ISSN-L mapping is.
+- `issne` (string): Electronic ISSN ("ISSN-E")
+- `issnp` (string): Print ISSN ("ISSN-P")
 - `wikidata_qid` (string): external linking identifier to a Wikidata entity.
 
 #### `extra` Fields
@@ -31,8 +35,6 @@
   sometimes a very terse, single-word truncated form of the name (eg, a pun).
 - `coden` (string): an external identifier, the [CODEN code][]. 6 characters,
   all upper-case.
-- `issnp` (string): Print ISSN
-- `issne` (string): Electronic ISSN
 - `default_license` (string, slug): short name (eg, "CC-BY-SA") for the
   default/recommended license for works published in this container
 - `original_name` (string): native name (if `name` is translated)
@@ -50,6 +52,8 @@
 - `region` (string, slug): continent/world-region (vocabulary is TODO)
 - `discipline` (string, slug): highest-level subject aread (vocabulary is TODO)
 - `urls` (array of strings): known homepage URLs for this container (first in array is default)
+- `issnp` (deprecated; string): Print ISSN; deprecated now that there is a top-level field
+- `issne` (deprecated; string): Electronic ISSN; deprecated now that there is a top-level field
 
 Additional fields used in analytics and "curration" tracking:
 
@@ -98,3 +102,13 @@ preserved).
 - `trade`
 - `test`
 
+#### `publication_status` Vocabulary
+
+- `active`: ongoing publication of new releases
+- `suspended`: publication has stopped, but may continue in the future
+- `discontinued`: publication has permanently ceased
+- `vanished`: publication has stopped, and public traces have vanished (eg,
+  publisher website has disapeared with no notice)
+- `never`: no works were ever published under this container
+- `one-time`: releases were all published as a one-time even. for example, a
+  single instance of a conference, or a fixed-size book series
