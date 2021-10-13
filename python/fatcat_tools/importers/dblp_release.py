@@ -30,7 +30,7 @@ from typing import List, Optional, Any
 import fatcat_openapi_client
 
 from fatcat_tools.normal import (clean_doi, clean_str, parse_month,
-    clean_orcid,
+    clean_orcid, clean_hdl,
     clean_arxiv_id, clean_wikidata_qid, clean_isbn13)
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.transforms import entity_to_dict
@@ -483,6 +483,7 @@ class DblpReleaseImporter(EntityImporter):
         doi: Optional[str] = None
         wikidata_qid: Optional[str] = None
         arxiv_id: Optional[str] = None
+        hdl: Optional[str] = None
         for ee in xml_elem.find_all('ee'):
             url = ee.text
             # convert DOI-like domains, which mostly have DOIs anyways
@@ -498,12 +499,15 @@ class DblpReleaseImporter(EntityImporter):
             elif '://arxiv.org/abs/' in url and not arxiv_id:
                 arxiv_id = url.replace('http://', '').replace('https://', '').replace('arxiv.org/abs/', '')
                 arxiv_id = clean_arxiv_id(arxiv_id)
+            elif '://hdl.handle.net' in url and not hdl:
+                hdl = clean_hdl(url)
 
         return fatcat_openapi_client.ReleaseExtIds(
             dblp=dblp_key,
             doi=doi,
             wikidata_qid=wikidata_qid,
             arxiv=arxiv_id,
+            hdl=hdl,
         )
 
     def dblp_ext_urls(self, xml_elem: Any) -> List[str]:
