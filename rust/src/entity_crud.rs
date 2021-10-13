@@ -2270,7 +2270,11 @@ impl EntityCrud for ReleaseEntity {
                     withdrawn_status: model.withdrawn_status.clone(),
                     withdrawn_date: model.withdrawn_date,
                     withdrawn_year: model.withdrawn_year,
-                    doi: model.ext_ids.doi.clone(),
+                    doi: match model.ext_ids.doi.clone() {
+                        None => None,
+                        // NOTE: DOI lowercase is *not* currently being enforced here, but could be
+                        Some(s) => Some(s),
+                    },
                     pmid: model.ext_ids.pmid.clone(),
                     pmcid: model.ext_ids.pmcid.clone(),
                     wikidata_qid: model.ext_ids.wikidata_qid.clone(),
