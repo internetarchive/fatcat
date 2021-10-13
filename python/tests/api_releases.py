@@ -33,7 +33,7 @@ def test_release(api):
             jstor="8328424",
             mag="9439328",
             ark="ark:/12025/654xz321",
-            hdl="20.123.45/asdf",
+            hdl="20.123.45/ASDF",
         ),
         volume="84",
         number="RFC1234",
@@ -100,8 +100,10 @@ def test_release(api):
     assert r1.ext_ids.core == r2.ext_ids.core
     assert r1.ext_ids.arxiv == r2.ext_ids.arxiv
     assert r1.ext_ids.jstor == r2.ext_ids.jstor
-    assert r1.ext_ids.ark == r2.ext_ids.ark
     assert r1.ext_ids.mag == r2.ext_ids.mag
+    assert r1.ext_ids.ark == r2.ext_ids.ark
+    assert r1.ext_ids.hdl != r2.ext_ids.hdl
+    assert r1.ext_ids.hdl.lower() == r2.ext_ids.hdl
     assert r1.number == r2.number
     assert r1.version == r2.version
     assert r1.volume == r2.volume
@@ -146,6 +148,7 @@ def test_release_examples(api):
     api.lookup_release(ark='ark:/13030/m53r5pzm')
     api.lookup_release(mag='992489213')
     api.lookup_release(hdl='20.500.23456/ABC/DUMMY')
+    api.lookup_release(hdl='20.500.23456/abc/dummy')
 
     # failed lookup exception type
     try:

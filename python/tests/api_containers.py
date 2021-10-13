@@ -39,6 +39,20 @@ def test_container(api):
     assert c2.revision == c2_rev.revision
     assert c2.name == c2_rev.name
 
+    # lookups
+    tmp = api.lookup_container(issnl=c1.issnl)
+    assert tmp.revision == c2.revision
+    tmp = api.lookup_container(issne=c1.issne)
+    assert tmp.revision == c2.revision
+    tmp = api.lookup_container(issnp=c1.issnp)
+    assert tmp.revision == c2.revision
+    tmp = api.lookup_container(issn=c1.issnp)
+    assert tmp.revision == c2.revision
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
+        api.lookup_container(issne=c1.issnp)
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
+        api.lookup_container(issnp=c1.issne)
+
     # get redirects (none)
     assert api.get_container_redirects(c2.ident) == []
 
