@@ -267,6 +267,26 @@ fn test_lookups() {
 
     helpers::check_http_response(
         request::get(
+            "http://localhost:9411/v0/container/lookup?issne=1234-3333",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("Journal of Trivial Results"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/container/lookup?issn=1234-3333",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("Journal of Trivial Results"),
+    );
+
+    helpers::check_http_response(
+        request::get(
             "http://localhost:9411/v0/creator/lookup?orcid=0000-0003-2088-7465",
             headers.clone(),
             &router,
@@ -463,6 +483,16 @@ fn test_lookups() {
         status::Ok,
         Some("bigger example"),
     );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?hdl=20.500.23456/ABC/DUMMY",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
 }
 
 #[test]
@@ -532,7 +562,7 @@ fn test_post_container() {
                 editgroup_id
             ),
             headers,
-            r#"{"name": "test journal"}"#,
+            r#"{"name": "test journal", "publication_status": "active"}"#,
             &router,
         ),
         status::Created,
@@ -670,7 +700,7 @@ fn test_post_fileset() {
             ),
             headers.clone(),
             r#"{"manifest": [
-                    {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" },
+                    {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3", "mimetype": "text/plain" },
                     {"path": "output/bogus.hdf5", "size": 43210, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3", "extra": {"some": "other value"} }
                 ],
                 "urls": [
