@@ -495,10 +495,9 @@ class DblpReleaseImporter(EntityImporter):
                 doi = clean_doi(url)
             elif 'wikidata.org/entity/Q' in url and not wikidata_qid:
                 wikidata_qid = clean_wikidata_qid(url)
-            elif '://arxiv.org/abs/' in url and not wikidata_qid:
+            elif '://arxiv.org/abs/' in url and not arxiv_id:
                 arxiv_id = url.replace('http://', '').replace('https://', '').replace('arxiv.org/abs/', '')
                 arxiv_id = clean_arxiv_id(arxiv_id)
-                wikidata_qid = clean_wikidata_qid(url)
 
         return fatcat_openapi_client.ReleaseExtIds(
             dblp=dblp_key,
