@@ -14,13 +14,27 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## Unreleased
+## [0.4.0] - 2021-10-12
+
+Includes small API and SQL schema changes; see
+`./proposals/20211012_v04_schema_tweaks.md`. Old database dumps may not work
+with this version of API server; migrations can be run using the `diesel`
+command line tool to upgrade old dumps.
 
 ### Added
 
 - reference graph views, based on fuzzy reference dataset in `refcat` and
   `fatcat-scholar` projects, stored in elasticsearch index
 - savepapernow webcapture/html importer
+- release schema: new `hdl` (handle) external identifier
+- fileset schema: new `mimetype` field for files under manifest
+- container schema: new `issne` and `issnp` top-level fields, which are
+  supported in lookups, as well as the `issn` lookup field, which matches any
+  of the `issn*` fields
+- container schema: new `publication_status` field, to indicate if container is
+  still actively publishing, discontinued, or "stub"
+- above API schema changes added to elasticsearch 'release' and 'container' schemas
+- editor "lookup" API endpoint, for fetching editor object by username
 
 ### Fixed
 
@@ -28,6 +42,9 @@ See also:
 - mediawiki (wikipedia) OAuth logins (bytes/str bug in fatcat code)
 - savepapernow ingest importer force flushes every 5 minutes; should fix a bug
   with many SPN ingest requests not getting imported
+- added 'version' field to release elasticsearch schema (was missing)
+- several release external identifier validators were not actually being run
+  before insertion
 
 ## [0.3.4] - 2021-05-25
 
