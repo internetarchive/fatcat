@@ -35,6 +35,7 @@ command line tool to upgrade old dumps.
   still actively publishing, discontinued, or "stub"
 - above API schema changes added to elasticsearch 'release' and 'container' schemas
 - editor "lookup" API endpoint, for fetching editor object by username
+- web `/u/{username}` redirect helper for inspecting editors, bots, etc
 
 ### Fixed
 

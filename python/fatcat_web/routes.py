@@ -606,6 +606,14 @@ def editor_annotations(ident):
     return render_template('editor_annotations.html', editor=editor,
         annotations=annotations)
 
+@app.route('/u/<string:username>', methods=['GET', 'HEAD'])
+def editor_username_redirect(username):
+    try:
+        editor = api.lookup_editor(username=username)
+    except ApiException as ae:
+        abort(ae.status)
+    return redirect(f'/editor/{editor.editor_id}')
+
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
     try:
