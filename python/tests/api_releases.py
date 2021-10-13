@@ -29,10 +29,11 @@ def test_release(api):
             wikidata_qid="Q1234",
             isbn13="978-3-16-148410-0",
             core="187348",
-            arxiv="aslkdjfh",
+            arxiv="math.CA/0611800v2",
             jstor="8328424",
             mag="9439328",
             ark="ark:/12025/654xz321",
+            hdl="20.123.45/asdf",
         ),
         volume="84",
         number="RFC1234",
@@ -144,6 +145,7 @@ def test_release_examples(api):
     api.lookup_release(jstor='1819117828')
     api.lookup_release(ark='ark:/13030/m53r5pzm')
     api.lookup_release(mag='992489213')
+    api.lookup_release(hdl='20.500.23456/ABC/DUMMY')
 
     # failed lookup exception type
     try:

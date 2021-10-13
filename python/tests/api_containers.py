@@ -1,4 +1,5 @@
 
+import pytest
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -12,6 +13,8 @@ def test_container(api):
         container_type="journal",
         publisher="some container publisher",
         issnl="1234-567X",
+        issne="1230-0000",
+        issnp="1234-0001",
         wikidata_qid="Q954248",
         extra=dict(a=1, b=2),
         edit_extra=dict(test_key="containers rule"),
@@ -46,11 +49,38 @@ def test_container(api):
     c2 = api.get_container(c2.ident)
     assert c2.state == "deleted"
 
+def test_container_bad_idents(api):
+
+    # all the fields!
+    c1 = ContainerEntity(
+        name="some container name",
+        container_type="journal",
+        publisher="some container publisher",
+        wikidata_qid="Q954248",
+        extra=dict(a=1, b=2),
+        edit_extra=dict(test_key="containers rule"),
+    )
+
+    with pytest.raises(ValueError):
+        c1.issnl = "1234-123 "
+
+    with pytest.raises(ValueError):
+        c1.issne = "asdf-hhhh"
+
 def test_container_examples(api):
 
     c1 = api.get_container('aaaaaaaaaaaaaeiraaaaaaaaam')
     assert c1.name == "PLOS Medicine"
     assert c1.issnl == "1549-1277"
+    assert c1.issne == "1549-1676"
+    assert c1.issnp == "1549-1277"
+    assert c1.publication_status == "active"
 
     c2 = api.lookup_container(issnl=c1.issnl)
     assert c1.ident == c2.ident
+
+    c3 = api.lookup_container(issnp=c1.issnp)
+    assert c1.ident == c3.ident
+
+    c4 = api.lookup_container(issn=c1.issnp)
+    assert c1.ident == c4.ident
