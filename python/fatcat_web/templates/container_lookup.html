@@ -18,11 +18,9 @@ Couldn't find a container with that identifier (<b><code>{{ lookup_key }}:{{
 lookup_value }}</code></b>). If you think it should be in the catalog, you could
 search for an existing record missing that identifier, or create a new container
 entity. 
-{% if lookup_key == "issnl" %}
-<p>You can check if it is a registered ISSN-L by visiting:
+{% if lookup_key == "issnl" or lookup_key == "issn" or lookup_key == "issne" or lookup_key == "issnp" %}
+<p>You can check if it is a registered ISSN by visiting:
 <b><a href="https://portal.issn.org/api/search?search[]=MUST=allissnbis={{ lookup_value }}">https://portal.issn.org/api/search?search[]=MUST=allissnbis={{ lookup_value }}</a></b>.
-If this is a valid electronic or print ISSN, but not the ISSN-L for the
-container, you need to use the indicated "linking" ISSN.
 {% elif lookup_key == "wikidata_qid" %}
 <p>You can check if it is a real Wikidata entity by visiting:
 <b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}">https://www.wikidata.org/wiki/{{ lookup_value }}</a></b>
@@ -31,6 +29,14 @@ container, you need to use the indicated "linking" ISSN.
 {% endif %}
 
 <div class="ui top attached segment">
+
+<h2>ISSN</h2>
+<p>Lookup container with the given ISSN as any of the ISSN-L, ISSN-E (electronic) or ISSN-P (print) ISSNs.
+{{ entity_macros.lookup_form("container", "issn", "1234-567X", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Must include the dash</i>
+
+</div>
+<div class="ui attached segment">
 
 <h2>ISSN-L</h2>
 <p>The "linking" ISSN for a journal or other publication is one of the 

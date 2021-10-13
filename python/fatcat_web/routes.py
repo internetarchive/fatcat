@@ -146,7 +146,7 @@ def container_lookup():
     return generic_lookup_view(
         'container',
         'container_lookup.html',
-        ('issnl', 'wikidata_qid'),
+        ('issn', 'issne', 'issnp', 'issnl', 'wikidata_qid'),
         lambda p: api.lookup_container(**p))
 
 @app.route('/creator/lookup', methods=['GET'])
