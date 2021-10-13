@@ -63,6 +63,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         pages = release.pages,
         number = release.number,
         license = release.license_slug,
+        version = release.version,
         doi = release.ext_ids.doi,
         pmid = release.ext_ids.pmid,
         pmcid = release.ext_ids.pmcid,
@@ -75,6 +76,8 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         mag_id = release.ext_ids.mag,
         dblp_id = release.ext_ids.dblp,
         doaj_id = release.ext_ids.doaj,
+        hdl = release.ext_ids.hdl,
+        tags = [],
     )
 
     t.update(dict(
@@ -157,11 +160,14 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         if release.license_slug.startswith("ARXIV-"):
             t['is_oa'] = True
 
+    t['is_work_alias'] = None
     extra = release.extra or dict()
     if extra:
         if extra.get('is_oa'):
             # NOTE: not actually setting this anywhere... but could
             t['is_oa'] = True
+        if extra.get('is_work_alias') != None:
+            t['is_work_alias'] = bool(extra.get('is_work_alias'))
         if extra.get('longtail_oa'):
             # sometimes set by GROBID/matcher
             t['is_oa'] = True
@@ -220,7 +226,8 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
     # optionally coerce all flags from Optional[bool] to bool
     if force_bool:
         for k in ('is_oa', 'is_longtail_oa', 'in_kbart', 'in_ia_sim',
-                  'in_jstor', 'in_web', 'in_dweb', 'in_shadows'):
+                  'in_jstor', 'in_web', 'in_dweb', 'in_shadows',
+                  'is_work_alias'):
             t[k] = bool(t[k])
 
     t['in_ia'] = bool(t['in_ia'])
@@ -256,7 +263,11 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     # be a redirect involved
     t['container_id'] = container.ident
     t['container_issnl'] = container.issnl
+    issns = [container.issnl, container.issne, container.issnp]
+    issns = list(set([i for i in issns if i]))
+    t['container_issns'] = issns
     t['container_type'] = container.container_type
+    t['container_publication_status'] = container.publication_status
     if container.extra:
         c_extra = container.extra
         if c_extra.get('kbart') and release_year:
@@ -406,7 +417,10 @@ def container_to_elasticsearch(entity, force_bool=True, stats=None):
         name = entity.name,
         publisher = entity.publisher,
         container_type = entity.container_type,
+        publication_status= entity.publication_status,
         issnl = entity.issnl,
+        issne = entity.issne,
+        issnp = entity.issnp,
         wikidata_qid = entity.wikidata_qid,
     )
 
@@ -424,12 +438,11 @@ def container_to_elasticsearch(entity, force_bool=True, stats=None):
     if 'country' in t:
         t['country_code'] = t.pop('country')
 
-    t['issns'] = []
-    if entity.issnl:
-        t['issns'].append(entity.issnl)
+    t['issns'] = [entity.issnl, entity.issne, entity.issnp]
     for key in ('issnp', 'issne'):
         if entity.extra.get(key):
             t['issns'].append(entity.extra[key])
+    t['issns'] = list(set([i for i in t['issns'] if i]))
 
     in_doaj = None
     in_road = None
