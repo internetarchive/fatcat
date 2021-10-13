@@ -266,7 +266,7 @@ accessible version.
   </div>
 {% endif %}
 
-{% if release.number or release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid or release.ext_ids.isbn13 or release.ext_ids.arxiv or release.ext_ids.jstor or release.ext_ids.ark or release.ext_ids.doaj or release.ext_ids.dblp %}
+{% if release.number or release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid or release.ext_ids.isbn13 or release.ext_ids.arxiv or release.ext_ids.jstor or release.ext_ids.ark or release.ext_ids.doaj or release.ext_ids.dblp or release.ext_ids.hdl %}
 <div class="ui segment attached" style="word-wrap: break-word;">
 {% if release.number %}
   <b>Number</b> &nbsp;<code>{{ release.number }}</code><br>
@@ -300,6 +300,9 @@ accessible version.
 {% endif %}
 {% if release.ext_ids.dblp != None %}
   <b>dblp</b> &nbsp;<a href="https://dblp.org/rec/{{ release.ext_ids.dblp }}.html"><code>{{ release.ext_ids.dblp }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.hdl != None %}
+  <b>Handle</b> &nbsp;<a href="https://hdl.handle.net/{{ release.ext_ids.hdl}}"><code>{{ release.ext_ids.hdl }}</code></a><br>
 {% endif %}
 </div>
 {% endif %}

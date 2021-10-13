@@ -38,6 +38,9 @@ you don't know the version, you can append "v1" to get the first version.
 {% elif lookup_key == "wikidata_qid" %}
 <p>You can check if it is a real Wikidata entity by visiting:
 <b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}">https://www.wikidata.org/wiki/{{ lookup_value }}</a></b>
+{% elif lookup_key == "hdl" %}
+<p>You can check if it is a real Handle entity by visiting:
+<b><a href="https://hdl.handle.net/{{ lookup_value }}">https://hdl.handle.net/{{ lookup_value }}</a></b>
 {% endif %}
 </div>
 {% endif %}
@@ -118,6 +121,16 @@ releases must be versioned; if you don't know the version you can always lookup
 "v1" and then look for other releases under the same work.
 {{ entity_macros.lookup_form("release", "arxiv", "0706.0001v1 or math-GT/0309136v2", lookup_key, lookup_value, lookup_error) }}
 <i>&nbsp; Old and new style supported, but version always required for exact lookups.</i>
+
+</div>
+<div class="ui attached segment">
+
+<h2>Handle</h2>
+<p><a href="https://handle.net">Handle identifiers</a> are registered under the
+hierarchal handle.net system, maintained by CNRI. While technically all DOIs
+are Handles, our system treats them as distinct identifiers.
+{{ entity_macros.lookup_form("release", "hdl", "20.500.12690/RIN/IDDOAH/BTNH25", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Only include the identifier itself</i>
 
 </div>
 <div class="ui attached bottom segment">

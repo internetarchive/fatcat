@@ -88,17 +88,22 @@
 {% endif %}
 {% endif %}
 
-{% if container.issnl != None or container.wikidata_qid != None %}
+<div class="ui segment attached">
+  <b>Type</b> &nbsp;{{ container.container_type or 'Unknown' }}
+  <b>Status</b> &nbsp;{{ container.publication_status or 'Unknown' }}
+</div>
+
+{% if container.issnl != None or container.issne != None or container.issnp != None or container.wikidata_qid != None %}
 <div class="ui segment attached">
   {% if container.issnl != None %}
     <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b>
     &nbsp;<code>{{ container.issnl }}</code>
   {% endif %}
-  {% if container.extra != None and container.extra.issnp != None and (container.extra.issnp|length > 0) %}
-    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.issnp }}</code>
+  {% if container.issnp or (container.extra != None and container.extra.issnp != None and (container.extra.issnp|length > 0)) %}
+    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.issnp or container.extra.issnp }}</code>
   {% endif %}
-  {% if container.extra != None and container.extra.issne != None and (container.extra.issne|length > 0) %}
-    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.issne }}</code>
+  {% if container.issne or (container.extra != None and container.extra.issne != None and (container.extra.issne|length > 0)) %}
+    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.issne or container.extra.issne }}</code>
   {% endif %}
   <br>
   {% if container.wikidata_qid != None %}

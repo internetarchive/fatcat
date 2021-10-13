@@ -133,6 +133,8 @@ class ReleaseEntityForm(EntityEditForm):
     #core_id
     #arxiv_id
     #jstor_id
+    #oai
+    #hdl
     volume = StringField('Volume')
     issue = StringField('Issue')
     pages = StringField('Pages')
@@ -226,8 +228,8 @@ container_type_options = (
 )
 
 CONTAINER_SIMPLE_ATTRS = ['name', 'container_type', 'publisher', 'issnl',
-    'wikidata_qid']
-CONTAINER_EXTRA_ATTRS = ['issne', 'issnp', 'original_name', 'country']
+    'wikidata_qid', 'issne', 'issnp']
+CONTAINER_EXTRA_ATTRS = ['original_name', 'country']
 
 class ContainerEntityForm(EntityEditForm):
     name = StringField('Name/Title',

@@ -228,7 +228,7 @@
   {% endif %}
 
   {# ### IDENTIFIERS #}
-  {% if paper.doi or paper.pmcid or paper.pmid or paper.arxiv_id or paper.jstor_id or paper.doaj_id or paper.dblp_id %}
+  {% if paper.doi or paper.pmcid or paper.pmid or paper.arxiv_id or paper.jstor_id or paper.doaj_id or paper.dblp_id or paper.hdl %}
     <br>
   {% endif %}
   {% if paper.doi %}
@@ -250,6 +250,9 @@
   {% endif %}
   {% if paper.dblp_id %}
     <a href="https://dblp.org/rec/{{ paper.dblp_id }}.html" style="color: green;">dblp:{{ paper.dblp_id }}</a> &nbsp;
+  {% endif %}
+  {% if paper.hdl %}
+    <a href="https://hdl.handle.net/{{ paper.hdl }}" style="color: green;">hdl:{{ paper.hdl}}</a> &nbsp;
   {% endif %}
 
 {# WIP: elastic release work grouping searches
@@ -275,6 +278,9 @@
     {% endif %}
     {% if entity.container_type %}
       &nbsp;{{ entity.container_type }}
+    {% endif %}
+    {% if entity.publication_status and entity.publication_status != "active" %}
+      &nbsp;{{ entity.publication_status }}
     {% endif %}
   </div>
 {% endmacro %}
@@ -448,6 +454,9 @@ yellow
   {% endif %}
   {% if release.ext_ids.dblp %}
     <a href="#" style="color:green;">dblp:{{ release.ext_ids.dblp }}</a>&nbsp;
+  {% endif %}
+  {% if release.ext_ids.hdl %}
+    <a href="https://hdl.handle.net/{{ release.ext_ids.hdl }}" style="color:green;">hdl:{{ release.ext_ids.hdl }}</a>&nbsp;
   {% endif %}
 {% endmacro %}
 

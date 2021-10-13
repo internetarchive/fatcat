@@ -179,7 +179,7 @@ def release_lookup():
         'release',
         'release_lookup.html',
         ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'jstor', 'arxiv',
-         'core', 'ark', 'mag'),
+         'core', 'ark', 'mag', 'oai', 'hdl'),
         lambda p: api.lookup_release(**p))
 
 @app.route('/work/lookup', methods=['GET'])
@@ -672,7 +672,9 @@ def release_save(ident):
     elif release.ext_ids.arxiv:
         form.base_url.data = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
     elif release.ext_ids.pmcid:
-        form.base_url.data = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
+        form.base_url.data = "https://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
+    elif release.ext_ids.hdl:
+        form.base_url.data = "https://hdl.handle.net/{}".format(release.ext_ids.hdl)
     return render_template('release_save.html', entity=release, form=form), 200
 
 ### Search ##################################################################
