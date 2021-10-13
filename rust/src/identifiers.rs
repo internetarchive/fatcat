@@ -461,9 +461,9 @@ pub fn check_hdl(raw: &str) -> Result<()> {
     // currently strict about only allowing a fixed set of prefixes
     // should explicitly not allow DOIs, even though DOIs are themselves handles
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^(20|11|21|84).\d{1,6}(.\d{1,6})?/\S+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d+(\.\d+)*/\S+$").unwrap();
     }
-    if raw.is_ascii() && RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) && !raw.starts_with("10.") {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -483,9 +483,11 @@ fn test_check_hdl() {
     assert!(check_hdl("11.1234/aksjdfh").is_ok());
     assert!(check_hdl("20.500.23456/ABC/trs12").is_ok());
     assert!(check_hdl("20.500/ABC/trs12").is_ok());
+    assert!(check_hdl("2381/12775").is_ok());
+    assert!(check_hdl("2027/spo.bbp2372.1999.394").is_ok());
+    assert!(check_hdl("0.1234/aksjdfh").is_ok());
 
     assert!(check_hdl("10.1234/aksjdfh").is_err());
-    assert!(check_hdl("0.1234/aksjdfh").is_err());
     assert!(check_hdl("20.1234/ßs").is_err());
     assert!(check_hdl("20.1234/aksjdfh ").is_err());
     assert!(check_hdl("20.1234/ak sjdfh").is_err());
@@ -495,6 +497,8 @@ fn test_check_hdl() {
     assert!(check_hdl("20.1234/\naksjdfh").is_err());
     assert!(check_hdl("20.1234").is_err());
     assert!(check_hdl("20.1234/").is_err());
+    assert!(check_hdl("20./asdf").is_err());
+    assert!(check_hdl(".123/asdf").is_err());
 }
 
 pub fn check_issn(raw: &str) -> Result<()> {
