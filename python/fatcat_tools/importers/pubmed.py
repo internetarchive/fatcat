@@ -448,9 +448,14 @@ class PubmedImporter(EntityImporter):
         journal = medline.Article.Journal
         issnp = journal.find("ISSN", IssnType="Print")
         if issnp:
-            container_extra['issnp'] = issnp.string
-        if not issnl:
+            issnp = clean_issn(issnp.string)
+        else:
+            issnp = None
+
+        if not issnl and issnp:
             issnl = self.issn2issnl(issnp)
+        else:
+            issnl = None
 
         if issnl:
             container_id = self.lookup_issnl(issnl)
@@ -490,12 +495,13 @@ class PubmedImporter(EntityImporter):
         if (container_id is None and self.create_containers and (issnl is not None)
                 and container_name):
             # name, type, publisher, issnl
-            # extra: issnp, issne, original_name, languages, country
+            # extra: original_name, languages, country
             ce = fatcat_openapi_client.ContainerEntity(
                 name=container_name,
                 container_type='journal',
                 #NOTE: publisher not included
                 issnl=issnl,
+                issnp=issnp,
                 extra=(container_extra or None))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident

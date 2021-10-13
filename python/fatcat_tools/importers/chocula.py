@@ -52,7 +52,7 @@ class ChoculaImporter(EntityImporter):
             name = name[:-1]
 
         extra = dict()
-        for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
+        for k in ('urls', 'webarchive_urls', 'country',
                   'sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'languages',
                   'ia', 'scielo', 'kbart', 'publisher_type', 'platform'):
             if row['extra'].get(k):
@@ -66,6 +66,8 @@ class ChoculaImporter(EntityImporter):
 
         ce = fatcat_openapi_client.ContainerEntity(
             issnl=row['issnl'],
+            issnp=row['extra'].get('issnp'),
+            issne=row['extra'].get('issne'),
             ident=row['ident'],
             name=name,
             container_type=container_type,
@@ -132,6 +134,8 @@ class ChoculaImporter(EntityImporter):
             existing.wikidata_qid = existing.wikidata_qid or ce.wikidata_qid
             existing.publisher = existing.publisher or ce.publisher
             existing.container_type = existing.container_type or ce.container_type
+            existing.issne = existing.issne or ce.issne
+            existing.issnp = existing.issnp or ce.issnp
             for k in ('urls', 'webarchive_urls'):
                 # be conservative about URL updates; don't clobber existing URL lists
                 # may want to make this behavior more sophisticated in the
@@ -143,7 +147,7 @@ class ChoculaImporter(EntityImporter):
                 # always update (chocula over-rides)
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
-            for k in ('issne', 'issnp', 'country'):
+            for k in ('country',):
                 # only include if not set (don't clobber human edits)
                 if ce.extra.get(k) and not existing.extra.get(k):
                     existing.extra[k] = ce.extra[k]

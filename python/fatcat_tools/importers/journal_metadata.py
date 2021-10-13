@@ -92,6 +92,8 @@ class JournalMetadataImporter(EntityImporter):
 
         ce = fatcat_openapi_client.ContainerEntity(
             issnl=row['issnl'],
+            issne=row.get('issne'),
+            issnp=row.get('issnp'),
             container_type=None, # TODO
             name=name,
             publisher=clean(row.get('publisher')),
@@ -103,7 +105,7 @@ class JournalMetadataImporter(EntityImporter):
 
         existing = None
         try:
-            existing = self.api.lookup_container(issnl=ce.issnl)
+            existing = self.api.lookup_container(issn=ce.issnl)
         except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
