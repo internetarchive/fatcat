@@ -71,7 +71,7 @@ pub fn create_test_server() -> Result<Server> {
     diesel_migrations::run_pending_migrations(&conn).unwrap();
     diesel_migrations::revert_latest_migration(&conn).unwrap();
     diesel_migrations::revert_latest_migration(&conn).unwrap();
-    diesel_migrations::run_pending_migrations(&conn).unwrap();
+    diesel_migrations::revert_latest_migration(&conn).unwrap();
     diesel_migrations::run_pending_migrations(&conn).unwrap();
     Ok(server)
 }
