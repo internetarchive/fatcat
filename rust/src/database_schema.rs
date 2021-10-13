@@ -55,6 +55,9 @@ table! {
         publisher -> Nullable<Text>,
         issnl -> Nullable<Text>,
         wikidata_qid -> Nullable<Text>,
+        issne -> Nullable<Text>,
+        issnp -> Nullable<Text>,
+        publication_status -> Nullable<Text>,
     }
 }
 
@@ -218,6 +221,7 @@ table! {
         sha1 -> Nullable<Text>,
         sha256 -> Nullable<Text>,
         extra_json -> Nullable<Jsonb>,
+        mimetype -> Nullable<Text>,
     }
 }
 

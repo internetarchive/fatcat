@@ -133,6 +133,9 @@ pub struct ContainerRevRow {
     pub publisher: Option<String>,
     pub issnl: Option<String>,
     pub wikidata_qid: Option<String>,
+    pub issne: Option<String>,
+    pub issnp: Option<String>,
+    pub publication_status: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -144,6 +147,9 @@ pub struct ContainerRevNewRow {
     pub publisher: Option<String>,
     pub issnl: Option<String>,
     pub wikidata_qid: Option<String>,
+    pub issne: Option<String>,
+    pub issnp: Option<String>,
+    pub publication_status: Option<String>,
 }
 
 entity_structs!(
@@ -247,6 +253,7 @@ pub struct FilesetRevFileRow {
     pub sha1: Option<String>,
     pub sha256: Option<String>,
     pub extra_json: Option<serde_json::Value>,
+    pub mimetype: Option<String>,
 }
 
 #[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
@@ -259,6 +266,7 @@ pub struct FilesetRevFileNewRow {
     pub sha1: Option<String>,
     pub sha256: Option<String>,
     pub extra_json: Option<serde_json::Value>,
+    pub mimetype: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
