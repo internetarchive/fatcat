@@ -1,0 +1,42 @@
+
+Testing upgrade/migration to v0.4 in qa.fatcat.wiki
+
+Working circa: Wed Oct 13 23:48:33 UTC 2021
+
+Steps:
+- git checkout bnewbold-v04 branch
+- run diesel SQL migration: time diesel migration run
+- cargo build: time cargo build --release
+- restart fatcat-api
+    => is website is still responsive? yes
+- pipenv update: time pipenv install --dev --deploy
+- restart fatcat-web
+
+Commands and timing:
+
+    fatcat@wbgrp-svc509:/1/srv/fatcat/src/rust$ time diesel migration run
+    Running migration 2021-10-12-215817_v0.4
+
+    real    0m1.155s
+    user    0m0.037s
+    sys     0m0.018s
+
+    fatcat@wbgrp-svc509:/1/srv/fatcat/src/rust$ time cargo build --release
+    [...]
+       Compiling fatcat-openapi v0.4.0 (/1/srv/fatcat/src/rust/fatcat-openapi)
+       Compiling fatcat v0.4.0 (/1/srv/fatcat/src/rust)
+       Finished release [optimized] target(s) in 3m 48s
+    real    3m48.770s
+    user    10m22.186s
+    sys     0m7.836s
+
+
+    fatcat@wbgrp-svc509:/1/srv/fatcat/src/python$ time pipenv install --dev --deploy
+    Installing dependencies from Pipfile.lock (9d7de7)...
+      🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 35/35 — 00:00:14
+
+    real    0m40.614s
+    user    1m27.030s
+    sys     0m12.580s
+
+Finished circa: Thu Oct 14 00:11:09 UTC 2021
