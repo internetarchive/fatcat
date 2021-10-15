@@ -628,23 +628,23 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         if row['strategy'] == 'archiveorg-fileset' and row.get('archiveorg_item_name'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
-                rel="archive",
+                rel="archive-base",
             ))
-        elif row['strategy'] == 'archiveorg-file-hundle' and row.get('archiveorg_item_name'):
+        elif row['strategy'] == 'archiveorg-fileset-bundle' and row.get('archiveorg_item_name'):
             # XXX: what is the filename of bundle?
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
-                rel="archive",
+                rel="archive-bundle",
             ))
         elif row['strategy'].startswith('web') and row.get('platform_base_url'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://web.archive.org/web/{row['web_base_url_dt']}/{row['web_base_url']}",
                 rel="webarchive",
             ))
-        elif row['strategy'] == 'web-file-bundle' and row.get('platform_bundle_url'):
+        elif row['strategy'] == 'web-fileset-bundle' and row.get('platform_bundle_url'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://web.archive.org/web/{row['web_bundle_url_dt']}/{row['web_bundle_url']}",
-                rel="webarchive",
+                rel="webarchive-bundle",
             ))
         else:
             # if no archival URLs, bail out
@@ -659,7 +659,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         if row.get('platform_base_url'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=row['platform_bundle_url'],
-                rel="repository",
+                rel="repository-base",
             ))
         return urls
 
