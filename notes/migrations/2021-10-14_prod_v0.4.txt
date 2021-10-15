@@ -1,0 +1,48 @@
+
+Primary Deployment Steps:
+- halt all importers on prod1
+- take full private database snapshot (version used for upgrades)
+- merge branch to master
+- git pull
+- run diesel SQL migration: time diesel migration run
+- cargo build: time cargo build --release
+- restart fatcat-api
+- pipenv update: time pipenv install --dev --deploy
+- restart fatcat-web
+- restart importers
+
+Commands and status:
+
+    sudo systemctl stop fatcat-import-*
+
+    # expecting ~3 hours for dump to complete on fatcat-prod1
+    export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
+    time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_full_dbdump_${DATESLUG}.tar.gz
+
+    real    176m4.992s
+    user    729m44.161s
+    sys     56m41.694s
+
+    fatcat@wbgrp-svc502:/srv/fatcat/src/rust$ time diesel migration run
+    Running migration 2021-10-12-215817_v0.4
+
+    real    0m1.518s
+    user    0m0.054s
+    sys     0m0.024s
+
+
+    fatcat@wbgrp-svc502:/srv/fatcat/src/rust$ time cargo build --release
+       Compiling fatcat-openapi v0.4.0 (/srv/fatcat/src/rust/fatcat-openapi)
+       Compiling fatcat v0.4.0 (/srv/fatcat/src/rust)
+        Building [=====================================================> ] 353/354: fatcatd(bin)                                                                
+        Finished release [optimized] target(s) in 3m 13s
+
+    real    3m13.627s
+    user    8m28.880s
+    sys     0m12.591s
+
+Cleanup:
+- deploy to other nodes, following same re-compile / pipenv steps
+- update CHANGELOG date, this file, tag a release, and push
+- push pipy package update (need account recovery!)
+- merge fatcat-cli changes, push a release

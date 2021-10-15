@@ -14,7 +14,8 @@ See also:
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## [0.4.0] - 2021-10-12
+
+## [0.4.0] - 2021-10-14
 
 Includes small API and SQL schema changes; see
 `./proposals/20211012_v04_schema_tweaks.md`. Old database dumps may not work
