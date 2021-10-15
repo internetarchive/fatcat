@@ -263,10 +263,12 @@ def ftpretr(url, max_retries=10, retry_delay=1, proxy_hostport=None):
             return f.name
 
 
-def ftpretr_via_http_proxy(url, proxy_hostport="159.69.240.245:15201", max_retries=10, retry_delay=1):
+def ftpretr_via_http_proxy(url, proxy_hostport="ftp.ncbi.nlm.nih.gov", max_retries=10, retry_delay=1):
     """
     Fetch file from FTP via external HTTP proxy, e.g. ftp.host.com:/a/b/c would
-    be retrievable via proxy.com/a/b/c.
+    be retrievable via proxy.com/a/b/c; (in 09/2021 we used
+    "159.69.240.245:15201" as proxy_hostport but that started to fail
+    2021-10-15; just switch to NIH's http version).
     """
     parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
