@@ -6,6 +6,8 @@ dist/
 *.egg-info
 *.json.gz
 fatcat-*.tar.gz
+old/
+TODO*
 
 !example.env
 !.coveragerc
