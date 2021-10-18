@@ -182,14 +182,18 @@ def reference_match_json():
             matches = close_fuzzy_biblio_matches(es_client=app.es_client, biblio=form.data, match_limit=10) or []
         else:
             raise NotImplementedError()
+        resp = []
         for m in matches:
             # expand releases more completely
             m.release = api.get_release(m.release.ident, expand="container,files,filesets,webcaptures", hide="abstract,refs")
             # hack in access options
             m.access_options = release_access_options(m.release)
 
-            # and convert to dict (for jsonify)
-            m.release = entity_to_dict(m.release)
-        return jsonify(matches), 200
+            # and manually convert to dict (for jsonify)
+            info = m.__dict__
+            info['release'] = entity_to_dict(m.release)
+            info['access_options'] = [o.dict() for o in m.access_options]
+            resp.append(info)
+        return jsonify(resp), 200
     else:
         return Response(json.dumps(dict(errors=form.errors)), mimetype="application/json", status=400)
