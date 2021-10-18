@@ -64,6 +64,9 @@ class IngestFileResultImporter(EntityImporter):
                     "application/jats+xml", "application/tei+xml", "text/xml"):
                 self.counts['skip-mimetype'] += 1
                 return False
+        elif row['request'].get('ingest_type') in ['component', 'src', 'dataset-file']:
+            # we rely on sandcrawler for these checks
+            pass
         else:
             self.counts['skip-ingest-type'] += 1
             return False
@@ -599,6 +602,10 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             self.counts['skip-empty-manifest'] += 1
             return False
 
+        if len(row.get('manifest')) == 1:
+            self.counts['skip-single-file'] += 1
+            return False
+
         if len(row.get('manifest')) > self.max_file_count:
             self.counts['skip-too-many-files'] += 1
             return False
@@ -621,34 +628,35 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         return True
 
     def parse_fileset_urls(self, row):
-        # XXX: create URLs and rel for dataset ingest
         if not row.get('strategy'):
             return []
+        strategy = row['strategy']
         urls = []
-        if row['strategy'] == 'archiveorg-fileset' and row.get('archiveorg_item_name'):
+        if strategy == 'archiveorg-fileset' and row.get('archiveorg_item_name'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
                 rel="archive-base",
             ))
-        elif row['strategy'] == 'archiveorg-fileset-bundle' and row.get('archiveorg_item_name'):
-            # XXX: what is the filename of bundle?
-            urls.append(fatcat_openapi_client.FilesetUrl(
-                url=f"https://archive.org/download/{row['archiveorg_item_name']}/",
-                rel="archive-bundle",
-            ))
-        elif row['strategy'].startswith('web') and row.get('platform_base_url'):
+        if row['strategy'].startswith('web-') and row.get('platform_base_url'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://web.archive.org/web/{row['web_base_url_dt']}/{row['web_base_url']}",
-                rel="webarchive",
+                rel="webarchive-base",
             ))
-        elif row['strategy'] == 'web-fileset-bundle' and row.get('platform_bundle_url'):
+        # TODO: repository-base
+        # TODO: web-base
+
+        if row['strategy'] == 'archiveorg-fileset-bundle' and row.get('archiveorg_item_name'):
+            # TODO: bundle path
+            urls.append(fatcat_openapi_client.FilesetUrl(
+                url=f"https://archive.org/download/{row['archiveorg_item_name']}/{bundle_path}",
+                rel="archive-bundle",
+            ))
+
+        if row['strategy'] == 'web-fileset-bundle' and row.get('platform_bundle_url'):
             urls.append(fatcat_openapi_client.FilesetUrl(
                 url=f"https://web.archive.org/web/{row['web_bundle_url_dt']}/{row['web_bundle_url']}",
                 rel="webarchive-bundle",
             ))
-        else:
-            # if no archival URLs, bail out
-            return []
 
         # add any additional / platform URLs here
         if row.get('platform_bundle_url'):
