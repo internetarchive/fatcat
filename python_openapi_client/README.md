@@ -10,7 +10,7 @@ For more information, please visit [https://fatcat.wiki](https://fatcat.wiki)
 
 ## Requirements.
 
-Python 2.7 and 3.5+
+Python 3.5+
 
 ## Installation & Usage
 ### pip install
