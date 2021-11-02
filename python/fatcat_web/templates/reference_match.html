@@ -83,7 +83,9 @@
         <td class="">
           {% if match.access_options %}
             <a href="{{ match.access_options[0].access_url}}" class="ui tiny green active button">{{ match.access_options[0].access_type.name }}</a>
-            {% endif %}
+          {% else %}
+            <i class="ui tiny grey inactive button">no fulltext</a>
+          {% endif %}
   {% endfor %}
   </tbody>
   </table>

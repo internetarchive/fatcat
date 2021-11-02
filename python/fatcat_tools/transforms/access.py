@@ -36,10 +36,16 @@ def release_access_options(release: ReleaseEntity) -> List[AccessOption]:
     """
     Extracts access options from a release.
 
-    TODO: proper implementation
+    TODO: proper implementation and filtering, instead of just returning first
+    option found
     """
     options = []
     for f in (release.files or []):
+        thumbnail_url = None
+        if f.mimetype == 'application/pdf' and f.sha1 and f.urls:
+            # NOTE: scholar.archive.org does an actual database check before
+            # generating these URLs, but we skip that for speed
+            thumbnail_url = f"https://blobs.fatcat.wiki/thumbnail/pdf/{f.sha1[0:2]}/{f.sha1[2:4]}/{f.sha1}.180px.jpg"
         for u in (f.urls or []):
             if '://web.archive.org/' in u.url:
                 return [AccessOption(
@@ -47,7 +53,7 @@ def release_access_options(release: ReleaseEntity) -> List[AccessOption]:
                     access_url=u.url,
                     mimetype=f.mimetype,
                     size_bytes=f.size,
-                    thumbnail_url=None
+                    thumbnail_url=thumbnail_url,
                 )]
             elif '://archive.org/' in u.url:
                 return [AccessOption(
@@ -55,6 +61,6 @@ def release_access_options(release: ReleaseEntity) -> List[AccessOption]:
                     access_url=u.url,
                     mimetype=f.mimetype,
                     size_bytes=f.size,
-                    thumbnail_url=None
+                    thumbnail_url=thumbnail_url,
                 )]
     return options

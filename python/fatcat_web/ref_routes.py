@@ -3,13 +3,16 @@ Flask endpoints for reference (citation) endpoints. Eg, listing references
 "inbound" and "outbound" from a specific release or work.
 """
 
-from flask import render_template, request, Response
+import json
+
+from flask import render_template, request, Response, jsonify
 from fatcat_openapi_client import *
 from fuzzycat.grobid_unstructured import grobid_api_process_citation, transform_grobid_ref_xml, grobid_ref_to_release
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
 
 from fatcat_tools.references import enrich_inbound_refs, enrich_outbound_refs, get_inbound_refs, get_outbound_refs, RefHits
 from fatcat_tools.transforms.access import release_access_options
+from fatcat_tools.transforms.entities import entity_to_dict
 from fatcat_web import app, api
 from fatcat_web.cors import crossdomain
 from fatcat_web.forms import *
@@ -92,16 +95,18 @@ def wikipedia_view_refs_outbound(wiki_lang: str, wiki_article: str):
     hits = _refs_web("out", wikipedia_article=wikipedia_article)
     return render_template('wikipedia_view_fuzzy_refs.html', wiki_article=wiki_article, wiki_lang=wiki_lang, wiki_url=wiki_url, direction="out", hits=hits), 200
 
-
 @app.route('/reference/match', methods=['GET', 'POST'])
 def reference_match():
 
-    form = ReferenceMatchForm()
     grobid_status = None
     grobid_dict = None
 
-    if form.is_submitted():
-        if form.validate_on_submit():
+    form = ReferenceMatchForm()
+    if not form.is_submitted() and request.args.get('submit_type'):
+        form = ReferenceMatchForm(request.args)
+
+    if form.is_submitted() or request.args.get('title'):
+        if form.validate():
             if form.submit_type.data == 'parse':
                 resp_xml = grobid_api_process_citation(form.raw_citation.data)
                 if not resp_xml:
@@ -166,3 +171,29 @@ def wikipedia_view_refs_outbound_json(wiki_lang: str, wiki_article: str):
     wikipedia_article = wiki_lang + ":" + wiki_article
     hits = _refs_web("out", wikipedia_article=wikipedia_article)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")
+
+
+@app.route('/reference/match.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def reference_match_json():
+    form = ReferenceMatchForm(request.args)
+    if form.validate():
+        if form.submit_type.data == 'match':
+            matches = close_fuzzy_biblio_matches(es_client=app.es_client, biblio=form.data, match_limit=10) or []
+        else:
+            raise NotImplementedError()
+        resp = []
+        for m in matches:
+            # expand releases more completely
+            m.release = api.get_release(m.release.ident, expand="container,files,filesets,webcaptures", hide="abstract,refs")
+            # hack in access options
+            m.access_options = release_access_options(m.release)
+
+            # and manually convert to dict (for jsonify)
+            info = m.__dict__
+            info['release'] = entity_to_dict(m.release)
+            info['access_options'] = [o.dict() for o in m.access_options]
+            resp.append(info)
+        return jsonify(resp), 200
+    else:
+        return Response(json.dumps(dict(errors=form.errors)), mimetype="application/json", status=400)
