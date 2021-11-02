@@ -71,6 +71,7 @@ fuzzycat = "==0.1.21"
 dynaconf = ">=3"
 pydantic = "==1.*"
 surt = "==0.3.*"
+sentry-sdk = { version = ">=0.14.0", extras = [] }
 
 [requires]
 # As of Fall 2020, Internet Archive cluster VMs are split between Ubuntu Xenial
