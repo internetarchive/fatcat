@@ -113,13 +113,14 @@ class ElasticsearchReleaseWorker(FatcatWorker):
             for msg in batch:
                 json_str = msg.value().decode('utf-8')
                 entity = entity_from_json(json_str, self.entity_type, api_client=ac)
+                assert isinstance(entity, self.entity_type)
                 if self.entity_type == ChangelogEntry:
                     key = entity.index
                     # might need to fetch from API
-                    if not (entity.editgroup and entity.editgroup.editor):
+                    if not (entity.editgroup and entity.editgroup.editor): # pylint: disable=no-member # (TODO)
                         entity = api.get_changelog_entry(entity.index)
                 else:
-                    key = entity.ident
+                    key = entity.ident  # pylint: disable=no-member # (TODO)
 
                 if self.entity_type != ChangelogEntry and entity.state == 'wip':
                     print(f"WARNING: skipping state=wip entity: {self.entity_type.__name__} {entity.ident}", file=sys.stderr)

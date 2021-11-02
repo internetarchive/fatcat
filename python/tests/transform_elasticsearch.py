@@ -204,15 +204,21 @@ def test_elasticsearch_container_transform(journal_metadata_importer):
 
 
 def test_elasticsearch_file_transform():
-    f = entity_from_json(open('./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json', 'r').read(), FileEntity)
 
-    f.state = 'active'
-    es = file_to_elasticsearch(f)
-    assert es['sha1'] == f.sha1
-    assert es['sha256'] == f.sha256
-    assert es['md5'] == f.md5
-    assert es['size_bytes'] == f.size
-    assert es['mimetype'] == f.mimetype
+    with open('./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json', 'r') as f:
+        json_str = f.read()
+
+    fe = entity_from_json(json_str, FileEntity)
+
+    fe.state = 'active'
+    es = file_to_elasticsearch(fe)
+
+    # pylint infers type of 'fe' incorrectly for some reason (as str/bytes)
+    assert es['sha1'] == fe.sha1  # pylint: disable=no-member
+    assert es['sha256'] == fe.sha256  # pylint: disable=no-member
+    assert es['md5'] == fe.md5  # pylint: disable=no-member
+    assert es['size_bytes'] == fe.size  # pylint: disable=no-member
+    assert es['mimetype'] == fe.mimetype  # pylint: disable=no-member
     assert es['in_ia'] == True
 
     assert 'web' in es['rels']
