@@ -13,28 +13,29 @@ dep: ## Create local virtualenv using pipenv
 	pipenv install --dev
 
 .PHONY: lint
-lint: ## Run lints (eg, flake8)
-	pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests/*.py
-	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --select=E9,F63,F7,F82
+lint: ## Run lints (eg, flake8), does not fail if there are problems
+	pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests/*.py || true
 	pipenv run flake8 *.py tests/ fatcat_web/ fatcat_tools/ --exit-zero
-
-.PHONY: lint-mypy
-lint-mypy: ## Run mypy type checks (not part of regular lint yet)
+	pipenv run isort -q -c . || true
 	pipenv run mypy *.py fatcat_web/ fatcat_tools/ --ignore-missing-imports
 
-# Not ready for 'black' yet
-#.PHONY: fmt
-#fmt: ## Run code formating on all source code
-#	pipenv run black *.py fatcat_web/ fatcat_tools/ tests/
+.PHONY: lint-verbose
+lint-verbose: ## Run lints with extra warnings/notes shown
+	pipenv run pylint fatcat*.py fatcat_tools fatcat_web tests/*.py
+
+.PHONY: fmt
+fmt: ## Run code formating on all source code
+	pipenv run isort --atomic .
+	pipenv run black --line-length 96 .
 
 .PHONY: test
 test: ## Run all tests and lints
 	@curl --silent localhost:9411/v0/changelog > /dev/null || (echo "API not running locally, bailing early from tests" && exit 1)
-	pipenv run pytest
+	pipenv run pytest -vv
 
 .PHONY: coverage
 coverage: ## Run all tests with coverage
-	pipenv run pytest --cov
+	pipenv run pytest --cov --cov-report=term --cov-report=html
 
 .PHONY: test-cli
 test-cli: ## Run CLI commands. WARNING: may mutate local database
