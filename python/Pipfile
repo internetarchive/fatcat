@@ -17,6 +17,17 @@ pytest-cov = "==2.*"
 pylint = "==2.*"
 pytest-mock = "==3.*"
 flake8 = "==3.*"
+flake8-annotations = "*"
+mypy = "*"
+typing_extensions = "*"
+isort = "*"
+types-requests = "*"
+types-beautifulsoup4 = "*"
+types-toml = "*"
+types-dateparser = "*"
+# must lock black to an exact version because it is still "beta"
+# see: https://github.com/psf/black/issues/517
+black = "==21.9b0"
 
 [packages]
 fatcat-openapi-client = {path = "./../python_openapi_client"}
