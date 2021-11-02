@@ -57,8 +57,10 @@ beautifulsoup4 = "==4.*"
 python-magic = "==0.4.*"
 pylatexenc = "==2.*"
 pygal = "==2.*"
+# <7.14 pin is because of elasticsearch.exceptions.UnsupportedProductError
+# https://github.com/elastic/elasticsearch-py/issues/1639
+elasticsearch = ">=7.8.0,<7.14.0"
 elasticsearch-dsl = ">=7.0.0,<8.0.0"
-elasticsearch = ">=7.0.0,<8.0.0"
 dateparser = ">=0.7"
 langdetect = "==1.*"
 pathlib2 = "==2.*"
