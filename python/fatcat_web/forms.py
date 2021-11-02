@@ -7,13 +7,29 @@ but can't find one that is actually maintained.
 import datetime
 
 import toml
+from fatcat_openapi_client import (
+    ContainerEntity,
+    FileEntity,
+    FileUrl,
+    ReleaseContrib,
+    ReleaseEntity,
+    ReleaseExtIds,
+)
 from flask_wtf import FlaskForm
-from wtforms import SelectField, DateField, StringField, IntegerField, \
-    HiddenField, FormField, FieldList, validators, ValidationError, TextAreaField
+from wtforms import (
+    DateField,
+    FieldList,
+    FormField,
+    HiddenField,
+    IntegerField,
+    SelectField,
+    StringField,
+    TextAreaField,
+    ValidationError,
+    validators,
+)
 
-from fatcat_tools import entity_to_toml
-from fatcat_openapi_client import ContainerEntity, FileEntity, \
-    ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
+from fatcat_tools.transforms import entity_to_toml
 
 release_type_options = [
     ('', 'Unknown (blank)'),

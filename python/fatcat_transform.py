@@ -5,17 +5,23 @@ Utility script for doing bulk conversion/transforms of entity JSON schema to
 other formats
 """
 
-import sys
-import json
 import argparse
+import json
+import sys
 
 import elasticsearch
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, FileEntity, ChangelogEntry
+from fatcat_openapi_client import ChangelogEntry, ContainerEntity, FileEntity, ReleaseEntity
 
-from fatcat_tools import entity_from_json, \
-    release_to_elasticsearch, container_to_elasticsearch, \
-    file_to_elasticsearch, changelog_to_elasticsearch, public_api, \
-    release_to_csl, citeproc_csl
+from fatcat_tools import public_api
+from fatcat_tools.transforms import (
+    changelog_to_elasticsearch,
+    citeproc_csl,
+    container_to_elasticsearch,
+    entity_from_json,
+    file_to_elasticsearch,
+    release_to_csl,
+    release_to_elasticsearch,
+)
 from fatcat_web.search import get_elastic_container_stats
 
 

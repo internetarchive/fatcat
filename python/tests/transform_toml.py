@@ -1,10 +1,11 @@
 
 import json
 
-from fatcat_tools import *
-from fatcat_openapi_client import *
+from fatcat_openapi_client import ReleaseEntity
+from fixtures import api
 from import_crossref import crossref_importer
-from fixtures import *
+
+from fatcat_tools.transforms import entity_from_toml, entity_to_toml
 
 
 def test_basic_toml(crossref_importer):

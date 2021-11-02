@@ -4,7 +4,8 @@ import gzip
 import pytest
 
 from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
-from fixtures import *
+
+from fixtures import api
 
 
 @pytest.fixture(scope="function")

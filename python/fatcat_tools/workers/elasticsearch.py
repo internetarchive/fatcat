@@ -1,17 +1,20 @@
 
-import sys
 import json
+import sys
 
-import requests
 import elasticsearch
+import requests
 from confluent_kafka import Consumer, KafkaException
+from fatcat_openapi_client import ApiClient, ChangelogEntry, ContainerEntity, ReleaseEntity
 
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ApiClient, ChangelogEntry
-from fatcat_tools import (public_api, entity_from_json,
-    release_to_elasticsearch, container_to_elasticsearch,
+from fatcat_tools import entity_from_json, public_api
+from fatcat_tools.transforms import (
     changelog_to_elasticsearch,
+    container_to_elasticsearch,
+    release_to_elasticsearch,
 )
 from fatcat_web.search import get_elastic_container_stats
+
 from .worker_common import FatcatWorker
 
 

@@ -1,13 +1,26 @@
-
-import json
 import datetime
+import json
 
-from fatcat_tools import *
-from fatcat_openapi_client import *
-from import_journal_metadata import journal_metadata_importer
+from fatcat_openapi_client import (
+    ChangelogEntry,
+    ContainerEntity,
+    FileEntity,
+    FileUrl,
+    ReleaseEntity,
+    ReleaseExtIds,
+    ReleaseRef,
+)
+from fixtures import api
 from import_crossref import crossref_importer
-from import_matched import matched_importer
-from fixtures import *
+from import_journal_metadata import journal_metadata_importer
+
+from fatcat_tools.transforms import (
+    changelog_to_elasticsearch,
+    container_to_elasticsearch,
+    entity_from_json,
+    file_to_elasticsearch,
+    release_to_elasticsearch,
+)
 
 
 def test_basic_elasticsearch_convert(crossref_importer):
@@ -190,7 +203,7 @@ def test_elasticsearch_container_transform(journal_metadata_importer):
     assert es['any_kbart'] == True
 
 
-def test_elasticsearch_file_transform(matched_importer):
+def test_elasticsearch_file_transform():
     f = entity_from_json(open('./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json', 'r').read(), FileEntity)
 
     f.state = 'active'
@@ -210,7 +223,7 @@ def test_elasticsearch_file_transform(matched_importer):
     # old regression
     assert not '.archive.org' in (es['hosts'] + es['domains'])
 
-def test_elasticsearch_changelog_transform(matched_importer):
+def test_elasticsearch_changelog_transform():
     ce = entity_from_json(open('./tests/files/changelog_3469683.json', 'r').read(), ChangelogEntry)
 
     es = changelog_to_elasticsearch(ce)
