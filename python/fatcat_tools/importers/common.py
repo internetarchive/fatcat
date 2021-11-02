@@ -7,7 +7,7 @@ import sqlite3
 import datetime
 import subprocess
 from collections import Counter
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import lxml
 import xml.etree.ElementTree as ET
 

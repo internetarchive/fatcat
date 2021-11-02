@@ -4,7 +4,7 @@ from typing import Dict, List, Any, Optional
 
 import tldextract
 
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity
+from fatcat_openapi_client import ReleaseEntity, ContainerEntity, EntityEdit, ChangelogEntry, FileEntity
 
 
 def check_kbart(year: int, archive: dict) -> Optional[bool]:

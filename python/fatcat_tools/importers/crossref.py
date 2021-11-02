@@ -1,7 +1,11 @@
 
 import sqlite3
 import datetime
+from typing import Dict, Optional, Any
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ReleaseEntity
+
 from .common import EntityImporter, clean
 
 
@@ -452,7 +456,7 @@ class CrossrefImporter(EntityImporter):
         if not extra:
             extra = None
 
-        re = fatcat_openapi_client.ReleaseEntity(
+        re = ReleaseEntity(
             work_id=None,
             container_id=container_id,
             title=title,
