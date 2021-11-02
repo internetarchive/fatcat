@@ -646,9 +646,8 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         # TODO: web-base
 
         if row['strategy'] == 'archiveorg-fileset-bundle' and row.get('archiveorg_item_name'):
-            # TODO: bundle path
             urls.append(fatcat_openapi_client.FilesetUrl(
-                url=f"https://archive.org/download/{row['archiveorg_item_name']}/{bundle_path}",
+                url=f"https://archive.org/download/{row['archiveorg_item_name']}/{row['archiveorg_bundle_path']}",
                 rel="archive-bundle",
             ))
 
