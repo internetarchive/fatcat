@@ -6,7 +6,7 @@ free-form input, titles, etc.
 
 import re
 import base64
-from typing import Optional
+from typing import Optional, Union
 import unicodedata
 
 import ftfy
@@ -326,10 +326,10 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
     """
     if not thing:
         return None
-    fix_entities = 'auto'
+    unescape_html: Union[str, bool] = 'auto'
     if force_xml:
-        fix_entities = True
-    fixed = ftfy.fix_text(thing, fix_entities=fix_entities).strip()
+        unescape_html = True
+    fixed = ftfy.fix_text(thing, unescape_html=unescape_html).strip()
     if not fixed or len(fixed) <= 1:
         # wasn't zero-length before, but is now; return None
         return None
