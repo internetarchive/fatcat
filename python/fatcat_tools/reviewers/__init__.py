@@ -1,2 +1,1 @@
-
-from .review_common import ReviewBot, EditCheck, CheckResult, DummyReviewBot
+from .review_common import CheckResult, DummyReviewBot, EditCheck, ReviewBot
