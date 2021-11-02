@@ -32,8 +32,22 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
 
     if (not ingest_type) and release.container_id:
         ingest_type = INGEST_TYPE_CONTAINER_MAP.get(release.container_id)
+
     if not ingest_type:
-        ingest_type = 'pdf'
+        if release.release_type == 'stub':
+            return None
+        elif release.release_type in ['component', 'graphic']:
+            ingest_type = 'component'
+        elif release.release_type == 'dataset':
+            ingest_type = 'dataset'
+        elif release.release_type == 'software':
+            ingest_type = 'software'
+        elif release.release_type == 'post-weblog':
+            ingest_type = 'html'
+        elif release.release_type in ['article-journal', 'article', 'chapter', 'paper-conference', 'book', 'report', 'thesis']:
+            ingest_type = 'pdf'
+        else:
+            ingest_type = 'pdf'
 
     # generate a URL where we expect to find fulltext
     url = None

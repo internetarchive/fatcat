@@ -27,9 +27,10 @@ from .orcid import OrcidImporter
 from .arabesque import ArabesqueMatchImporter, ARABESQUE_MATCH_WHERE_CLAUSE
 from .wayback_static import auto_wayback_static
 from .cdl_dash_dat import auto_cdl_dash_dat
-from .ingest import IngestFileResultImporter, SavePaperNowFileImporter, IngestWebResultImporter, SavePaperNowWebImporter
+from .ingest import IngestFileResultImporter, SavePaperNowFileImporter, IngestWebResultImporter, SavePaperNowWebImporter, IngestFilesetResultImporter, SavePaperNowFilesetImporter
 from .shadow import ShadowLibraryImporter
 from .file_meta import FileMetaImporter
 from .doaj_article import DoajArticleImporter
 from .dblp_release import DblpReleaseImporter
 from .dblp_container import DblpContainerImporter
+from .fileset_generic import FilesetImporter

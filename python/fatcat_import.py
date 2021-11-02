@@ -164,6 +164,27 @@ def run_ingest_web(args):
     else:
         JsonLinePusher(iwri, args.json_file).run()
 
+def run_ingest_fileset(args):
+    ifri = IngestFilesetResultImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        skip_source_allowlist=args.skip_source_allowlist,
+        do_updates=args.do_updates,
+        default_link_rel=args.default_link_rel,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            ifri,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ingest-fileset-results",
+            "fatcat-{}-ingest-fileset-result".format(args.kafka_env),
+            kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size,
+            force_flush=True,
+        ).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
 def run_savepapernow_file(args):
     ifri = SavePaperNowFileImporter(args.api,
         editgroup_description=args.editgroup_description_override,
@@ -193,6 +214,24 @@ def run_savepapernow_web(args):
             args.kafka_env,
             "ingest-file-results",
             "fatcat-{}-savepapernow-web-result".format(args.kafka_env),
+            kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size,
+            force_flush=True,
+        ).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
+def run_savepapernow_fileset(args):
+    ifri = SavePaperNowFilesetImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            ifri,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ingest-file-results",
+            "fatcat-{}-savepapernow-fileset-result".format(args.kafka_env),
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -322,6 +361,14 @@ def run_file_meta(args):
     fmi = FileMetaImporter(args.api,
         edit_batch_size=100,
         editgroup_description=args.editgroup_description_override,
+    )
+    JsonLinePusher(fmi, args.json_file).run()
+
+def run_fileset(args):
+    fmi = FilesetImporter(
+        args.api,
+        edit_batch_size=100,
+        skip_release_fileset_check=args.skip_release_fileset_check,
     )
     JsonLinePusher(fmi, args.json_file).run()
 
@@ -561,6 +608,28 @@ def main():
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
+    sub_ingest_fileset = subparsers.add_parser('ingest-fileset-results',
+        help="add/update fileset entities linked to releases based on sandcrawler ingest results")
+    sub_ingest_fileset.set_defaults(
+        func=run_ingest_fileset,
+        auth_var="FATCAT_AUTH_WORKER_CRAWL",
+    )
+    sub_ingest_fileset.add_argument('json_file',
+        help="ingest_fileset JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_ingest_fileset.add_argument('--skip-source-allowlist',
+        action='store_true',
+        help="don't filter import based on request source allowlist")
+    sub_ingest_fileset.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+    sub_ingest_fileset.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing fileset entities if new match (instead of skipping)")
+    sub_ingest_fileset.add_argument('--default-link-rel',
+        default="fileset",
+        help="default URL rel for matches (eg, 'publisher', 'web')")
+
     sub_savepapernow_file = subparsers.add_parser('savepapernow-file-results',
         help="add file entities crawled due to async Save Paper Now request")
     sub_savepapernow_file.set_defaults(
@@ -584,6 +653,19 @@ def main():
         help="ingest-file JSON file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_savepapernow_web.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+
+    sub_savepapernow_fileset = subparsers.add_parser('savepapernow-fileset-results',
+        help="add fileset entities crawled due to async Save Paper Now request")
+    sub_savepapernow_fileset.set_defaults(
+        func=run_savepapernow_fileset,
+        auth_var="FATCAT_AUTH_WORKER_SAVEPAPERNOW",
+    )
+    sub_savepapernow_fileset.add_argument('json_file',
+        help="ingest-file JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_savepapernow_fileset.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
 
@@ -749,6 +831,19 @@ def main():
     sub_file_meta.add_argument('json_file',
         help="File with jsonlines from file_meta schema to import from",
         default=sys.stdin, type=argparse.FileType('r'))
+
+    sub_fileset = subparsers.add_parser('fileset',
+        help="generic fileset importer")
+    sub_fileset.set_defaults(
+        func=run_fileset,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_fileset.add_argument('json_file',
+        help="File with jsonlines of fileset entities to import",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_fileset.add_argument('--skip-release-fileset-check',
+        action='store_true',
+        help="create without checking if releases already have related filesets")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
