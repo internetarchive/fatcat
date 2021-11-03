@@ -1,14 +1,12 @@
 [flake8]
 select = C,E,F,W,ANN
-# ANN003 is annotation on, eg, **kwargs
+# ANN002,ANN003 is annotation on, eg, **kwargs
 # ANN101 is annotation on 'self'
 # ANN204 is annotation on '__init__()'
 # E265,E266 are restrictions on comments ('#')
 # E501 is line-too-long, which we enforce with black
 # W503,E203 are allowed by black
-# TODO: additional ignores while prepping for type annotations
-ignore = ANN003,ANN101,ANN204,E265,E266,E501,W503,E203,ANN001,ANN201,ANN205,ANN202,ANN102,ANN002,ANN206
-#ignore = ANN003,ANN101,ANN204,E265,E266,E501,W503,E203
+ignore = ANN002,ANN003,ANN101,ANN204,E265,E266,E501,W503,E203
 per-file-ignores =
     */__init__.py: F401
     fatcat_web/__init__.py: E402,F401
