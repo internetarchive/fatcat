@@ -355,7 +355,7 @@ def run_cdl_dash_dat(args: argparse.Namespace) -> None:
     (editgroup_id, release, fs) = auto_cdl_dash_dat(
         api, args.dat_path, release_id=args.release_id, editgroup_id=args.editgroup_id
     )
-    if not fs:
+    if not (fs and release):
         return
     print("release_id: {}".format(release.ident))
     print("editgroup_id: {}".format(editgroup_id))
