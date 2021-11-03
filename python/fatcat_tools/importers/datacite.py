@@ -1255,7 +1255,7 @@ def parse_datacite_dates(
     def parse_item(
         item: Dict[str, Any]
     ) -> Tuple[Optional[datetime.date], Optional[int], Optional[int]]:
-        result, value, year_only = None, str(item.get("date", "")) or "", False
+        result, value = None, str(item.get("date", "")) or ""
         release_date: Optional[datetime.date] = None
         release_month: Optional[int] = None
         release_year: Optional[int] = None
@@ -1267,7 +1267,8 @@ def parse_datacite_dates(
                 continue
             else:
                 if granularity == "y":
-                    year_only = True
+                    # TODO: year_only = True
+                    pass
                 break
 
         if result is None:
