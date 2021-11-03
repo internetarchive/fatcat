@@ -95,7 +95,7 @@ class ShadowLibraryImporter(EntityImporter):
         urls = []
         if obj.get('cdx'):
             url = make_rel_url(obj['cdx']['url'], default_link_rel=self.default_link_rel)
-            if url != None:
+            if url is not None:
                 urls.append(url)
             wayback = "https://web.archive.org/web/{}/{}".format(
                 obj['cdx']['datetime'],

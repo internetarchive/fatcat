@@ -50,19 +50,19 @@ def test_pubmed_xml_parse(pubmed_importer):
         r2 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[-1])
 
     assert r1.title == "Hospital debt management and cost reimbursement"
-    assert r1.subtitle == None
-    assert r1.original_title == None
-    assert r1.publisher == None
+    assert r1.subtitle is None
+    assert r1.original_title is None
+    assert r1.publisher is None
     assert r1.release_type == "article-journal"
     assert r1.release_stage == "published"
-    assert r1.license_slug == None
-    assert r1.ext_ids.doi == None
+    assert r1.license_slug is None
+    assert r1.ext_ids.doi is None
     assert r1.ext_ids.pmid == "973217"
     assert r1.language == "en"
     assert r1.volume == "3"
     assert r1.issue == "1"
     assert r1.pages == "69-81"
-    assert r1.release_date == None # not "1976-12-03", which is medline ingest date
+    assert r1.release_date is None # not "1976-12-03", which is medline ingest date
     assert r1.release_year == 1976
     # matched by ISSN, so shouldn't be in there?
     #assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
@@ -77,18 +77,18 @@ def test_pubmed_xml_parse(pubmed_importer):
     assert not r1.refs
 
     assert r2.title == "Synthesis and Antibacterial Activity of Metal(loid) Nanostructures by Environmental Multi-Metal(loid) Resistant Bacteria and Metal(loid)-Reducing Flavoproteins"
-    assert r2.subtitle == None
-    assert r2.original_title == None
-    assert r2.publisher == None
+    assert r2.subtitle is None
+    assert r2.original_title is None
+    assert r2.publisher is None
     assert r2.release_type == "article-journal"
     assert r2.release_stage == "published"
-    assert r2.license_slug == None
+    assert r2.license_slug is None
     assert r2.ext_ids.doi == "10.3389/fmicb.2018.00959"
     assert r2.ext_ids.pmid == "29869640"
     assert r2.ext_ids.pmcid == "PMC5962736"
     assert r2.language == "en"
     assert r2.volume == "9"
-    assert r2.issue == None
+    assert r2.issue is None
     assert r2.pages == "959"
     assert str(r2.release_date) == "2018-05-15"
     assert r2.release_year == 2018

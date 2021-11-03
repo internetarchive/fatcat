@@ -58,7 +58,7 @@ def test_citation_targets(api):
     assert r2.refs[1].key == "second"
     assert r2.refs[0].index == 0 # TODO: one-indexing?
     assert r2.refs[1].index == 1
-    assert r2.refs[0].target_release_id == None
+    assert r2.refs[0].target_release_id is None
     assert r2.refs[1].target_release_id == r1.ident
     assert len(r2.refs) == 2
 
@@ -81,7 +81,7 @@ def test_citation_empty_array(api):
     assert r1.refs == r2.refs
 
     r1b = api.get_release(r1.ident, hide="refs")
-    assert r1b.refs == None
+    assert r1b.refs is None
 
 def test_citation_encoding(api):
     # escape-only changes (eg, \u1234 whatever for ASCII)

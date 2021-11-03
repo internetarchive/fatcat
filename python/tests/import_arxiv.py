@@ -50,8 +50,8 @@ def test_arxiv_xml_parse(arxiv_importer):
     print(r2.extra)
     assert r1.work_id == r2.work_id
     assert r1.title == "Martingale theory for housekeeping heat"
-    assert r1.subtitle == None
-    assert r1.original_title == None
+    assert r1.subtitle is None
+    assert r1.original_title is None
     assert r1.release_type == "article"
     assert r1.release_stage == "submitted"
     assert r2.release_stage == "accepted"
@@ -60,7 +60,7 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert r2.version == "v2"
     assert r1.ext_ids.arxiv == "1810.09584v1"
     assert r2.ext_ids.arxiv == "1810.09584v2"
-    assert r1.ext_ids.doi == None
+    assert r1.ext_ids.doi is None
     assert r2.ext_ids.doi == "10.1209/0295-5075/124/60006"
     assert r1.release_year == 2018
     assert str(r1.release_date) == "2018-10-22"
@@ -71,7 +71,7 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert len(r1.contribs) == 4
     assert r1.extra['arxiv']['categories'] == ['cond-mat.stat-mech', 'physics.bio-ph', 'physics.data-an']
     assert r1.extra['arxiv']['base_id'] == '1810.09584'
-    assert r1.extra['superceded'] == True
+    assert r1.extra['superceded'] is True
 
     assert r1.contribs[0].raw_name == "Raphael Chetrite"
     assert r1.contribs[0].role == "author"

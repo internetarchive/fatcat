@@ -77,7 +77,7 @@ class HarvestState:
 
         current = start_date
         while current <= end_date:
-            if not current in self.completed:
+            if current not in self.completed:
                 self.to_process.add(current)
             current += datetime.timedelta(days=1)
 

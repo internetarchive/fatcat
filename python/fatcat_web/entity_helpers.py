@@ -45,7 +45,7 @@ def enrich_fileset_entity(entity):
     if entity.state in ('redirect', 'deleted'):
         return entity
     entity._total_size = None
-    if entity.manifest != None:
+    if entity.manifest is not None:
         entity._total_size = sum([f.size for f in entity.manifest]) or 0
     return entity
 
@@ -93,7 +93,7 @@ def enrich_release_entity(entity):
         c.role in ('author', None) and
         (c.surname or c.raw_name or (c.creator and c.creator.surname))
     ]
-    entity._authors = sorted(authors, key=lambda c: (c.index == None and 99999999) or c.index)
+    entity._authors = sorted(authors, key=lambda c: (c.index is None and 99999999) or c.index)
     # need authors, title for citeproc to work
     entity._can_citeproc = bool(entity._authors) and bool(entity.title)
     if entity.abstracts:

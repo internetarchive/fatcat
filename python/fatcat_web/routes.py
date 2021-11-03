@@ -738,7 +738,7 @@ def release_save(ident):
 
 @app.route('/search', methods=['GET', 'POST'])
 def generic_search():
-    if not 'q' in request.args.keys():
+    if 'q' not in request.args.keys():
         return redirect('/release/search')
     query = request.args.get('q').strip()
 
@@ -1080,7 +1080,7 @@ def change_username():
     if not app.testing:
         app.csrf.protect()
     # show the user a list of login options
-    if not 'username' in request.form:
+    if 'username' not in request.form:
         abort(400)
     # on behalf of user...
     user_api = auth_api(session['api_token'])

@@ -323,7 +323,7 @@ def test_datacite_spammy_title(datacite_importer):
                                         Heroes: Rising [2020]Full Movie Watch
                                         Online And Free Download""",
                                         "attributes": {"doi": "10.1234/1234"}})
-    assert r == False
+    assert r is False
 
 def test_datacite_importer(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
@@ -367,13 +367,13 @@ def test_datacite_dict_parse(datacite_importer):
         )
         assert r.release_type == "article"
         assert r.release_stage == "published"
-        assert r.license_slug == None
-        assert r.original_title == None
+        assert r.license_slug is None
+        assert r.original_title is None
         assert r.ext_ids.doi == "10.18730/8dym9"
-        assert r.ext_ids.isbn13 == None
+        assert r.ext_ids.isbn13 is None
         assert r.language == "en"
-        assert r.subtitle == None
-        assert r.release_date == None
+        assert r.subtitle is None
+        assert r.release_date is None
         assert r.release_year == 1986
         assert "subtitle" not in r.extra
         assert "subtitle" not in r.extra["datacite"]
@@ -388,10 +388,10 @@ def test_datacite_dict_parse(datacite_importer):
         assert len(r.abstracts[0].content) == 421
         assert len(r.contribs) == 2
         assert r.contribs[0].raw_name == "GLIS Of The ITPGRFA"
-        assert r.contribs[0].given_name == None
-        assert r.contribs[0].surname == None
+        assert r.contribs[0].given_name is None
+        assert r.contribs[0].surname is None
         assert len(r.refs) == 0
-        assert r.version == None
+        assert r.version is None
 
 
 def test_datacite_conversions(datacite_importer):

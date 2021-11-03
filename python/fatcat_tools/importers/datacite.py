@@ -319,7 +319,7 @@ class DataciteImporter(EntityImporter):
         #      17871 | translator
         #   10870584 |
         # (4 rows)
-	#
+        #
         # Related: https://guide.fatcat.wiki/entity_release.html -- role
         # (string, of a set): the type of contribution, from a controlled
         # vocabulary. TODO: vocabulary needs review.
@@ -1046,7 +1046,7 @@ def find_original_language_title(item, min_length=4, max_questionmarks=3):
 
     Example input: {'title': 'Some title', 'original_language_title': 'Some title'}
     """
-    if not 'original_language_title' in item:
+    if 'original_language_title' not in item:
         return None
     title = item.get('title')
     if not title:

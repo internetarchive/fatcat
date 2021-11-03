@@ -78,7 +78,7 @@ class IngestFileResultImporter(EntityImporter):
         Sandcrawler ingest-specific part of want(). Generic across file and
         webcapture ingest.
         """
-        if row.get('hit') != True:
+        if row.get('hit') is not True:
             self.counts['skip-hit'] += 1
             return False
         source = row['request'].get('ingest_request_source')
@@ -178,9 +178,9 @@ class IngestFileResultImporter(EntityImporter):
                 }
 
         # work around old schema
-        if not 'terminal_url' in terminal:
+        if 'terminal_url' not in terminal:
             terminal['terminal_url'] = terminal['url']
-        if not 'terminal_dt' in terminal:
+        if 'terminal_dt' not in terminal:
             terminal['terminal_dt'] = terminal['dt']
 
         # convert CDX-style digits to ISO-style timestamp
@@ -358,7 +358,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
             self.counts['skip-not-savepapernow'] += 1
             return False
 
-        if row.get('hit') != True:
+        if row.get('hit') is not True:
             self.counts['skip-hit'] += 1
             return False
 
@@ -459,7 +459,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
         for resource in row.get('html_resources', []):
             timestamp = resource['timestamp']
-            if not "+" in timestamp and not "Z" in timestamp:
+            if "+" not in timestamp and "Z" not in timestamp:
                 timestamp += "Z"
             wc_cdx.append(fatcat_openapi_client.WebcaptureCdxLine(
                 surt=resource['surt'],
@@ -808,7 +808,7 @@ class SavePaperNowFilesetImporter(IngestFilesetResultImporter):
             self.counts['skip-not-savepapernow'] += 1
             return False
 
-        if row.get('hit') != True:
+        if row.get('hit') is not True:
             self.counts['skip-hit'] += 1
             return False
 

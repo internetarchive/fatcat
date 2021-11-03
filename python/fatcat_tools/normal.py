@@ -74,19 +74,19 @@ def test_clean_doi():
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
-    assert clean_doi("10.23750/abm.v88i2 -s.6506") == None
-    assert clean_doi("10.17167/mksz.2017.2.129–155") == None
+    assert clean_doi("10.23750/abm.v88i2 -s.6506") is None
+    assert clean_doi("10.17167/mksz.2017.2.129–155") is None
     assert clean_doi("http://doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("https://dx.doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
-    assert clean_doi("doi:10.1234/ asdf ") == None
-    assert clean_doi("10.4149/gpb¬_2017042") == None  # "logical negation" character
-    assert clean_doi("10.6002/ect.2020.häyry") == None  # this example via pubmed (pmid:32519616)
-    assert clean_doi("10.30466/vrf.2019.98547.2350\u200e") == None
-    assert clean_doi("10.12016/j.issn.2096⁃1456.2017.06.014") == None
-    assert clean_doi("10.4025/diálogos.v17i2.36030") == None
-    assert clean_doi("10.19027/jai.10.106‒115") == None
-    assert clean_doi("10.15673/атбп2312-3125.17/2014.26332") == None
+    assert clean_doi("doi:10.1234/ asdf ") is None
+    assert clean_doi("10.4149/gpb¬_2017042") is None  # "logical negation" character
+    assert clean_doi("10.6002/ect.2020.häyry") is None  # this example via pubmed (pmid:32519616)
+    assert clean_doi("10.30466/vrf.2019.98547.2350\u200e") is None
+    assert clean_doi("10.12016/j.issn.2096⁃1456.2017.06.014") is None
+    assert clean_doi("10.4025/diálogos.v17i2.36030") is None
+    assert clean_doi("10.19027/jai.10.106‒115") is None
+    assert clean_doi("10.15673/атбп2312-3125.17/2014.26332") is None
     assert clean_doi("10.7326/M20-6817") == "10.7326/m20-6817"
 
 
@@ -129,17 +129,17 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("arxiv:0806.2878v1") == "0806.2878v1"
     assert clean_arxiv_id("arXiv:0806.2878v1") == "0806.2878v1"
 
-    assert clean_arxiv_id("hep-TH/9901001v1") == None
-    assert clean_arxiv_id("hßp-th/9901001v1") == None
-    assert clean_arxiv_id("math.CA/06l1800v2") == None
-    assert clean_arxiv_id("mßth.ca/0611800v2") == None
-    assert clean_arxiv_id("MATH.CA/0611800v2") == None
+    assert clean_arxiv_id("hep-TH/9901001v1") is None
+    assert clean_arxiv_id("hßp-th/9901001v1") is None
+    assert clean_arxiv_id("math.CA/06l1800v2") is None
+    assert clean_arxiv_id("mßth.ca/0611800v2") is None
+    assert clean_arxiv_id("MATH.CA/0611800v2") is None
     assert clean_arxiv_id("0806.2878v23") == "0806.2878v23"  # ?
-    assert clean_arxiv_id("0806.2878v") == None
+    assert clean_arxiv_id("0806.2878v") is None
     assert clean_arxiv_id("0806.2878") == "0806.2878"
-    assert clean_arxiv_id("006.2878v1") == None
-    assert clean_arxiv_id("0806.v1") == None
-    assert clean_arxiv_id("08062878v1") == None
+    assert clean_arxiv_id("006.2878v1") is None
+    assert clean_arxiv_id("0806.v1") is None
+    assert clean_arxiv_id("08062878v1") is None
 
 def clean_wikidata_qid(raw):
     if not raw:
@@ -155,13 +155,13 @@ def test_clean_wikidata_qid():
     assert clean_wikidata_qid("Q1234") == "Q1234"
     assert clean_wikidata_qid("Q1") == "Q1"
     assert clean_wikidata_qid(" Q1234 ") == "Q1234"
-    assert clean_wikidata_qid(" Q1 234 ") == None
-    assert clean_wikidata_qid("q1234") == None
-    assert clean_wikidata_qid("1234 ") == None
-    assert clean_wikidata_qid("Q0123") == None
-    assert clean_wikidata_qid("PMC123") == None
-    assert clean_wikidata_qid("qfba3") == None
-    assert clean_wikidata_qid("") == None
+    assert clean_wikidata_qid(" Q1 234 ") is None
+    assert clean_wikidata_qid("q1234") is None
+    assert clean_wikidata_qid("1234 ") is None
+    assert clean_wikidata_qid("Q0123") is None
+    assert clean_wikidata_qid("PMC123") is None
+    assert clean_wikidata_qid("qfba3") is None
+    assert clean_wikidata_qid("") is None
 
 def clean_pmid(raw: str) -> Optional[str]:
     if not raw:
@@ -176,9 +176,9 @@ def clean_pmid(raw: str) -> Optional[str]:
 def test_clean_pmid():
     assert clean_pmid("1234") == "1234"
     assert clean_pmid("1234 ") == "1234"
-    assert clean_pmid("PMC123") == None
-    assert clean_pmid("qfba3") == None
-    assert clean_pmid("") == None
+    assert clean_pmid("PMC123") is None
+    assert clean_pmid("qfba3") is None
+    assert clean_pmid("") is None
 
 def clean_pmcid(raw: str) -> Optional[str]:
     if not raw:
@@ -206,9 +206,9 @@ def clean_sha1(raw: str) -> Optional[str]:
 def test_clean_sha1():
     assert clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
     assert clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b ") == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
-    assert clean_sha1("fba3fba0e1937aa0297de3836b768b5dfb23d7b") == None
-    assert clean_sha1("qfba3fba0e1937aa0297de3836b768b5dfb23d7b") == None
-    assert clean_sha1("0fba3fb a0e1937aa0297de3836b768b5dfb23d7b") == None
+    assert clean_sha1("fba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
+    assert clean_sha1("qfba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
+    assert clean_sha1("0fba3fb a0e1937aa0297de3836b768b5dfb23d7b") is None
 
 def clean_sha256(raw: str) -> Optional[str]:
     raw = raw.strip().lower()
@@ -223,7 +223,7 @@ def clean_sha256(raw: str) -> Optional[str]:
 
 def test_clean_sha256():
     assert clean_sha256("6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f") == "6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f"
-    assert clean_sha256("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") == None
+    assert clean_sha256("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
 
 ISSN_REGEX = re.compile(r"^\d{4}-\d{3}[0-9X]$")
 
@@ -240,8 +240,8 @@ def clean_issn(raw: str) -> Optional[str]:
 def test_clean_issn():
     assert clean_issn("1234-4567") == "1234-4567"
     assert clean_issn("1234-456X") == "1234-456X"
-    assert clean_issn("134-4567") == None
-    assert clean_issn("123X-4567") == None
+    assert clean_issn("134-4567") is None
+    assert clean_issn("123X-4567") is None
 
 ISBN13_REGEX = re.compile(r"^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
 
@@ -257,7 +257,7 @@ def test_clean_isbn13():
     assert clean_isbn13("978-1-56619-909-4") == "978-1-56619-909-4"
     assert clean_isbn13("978-1-4028-9462-6") == "978-1-4028-9462-6"
     assert clean_isbn13("978-1-56619-909-4 ") == "978-1-56619-909-4"
-    assert clean_isbn13("9781566199094") == None
+    assert clean_isbn13("9781566199094") is None
 
 ORCID_REGEX = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
 
@@ -273,8 +273,8 @@ def test_clean_orcid():
     assert clean_orcid("0123-4567-3456-6789") == "0123-4567-3456-6789"
     assert clean_orcid("0123-4567-3456-678X") == "0123-4567-3456-678X"
     assert clean_orcid("0123-4567-3456-6789 ") == "0123-4567-3456-6789"
-    assert clean_orcid("01234567-3456-6780") == None
-    assert clean_orcid("0x23-4567-3456-6780") == None
+    assert clean_orcid("01234567-3456-6780") is None
+    assert clean_orcid("0x23-4567-3456-6780") is None
 
 
 HDL_REGEX = re.compile(r"^\d+(\.\d+)*/\S+$")
@@ -304,10 +304,10 @@ def test_clean_hdl():
     assert clean_hdl("http://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
     assert clean_hdl("21.1234/aksjdfh") == "21.1234/aksjdfh"
     assert clean_hdl("2381/12775") == "2381/12775"
-    assert clean_hdl("10.1234/aksjdfh") == None
-    assert clean_hdl("20.1234") == None
-    assert clean_hdl("20.1234/") == None
-    assert clean_hdl("20./asdf") == None
+    assert clean_hdl("10.1234/aksjdfh") is None
+    assert clean_hdl("20.1234") is None
+    assert clean_hdl("20.1234/") is None
+    assert clean_hdl("20./asdf") is None
 
 
 def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
@@ -337,9 +337,9 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
 
 def test_clean_str():
 
-    assert clean_str(None) == None
-    assert clean_str('') == None
-    assert clean_str('1') == None
+    assert clean_str(None) is None
+    assert clean_str('') is None
+    assert clean_str('1') is None
     assert clean_str('123') == '123'
     assert clean_str('a&amp;b') == 'a&b'
     assert clean_str('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
@@ -410,9 +410,9 @@ def parse_month(raw: Optional[str]) -> Optional[int]:
 
 def test_parse_month() -> None:
 
-    assert parse_month(None) == None
-    assert parse_month("") == None
-    assert parse_month("0") == None
+    assert parse_month(None) is None
+    assert parse_month("") is None
+    assert parse_month("0") is None
     assert parse_month("10") == 10
     assert parse_month("jan") == 1
     assert parse_month("September") == 9
@@ -435,7 +435,7 @@ def detect_text_lang(raw: str) -> Optional[str]:
     return None
 
 def test_detect_text_lang() -> None:
-    assert detect_text_lang("") == None
+    assert detect_text_lang("") is None
     EN_SAMPLE = "this is a string of English text for testing"
     assert detect_text_lang(EN_SAMPLE) == "en"
     JA_SAMPLE = "モーラの種類は、以下に示すように111程度存在する。ただし、研究者により数え方が少しずつ異なる。"
@@ -465,9 +465,9 @@ def parse_lang_name(raw: Optional[str]) -> Optional[str]:
 
 def test_parse_lang_name() -> None:
 
-    assert parse_lang_name(None) == None
-    assert parse_lang_name("") == None
-    assert parse_lang_name("asdf ") == None
+    assert parse_lang_name(None) is None
+    assert parse_lang_name("") is None
+    assert parse_lang_name("asdf ") is None
     assert parse_lang_name("english") == "en"
     assert parse_lang_name("ENGLISH") == "en"
     assert parse_lang_name("asdf blah") is None

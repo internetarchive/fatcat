@@ -155,7 +155,7 @@ def test_ingest_dict_parse_old(ingest_importer):
 
         # ancient ingest requests had no type; skip them
         f = ingest_importer.parse_record(raw)
-        assert f == None
+        assert f is None
         raw['request']['ingest_type'] = 'pdf'
 
         f = ingest_importer.parse_record(raw)

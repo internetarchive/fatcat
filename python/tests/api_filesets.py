@@ -80,7 +80,7 @@ def test_fileset_examples(api):
     assert fs3.urls[1].rel == 'archive'
     assert fs3.manifest[1].md5 == 'f4de91152c7ab9fdc2a128f962faebff'
     assert fs3.manifest[1].mimetype == 'application/gzip'
-    assert fs3.manifest[1].extra != None
+    assert fs3.manifest[1].extra is not None
     assert fs3.releases[0].ident
     assert fs3.releases[0].abstracts is None
     assert fs3.releases[0].refs is None

@@ -77,12 +77,12 @@ def test_jalc_xml_parse(jalc_importer):
 
     print(r.extra)
     assert r.title == "New carbides in the Ni-Ti-Mo-C system"
-    assert r.subtitle == None
+    assert r.subtitle is None
     assert r.original_title == "Ni-Ti-Mo-C系に出現する新炭化物相について"
     assert r.publisher == "Japan Society of Powder and Powder Metallurgy"
     assert r.release_type == "article-journal"
     assert r.release_stage == "published"
-    assert r.license_slug == None
+    assert r.license_slug is None
     assert r.ext_ids.doi == "10.2497/jjspm.36.898"
     assert r.language == "ja"
     assert r.volume == "36"

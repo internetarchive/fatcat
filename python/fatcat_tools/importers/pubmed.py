@@ -590,7 +590,7 @@ class PubmedImporter(EntityImporter):
                         orcid = orcid.replace("http://orcid.org/", "")
                     elif orcid.startswith("https://orcid.org/"):
                         orcid = orcid.replace("https://orcid.org/", "")
-                    elif not '-' in orcid:
+                    elif '-' not in orcid:
                         orcid = "{}-{}-{}-{}".format(
                             orcid[0:4],
                             orcid[4:8],

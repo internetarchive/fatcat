@@ -188,7 +188,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
             raise ae
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             abort(400, "Editgroup already merged")
 
     # fetch entity (if set) or 404
@@ -285,7 +285,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                 raise NotImplementedError
 
     editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
-    potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
+    potential_editgroups = [e for e in editor_editgroups if e.changelog_index is None and e.submitted is None]
 
     if not form.is_submitted():
         # default to most recent not submitted, fallback to "create new"
@@ -313,7 +313,7 @@ def generic_entity_toml_edit(editgroup_id, entity_type, existing_ident, edit_tem
             raise ae
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
 
@@ -381,7 +381,7 @@ def generic_entity_toml_edit(editgroup_id, entity_type, existing_ident, edit_tem
             form = EntityTomlForm.from_entity(existing)
 
     editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
-    potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
+    potential_editgroups = [e for e in editor_editgroups if e.changelog_index is None and e.submitted is None]
 
     if not form.is_submitted():
         # default to most recent not submitted, fallback to "create new"
@@ -410,7 +410,7 @@ def generic_entity_delete(editgroup_id: Optional[str], entity_type: str, existin
             raise ae
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
 
@@ -462,7 +462,7 @@ def generic_entity_delete(editgroup_id: Optional[str], entity_type: str, existin
             form = EntityTomlForm.from_entity(existing)
 
     editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
-    potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
+    potential_editgroups = [e for e in editor_editgroups if e.changelog_index is None and e.submitted is None]
 
     if not form.is_submitted():
         # default to most recent not submitted, fallback to "create new"
@@ -484,7 +484,7 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
             abort(ae.status)
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
 

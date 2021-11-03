@@ -417,7 +417,7 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
     preservation_bucket['total'] = _hits_total_int(resp.hits.total)
     for k in ('bright', 'dark', 'shadows_only', 'none'):
-        if not k in preservation_bucket:
+        if k not in preservation_bucket:
             preservation_bucket[k] = 0
     if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
         preservation_bucket['none'] += preservation_bucket['shadows_only']
@@ -490,7 +490,7 @@ def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
     preservation_bucket['total'] = _hits_total_int(resp.hits.total)
     for k in ('bright', 'dark', 'shadows_only', 'none'):
-        if not k in preservation_bucket:
+        if k not in preservation_bucket:
             preservation_bucket[k] = 0
     if merge_shadows:
         preservation_bucket['none'] += preservation_bucket['shadows_only']

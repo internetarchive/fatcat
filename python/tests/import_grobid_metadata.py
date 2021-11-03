@@ -28,9 +28,9 @@ def test_grobid_metadata_parse(grobid_metadata_importer):
         assert re.contribs[0].raw_name == "Wahyu Ary"
         assert re.contribs[0].given_name == "Wahyu"
         assert re.contribs[0].surname == "Ary"
-        assert re.publisher == None
+        assert re.publisher is None
         if re.extra:
-            assert re.extra.get('container_name') == None
+            assert re.extra.get('container_name') is None
         assert len(re.refs) == 27
 
 def test_file_metadata_parse(grobid_metadata_importer):
@@ -43,7 +43,7 @@ def test_file_metadata_parse(grobid_metadata_importer):
             random_sha1, json.loads(raw[1]), raw[2], int(raw[3]))
         assert fe
         #assert fe.sha1 == "d4a841744719518bf8bdd5d91576ccedc55efbb5" # "sha1:2SUEC5CHDFIYX6F52XMRK5WM5XCV565V"
-        assert fe.md5 == None
+        assert fe.md5 is None
         assert fe.mimetype == "application/pdf"
         assert fe.size == 142710
         assert fe.urls[1].url.startswith("http://via.library.depaul.edu")

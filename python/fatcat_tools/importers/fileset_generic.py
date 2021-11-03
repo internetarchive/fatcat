@@ -30,7 +30,7 @@ class FilesetImporter(EntityImporter):
             **kwargs)
 
         # bezerk mode doesn't make sense for this importer
-        assert self.bezerk_mode == False
+        assert self.bezerk_mode is False
 
     def want(self, row):
         if not row.get('release_ids'):

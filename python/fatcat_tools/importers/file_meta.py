@@ -35,7 +35,7 @@ class FileMetaImporter(EntityImporter):
     def parse_record(self, row):
 
         # bezerk mode doesn't make sense for this importer
-        assert self.bezerk_mode == False
+        assert self.bezerk_mode is False
 
         file_meta = row
         fe = fatcat_openapi_client.FileEntity(

@@ -128,16 +128,16 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.release_type == "article-journal"
         assert r.release_stage == "published"
         assert r.license_slug == "cc-by-nc-nd"
-        assert r.original_title == None
+        assert r.original_title is None
         assert r.ext_ids.doi == "10.1016/j.matdes.2016.06.110"
         assert r.ext_ids.doaj == "e58f08a11ecb495ead55a44ad4f89808"
-        assert r.subtitle == None
-        assert r.release_date == None
+        assert r.subtitle is None
+        assert r.release_date is None
         assert r.release_year == 2016
         assert r.volume == "108"
-        assert r.number == None
+        assert r.number is None
         assert r.pages == "608-617"
-        assert r.version == None
+        assert r.version is None
         assert r.language == "en"
         # matched by ISSN, so wouldn't be defined normally
         assert r.extra['container_name'] == "Materials & Design"
@@ -145,8 +145,8 @@ def test_doaj_dict_parse(doaj_importer):
         assert len(r.abstracts[0].content) == 1033
         assert len(r.contribs) == 5
         assert r.contribs[0].raw_name == "Xinfeng Li"
-        assert r.contribs[0].given_name == None
-        assert r.contribs[0].surname == None
+        assert r.contribs[0].given_name is None
+        assert r.contribs[0].surname is None
         assert not r.refs
 
         #print(r.extra)

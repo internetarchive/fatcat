@@ -94,7 +94,7 @@ class MatchedImporter(EntityImporter):
         urls = set()
         for url in obj.get('urls', []):
             url = make_rel_url(url, default_link_rel=self.default_link_rel)
-            if url != None:
+            if url is not None:
                 urls.add(url)
         for cdx in obj.get('cdx', []):
             original = cdx['url']
@@ -104,7 +104,7 @@ class MatchedImporter(EntityImporter):
                     original)
                 urls.add(("webarchive", wayback))
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
-            if url != None:
+            if url is not None:
                 urls.add(url)
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:

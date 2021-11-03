@@ -73,7 +73,7 @@ class DoajArticleImporter(EntityImporter):
         }
         """
 
-        if not obj or not isinstance(obj, dict) or not 'bibjson' in obj:
+        if not obj or not isinstance(obj, dict) or 'bibjson' not in obj:
             self.counts['skip-empty'] += 1
             return None
 

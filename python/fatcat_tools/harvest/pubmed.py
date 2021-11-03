@@ -301,7 +301,7 @@ def xmlstream(filename, tag, encoding='utf-8'):
     Known vulnerabilities: https://docs.python.org/3/library/xml.html#xml-vulnerabilities
     """
     def strip_ns(tag):
-        if not '}' in tag:
+        if '}' not in tag:
             return tag
         return tag.split('}')[1]
 

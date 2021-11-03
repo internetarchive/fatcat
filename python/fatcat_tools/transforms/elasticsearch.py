@@ -1,6 +1,6 @@
 
 import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 
 import tldextract
 
@@ -166,7 +166,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         if extra.get('is_oa'):
             # NOTE: not actually setting this anywhere... but could
             t['is_oa'] = True
-        if extra.get('is_work_alias') != None:
+        if extra.get('is_work_alias') is not None:
             t['is_work_alias'] = bool(extra.get('is_work_alias'))
         if extra.get('longtail_oa'):
             # sometimes set by GROBID/matcher
@@ -214,7 +214,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
         for k in ('crossref', 'datacite', 'jalc'):
             if k in extra:
                 t['doi_registrar'] = k
-        if not 'doi_registrar' in t:
+        if 'doi_registrar' not in t:
             t['doi_registrar'] = 'crossref'
 
     if t['doi']:
@@ -511,12 +511,12 @@ def container_to_elasticsearch(entity, force_bool=True, stats=None):
 
 
 def _type_of_edit(edit: EntityEdit) -> str:
-    if edit.revision == None and edit.redirect_ident == None:
+    if edit.revision is None and edit.redirect_ident is None:
         return 'delete'
     elif edit.redirect_ident:
         # redirect
         return 'update'
-    elif edit.prev_revision == None and edit.redirect_ident == None and edit.revision:
+    elif edit.prev_revision is None and edit.redirect_ident is None and edit.revision:
         return 'create'
     else:
         return 'update'

@@ -40,7 +40,7 @@ class OrcidImporter(EntityImporter):
         returns a CreatorEntity
         """
 
-        if not 'person' in obj:
+        if 'person' not in obj:
             return False
 
         name = obj['person']['name']

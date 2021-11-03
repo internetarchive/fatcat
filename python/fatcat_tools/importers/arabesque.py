@@ -62,13 +62,13 @@ class ArabesqueMatchImporter(EntityImporter):
     def want(self, row):
         if self.require_grobid and not row['postproc_status'] == "200":
             return False
-        if (row['hit'] == True
+        if (row['hit'] is True
                 and row['final_sha1']
                 and row['final_timestamp']
                 and row['final_timestamp'] != "-"
                 and len(row['final_timestamp']) == 14
                 and row['final_mimetype']
-                and row['hit'] == True
+                and row['hit'] is True
                 and row['identifier']):
             return True
         else:

@@ -27,7 +27,7 @@ class FileCleaner(EntityCleaner):
         """
 
         # URL has ://web.archive.org/web/None/ link => delete URL
-        entity.urls = [u for u in entity.urls if not '://web.archive.org/web/None/' in u.url]
+        entity.urls = [u for u in entity.urls if '://web.archive.org/web/None/' not in u.url]
 
         # URL has ://archive.org/ link with rel=repository => rel=archive
         for u in entity.urls:

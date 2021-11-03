@@ -28,7 +28,7 @@ def test_url_cleanups(file_cleaner):
     # remove None wayback links
     assert len(f.urls) == 2
     for u in f.urls:
-        assert not 'web/None' in u.url
+        assert 'web/None' not in u.url
 
     assert f == file_cleaner.clean_entity(f)
     assert f == file_cleaner.clean_entity(copy.deepcopy(f))

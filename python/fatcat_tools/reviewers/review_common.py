@@ -92,7 +92,7 @@ class ReviewBot:
         return annotation
 
     def run(self, since=None):
-        if since == None:
+        if since is None:
             since = datetime.datetime.utcnow()
         while True:
             # XXX: better isoformat conversion?

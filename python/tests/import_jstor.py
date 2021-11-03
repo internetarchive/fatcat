@@ -50,20 +50,20 @@ def test_jstor_xml_parse(jstor_importer):
 
     print(r.extra)
     assert r.title == "On the Universal Law of Attraction, Including that of Gravitation, as a Particular Case of Approximation Deducible from the Principle that Equal and Similar Particles of Matter Move Similarly, Relatively to Each other. [Abstract]"
-    assert r.subtitle == None
-    assert r.original_title == None
+    assert r.subtitle is None
+    assert r.original_title is None
     assert r.publisher == "The Royal Society"
     assert r.release_type == "abstract"
     assert r.release_stage == "published"
-    assert r.license_slug == None
-    assert r.ext_ids.doi == None
+    assert r.license_slug is None
+    assert r.ext_ids.doi is None
     assert r.ext_ids.jstor == "111039"
     assert r.language == "en"
     assert r.volume == "5"
-    assert r.issue == None
+    assert r.issue is None
     assert r.pages == "831-832"
     # None because jan 1st
-    assert r.release_date == None
+    assert r.release_date is None
     assert r.release_year == 1843
     # matched by ISSN, so shouldn't be in there?
     #assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
@@ -74,4 +74,4 @@ def test_jstor_xml_parse(jstor_importer):
     assert r.contribs[0].given_name == "John Kinnersley"
     assert r.contribs[0].surname == "Smythies"
 
-    assert r.refs == None
+    assert r.refs is None

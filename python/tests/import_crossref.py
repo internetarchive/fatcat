@@ -87,7 +87,7 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.ext_ids.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
         assert r.ext_ids.isbn13 == "978-3-16-148410-0"
         assert r.language == "fr"
-        assert r.subtitle == None
+        assert r.subtitle is None
         assert 'subtitle' not in r.extra
         assert 'subtitle' not in r.extra['crossref']
         assert 'funder' not in r.extra

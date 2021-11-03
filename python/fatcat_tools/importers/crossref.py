@@ -205,7 +205,7 @@ class CrossrefImporter(EntityImporter):
             return None
 
         # Do require the 'title' keys to exist, as release entities do
-        if (not 'title' in obj) or (not obj['title']):
+        if ('title' not in obj) or (not obj['title']):
             self.counts['skip-blank-title'] += 1
             return None
 
@@ -428,7 +428,6 @@ class CrossrefImporter(EntityImporter):
             # sometimes only the year is included, not the full date
             release_year = raw_date[0]
             release_date = None
-
 
         original_title: Optional[str] = None
         if obj.get('original-title'):

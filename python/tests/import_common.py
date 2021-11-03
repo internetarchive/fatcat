@@ -37,7 +37,7 @@ def test_fuzzy_match_none(entity_importer, mocker) -> None:
     )
 
     resp = entity_importer.match_existing_release_fuzzy(release)
-    assert resp == None
+    assert resp is None
 
 def test_fuzzy_match_different(entity_importer, mocker) -> None:
     """
@@ -71,8 +71,8 @@ def test_fuzzy_match_different(entity_importer, mocker) -> None:
 
     match_raw.side_effect = [[r3]]
     resp = entity_importer.match_existing_release_fuzzy(r1)
-    assert resp == None
+    assert resp is None
 
     match_raw.side_effect = [[]]
     resp = entity_importer.match_existing_release_fuzzy(r1)
-    assert resp == None
+    assert resp is None

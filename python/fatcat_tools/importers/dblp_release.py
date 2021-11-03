@@ -93,7 +93,7 @@ class DblpReleaseImporter(EntityImporter):
         return self._dblp_container_map.get(prefix)
 
     def want(self, xml_elem):
-        if not xml_elem.name in self.ELEMENT_TYPES:
+        if xml_elem.name not in self.ELEMENT_TYPES:
             self.counts['skip-type'] += 1
             return False
         if not xml_elem.get('key'):
@@ -243,7 +243,7 @@ class DblpReleaseImporter(EntityImporter):
         # dblp-specific extra
         dblp_extra = dict(type=dblp_type)
         note = clean_str(xml_elem.note and xml_elem.note.text)
-        if note and not 'base-search.net' in note:
+        if note and 'base-search.net' not in note:
             dblp_extra['note'] = note
         if part_of_key:
             dblp_extra['part_of_key'] = part_of_key
