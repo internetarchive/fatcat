@@ -31,7 +31,7 @@ fmt: ## Run code formating on all source code
 .PHONY: test
 test: ## Run all tests and lints
 	@curl --silent localhost:9411/v0/changelog > /dev/null || (echo "API not running locally, bailing early from tests" && exit 1)
-	pipenv run pytest -vv
+	pipenv run pytest
 
 .PHONY: coverage
 coverage: ## Run all tests with coverage
