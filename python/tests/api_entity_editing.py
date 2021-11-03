@@ -1,4 +1,3 @@
-
 import pytest
 from fatcat_openapi_client import *
 from fixtures import *
@@ -53,7 +52,7 @@ def test_edit_after_accept(api):
     except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         # TODO: need better message
-        #assert "accepted" in e.body
+        # assert "accepted" in e.body
 
     # cleanup
     eg = quick_eg(api)
@@ -142,8 +141,8 @@ def test_wip_revision(api):
 def test_edit_get_all(api_dummy_entities):
 
     ade = api_dummy_entities
-    api = ade['api']
-    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+    api = ade["api"]
+    eg = api.get_editgroup(ade["editgroup"].editgroup_id)
 
     assert api.get_creator_edit(eg.edits.creators[0].edit_id)
     assert api.get_container_edit(eg.edits.containers[0].edit_id)
@@ -153,11 +152,12 @@ def test_edit_get_all(api_dummy_entities):
     assert api.get_release_edit(eg.edits.releases[0].edit_id)
     assert api.get_work_edit(eg.edits.works[0].edit_id)
 
+
 def test_edit_delete_all(api_dummy_entities):
 
     ade = api_dummy_entities
-    api = ade['api']
-    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+    api = ade["api"]
+    eg = api.get_editgroup(ade["editgroup"].editgroup_id)
 
     api.delete_creator_edit(eg.editgroup_id, eg.edits.creators[0].edit_id)
     api.delete_container_edit(eg.editgroup_id, eg.edits.containers[0].edit_id)
@@ -168,7 +168,7 @@ def test_edit_delete_all(api_dummy_entities):
     api.delete_work_edit(eg.editgroup_id, eg.edits.works[0].edit_id)
 
     # verify deletion
-    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+    eg = api.get_editgroup(ade["editgroup"].editgroup_id)
     assert len(eg.edits.creators) == 0
     assert len(eg.edits.containers) == 0
     assert len(eg.edits.files) == 0

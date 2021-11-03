@@ -1,4 +1,3 @@
-
 import datetime
 
 from fatcat_tools.harvest import *
@@ -18,21 +17,21 @@ def test_harvest_state():
     assert hs.next_span() is None
 
     hs = HarvestState(
-        start_date=datetime.date(2000,1,1),
-        end_date=datetime.date(2000,1,3),
+        start_date=datetime.date(2000, 1, 1),
+        end_date=datetime.date(2000, 1, 3),
     )
     assert len(hs.to_process) == 3
     hs = HarvestState(
-        start_date=datetime.date(2000,1,29),
-        end_date=datetime.date(2000,2,2),
+        start_date=datetime.date(2000, 1, 29),
+        end_date=datetime.date(2000, 2, 2),
     )
     assert len(hs.to_process) == 5
 
     hs = HarvestState(catchup_days=0)
     assert hs.next_span() is None
     hs.enqueue_period(
-        start_date=datetime.date(2000,1,1),
-        end_date=datetime.date(2000,1,3),
+        start_date=datetime.date(2000, 1, 1),
+        end_date=datetime.date(2000, 1, 3),
     )
     assert len(hs.to_process) == 3
     hs.update('{"completed-date": "2000-01-02"}')

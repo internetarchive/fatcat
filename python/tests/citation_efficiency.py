@@ -1,4 +1,3 @@
-
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -34,6 +33,7 @@ def test_citation_indexing(api):
     assert r1.refs[1].index == 1
     assert r1.refs[1].key == "third"
 
+
 def test_citation_targets(api):
     # invariant to linking citations
     # also, updates work
@@ -56,11 +56,12 @@ def test_citation_targets(api):
     r2 = api.get_release(r2.ident)
     assert r2.refs[0].key == "first"
     assert r2.refs[1].key == "second"
-    assert r2.refs[0].index == 0 # TODO: one-indexing?
+    assert r2.refs[0].index == 0  # TODO: one-indexing?
     assert r2.refs[1].index == 1
     assert r2.refs[0].target_release_id is None
     assert r2.refs[1].target_release_id == r1.ident
     assert len(r2.refs) == 2
+
 
 def test_citation_empty_array(api):
     # distinction between empty array (no citations) and no array (hidden)
@@ -83,17 +84,24 @@ def test_citation_empty_array(api):
     r1b = api.get_release(r1.ident, hide="refs")
     assert r1b.refs is None
 
+
 def test_citation_encoding(api):
     # escape-only changes (eg, \u1234 whatever for ASCII)
 
     r1 = ReleaseEntity(title="citation encoding", ext_ids=ReleaseExtIds())
-    title = "title-unicode \\u0050 \\\" "
+    title = 'title-unicode \\u0050 \\" '
     container = "container-unicode ☃︎ ä ö ü スティー"
-    extra = extra={'a': 1, 'b': 2, 'ö': 3}
+    extra = extra = {"a": 1, "b": 2, "ö": 3}
     locator = "p123"
     r1.refs = [
-        ReleaseRef(key="1", year=1923, title=title, container_name=container,
-            extra=extra, locator=locator),
+        ReleaseRef(
+            key="1",
+            year=1923,
+            title=title,
+            container_name=container,
+            extra=extra,
+            locator=locator,
+        ),
         ReleaseRef(key="2"),
     ]
 

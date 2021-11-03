@@ -1,4 +1,3 @@
-
 import fatcat_openapi_client
 import pytest
 from fixtures import api
@@ -18,10 +17,12 @@ def test_editor_update(api):
     check = api.get_editor(editor_id)
     assert check == orig
 
+
 def test_editor_get(api):
 
     editor_id = api.editor_id
     api.get_editor(editor_id)
+
 
 def test_editor_lookup(api):
 

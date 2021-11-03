@@ -1,4 +1,3 @@
-
 import pytest
 from fatcat_openapi_client import *
 
@@ -23,77 +22,116 @@ def test_file_update_generic():
     url_sets = [
         # dummy
         {
-            'before': [],
-            'after': [],
+            "before": [],
+            "after": [],
         },
         # social => academicsocial
         {
-            'before': [
+            "before": [
                 FileUrl(url="https://academic.edu/blah.pdf", rel="social"),
             ],
-            'after': [
+            "after": [
                 FileUrl(url="https://academic.edu/blah.pdf", rel="academicsocial"),
             ],
         },
         # archive.org repository => archive
         {
-            'before': [
+            "before": [
                 FileUrl(url="https://archive.org/download/item/blah.pdf", rel="repository"),
             ],
-            'after': [
+            "after": [
                 FileUrl(url="https://archive.org/download/item/blah.pdf", rel="archive"),
             ],
         },
         # :80 in URL is redundant
         {
-            'before': [
-                FileUrl(url="http://homepages.math.uic.edu/~rosendal/PapersWebsite/BanachMinimalExamples.pdf", rel="web"),
-                FileUrl(url="http://homepages.math.uic.edu:80/~rosendal/PapersWebsite/BanachMinimalExamples.pdf", rel="web"),
+            "before": [
+                FileUrl(
+                    url="http://homepages.math.uic.edu/~rosendal/PapersWebsite/BanachMinimalExamples.pdf",
+                    rel="web",
+                ),
+                FileUrl(
+                    url="http://homepages.math.uic.edu:80/~rosendal/PapersWebsite/BanachMinimalExamples.pdf",
+                    rel="web",
+                ),
                 FileUrl(url="http://mit.edu/item/blah.pdf", rel="web"),
                 FileUrl(url="http://mit.edu:80/item/blah.pdf", rel="web"),
             ],
-            'after': [
-                FileUrl(url="http://homepages.math.uic.edu/~rosendal/PapersWebsite/BanachMinimalExamples.pdf", rel="web"),
+            "after": [
+                FileUrl(
+                    url="http://homepages.math.uic.edu/~rosendal/PapersWebsite/BanachMinimalExamples.pdf",
+                    rel="web",
+                ),
                 FileUrl(url="http://mit.edu/item/blah.pdf", rel="web"),
             ],
         },
         {
-            'before': [
+            "before": [
                 FileUrl(url="http://mit.edu:80/item/blah.pdf", rel="web"),
             ],
-            'after': [
+            "after": [
                 FileUrl(url="http://mit.edu:80/item/blah.pdf", rel="web"),
             ],
         },
         # http/https redundant
         {
-            'before': [
-                FileUrl(url="https://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf", rel="web"),
-                FileUrl(url="http://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf", rel="web"),
+            "before": [
+                FileUrl(
+                    url="https://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf",
+                    rel="web",
+                ),
+                FileUrl(
+                    url="http://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf",
+                    rel="web",
+                ),
                 FileUrl(url="https://mit.edu/item/blah.pdf", rel="web"),
-                FileUrl(url="https://web.archive.org/web/12345542/http://mit.edu/item/blah.pdf", rel="webarchive"),
+                FileUrl(
+                    url="https://web.archive.org/web/12345542/http://mit.edu/item/blah.pdf",
+                    rel="webarchive",
+                ),
                 FileUrl(url="http://mit.edu/item/blah.pdf", rel="web"),
-                FileUrl(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
+                FileUrl(
+                    url="https://web.archive.org/web/12345542/something.com/blah.pdf",
+                    rel="webarchive",
+                ),
             ],
-            'after': [
-                FileUrl(url="https://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf", rel="web"),
+            "after": [
+                FileUrl(
+                    url="https://eo1.gsfc.nasa.gov/new/validationReport/Technology/JoeCD/asner_etal_PNAS_20041.pdf",
+                    rel="web",
+                ),
                 FileUrl(url="https://mit.edu/item/blah.pdf", rel="web"),
-                FileUrl(url="https://web.archive.org/web/12345542/http://mit.edu/item/blah.pdf", rel="webarchive"),
-                FileUrl(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
+                FileUrl(
+                    url="https://web.archive.org/web/12345542/http://mit.edu/item/blah.pdf",
+                    rel="webarchive",
+                ),
+                FileUrl(
+                    url="https://web.archive.org/web/12345542/something.com/blah.pdf",
+                    rel="webarchive",
+                ),
             ],
         },
         # short /2017/ wayback datetime
         {
-            'before': [
-                FileUrl(url="https://web.archive.org/web/2017/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38", rel="webarchive"),
-                FileUrl(url="https://web.archive.org/web/20170922010835/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38", rel="webarchive"),
+            "before": [
+                FileUrl(
+                    url="https://web.archive.org/web/2017/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38",
+                    rel="webarchive",
+                ),
+                FileUrl(
+                    url="https://web.archive.org/web/20170922010835/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38",
+                    rel="webarchive",
+                ),
             ],
-            'after': [
-                FileUrl(url="https://web.archive.org/web/20170922010835/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38", rel="webarchive"),
+            "after": [
+                FileUrl(
+                    url="https://web.archive.org/web/20170922010835/http://www.geoamazonia.net/index.php/revista/article/download/51/pdf_38",
+                    rel="webarchive",
+                ),
             ],
         },
     ]
 
     for pair in url_sets:
-        f1.urls = pair['before']
-        assert EntityImporter.generic_file_cleanups(f1).urls == pair['after']
+        f1.urls = pair["before"]
+        assert EntityImporter.generic_file_cleanups(f1).urls == pair["after"]

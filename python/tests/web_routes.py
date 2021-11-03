@@ -1,10 +1,8 @@
-
 from fixtures import *
 
 
 def test_static_routes(app):
-    for route in ('/health.json', '/robots.txt', '/', '/about', '/rfc',
-            '/static/fatcat.jpg'):
+    for route in ("/health.json", "/robots.txt", "/", "/about", "/rfc", "/static/fatcat.jpg"):
         rv = app.get(route)
         assert rv.status_code == 200
 

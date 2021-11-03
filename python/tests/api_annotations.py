@@ -1,4 +1,3 @@
-
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -14,14 +13,13 @@ def test_annotations(api):
     # create an annotation!
     api.create_editgroup_annotation(
         eg.editgroup_id,
-        EditgroupAnnotation(
-            comment_markdown="some *annotation*",
-            extra=dict(thing="thang")))
+        EditgroupAnnotation(comment_markdown="some *annotation*", extra=dict(thing="thang")),
+    )
 
     # check that we can fetch it all sorts of ways
     a = api.get_editgroup_annotations(eg.editgroup_id)
     assert len(a) == 1
-    assert a[0].extra['thing'] == "thang"
+    assert a[0].extra["thing"] == "thang"
 
     # the editor persists, so this is a hack to find a "recent" one
     a2 = api.get_editor_annotations(eg.editor_id, limit=100)
@@ -31,4 +29,4 @@ def test_annotations(api):
             found = thing
             break
     assert found
-    assert found.extra['thing'] == "thang"
+    assert found.extra["thing"] == "thang"

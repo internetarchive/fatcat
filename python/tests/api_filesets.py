@@ -1,4 +1,3 @@
-
 import pytest
 from fatcat_openapi_client import *
 from fixtures import *
@@ -11,7 +10,7 @@ def test_fileset(api):
     r1edit = api.create_release(eg.editgroup_id, r1)
 
     fs1 = FilesetEntity(
-        manifest = [
+        manifest=[
             FilesetFile(
                 path="data/thing.tar.gz",
                 size=54321,
@@ -30,11 +29,11 @@ def test_fileset(api):
                 extra={"x": 1, "y": "q"},
             ),
         ],
-        urls = [
+        urls=[
             FilesetUrl(url="https://archive.org/download/fileset-123/", rel="repository"),
             FilesetUrl(url="https://humble-host.com/~user123/dataset/", rel="web"),
         ],
-        release_ids = [r1edit.ident],
+        release_ids=[r1edit.ident],
         extra=dict(t=4, u=9),
         edit_extra=dict(test_key="filesets rule"),
     )
@@ -59,7 +58,9 @@ def test_fileset(api):
     # expansion
     r1 = api.get_release(r1edit.ident, expand="filesets")
     # XXX: manifest return order is *NOT* currently stable
-    assert (r1.filesets[0].manifest == fs1.manifest) or (r1.filesets[0].manifest == list(reversed(fs1.manifest)))
+    assert (r1.filesets[0].manifest == fs1.manifest) or (
+        r1.filesets[0].manifest == list(reversed(fs1.manifest))
+    )
 
     # get redirects (none)
     assert api.get_fileset_redirects(fs2.ident) == []
@@ -71,19 +72,21 @@ def test_fileset(api):
     fs2 = api.get_fileset(fs2.ident)
     assert fs2.state == "deleted"
 
-def test_fileset_examples(api):
-    fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam')
-    assert fs3.releases is None
-    fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam', expand="releases")
 
-    assert fs3.urls[0].url == 'http://other-personal-blog.name/dataset/'
-    assert fs3.urls[1].rel == 'archive'
-    assert fs3.manifest[1].md5 == 'f4de91152c7ab9fdc2a128f962faebff'
-    assert fs3.manifest[1].mimetype == 'application/gzip'
+def test_fileset_examples(api):
+    fs3 = api.get_fileset("aaaaaaaaaaaaaztgaaaaaaaaam")
+    assert fs3.releases is None
+    fs3 = api.get_fileset("aaaaaaaaaaaaaztgaaaaaaaaam", expand="releases")
+
+    assert fs3.urls[0].url == "http://other-personal-blog.name/dataset/"
+    assert fs3.urls[1].rel == "archive"
+    assert fs3.manifest[1].md5 == "f4de91152c7ab9fdc2a128f962faebff"
+    assert fs3.manifest[1].mimetype == "application/gzip"
     assert fs3.manifest[1].extra is not None
     assert fs3.releases[0].ident
     assert fs3.releases[0].abstracts is None
     assert fs3.releases[0].refs is None
+
 
 def test_bad_fileset(api):
 
@@ -91,8 +94,8 @@ def test_bad_fileset(api):
 
     bad_list = [
         # good (for testing test itself)
-        #FilesetEntity(manifest=[FilesetFile(path="123.jpg", size=1234)]),
-        #FilesetEntity(urls=[FilesetUrl(url="thing", rel="blah")]),
+        # FilesetEntity(manifest=[FilesetFile(path="123.jpg", size=1234)]),
+        # FilesetEntity(urls=[FilesetUrl(url="thing", rel="blah")]),
         FilesetEntity(manifest=[FilesetFile(path="123.jpg", size="big")]),
         FilesetEntity(release_ids=["asdf"]),
     ]

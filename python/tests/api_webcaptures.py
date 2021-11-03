@@ -1,4 +1,3 @@
-
 import datetime
 
 import pytest
@@ -13,13 +12,13 @@ def test_webcapture(api):
     r1edit = api.create_release(eg.editgroup_id, r1)
 
     wc1 = WebcaptureEntity(
-        original_url = "http://example.site",
-        #timestamp = "2012-01-02T03:04:05Z",
-        timestamp = datetime.datetime.now(datetime.timezone.utc),
-        cdx = [
+        original_url="http://example.site",
+        # timestamp = "2012-01-02T03:04:05Z",
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
+        cdx=[
             WebcaptureCdxLine(
                 surt="site,example,)/data/thing.tar.gz",
-                #timestamp="2012-01-02T03:04:05Z",
+                # timestamp="2012-01-02T03:04:05Z",
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
                 url="http://example.site/data/thing.tar.gz",
                 mimetype="application/gzip",
@@ -30,7 +29,7 @@ def test_webcapture(api):
             ),
             WebcaptureCdxLine(
                 surt="site,example,)/README.md",
-                #timestamp="2012-01-02T03:04:05Z",
+                # timestamp="2012-01-02T03:04:05Z",
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
                 url="http://example.site/README.md",
                 mimetype="text/markdown",
@@ -40,10 +39,10 @@ def test_webcapture(api):
                 sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
             ),
         ],
-        archive_urls = [
+        archive_urls=[
             FileUrl(rel="wayback", url="https://web.archive.org/web/"),
         ],
-        release_ids = [r1edit.ident],
+        release_ids=[r1edit.ident],
         extra=dict(c=1, b=2),
         edit_extra=dict(test_key="webcaptures rule"),
     )
@@ -61,9 +60,9 @@ def test_webcapture(api):
 
     # check that fields match
     # I don't know why these aren't equal...
-    #print(wc1.archive_urls)
-    #print(wc2.archive_urls)
-    #assert wc1.archive_urls == wc2.archive_urls
+    # print(wc1.archive_urls)
+    # print(wc2.archive_urls)
+    # assert wc1.archive_urls == wc2.archive_urls
     assert wc1.archive_urls[0].rel == wc2.archive_urls[0].rel
     assert wc1.archive_urls[0].url == wc2.archive_urls[0].url
     assert wc1.cdx[0] == wc2.cdx[0]
@@ -89,14 +88,15 @@ def test_webcapture(api):
     wc2 = api.get_webcapture(wc2.ident)
     assert wc2.state == "deleted"
 
-def test_webcapture_examples(api):
-    wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam')
-    assert wc3.releases is None
-    wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam', expand="releases")
 
-    assert wc3.cdx[0].surt == 'org,asheesh)/'
-    assert wc3.cdx[1].sha1 == 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5'
-    assert wc3.archive_urls[1].rel == 'warc'
+def test_webcapture_examples(api):
+    wc3 = api.get_webcapture("aaaaaaaaaaaaa53xaaaaaaaaam")
+    assert wc3.releases is None
+    wc3 = api.get_webcapture("aaaaaaaaaaaaa53xaaaaaaaaam", expand="releases")
+
+    assert wc3.cdx[0].surt == "org,asheesh)/"
+    assert wc3.cdx[1].sha1 == "a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5"
+    assert wc3.archive_urls[1].rel == "warc"
     assert wc3.releases[0].ident
     assert wc3.releases[0].abstracts is None
     assert wc3.releases[0].refs is None
@@ -110,44 +110,60 @@ def test_bad_webcapture(api):
     good = WebcaptureEntity(
         original_url="http://example.site/123.jpg",
         timestamp="2012-01-02T03:04:05Z",
-        cdx=[WebcaptureCdxLine(
-            surt="site,example,)/123.jpg",
-            url="http://example.site/123.jpg",
-            sha1="455face3598611458efe1f072e58624790a67266",
-            timestamp="2012-01-02T03:04:05Z")])
+        cdx=[
+            WebcaptureCdxLine(
+                surt="site,example,)/123.jpg",
+                url="http://example.site/123.jpg",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                timestamp="2012-01-02T03:04:05Z",
+            )
+        ],
+    )
 
     bad_list = [
         # uncomment to "test the test"
-        #good,
+        # good,
         # CDX timestamp format
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureCdxLine(
-                surt="site,example,)/123.jpg",
-                url="http://example.site/123.jpg",
-                sha1="455face3598611458efe1f072e58624790a67266",
-                size=123,
-                timestamp="20120102030405")]),
+            cdx=[
+                WebcaptureCdxLine(
+                    surt="site,example,)/123.jpg",
+                    url="http://example.site/123.jpg",
+                    sha1="455face3598611458efe1f072e58624790a67266",
+                    size=123,
+                    timestamp="20120102030405",
+                )
+            ],
+        ),
         # CDX timestamp format (int)
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureCdxLine(
-                surt="site,example,)/123.jpg",
-                url="http://example.site/123.jpg",
-                sha1="455face3598611458efe1f072e58624790a67266",
-                timestamp=20120102030405)]),
+            cdx=[
+                WebcaptureCdxLine(
+                    surt="site,example,)/123.jpg",
+                    url="http://example.site/123.jpg",
+                    sha1="455face3598611458efe1f072e58624790a67266",
+                    timestamp=20120102030405,
+                )
+            ],
+        ),
         # negative size
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureCdxLine(
-                surt="site,example,)/123.jpg",
-                url="http://example.site/123.jpg",
-                sha1="455face3598611458efe1f072e58624790a67266",
-                size=-123,
-                timestamp="20120102030405")]),
+            cdx=[
+                WebcaptureCdxLine(
+                    surt="site,example,)/123.jpg",
+                    url="http://example.site/123.jpg",
+                    sha1="455face3598611458efe1f072e58624790a67266",
+                    size=-123,
+                    timestamp="20120102030405",
+                )
+            ],
+        ),
     ]
 
     api.create_webcapture(eg.editgroup_id, good)
@@ -160,21 +176,27 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureCdxLine(
-                #url="http://example.site/123.jpg",
-                surt="site,example,)/123.jpg",
-                sha1="455face3598611458efe1f072e58624790a67266",
-                timestamp="2012-01-02T03:04:05Z",
-            )])
+            cdx=[
+                WebcaptureCdxLine(
+                    # url="http://example.site/123.jpg",
+                    surt="site,example,)/123.jpg",
+                    sha1="455face3598611458efe1f072e58624790a67266",
+                    timestamp="2012-01-02T03:04:05Z",
+                )
+            ],
+        )
 
     with pytest.raises(ValueError):
         # missing/empty CDX timestamp
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureCdxLine(
-                url="http://example.site/123.jpg",
-                surt="site,example,)/123.jpg",
-                sha1="455face3598611458efe1f072e58624790a67266",
-                #timestamp="2012-01-02T03:04:05Z",
-            )])
+            cdx=[
+                WebcaptureCdxLine(
+                    url="http://example.site/123.jpg",
+                    surt="site,example,)/123.jpg",
+                    sha1="455face3598611458efe1f072e58624790a67266",
+                    # timestamp="2012-01-02T03:04:05Z",
+                )
+            ],
+        )

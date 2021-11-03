@@ -54,9 +54,7 @@ def test_datacite_importer_huge(datacite_importer):
         counts = JsonLinePusher(datacite_importer, f).run()
     assert counts["insert"] == 998
     change = datacite_importer.api.get_changelog_entry(index=last_index + 1)
-    release = datacite_importer.api.get_release(
-        change.editgroup.edits.releases[0].ident
-    )
+    release = datacite_importer.api.get_release(change.editgroup.edits.releases[0].ident)
     assert len(release.contribs) == 3
 
 
@@ -76,17 +74,26 @@ def test_find_original_language_title():
         ),
         Case(
             "empty subdict is ignored",
-            {"title": "Noise Reduction", "original_language_title": {},},
+            {
+                "title": "Noise Reduction",
+                "original_language_title": {},
+            },
             None,
         ),
         Case(
             "unknown subdict keys are ignored",
-            {"title": "Noise Reduction", "original_language_title": {"broken": "kv"},},
+            {
+                "title": "Noise Reduction",
+                "original_language_title": {"broken": "kv"},
+            },
             None,
         ),
         Case(
             "original string",
-            {"title": "Noise Reduction", "original_language_title": "Подавление шума",},
+            {
+                "title": "Noise Reduction",
+                "original_language_title": "Подавление шума",
+            },
             "Подавление шума",
         ),
         Case(
@@ -163,7 +170,10 @@ def test_parse_datacite_titles():
         ),
         Case(
             "multiple titles, first wins",
-            [{"title": "Total carbon dioxide"}, {"title": "Meeting Heterogeneity"},],
+            [
+                {"title": "Total carbon dioxide"},
+                {"title": "Meeting Heterogeneity"},
+            ],
             ("Total carbon dioxide", None, None),
         ),
         Case(
@@ -201,7 +211,9 @@ def test_parse_datacite_titles():
             [
                 {
                     "title": "Total carbon dioxide",
-                    "original_language_title": {"__content__": "Total carbon dioxide",},
+                    "original_language_title": {
+                        "__content__": "Total carbon dioxide",
+                    },
                 },
                 {"title": "Station TT043_7-9", "titleType": "Subtitle"},
             ],
@@ -239,9 +251,7 @@ def test_parse_datacite_dates():
         Case("year only yields year only", [{"date": "2019"}], (None, None, 2019)),
         Case("int year", [{"date": 2019}], (None, None, 2019)),
         Case("first wins", [{"date": "2019"}, {"date": "2020"}], (None, None, 2019)),
-        Case(
-            "skip bogus year", [{"date": "abc"}, {"date": "2020"}], (None, None, 2020)
-        ),
+        Case("skip bogus year", [{"date": "abc"}, {"date": "2020"}], (None, None, 2020)),
         Case(
             "first with type",
             [{"date": "2019", "dateType": "Accepted"}, {"date": "2020"}],
@@ -249,7 +259,9 @@ def test_parse_datacite_dates():
         ),
         Case(
             "full date",
-            [{"date": "2019-12-01", "dateType": "Valid"},],
+            [
+                {"date": "2019-12-01", "dateType": "Valid"},
+            ],
             (datetime.date(2019, 12, 1), 12, 2019),
         ),
         Case(
@@ -294,22 +306,30 @@ def test_parse_datacite_dates():
         ),
         Case(
             "fuzzy year only",
-            [{"date": "Year 2010", "dateType": "Issued"},],
+            [
+                {"date": "Year 2010", "dateType": "Issued"},
+            ],
             (None, None, 2010),
         ),
         Case(
             "fuzzy year and month",
-            [{"date": "Year 2010 Feb", "dateType": "Issued"},],
+            [
+                {"date": "Year 2010 Feb", "dateType": "Issued"},
+            ],
             (None, 2, 2010),
         ),
         Case(
             "fuzzy year, month, day",
-            [{"date": "Year 2010 Feb 24", "dateType": "Issued"},],
+            [
+                {"date": "Year 2010 Feb 24", "dateType": "Issued"},
+            ],
             (datetime.date(2010, 2, 24), 2, 2010),
         ),
         Case(
             "ignore broken date",
-            [{"date": "Febrrr 45", "dateType": "Updated"},],
+            [
+                {"date": "Febrrr 45", "dateType": "Updated"},
+            ],
             (None, None, None),
         ),
     ]
@@ -317,12 +337,18 @@ def test_parse_datacite_dates():
         result = parse_datacite_dates(case.input)
         assert result == case.result, case.about
 
+
 def test_datacite_spammy_title(datacite_importer):
-    r = datacite_importer.parse_record({"title": """HD! My Hero academia
+    r = datacite_importer.parse_record(
+        {
+            "title": """HD! My Hero academia
                                         Heroes: Rising [2020]Full Movie Watch
                                         Online And Free Download""",
-                                        "attributes": {"doi": "10.1234/1234"}})
+            "attributes": {"doi": "10.1234/1234"},
+        }
+    )
     assert r is False
+
 
 def test_datacite_importer(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
@@ -361,9 +387,7 @@ def test_datacite_dict_parse(datacite_importer):
 
         print(r.extra)
         assert r.title == "Triticum turgidum L. subsp. durum (Desf.) Husn. 97090"
-        assert (
-            r.publisher == "International Centre for Agricultural Research in Dry Areas"
-        )
+        assert r.publisher == "International Centre for Agricultural Research in Dry Areas"
         assert r.release_type == "article"
         assert r.release_stage == "published"
         assert r.license_slug is None
@@ -424,9 +448,7 @@ def test_index_form_to_display_name():
         ),
         Case("Solomon, P. M.", "P. M. Solomon"),
         Case("Sujeevan Ratnasingham", "Sujeevan Ratnasingham"),
-        Case(
-            "Paul Stöckli (1906-1991), Künstler", "Paul Stöckli (1906-1991), Künstler"
-        ),
+        Case("Paul Stöckli (1906-1991), Künstler", "Paul Stöckli (1906-1991), Künstler"),
     ]
 
     for c in cases:
@@ -450,9 +472,7 @@ def test_lookup_license_slug():
             "https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess.xhtml",
             "ADS-UK",
         ),
-        Case(
-            "https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess", "ADS-UK"
-        ),
+        Case("https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess", "ADS-UK"),
         Case("https://creativecommons.org/public-domain/cc0", "CC-0"),
         Case("https://creativecommons.org/publicdomain/zero/1.0", "CC-0"),
         Case("https://creativecommons.org/share-your-work/public-domain/cc0", "CC-0"),

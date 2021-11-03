@@ -1,4 +1,3 @@
-
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -15,7 +14,10 @@ def test_file(api):
         sha256="f1f4f18a904e76818863ccbc6141fce92b0dcb47b0d6041aec98bc6806e393c3",
         mimetype="application/pdf",
         urls=[
-            FileUrl(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
+            FileUrl(
+                url="https://web.archive.org/web/12345542/something.com/blah.pdf",
+                rel="webarchive",
+            ),
         ],
         release_ids=[],
         extra=dict(a=2, b=5),
@@ -53,12 +55,15 @@ def test_file(api):
     f2 = api.get_file(f2.ident)
     assert f2.state == "deleted"
 
+
 def test_file_examples(api):
 
-    f1 = api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
+    f1 = api.lookup_file(
+        sha256="ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362"
+    )
     assert f1.releases is None
 
-    f1 = api.get_file('aaaaaaaaaaaaamztaaaaaaaaam', expand="releases")
+    f1 = api.get_file("aaaaaaaaaaaaamztaaaaaaaaam", expand="releases")
     assert f1.sha256 == "ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362"
     assert f1.releases[0].ident
     assert f1.releases[0].abstracts is None

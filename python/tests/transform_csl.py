@@ -1,4 +1,3 @@
-
 import json
 
 import pytest
@@ -10,15 +9,15 @@ from fatcat_tools.transforms import citeproc_csl, entity_from_json, release_to_c
 
 
 def test_csl_crossref(crossref_importer):
-    with open('tests/files/crossref-works.single.json', 'r') as f:
+    with open("tests/files/crossref-works.single.json", "r") as f:
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)
     csl = release_to_csl(r)
-    citeproc_csl(csl, 'csl-json')
-    citeproc_csl(csl, 'bibtex')
-    citeproc_csl(csl, 'harvard1')
-    citeproc_csl(csl, 'harvard1', html=True)
+    citeproc_csl(csl, "csl-json")
+    citeproc_csl(csl, "bibtex")
+    citeproc_csl(csl, "harvard1")
+    citeproc_csl(csl, "harvard1", html=True)
 
     # check that with no author surnames, can't run
     for c in r.contribs:
@@ -28,26 +27,30 @@ def test_csl_crossref(crossref_importer):
         release_to_csl(r)
     with pytest.raises(ValueError):
         csl = release_to_csl(r)
-        citeproc_csl(csl, 'csl-json')
+        citeproc_csl(csl, "csl-json")
+
 
 def test_csl_pubmed(crossref_importer):
-    with open('tests/files/example_releases_pubmed19n0972.json', 'r') as f:
+    with open("tests/files/example_releases_pubmed19n0972.json", "r") as f:
         # multiple single lines
         for line in f:
             r = entity_from_json(line, ReleaseEntity)
             csl = release_to_csl(r)
-            citeproc_csl(csl, 'csl-json')
-            citeproc_csl(csl, 'bibtex')
-            citeproc_csl(csl, 'harvard1')
-            citeproc_csl(csl, 'harvard1', html=True)
+            citeproc_csl(csl, "csl-json")
+            citeproc_csl(csl, "bibtex")
+            citeproc_csl(csl, "harvard1")
+            citeproc_csl(csl, "harvard1", html=True)
+
 
 def test_csl_pubmed_bibtex(crossref_importer):
-    with open('tests/files/example_releases_pubmed19n0972.json', 'r') as f:
+    with open("tests/files/example_releases_pubmed19n0972.json", "r") as f:
         r = entity_from_json(f.readline(), ReleaseEntity)
     csl = release_to_csl(r)
-    print(citeproc_csl(csl, 'bibtex'))
+    print(citeproc_csl(csl, "bibtex"))
     # TODO: what's with the '`' in volume?
-    assert citeproc_csl(csl, 'bibtex').strip() == """
+    assert (
+        citeproc_csl(csl, "bibtex").strip()
+        == """
 @article{mędrela-kuder_szymura_2018, 
   title={Selected anti-health behaviours among women with osteoporosis}, 
   volume={69`}, 
@@ -60,6 +63,10 @@ def test_csl_pubmed_bibtex(crossref_importer):
   year={2018}
   }
     """.strip()
-    assert citeproc_csl(csl, 'harvard1', html=True).strip() == """
+    )
+    assert (
+        citeproc_csl(csl, "harvard1", html=True).strip()
+        == """
     Mędrela-Kuder and Szymura (2018) ‘Selected anti-health behaviours among women with osteoporosis’, <i>Roczniki Panstwowego Zakladu Higieny</i>, 69`(4). doi: 10.32394/rpzh.2018.0046.
     """.strip()
+    )

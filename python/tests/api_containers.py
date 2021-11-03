@@ -1,4 +1,3 @@
-
 import pytest
 from fatcat_openapi_client import *
 from fixtures import *
@@ -63,6 +62,7 @@ def test_container(api):
     c2 = api.get_container(c2.ident)
     assert c2.state == "deleted"
 
+
 def test_container_bad_idents(api):
 
     # all the fields!
@@ -81,9 +81,10 @@ def test_container_bad_idents(api):
     with pytest.raises(ValueError):
         c1.issne = "asdf-hhhh"
 
+
 def test_container_examples(api):
 
-    c1 = api.get_container('aaaaaaaaaaaaaeiraaaaaaaaam')
+    c1 = api.get_container("aaaaaaaaaaaaaeiraaaaaaaaam")
     assert c1.name == "PLOS Medicine"
     assert c1.issnl == "1549-1277"
     assert c1.issne == "1549-1676"

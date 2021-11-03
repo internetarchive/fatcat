@@ -1,4 +1,3 @@
-
 import pytest
 from bs4 import BeautifulSoup
 from fixtures import *
@@ -8,43 +7,58 @@ from fatcat_tools.importers import Bs4XmlLargeFilePusher, PubmedImporter
 
 @pytest.fixture(scope="function")
 def pubmed_importer(api):
-    with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield PubmedImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=True, lookup_refs=True)
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+        yield PubmedImporter(
+            api,
+            issn_file,
+            extid_map_file="tests/files/example_map.sqlite3",
+            bezerk_mode=True,
+            lookup_refs=True,
+        )
+
 
 @pytest.fixture(scope="function")
 def pubmed_importer_existing(api):
-    with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield PubmedImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=False, lookup_refs=True)
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+        yield PubmedImporter(
+            api,
+            issn_file,
+            extid_map_file="tests/files/example_map.sqlite3",
+            bezerk_mode=False,
+            lookup_refs=True,
+        )
+
 
 def test_pubmed_importer(pubmed_importer):
     last_index = pubmed_importer.api.get_changelog(limit=1)[0].index
-    with open('tests/files/pubmedsample_2019.xml', 'r') as f:
+    with open("tests/files/pubmedsample_2019.xml", "r") as f:
         pubmed_importer.bezerk_mode = True
         counts = Bs4XmlLargeFilePusher(pubmed_importer, f, ["PubmedArticle"]).run()
-    assert counts['insert'] == 176
-    assert counts['exists'] == 0
-    assert counts['skip'] == 0
+    assert counts["insert"] == 176
+    assert counts["exists"] == 0
+    assert counts["skip"] == 0
 
     # fetch most recent editgroup
-    change = pubmed_importer.api.get_changelog_entry(index=last_index+1)
+    change = pubmed_importer.api.get_changelog_entry(index=last_index + 1)
     eg = change.editgroup
     assert eg.description
     assert "pubmed" in eg.description.lower()
-    assert eg.extra['git_rev']
-    assert "fatcat_tools.PubmedImporter" in eg.extra['agent']
+    assert eg.extra["git_rev"]
+    assert "fatcat_tools.PubmedImporter" in eg.extra["agent"]
 
     last_index = pubmed_importer.api.get_changelog(limit=1)[0].index
-    with open('tests/files/pubmedsample_2019.xml', 'r') as f:
+    with open("tests/files/pubmedsample_2019.xml", "r") as f:
         pubmed_importer.bezerk_mode = False
         pubmed_importer.reset()
         counts = Bs4XmlLargeFilePusher(pubmed_importer, f, ["PubmedArticle"]).run()
-    assert counts['insert'] == 0
-    assert counts['exists'] == 176
-    assert counts['skip'] == 0
+    assert counts["insert"] == 0
+    assert counts["exists"] == 176
+    assert counts["skip"] == 0
     assert last_index == pubmed_importer.api.get_changelog(limit=1)[0].index
 
+
 def test_pubmed_xml_parse(pubmed_importer):
-    with open('tests/files/pubmedsample_2019.xml', 'r') as f:
+    with open("tests/files/pubmedsample_2019.xml", "r") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
         r2 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[-1])
@@ -62,10 +76,10 @@ def test_pubmed_xml_parse(pubmed_importer):
     assert r1.volume == "3"
     assert r1.issue == "1"
     assert r1.pages == "69-81"
-    assert r1.release_date is None # not "1976-12-03", which is medline ingest date
+    assert r1.release_date is None  # not "1976-12-03", which is medline ingest date
     assert r1.release_year == 1976
     # matched by ISSN, so shouldn't be in there?
-    #assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
+    # assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
     assert len(r1.contribs) == 1
 
     assert r1.contribs[0].raw_name == "F R Blume"
@@ -73,10 +87,13 @@ def test_pubmed_xml_parse(pubmed_importer):
     assert r1.contribs[0].surname == "Blume"
 
     print(r1.extra)
-    assert r1.extra['pubmed']['pub_types'] == ['Journal Article']
+    assert r1.extra["pubmed"]["pub_types"] == ["Journal Article"]
     assert not r1.refs
 
-    assert r2.title == "Synthesis and Antibacterial Activity of Metal(loid) Nanostructures by Environmental Multi-Metal(loid) Resistant Bacteria and Metal(loid)-Reducing Flavoproteins"
+    assert (
+        r2.title
+        == "Synthesis and Antibacterial Activity of Metal(loid) Nanostructures by Environmental Multi-Metal(loid) Resistant Bacteria and Metal(loid)-Reducing Flavoproteins"
+    )
     assert r2.subtitle is None
     assert r2.original_title is None
     assert r2.publisher is None
@@ -93,46 +110,56 @@ def test_pubmed_xml_parse(pubmed_importer):
     assert str(r2.release_date) == "2018-05-15"
     assert r2.release_year == 2018
     # matched by ISSN, so shouldn't be in there?
-    #assert extra['container_name'] == "Frontiers in microbiology"
+    # assert extra['container_name'] == "Frontiers in microbiology"
 
     assert len(r2.contribs) > 3
     assert r2.contribs[0].raw_name == "Maximiliano Figueroa"
     assert r2.contribs[0].given_name == "Maximiliano"
     assert r2.contribs[0].surname == "Figueroa"
-    assert r2.contribs[0].raw_affiliation == "Laboratorio Microbiología Molecular, Departamento de Biología, Facultad de Química y Biología, Universidad de Santiago de Chile, Santiago, Chile."
+    assert (
+        r2.contribs[0].raw_affiliation
+        == "Laboratorio Microbiología Molecular, Departamento de Biología, Facultad de Química y Biología, Universidad de Santiago de Chile, Santiago, Chile."
+    )
     assert r2.contribs[4].surname == "Muñoz-Villagrán"
     assert r2.contribs[7].surname == "Latorre"
-    assert r2.contribs[7].raw_affiliation == "Mathomics, Centro de Modelamiento Matemático, Universidad de Chile, Beauchef, Santiago, Chile."
-    assert r2.contribs[7].extra['more_affiliations'] == [
+    assert (
+        r2.contribs[7].raw_affiliation
+        == "Mathomics, Centro de Modelamiento Matemático, Universidad de Chile, Beauchef, Santiago, Chile."
+    )
+    assert r2.contribs[7].extra["more_affiliations"] == [
         "Fondap-Center of Genome Regulation, Facultad de Ciencias, Universidad de Chile, Santiago, Chile.",
         "Laboratorio de Bioinformática y Expresión Génica, INTA, Universidad de Chile, Santiago, Chile.",
         "Instituto de Ciencias de la Ingeniería, Universidad de O'Higgins, Rancagua, Chile.",
     ]
     assert r2.contribs[-1].raw_name == "Felipe Arenas"
 
-    assert r2.abstracts[0].content.startswith("Microbes are suitable candidates to recover and decontaminate different environments from soluble metal ions, either via reduction")
+    assert r2.abstracts[0].content.startswith(
+        "Microbes are suitable candidates to recover and decontaminate different environments from soluble metal ions, either via reduction"
+    )
     assert r2.abstracts[0].lang == "en"
 
     print(r2.extra)
-    assert r2.extra['pubmed']['pub_types'] == ['Journal Article']
+    assert r2.extra["pubmed"]["pub_types"] == ["Journal Article"]
 
-    assert r2.refs[0].extra['unstructured'] == "Microbiology. 2009 Jun;155(Pt 6):1840-6"
-    assert r2.refs[0].extra['pmid'] == "19383690"
+    assert r2.refs[0].extra["unstructured"] == "Microbiology. 2009 Jun;155(Pt 6):1840-6"
+    assert r2.refs[0].extra["pmid"] == "19383690"
     assert len(r2.refs) > 1
 
+
 def test_pubmed_xml_dates(pubmed_importer):
-    with open('tests/files/pubmed_31393839.xml', 'r') as f:
+    with open("tests/files/pubmed_31393839.xml", "r") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 
     assert r1.release_year == 2019
+
 
 def test_pubmed_xml_parse_refs(pubmed_importer):
     """
     Tests the case of multiple nested ReferenceList/Reference objects, instead
     of a single ReferenceList with multiple Reference
     """
-    with open('tests/files/pubmed_19129924.xml', 'r') as f:
+    with open("tests/files/pubmed_19129924.xml", "r") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 

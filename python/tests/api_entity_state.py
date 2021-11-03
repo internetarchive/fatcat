@@ -1,4 +1,3 @@
-
 import pytest
 from fatcat_openapi_client import *
 from fatcat_openapi_client.rest import ApiException
@@ -17,8 +16,8 @@ def test_redirect_entity(api):
     offset = 0
     while True:
         offset += 1
-        o1 = '0000-0000-1111-%04d' % offset
-        o2 = '0000-0000-2222-%04d' % offset
+        o1 = "0000-0000-1111-%04d" % offset
+        o2 = "0000-0000-2222-%04d" % offset
         try:
             api.lookup_creator(orcid=o1)
             continue
@@ -55,7 +54,9 @@ def test_redirect_entity(api):
     assert redirs == []
     api.accept_editgroup(eg.editgroup_id)
     redirs = api.get_creator_redirects(c1.ident)
-    assert redirs == [c2.ident, ]
+    assert redirs == [
+        c2.ident,
+    ]
 
     # get both by ident
     res = api.get_creator(c1.ident)
@@ -95,7 +96,9 @@ def test_redirect_entity(api):
     assert res.display_name is None
     assert res.revision is None
     redirs = api.get_creator_redirects(c1.ident)
-    assert redirs == [c2.ident, ]
+    assert redirs == [
+        c2.ident,
+    ]
 
     # undelete first; check that second is a redirect
     eg = quick_eg(api)
@@ -106,7 +109,9 @@ def test_redirect_entity(api):
     assert res.state == "redirect"
     assert res.display_name == "test one one"
     redirs = api.get_creator_redirects(c1.ident)
-    assert redirs == [c2.ident, ]
+    assert redirs == [
+        c2.ident,
+    ]
 
     # split second entity back out
     assert c2.revision
@@ -116,7 +121,9 @@ def test_redirect_entity(api):
     # prev_revision should be none after an un-redirect
     assert update_edit.prev_revision is None
     redirs = api.get_creator_redirects(c1.ident)
-    assert redirs == [c2.ident, ]
+    assert redirs == [
+        c2.ident,
+    ]
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
     assert res.state == "active"
@@ -138,7 +145,7 @@ def test_delete_entity(api):
     offset = 0
     while True:
         offset += 1
-        o1 = '0000-0000-1111-%04d' % offset
+        o1 = "0000-0000-1111-%04d" % offset
         try:
             api.lookup_creator(orcid=o1)
             continue
@@ -177,10 +184,10 @@ def test_delete_entity(api):
     try:
         # can't re-delete an entity
         api.delete_creator(eg.editgroup_id, c1.ident)
-        #api.accept_editgroup(eg.editgroup_id)
+        # api.accept_editgroup(eg.editgroup_id)
         assert False
     except fatcat_openapi_client.rest.ApiException as e:
-        assert 400 <= e.status < 500 # error is 4xx
+        assert 400 <= e.status < 500  # error is 4xx
 
     # undelete
     eg = quick_eg(api)
@@ -204,9 +211,9 @@ def test_recursive_redirects_entity(api):
     offset = 0
     while True:
         offset += 1
-        o1 = '0000-0000-1111-%04d' % offset
-        o2 = '0000-0000-2222-%04d' % offset
-        o3 = '0000-0000-3333-%04d' % offset
+        o1 = "0000-0000-1111-%04d" % offset
+        o2 = "0000-0000-2222-%04d" % offset
+        o3 = "0000-0000-3333-%04d" % offset
         try:
             api.lookup_creator(orcid=o1)
             continue
@@ -448,6 +455,7 @@ def test_required_entity_fields(api):
     except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "title" in e.body
+
 
 def test_revert_current_status(api):
 

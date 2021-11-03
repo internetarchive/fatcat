@@ -1,4 +1,3 @@
-
 import datetime
 import json
 
@@ -12,13 +11,14 @@ def test_crossref_harvest_date(mocker):
 
     # mock out the harvest state object so it doesn't try to actually connect
     # to Kafka
-    mocker.patch('fatcat_tools.harvest.harvest_common.HarvestState.initialize_from_kafka')
+    mocker.patch("fatcat_tools.harvest.harvest_common.HarvestState.initialize_from_kafka")
 
     # mock day request to crossref API
-    with open('tests/files/crossref_api_works.json', 'r') as f:
+    with open("tests/files/crossref_api_works.json", "r") as f:
         crossref_resp = json.loads(f.readline())
-    responses.add(responses.GET, 'https://api.crossref.org/works',
-        json=crossref_resp, status=200)
+    responses.add(
+        responses.GET, "https://api.crossref.org/works", json=crossref_resp, status=200
+    )
 
     harvester = HarvestCrossrefWorker(
         kafka_hosts="dummy",
@@ -34,7 +34,7 @@ def test_crossref_harvest_date(mocker):
     assert len(responses.calls) == 1
 
     # ensure email was included in User-Agent
-    assert "mailto:test@fatcat.wiki" in responses.calls[0].request.headers['User-Agent']
+    assert "mailto:test@fatcat.wiki" in responses.calls[0].request.headers["User-Agent"]
 
     # check that correct date param was passed as expected
     assert "filter=from-update-date%3A2019-02-03" in responses.calls[0].request.url

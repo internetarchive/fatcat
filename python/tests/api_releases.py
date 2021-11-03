@@ -1,4 +1,3 @@
-
 import datetime
 
 import pytest
@@ -44,26 +43,16 @@ def test_release(api):
         language="en",
         license_slug="CC-0",
         contribs=[
-            ReleaseContrib(
-                given_name="Paul",
-                surname="Otlet"),
-            ReleaseContrib(
-                raw_name="Cindy Sherman",
-                given_name="Cindy",
-                surname="Sherman"),
-            ReleaseContrib(
-                raw_name="Andy Warhol"),
+            ReleaseContrib(given_name="Paul", surname="Otlet"),
+            ReleaseContrib(raw_name="Cindy Sherman", given_name="Cindy", surname="Sherman"),
+            ReleaseContrib(raw_name="Andy Warhol"),
         ],
         refs=[],
         abstracts=[
+            ReleaseAbstract(content="this is some abstract", mimetype="text/plain", lang="en"),
             ReleaseAbstract(
-                content="this is some abstract",
-                mimetype="text/plain",
-                lang="en"),
-            ReleaseAbstract(
-                content="this is some other abstract",
-                mimetype="text/plain",
-                lang="de"),
+                content="this is some other abstract", mimetype="text/plain", lang="de"
+            ),
         ],
         extra=dict(a=1, b=2),
         edit_extra=dict(test_key="releases rule"),
@@ -138,33 +127,34 @@ def test_release(api):
     r2 = api.get_release(r2.ident)
     assert r2.state == "deleted"
 
+
 def test_release_examples(api):
 
-    api.lookup_release(pmid='54321')
-    api.lookup_release(doi='10.123/abc')
-    api.lookup_release(isbn13='978-3-16-148410-0')
-    api.lookup_release(arxiv='1905.03769v1')
-    api.lookup_release(jstor='1819117828')
-    api.lookup_release(ark='ark:/13030/m53r5pzm')
-    api.lookup_release(mag='992489213')
-    api.lookup_release(hdl='20.500.23456/ABC/DUMMY')
-    api.lookup_release(hdl='20.500.23456/abc/dummy')
+    api.lookup_release(pmid="54321")
+    api.lookup_release(doi="10.123/abc")
+    api.lookup_release(isbn13="978-3-16-148410-0")
+    api.lookup_release(arxiv="1905.03769v1")
+    api.lookup_release(jstor="1819117828")
+    api.lookup_release(ark="ark:/13030/m53r5pzm")
+    api.lookup_release(mag="992489213")
+    api.lookup_release(hdl="20.500.23456/ABC/DUMMY")
+    api.lookup_release(hdl="20.500.23456/abc/dummy")
 
     # failed lookup exception type
     try:
-        api.lookup_release(pmid='5432100')
+        api.lookup_release(pmid="5432100")
     except fatcat_openapi_client.rest.ApiException as ae:
         assert ae.status == 404
         assert "DatabaseRowNotFound" in ae.body
 
     # failed lookup formatting
     try:
-        api.lookup_release(doi='blah')
+        api.lookup_release(doi="blah")
     except fatcat_openapi_client.rest.ApiException as ae:
         assert ae.status == 400
         assert "MalformedExternalId" in ae.body
 
-    r1 = api.get_release('aaaaaaaaaaaaarceaaaaaaaaai')
+    r1 = api.get_release("aaaaaaaaaaaaarceaaaaaaaaai")
     assert r1.title.startswith("A bigger example")
     assert len(r1.refs) == 5
     assert r1.contribs[14].role == "editor"
@@ -174,6 +164,7 @@ def test_release_examples(api):
     api.get_release_filesets(r1.ident)
     api.get_release_webcaptures(r1.ident)
 
+
 def test_empty_fields(api):
 
     eg = quick_eg(api)
@@ -181,33 +172,43 @@ def test_empty_fields(api):
     r1 = ReleaseEntity(
         title="something",
         contribs=[ReleaseContrib(raw_name="somebody")],
-        ext_ids=ReleaseExtIds())
+        ext_ids=ReleaseExtIds(),
+    )
     api.create_release(eg.editgroup_id, r1)
 
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
         r2 = ReleaseEntity(title="", ext_ids=ReleaseExtIds())
         api.create_release(eg.editgroup_id, r2)
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
-        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseExtIds())
+        r2 = ReleaseEntity(
+            title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseExtIds()
+        )
         api.create_release(eg.editgroup_id, r2)
+
 
 def test_controlled_vocab(api):
 
     eg = quick_eg(api)
 
-    r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseExtIds())
+    r1 = ReleaseEntity(
+        title="something", release_type="journal-thingie", ext_ids=ReleaseExtIds()
+    )
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r1)
     r1.release_type = "article"
     api.create_release(eg.editgroup_id, r1)
 
-    r2 = ReleaseEntity(title="something else", release_stage="pre-print", ext_ids=ReleaseExtIds())
+    r2 = ReleaseEntity(
+        title="something else", release_stage="pre-print", ext_ids=ReleaseExtIds()
+    )
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r2)
     r2.release_stage = "published"
     api.create_release(eg.editgroup_id, r2)
 
-    r3 = ReleaseEntity(title="something else", withdrawn_status="boondogle", ext_ids=ReleaseExtIds())
+    r3 = ReleaseEntity(
+        title="something else", withdrawn_status="boondogle", ext_ids=ReleaseExtIds()
+    )
     with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r3)
     r3.withdrawn_status = "spam"

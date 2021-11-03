@@ -1,4 +1,3 @@
-
 from fatcat_openapi_client import *
 from fixtures import *
 
@@ -56,10 +55,12 @@ def test_creators(api):
     c2 = api.get_creator(c2.ident)
     assert c2.state == "deleted"
 
+
 # TODO: test expansion of new creator/release pair (release get)?
+
 
 def test_creators_examples(api):
     # ident: aaaaaaaaaaaaaircaaaaaaaaam
 
-    c1 = api.lookup_creator(orcid='0000-0003-3118-6859')
+    c1 = api.lookup_creator(orcid="0000-0003-3118-6859")
     assert c1.ident == "aaaaaaaaaaaaaircaaaaaaaaam"

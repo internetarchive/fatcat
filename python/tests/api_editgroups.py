@@ -1,4 +1,3 @@
-
 import datetime
 
 import pytest
@@ -45,7 +44,7 @@ def test_editgroup_submit(api):
     reviewable = api.get_editgroups_reviewable(limit=100)
     assert eg.editgroup_id not in [v.editgroup_id for v in reviewable]
     eg3 = api.get_editgroup(eg.editgroup_id)
-    #print(eg3)
+    # print(eg3)
     assert eg3.submitted
     assert eg3.changelog_index
 
@@ -63,23 +62,29 @@ def test_editgroup_ordering(api):
     api.update_editgroup(
         eg1.editgroup_id,
         Editgroup(editgroup_id=eg1.editgroup_id, description="FAIL"),
-        submit=True)
+        submit=True,
+    )
     api.update_editgroup(
         eg2.editgroup_id,
         Editgroup(editgroup_id=eg2.editgroup_id, description="FAIL"),
-        submit=True)
+        submit=True,
+    )
 
     r1 = api.get_editgroups_reviewable()
-    #print(r1)
+    # print(r1)
     assert not r1[0].description
     assert not r1[1].description
     assert r1[0].submitted >= r1[1].submitted
 
     # should be no editgroups "in the future" (since now + 1sec)
-    r1 = api.get_editgroups_reviewable(since=(datetime.datetime.utcnow() + datetime.timedelta(seconds=1)).isoformat()+"Z")
+    r1 = api.get_editgroups_reviewable(
+        since=(datetime.datetime.utcnow() + datetime.timedelta(seconds=1)).isoformat() + "Z"
+    )
     assert not r1
 
-    r1 = api.get_editgroups_reviewable(since=(datetime.datetime.utcnow() - datetime.timedelta(seconds=5)).isoformat()+"Z")
+    r1 = api.get_editgroups_reviewable(
+        since=(datetime.datetime.utcnow() - datetime.timedelta(seconds=5)).isoformat() + "Z"
+    )
     assert r1[0].submitted <= r1[1].submitted
 
 
@@ -88,9 +93,9 @@ def test_editgroup_auto_batch(api):
     c1 = CreatorEntity(display_name="test auto_batch")
     c2 = CreatorEntity(display_name="test another auto_batch")
 
-    eg1 = api.create_creator_auto_batch(CreatorAutoBatch(
-        editgroup=Editgroup(),
-        entity_list=[c1, c2]))
+    eg1 = api.create_creator_auto_batch(
+        CreatorAutoBatch(editgroup=Editgroup(), entity_list=[c1, c2])
+    )
 
     assert eg1.changelog_index
     assert len(eg1.edits.creators) == 2
@@ -103,11 +108,11 @@ def test_batch_params(api):
 
     desc = "test description"
     extra = dict(a=75, q="thing")
-    eg1 = api.create_creator_auto_batch(CreatorAutoBatch(
-        editgroup=Editgroup(
-            description=desc,
-            extra=extra),
-        entity_list=[c1, c2]))
+    eg1 = api.create_creator_auto_batch(
+        CreatorAutoBatch(
+            editgroup=Editgroup(description=desc, extra=extra), entity_list=[c1, c2]
+        )
+    )
 
     assert eg1.description == desc
     assert eg1.extra == extra

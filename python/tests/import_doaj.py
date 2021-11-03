@@ -1,4 +1,3 @@
-
 import datetime
 import json
 
@@ -14,7 +13,7 @@ from fatcat_tools.transforms import entity_to_dict
 @pytest.fixture(scope="function")
 def doaj_importer(api, mocker):
     es_client = elasticsearch.Elasticsearch("mockbackend")
-    mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    mocker.patch("elasticsearch.connection.Urllib3HttpConnection.perform_request")
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
         yield DoajArticleImporter(
             api,
@@ -22,6 +21,7 @@ def doaj_importer(api, mocker):
             bezerk_mode=True,
             es_client=es_client,
         )
+
 
 def test_doaj_importer(doaj_importer):
     last_index = doaj_importer.api.get_changelog(limit=1)[0].index
@@ -59,6 +59,7 @@ def test_doaj_importer(doaj_importer):
     for release_edit in success_editgroup.edits.releases:
         doaj_importer.api.delete_release(eg.editgroup_id, release_edit.ident)
     doaj_importer.api.accept_editgroup(eg.editgroup_id)
+
 
 def test_doaj_importer_existing_doi(doaj_importer):
     """
@@ -118,12 +119,16 @@ def test_doaj_importer_existing_doi(doaj_importer):
         )
     doaj_importer.api.accept_editgroup(eg.editgroup_id)
 
+
 def test_doaj_dict_parse(doaj_importer):
     with open("tests/files/example_doaj_articles.json", "r") as f:
         raw = json.loads(f.readline())
         r = doaj_importer.parse_record(raw)
 
-        assert r.title == "Effect of hydrogen on tensile properties and fracture behavior of PH 13-8 Mo steel"
+        assert (
+            r.title
+            == "Effect of hydrogen on tensile properties and fracture behavior of PH 13-8 Mo steel"
+        )
         assert r.publisher == "Elsevier"
         assert r.release_type == "article-journal"
         assert r.release_stage == "published"
@@ -140,7 +145,7 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.version is None
         assert r.language == "en"
         # matched by ISSN, so wouldn't be defined normally
-        assert r.extra['container_name'] == "Materials & Design"
+        assert r.extra["container_name"] == "Materials & Design"
         assert len(r.abstracts) == 1
         assert len(r.abstracts[0].content) == 1033
         assert len(r.contribs) == 5
@@ -149,6 +154,6 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.contribs[0].surname is None
         assert not r.refs
 
-        #print(r.extra)
-        assert r.extra['release_month'] == 10
-        assert r.extra['country'] == 'gb'
+        # print(r.extra)
+        assert r.extra["release_month"] == 10
+        assert r.extra["country"] == "gb"

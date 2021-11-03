@@ -1,4 +1,3 @@
-
 import datetime
 import json
 from typing import Any
@@ -17,15 +16,16 @@ from fatcat_tools.transforms import entity_to_dict
 @pytest.fixture(scope="function")
 def entity_importer(api, mocker) -> Any:
     es_client = elasticsearch.Elasticsearch("mockbackend")
-    mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    mocker.patch("elasticsearch.connection.Urllib3HttpConnection.perform_request")
     yield EntityImporter(api, es_client=es_client)
+
 
 def test_fuzzy_match_none(entity_importer, mocker) -> None:
     """
     Simple ES-mocked test for "no search results" case
     """
 
-    es_raw = mocker.patch('elasticsearch.connection.Urllib3HttpConnection.perform_request')
+    es_raw = mocker.patch("elasticsearch.connection.Urllib3HttpConnection.perform_request")
     es_raw.side_effect = [
         (200, {}, json.dumps(ES_RELEASE_EMPTY_RESP)),
         (200, {}, json.dumps(ES_RELEASE_EMPTY_RESP)),
@@ -38,6 +38,7 @@ def test_fuzzy_match_none(entity_importer, mocker) -> None:
 
     resp = entity_importer.match_existing_release_fuzzy(release)
     assert resp is None
+
 
 def test_fuzzy_match_different(entity_importer, mocker) -> None:
     """
@@ -60,7 +61,7 @@ def test_fuzzy_match_different(entity_importer, mocker) -> None:
         ext_ids=ReleaseExtIds(),
     )
 
-    match_raw = mocker.patch('fatcat_tools.importers.common.match_release_fuzzy')
+    match_raw = mocker.patch("fatcat_tools.importers.common.match_release_fuzzy")
     match_raw.side_effect = [[r3, r2, r3, r2]]
     resp = entity_importer.match_existing_release_fuzzy(r1)
     assert (resp[0], resp[2]) == ("STRONG", r2)
