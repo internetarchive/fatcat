@@ -15,6 +15,7 @@ from flask_wtf.csrf import CSRFProtect
 from loginpass import GitHub, Gitlab, ORCiD, create_flask_blueprint
 from raven.contrib.flask import Sentry
 
+from fatcat_web.types import AnyResponse
 from fatcat_web.web_config import Config
 
 toolbar = DebugToolbarExtension()
