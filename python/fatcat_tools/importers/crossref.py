@@ -393,8 +393,6 @@ class CrossrefImporter(EntityImporter):
             ):
                 if clean(rm.get(k)):
                     ref_extra[k] = clean(rm[k])
-            if not ref_extra:
-                ref_extra = None
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     index=i,
@@ -406,7 +404,7 @@ class CrossrefImporter(EntityImporter):
                     title=clean(rm.get("article-title")),
                     locator=clean(rm.get("first-page")),
                     # TODO: just dump JSON somewhere here?
-                    extra=ref_extra,
+                    extra=ref_extra or None,
                 )
             )
 
@@ -421,8 +419,8 @@ class CrossrefImporter(EntityImporter):
             )
 
         # extra fields
-        extra = dict()
-        extra_crossref = dict()
+        extra: Dict[str, Any] = dict()
+        extra_crossref: Dict[str, Any] = dict()
         # top-level extra keys
         if not container_id:
             if obj.get("container-title"):
@@ -471,13 +469,13 @@ class CrossrefImporter(EntityImporter):
             "dissertation",
             "book-chapter",
         ):
-            release_stage = "published"
+            release_stage: Optional[str] = "published"
         else:
             # unknown
             release_stage = None
 
         # external identifiers
-        extids: Dict[str, Any] = self.lookup_ext_ids(doi=obj["DOI"].lower())
+        extids: Dict[str, Any] = self.lookup_ext_ids(doi=obj["DOI"].lower()) or {}
 
         # filter out unreasonably huge releases
         if len(abstracts) > 100:
@@ -512,7 +510,7 @@ class CrossrefImporter(EntityImporter):
 
         title: Optional[str] = None
         if obj.get("title"):
-            title = clean(obj.get("title")[0], force_xml=True)
+            title = clean(obj["title"][0], force_xml=True)
             if not title or len(title) <= 1:
                 # title can't be just a single character
                 self.counts["skip-blank-title"] += 1
@@ -520,15 +518,13 @@ class CrossrefImporter(EntityImporter):
 
         subtitle = None
         if obj.get("subtitle"):
-            subtitle = clean(obj.get("subtitle")[0], force_xml=True)
+            subtitle = clean(obj["subtitle"][0], force_xml=True)
             if not subtitle or len(subtitle) <= 1:
                 # subtitle can't be just a single character
                 subtitle = None
 
         if extra_crossref:
             extra["crossref"] = extra_crossref
-        if not extra:
-            extra = None
 
         re = ReleaseEntity(
             work_id=None,
@@ -556,10 +552,10 @@ class CrossrefImporter(EntityImporter):
             pages=clean(obj.get("page")),
             language=clean(obj.get("language")),
             license_slug=license_slug,
-            extra=extra,
-            abstracts=abstracts,
-            contribs=contribs,
-            refs=refs,
+            extra=extra or None,
+            abstracts=abstracts or None,
+            contribs=contribs or None,
+            refs=refs or None,
         )
         return re
 

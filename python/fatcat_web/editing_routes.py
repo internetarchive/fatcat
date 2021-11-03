@@ -87,7 +87,7 @@ def generic_entity_delete_edit(
 
 def generic_entity_delete_entity(
     user_api, entity_type: str, editgroup_id: str, entity_ident: str
-) -> None:
+) -> EntityEdit:
     try:
         if entity_type == "container":
             edit = user_api.delete_container(editgroup_id, entity_ident)
@@ -491,7 +491,6 @@ def generic_entity_delete(editgroup_id: Optional[str], entity_type: str, existin
             abort(400)
 
     # fetch entity (if set) or 404
-    existing = None
     existing_edit = None
     if editgroup and existing_ident:
         existing, existing_edit = generic_get_editgroup_entity(

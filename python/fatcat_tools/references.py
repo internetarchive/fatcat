@@ -124,7 +124,33 @@ class RefHits(BaseModel):
     limit: int
     query_time_ms: int
     query_wall_time_ms: int
-    result_refs: List[Union[BiblioRef, EnrichedBiblioRef]]
+    result_refs: List[BiblioRef]
+
+    class Config:
+        json_encoders = {
+            ReleaseEntity: entity_to_dict,
+        }
+
+    def as_enriched(self, enriched_refs: List[EnrichedBiblioRef]) -> "RefHitsEnriched":
+        return RefHitsEnriched(
+            count_returned=self.count_returned,
+            count_total=self.count_total,
+            offset=self.offset,
+            limit=self.limit,
+            query_time_ms=self.query_time_ms,
+            query_wall_time_ms=self.query_wall_time_ms,
+            result_refs=enriched_refs,
+        )
+
+
+class RefHitsEnriched(BaseModel):
+    count_returned: int
+    count_total: int
+    offset: int
+    limit: int
+    query_time_ms: int
+    query_wall_time_ms: int
+    result_refs: List[EnrichedBiblioRef]
 
     class Config:
         json_encoders = {
@@ -221,7 +247,7 @@ def get_inbound_refs(
     limit: int = 25,
     offset: Optional[int] = None,
     es_index: str = "fatcat_ref",
-) -> List[BiblioRef]:
+) -> RefHits:
 
     search = Search(using=es_client, index=es_index)
 
@@ -398,16 +424,16 @@ def run_ref_query(args) -> None:
         enriched = enrich_outbound_refs(
             hits.result_refs, hide="refs,abstracts", fatcat_api_client=args.fatcat_api_client
         )
-        for ref in enriched:
-            if ref.release:
+        for eref in enriched:
+            if eref.release:
                 print(
-                    f"{ref.ref.ref_index or '-'}\trelease_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}"
+                    f"{eref.ref.ref_index or '-'}\trelease_{eref.release.ident}\t{eref.ref.match_provenance}/{eref.ref.match_status}\t{eref.release.release_year or '-'}\t{eref.release.title}\t{eref.release.ext_ids.pmid or eref.release.ext_ids.doi or '-'}"
                 )
             else:
-                print(f"{ref.ref.ref_index or '-'}\trelease_{ref.target_release_ident}")
+                print(f"{eref.ref.ref_index or '-'}\trelease_{eref.ref.target_release_ident}")
     else:
         for ref in hits.result_refs:
-            print(f"{ref.ref.ref_index or '-'}\trelease_{ref.target_release_ident}")
+            print(f"{ref.ref_index or '-'}\trelease_{ref.target_release_ident}")
 
     print()
     print("## Inbound References")
@@ -423,13 +449,13 @@ def run_ref_query(args) -> None:
         enriched = enrich_inbound_refs(
             hits.result_refs, hide="refs,abstracts", fatcat_api_client=args.fatcat_api_client
         )
-        for ref in enriched:
-            if ref.release:
+        for eref in enriched:
+            if eref.release:
                 print(
-                    f"release_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}"
+                    f"release_{eref.release.ident}\t{eref.ref.match_provenance}/{eref.ref.match_status}\t{eref.release.release_year or '-'}\t{eref.release.title}\t{eref.release.ext_ids.pmid or eref.release.ext_ids.doi or '-'}"
                 )
             else:
-                print(f"release_{ref.target_release_ident}")
+                print(f"release_{eref.ref.target_release_ident}")
     else:
         for ref in hits.result_refs:
             print(f"work_{ref.source_work_ident}\trelease_{ref.source_release_ident}")

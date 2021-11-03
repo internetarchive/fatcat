@@ -26,6 +26,7 @@ import sys  # noqa: F401
 import warnings
 from typing import Any, List, Optional
 
+import bs4
 import fatcat_openapi_client
 
 from fatcat_tools.importers.common import EntityImporter
@@ -420,7 +421,9 @@ class DblpReleaseImporter(EntityImporter):
             )
         )
 
-    def dblp_contribs(self, authors: List[dict]) -> List[fatcat_openapi_client.ReleaseContrib]:
+    def dblp_contribs(
+        self, elem: bs4.element.Tag
+    ) -> List[fatcat_openapi_client.ReleaseContrib]:
         """
         - author (multiple; each a single string)
             => may have HTML entities
@@ -431,21 +434,23 @@ class DblpReleaseImporter(EntityImporter):
         """
         contribs = []
         index = 0
-        for elem in authors.find_all("author"):
+        for elem in elem.find_all("author"):
             contrib = self.dblp_contrib_single(elem)
             contrib.role = "author"
             contrib.index = index
             contribs.append(contrib)
             index += 1
 
-        for elem in authors.find_all("editor"):
+        for elem in elem.find_all("editor"):
             contrib = self.dblp_contrib_single(elem)
             contrib.role = "editor"
             contribs.append(contrib)
 
         return contribs
 
-    def dblp_contrib_single(self, elem: Any) -> fatcat_openapi_client.ReleaseContrib:
+    def dblp_contrib_single(
+        self, elem: bs4.element.Tag
+    ) -> fatcat_openapi_client.ReleaseContrib:
         """
         In the future, might try to implement creator key-ificiation and lookup here.
 
@@ -461,11 +466,15 @@ class DblpReleaseImporter(EntityImporter):
         raw_name = clean_str(elem.text)
 
         # remove number in author name, if present
-        if raw_name.split()[-1].isdigit():
+        if raw_name and raw_name.split()[-1].isdigit():
             raw_name = " ".join(raw_name.split()[:-1])
 
         if elem.get("orcid"):
-            orcid = clean_orcid(elem["orcid"])
+            orcid_val = elem["orcid"]
+            if isinstance(orcid_val, list):
+                orcid = clean_orcid(orcid_val[0])
+            else:
+                orcid = clean_orcid(orcid_val)
             if orcid:
                 creator_id = self.lookup_orcid(orcid)
                 if not creator_id:

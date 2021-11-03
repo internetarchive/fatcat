@@ -7,6 +7,7 @@ from fatcat_openapi_client import (
     ContainerEntity,
     EntityEdit,
     FileEntity,
+    FileUrl,
     ReleaseEntity,
 )
 
@@ -355,7 +356,7 @@ def _rte_content_helper(release: ReleaseEntity) -> dict:
     - other webarchive or repository URLs
     - any other URL
     """
-    t = dict(
+    t: Dict[str, Any] = dict(
         file_count=len(release.files or []),
         fileset_count=len(release.filesets or []),
         webcapture_count=len(release.webcaptures or []),
@@ -403,7 +404,7 @@ def _rte_content_helper(release: ReleaseEntity) -> dict:
     return t
 
 
-def _rte_url_helper(url_obj) -> dict:
+def _rte_url_helper(url_obj: FileUrl) -> Dict[str, Any]:
     """
     Takes a location URL ('url' and 'rel' keys) and returns generic preservation status.
 
@@ -427,7 +428,9 @@ def _rte_url_helper(url_obj) -> dict:
     return t
 
 
-def container_to_elasticsearch(entity, force_bool=True, stats=None):
+def container_to_elasticsearch(
+    entity: Any, force_bool: bool = True, stats: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 

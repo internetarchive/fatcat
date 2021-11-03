@@ -15,6 +15,7 @@ from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matc
 
 from fatcat_tools.references import (
     RefHits,
+    RefHitsEnriched,
     enrich_inbound_refs,
     enrich_outbound_refs,
     get_inbound_refs,
@@ -30,11 +31,11 @@ from fatcat_web.forms import ReferenceMatchForm
 
 def _refs_web(
     direction, release_ident=None, work_ident=None, openlibrary_id=None, wikipedia_article=None
-) -> RefHits:
-    offset = request.args.get("offset", "0")
-    offset = max(0, int(offset)) if offset.isnumeric() else 0
-    limit = request.args.get("limit", "30")
-    limit = min(max(0, int(limit)), 100) if limit.isnumeric() else 30
+) -> RefHitsEnriched:
+    offset_arg = request.args.get("offset", "0")
+    offset: int = max(0, int(offset_arg)) if offset_arg.isnumeric() else 0
+    limit_arg = request.args.get("limit", "30")
+    limit: int = min(max(0, int(limit_arg)), 100) if limit_arg.isnumeric() else 30
     if direction == "in":
         hits = get_inbound_refs(
             release_ident=release_ident,
@@ -44,10 +45,12 @@ def _refs_web(
             offset=offset,
             limit=limit,
         )
-        hits.result_refs = enrich_inbound_refs(
-            hits.result_refs,
-            fatcat_api_client=api,
-            expand="container,files,webcaptures",
+        enriched_hits = hits.as_enriched(
+            enrich_inbound_refs(
+                hits.result_refs,
+                fatcat_api_client=api,
+                expand="container,files,webcaptures",
+            )
         )
     elif direction == "out":
         hits = get_outbound_refs(
@@ -58,14 +61,16 @@ def _refs_web(
             offset=offset,
             limit=limit,
         )
-        hits.result_refs = enrich_outbound_refs(
-            hits.result_refs,
-            fatcat_api_client=api,
-            expand="container,files,webcaptures",
+        enriched_hits = hits.as_enriched(
+            enrich_outbound_refs(
+                hits.result_refs,
+                fatcat_api_client=api,
+                expand="container,files,webcaptures",
+            )
         )
     else:
         raise ValueError()
-    return hits
+    return enriched_hits
 
 
 @app.route("/release/<string(length=26):ident>/refs-in", methods=["GET"])

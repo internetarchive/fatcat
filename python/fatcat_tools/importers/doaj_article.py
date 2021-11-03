@@ -382,7 +382,7 @@ class DoajArticleImporter(EntityImporter):
             if not license.get("open_access"):
                 continue
             slug = license.get("type")
-            if slug.startswith("CC "):
+            if slug and slug.startswith("CC "):
                 slug = slug.replace("CC ", "cc-").lower()
                 return slug
         return None

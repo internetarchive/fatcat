@@ -6,7 +6,7 @@ the formal API)
 import datetime
 import sys
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import elasticsearch
 import elasticsearch_dsl.response
@@ -135,18 +135,22 @@ def wrap_es_execution(search: Search) -> Any:
         # this is a "user" error
         print("elasticsearch 400: " + str(e.info), file=sys.stderr)
         description = None
+        assert isinstance(e.info, dict)
         if e.info.get("error", {}).get("root_cause", {}):
             description = str(e.info["error"]["root_cause"][0].get("reason"))
-        raise FatcatSearchError(e.status_code, str(e.error), description)
+        raise FatcatSearchError(int(e.status_code), str(e.error), description)
     except elasticsearch.exceptions.ConnectionError as e:
-        raise FatcatSearchError(e.status_code, "ConnectionError: search engine not available")
+        raise FatcatSearchError(
+            int(e.status_code), "ConnectionError: search engine not available"
+        )
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
         print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
         description = None
+        assert isinstance(e.info, dict)
         if e.info and e.info.get("error", {}).get("root_cause", {}):
             description = str(e.info["error"]["root_cause"][0].get("reason"))
-        raise FatcatSearchError(e.status_code, str(e.error), description)
+        raise FatcatSearchError(int(e.status_code), str(e.error), description)
     return resp
 
 
@@ -285,7 +289,7 @@ def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> Searc
     )
 
 
-def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
+def get_elastic_container_random_releases(ident: str, limit=5) -> List[Dict[str, Any]]:
     """
     Returns a list of releases from the container.
     """
@@ -750,7 +754,7 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.date_preservation.buckets
-    date_dicts = dict()
+    date_dicts: Dict[str, Dict[str, Any]] = dict()
     this_date = start_date
     while this_date <= end_date:
         date_dicts[str(this_date)] = dict(

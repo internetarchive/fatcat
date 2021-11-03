@@ -39,7 +39,7 @@ def release_access_options(release: ReleaseEntity) -> List[AccessOption]:
     TODO: proper implementation and filtering, instead of just returning first
     option found
     """
-    options = []
+    options: List[AccessOption] = []
     for f in release.files or []:
         thumbnail_url = None
         if f.mimetype == "application/pdf" and f.sha1 and f.urls:

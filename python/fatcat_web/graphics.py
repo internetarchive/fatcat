@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import pygal
 from pygal.style import CleanStyle
@@ -12,17 +12,17 @@ def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
     """
 
     raw_years = [int(r[0]) for r in rows]
-    years = dict()
+    years_dict = dict()
     if raw_years:
         for y in range(min(raw_years), max(raw_years) + 1):
-            years[int(y)] = dict(year=int(y), available=0, missing=0)
+            years_dict[int(y)] = dict(year=int(y), available=0, missing=0)
         for r in rows:
             if r[1]:
-                years[int(r[0])]["available"] = r[2]
+                years_dict[int(r[0])]["available"] = r[2]
             else:
-                years[int(r[0])]["missing"] = r[2]
+                years_dict[int(r[0])]["missing"] = r[2]
 
-    years = sorted(years.values(), key=lambda x: x["year"])
+    years: List[Dict[str, Any]] = sorted(years_dict.values(), key=lambda x: x["year"])
 
     CleanStyle.colors = ("green", "purple")
     label_count = len(years)
@@ -39,9 +39,9 @@ def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
     # chart.title = "Perpetual Access Coverage"
     chart.x_title = "Year"
     # chart.y_title = "Releases"
-    chart.x_labels = [str(y["year"]) for y in years]
-    chart.add("via Fatcat", [y["available"] for y in years])
-    chart.add("Missing", [y["missing"] for y in years])
+    chart.x_labels = [str(v["year"]) for v in years]
+    chart.add("via Fatcat", [v["available"] for v in years])
+    chart.add("Missing", [v["missing"] for v in years])
     return chart
 
 
