@@ -19,7 +19,9 @@ def run_export_releases(args):
         ident = uuid2fcid(line.split()[0])
         release = args.api.get_release(ident=ident, expand="all")
         args.json_output.write(
-            json.dumps(entity_to_dict(release), api_client=args.api.api_client) + "\n")
+            json.dumps(entity_to_dict(release), api_client=args.api.api_client) + "\n"
+        )
+
 
 def run_export_changelog(args):
     end = args.end
@@ -30,36 +32,47 @@ def run_export_changelog(args):
     for i in range(args.start, end):
         entry = args.api.get_changelog_entry(index=i)
         args.json_output.write(
-            json.dumps(entity_to_dict(entry, api_client=args.api.api_client)) + "\n")
+            json.dumps(entity_to_dict(entry, api_client=args.api.api_client)) + "\n"
+        )
+
 
 def main():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--fatcat-api-url',
-        default="http://localhost:9411/v0",
-        help="connect to this host/port")
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"
+    )
     subparsers = parser.add_subparsers()
 
-    sub_releases = subparsers.add_parser('releases')
+    sub_releases = subparsers.add_parser("releases")
     sub_releases.set_defaults(func=run_export_releases)
-    sub_releases.add_argument('ident_file',
+    sub_releases.add_argument(
+        "ident_file",
         help="TSV list of fatcat release idents to dump",
-        default=sys.stdin, type=argparse.FileType('r'))
-    sub_releases.add_argument('json_output',
+        default=sys.stdin,
+        type=argparse.FileType("r"),
+    )
+    sub_releases.add_argument(
+        "json_output",
         help="where to send output",
-        default=sys.stdout, type=argparse.FileType('w'))
+        default=sys.stdout,
+        type=argparse.FileType("w"),
+    )
 
-    sub_changelog = subparsers.add_parser('changelog')
+    sub_changelog = subparsers.add_parser("changelog")
     sub_changelog.set_defaults(func=run_export_changelog)
-    sub_changelog.add_argument('--start',
-        help="index to start dumping at",
-        default=1, type=int)
-    sub_changelog.add_argument('--end',
+    sub_changelog.add_argument("--start", help="index to start dumping at", default=1, type=int)
+    sub_changelog.add_argument(
+        "--end",
         help="index to stop dumping at (else detect most recent)",
-        default=None, type=int)
-    sub_changelog.add_argument('json_output',
+        default=None,
+        type=int,
+    )
+    sub_changelog.add_argument(
+        "json_output",
         help="where to send output",
-        default=sys.stdout, type=argparse.FileType('w'))
+        default=sys.stdout,
+        type=argparse.FileType("w"),
+    )
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
@@ -69,5 +82,6 @@ def main():
     args.api = public_api(args.fatcat_api_url)
     args.func(args)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
