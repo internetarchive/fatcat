@@ -7,8 +7,9 @@ pre-scraped in to JSON from HTML pages.
 import sys  # noqa: F401
 
 import fatcat_openapi_client
-from fatcat_tools.normal import clean_str
+
 from fatcat_tools.importers.common import EntityImporter
+from fatcat_tools.normal import clean_str
 
 
 class DblpContainerImporter(EntityImporter):

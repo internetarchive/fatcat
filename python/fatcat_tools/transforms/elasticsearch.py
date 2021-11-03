@@ -1,10 +1,15 @@
 
 import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 import tldextract
-
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, EntityEdit, ChangelogEntry, FileEntity
+from fatcat_openapi_client import (
+    ChangelogEntry,
+    ContainerEntity,
+    EntityEdit,
+    FileEntity,
+    ReleaseEntity,
+)
 
 
 def check_kbart(year: int, archive: dict) -> Optional[bool]:

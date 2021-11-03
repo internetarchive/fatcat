@@ -4,16 +4,17 @@ Helpers for doing elasticsearch queries (used in the web interface; not part of
 the formal API)
 """
 
-import sys
 import datetime
+import sys
 from dataclasses import dataclass
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 import elasticsearch
-from elasticsearch_dsl import Search, Q
 import elasticsearch_dsl.response
+from elasticsearch_dsl import Q, Search
 
 from fatcat_web import app
+
 
 class FatcatSearchError(Exception):
 

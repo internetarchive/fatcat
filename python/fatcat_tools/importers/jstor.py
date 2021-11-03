@@ -1,12 +1,13 @@
 
-import sys
-import json
 import datetime
+import json
+import sys
 import warnings
-from bs4 import BeautifulSoup
 
 import fatcat_openapi_client
-from .common import EntityImporter, clean, LANG_MAP_MARC
+from bs4 import BeautifulSoup
+
+from .common import LANG_MAP_MARC, EntityImporter, clean
 from .crossref import CONTAINER_TYPE_MAP
 
 # TODO: more entries?

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-import json
 import base64
+import json
+
 import fatcat_openapi_client
+
 from .common import EntityImporter, clean, make_rel_url
 
 MAX_ABSTRACT_BYTES=4096

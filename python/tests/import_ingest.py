@@ -1,9 +1,14 @@
 
 import json
-import pytest
 
-from fatcat_tools.importers import IngestFileResultImporter, IngestWebResultImporter, JsonLinePusher
+import pytest
 from fixtures import *
+
+from fatcat_tools.importers import (
+    IngestFileResultImporter,
+    IngestWebResultImporter,
+    JsonLinePusher,
+)
 
 
 @pytest.fixture(scope="function")

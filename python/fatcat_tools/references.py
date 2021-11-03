@@ -5,18 +5,18 @@ index of reference links between works in the main catalog.
 See bulk citation and citation API proposals for design documentation.
 """
 
-import sys
-import datetime
 import argparse
-from typing import Optional, List, Any, Dict, Union
+import datetime
+import sys
+from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, validator
 import elasticsearch
 from elasticsearch_dsl import Search
 from fatcat_openapi_client import ReleaseEntity
+from pydantic import BaseModel, validator
 
 from fatcat_tools import public_api
-from fatcat_tools.transforms.access import release_access_options, AccessOption
+from fatcat_tools.transforms.access import AccessOption, release_access_options
 from fatcat_tools.transforms.entities import entity_to_dict
 
 

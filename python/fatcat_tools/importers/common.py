@@ -1,31 +1,31 @@
 
-import re
-import sys
 import csv
-import json
-import sqlite3
 import datetime
+import json
+import re
+import sqlite3
 import subprocess
-from collections import Counter
-from typing import Dict, Any, List, Optional, Tuple
-import lxml
+import sys
 import xml.etree.ElementTree as ET
+from collections import Counter
+from typing import Any, Dict, List, Optional, Tuple
 
 import elasticsearch
+import fatcat_openapi_client
+import fuzzycat.common
+import fuzzycat.verify
+import lxml
 from bs4 import BeautifulSoup
 from confluent_kafka import Consumer, KafkaException
-
-import fatcat_openapi_client
 from fatcat_openapi_client import ReleaseEntity
 from fatcat_openapi_client.rest import ApiException
 from fuzzycat.matching import match_release_fuzzy
-import fuzzycat.common
-import fuzzycat.verify
 
 # TODO: refactor so remove need for this (re-imports for backwards compatibility)
-from fatcat_tools.normal import (clean_str as clean, is_cjk, b32_hex, LANG_MAP_MARC) # noqa: F401
+from fatcat_tools.normal import LANG_MAP_MARC, b32_hex
+from fatcat_tools.normal import clean_str as clean  # noqa: F401
+from fatcat_tools.normal import is_cjk
 from fatcat_tools.transforms import entity_to_dict
-
 
 DATE_FMT: str = "%Y-%m-%d"
 SANE_MAX_RELEASES: int = 200

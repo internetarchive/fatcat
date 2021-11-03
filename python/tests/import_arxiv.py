@@ -1,9 +1,9 @@
 
 import pytest
 from bs4 import BeautifulSoup
+from fixtures import *
 
 from fatcat_tools.importers import ArxivRawImporter, Bs4XmlFilePusher
-from fixtures import *
 
 
 @pytest.fixture(scope="function")

@@ -1,8 +1,9 @@
 
 import json
+
 from fixtures import *
 
-from fatcat_web.forms import ReleaseEntityForm, FileEntityForm, ContainerEntityForm
+from fatcat_web.forms import ContainerEntityForm, FileEntityForm, ReleaseEntityForm
 
 DUMMY_DEMO_ENTITIES = {
     'container': ('aaaaaaaaaaaaaeiraaaaaaaaai', '00000000-0000-0000-1111-fff000000002'),

@@ -1,9 +1,10 @@
 
-import sys
 import json
+import sys
 import time
-from confluent_kafka import Producer, KafkaException
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
+
+from confluent_kafka import KafkaException, Producer
 
 from .harvest_common import HarvestState, requests_retry_session
 

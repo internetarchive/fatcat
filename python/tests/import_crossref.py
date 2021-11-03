@@ -1,11 +1,11 @@
 
-import json
 import gzip
+import json
+
 import pytest
+from fixtures import api
 
 from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
-
-from fixtures import api
 
 
 @pytest.fixture(scope="function")

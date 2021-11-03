@@ -1,8 +1,9 @@
 
 import sys
 import time
+
 import sickle
-from confluent_kafka import Producer, KafkaException
+from confluent_kafka import KafkaException, Producer
 
 from .harvest_common import HarvestState
 

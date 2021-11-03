@@ -1,11 +1,12 @@
 
-import os
-import json
 import base64
+import json
+import os
+
 import pytest
+from fixtures import *
 
 from fatcat_tools.importers import GrobidMetadataImporter, LinePusher
-from fixtures import *
 
 """
 WARNING: these tests are currently very fragile because they have database

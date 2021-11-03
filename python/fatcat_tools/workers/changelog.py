@@ -1,7 +1,8 @@
 
 import json
 import time
-from confluent_kafka import Consumer, Producer, KafkaException
+
+from confluent_kafka import Consumer, KafkaException, Producer
 
 from fatcat_tools.transforms import release_ingest_request, release_to_elasticsearch
 

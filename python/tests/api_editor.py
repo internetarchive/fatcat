@@ -1,8 +1,6 @@
 
-import pytest
-
 import fatcat_openapi_client
-
+import pytest
 from fixtures import api
 
 

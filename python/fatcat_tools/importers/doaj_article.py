@@ -4,15 +4,24 @@ Importer for DOAJ article-level metadata, schema v1.
 DOAJ API schema and docs: https://doaj.org/api/v1/docs
 """
 
-import warnings
 import datetime
+import warnings
 from typing import List, Optional
 
 import fatcat_openapi_client
-from fatcat_tools.normal import (clean_doi, clean_str, parse_month,
-    clean_orcid, detect_text_lang, parse_lang_name, parse_country_name,
-    clean_pmid, clean_pmcid)
+
 from fatcat_tools.importers.common import EntityImporter
+from fatcat_tools.normal import (
+    clean_doi,
+    clean_orcid,
+    clean_pmcid,
+    clean_pmid,
+    clean_str,
+    detect_text_lang,
+    parse_country_name,
+    parse_lang_name,
+    parse_month,
+)
 
 # Cutoff length for abstracts.
 MAX_ABSTRACT_LENGTH = 2048

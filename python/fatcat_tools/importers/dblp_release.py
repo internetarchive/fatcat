@@ -21,18 +21,25 @@ brittle/unreliable TSV lookup mechanism for prefix-to-container_id (as of
 December 2020).
 """
 
-import sys  # noqa: F401
-import json
-import warnings
 import datetime
-from typing import List, Optional, Any
+import json
+import sys  # noqa: F401
+import warnings
+from typing import Any, List, Optional
 
 import fatcat_openapi_client
 
-from fatcat_tools.normal import (clean_doi, clean_str, parse_month,
-    clean_orcid, clean_hdl,
-    clean_arxiv_id, clean_wikidata_qid, clean_isbn13)
 from fatcat_tools.importers.common import EntityImporter
+from fatcat_tools.normal import (
+    clean_arxiv_id,
+    clean_doi,
+    clean_hdl,
+    clean_isbn13,
+    clean_orcid,
+    clean_str,
+    clean_wikidata_qid,
+    parse_month,
+)
 from fatcat_tools.transforms import entity_to_dict
 
 

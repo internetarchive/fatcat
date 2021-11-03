@@ -7,11 +7,11 @@ These scripts are just a demonstration of how the API *could* be scraped
 without permission by an third party.
 """
 
-import sys
-import json
 import argparse
+import json
+import sys
 
-from fatcat_tools import uuid2fcid, entity_to_dict, public_api
+from fatcat_tools import entity_to_dict, public_api, uuid2fcid
 
 
 def run_export_releases(args):

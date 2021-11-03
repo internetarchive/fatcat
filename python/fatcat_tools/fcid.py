@@ -2,6 +2,7 @@
 import base64
 import uuid
 
+
 def fcid2uuid(s):
     """
     Converts a fatcat identifier (base32 encoded string) to a uuid.UUID object

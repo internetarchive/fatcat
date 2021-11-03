@@ -1,7 +1,7 @@
 
 import fatcat_openapi_client
-from .common import EntityImporter, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS, b32_hex
 
+from .common import SANE_MAX_RELEASES, SANE_MAX_URLS, EntityImporter, b32_hex, make_rel_url
 
 ARABESQUE_MATCH_WHERE_CLAUSE='WHERE hit = 1 AND identifier IS NOT NULL'
 

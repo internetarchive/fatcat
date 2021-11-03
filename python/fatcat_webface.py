@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+
 from fatcat_web import app
+
 
 def main():
     parser = argparse.ArgumentParser(

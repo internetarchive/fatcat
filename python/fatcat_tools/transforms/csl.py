@@ -1,9 +1,13 @@
 
 import json
 
-from citeproc import CitationStylesStyle, CitationStylesBibliography
-from citeproc import Citation, CitationItem
-from citeproc import formatter
+from citeproc import (
+    Citation,
+    CitationItem,
+    CitationStylesBibliography,
+    CitationStylesStyle,
+    formatter,
+)
 from citeproc.source.json import CiteProcJSON
 from citeproc_styles import get_style_filepath
 

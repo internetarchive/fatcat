@@ -10,8 +10,9 @@ import scripts.
 """
 
 import os
-import raven
 import subprocess
+
+import raven
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

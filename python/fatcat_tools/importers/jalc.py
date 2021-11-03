@@ -1,12 +1,14 @@
 
-import sys
-import sqlite3
 import datetime
-from bs4 import BeautifulSoup
+import sqlite3
+import sys
 
 import fatcat_openapi_client
+from bs4 import BeautifulSoup
+
 from fatcat_tools.normal import clean_doi
-from .common import EntityImporter, clean, is_cjk, DATE_FMT
+
+from .common import DATE_FMT, EntityImporter, clean, is_cjk
 
 
 def parse_jalc_persons(raw_persons):

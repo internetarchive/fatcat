@@ -1,5 +1,6 @@
 
 import fatcat_openapi_client
+
 from .common import EntityImporter
 
 

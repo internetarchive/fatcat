@@ -1,17 +1,17 @@
 
-import json
 import datetime
+import json
 from typing import Any
 
-import pytest
 import elasticsearch
 import fatcat_openapi_client
-from fatcat_openapi_client import ReleaseEntity, ReleaseExtIds
 import fuzzycat.matching
+import pytest
+from fatcat_openapi_client import ReleaseEntity, ReleaseExtIds
+from fixtures import *
 
 from fatcat_tools.importers import EntityImporter
 from fatcat_tools.transforms import entity_to_dict
-from fixtures import *
 
 
 @pytest.fixture(scope="function")

@@ -1,10 +1,11 @@
 
 import json
-import pytest
 
-from fatcat_web.search import get_elastic_container_random_releases
+import pytest
 from fatcat_openapi_client.rest import ApiException
 from fixtures import *
+
+from fatcat_web.search import get_elastic_container_random_releases
 
 
 def test_generic_search(app):

@@ -1,11 +1,14 @@
 
 from collections import namedtuple
-import requests
-import pymacaroons
-from flask import render_template, abort, redirect, session, flash
-from flask_login import logout_user, login_user, UserMixin
-from fatcat_web import login_manager, app, api, priv_api, Config
+
 import fatcat_openapi_client
+import pymacaroons
+import requests
+from flask import abort, flash, redirect, render_template, session
+from flask_login import UserMixin, login_user, logout_user
+
+from fatcat_web import Config, api, app, login_manager, priv_api
+
 
 def handle_logout():
     logout_user()

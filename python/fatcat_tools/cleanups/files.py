@@ -1,6 +1,6 @@
 
-from fatcat_openapi_client.rest import ApiException
 from fatcat_openapi_client.models import FileEntity
+from fatcat_openapi_client.rest import ApiException
 
 from .common import EntityCleaner
 

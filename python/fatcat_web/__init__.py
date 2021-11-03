@@ -1,22 +1,21 @@
 
 import sys
 
+import elasticsearch
+import fatcat_openapi_client
+from authlib.flask.client import OAuth
 from flask import Flask
 from flask.logging import create_logger
-from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
-from flask_wtf.csrf import CSRFProtect
 from flask_misaka import Misaka
 from flask_mwoauth import MWOAuth
-from authlib.flask.client import OAuth
-from loginpass import create_flask_blueprint, Gitlab, GitHub, ORCiD
+from flask_uuid import FlaskUUID
+from flask_wtf.csrf import CSRFProtect
+from loginpass import GitHub, Gitlab, ORCiD, create_flask_blueprint
 from raven.contrib.flask import Sentry
-import fatcat_openapi_client
-import elasticsearch
 
 from fatcat_web.web_config import Config
-
 
 toolbar = DebugToolbarExtension()
 app = Flask(__name__, static_url_path='/static')
@@ -76,7 +75,7 @@ app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 
 app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND)
 
-from fatcat_web import routes, editing_routes, ref_routes, auth, cors, forms
+from fatcat_web import auth, cors, editing_routes, forms, ref_routes, routes
 
 # TODO: blocking on ORCID support in loginpass
 if Config.ORCID_CLIENT_ID:

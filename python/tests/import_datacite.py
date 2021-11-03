@@ -2,27 +2,26 @@
 Test datacite importer.
 """
 
+import collections
+import datetime
 import gzip
 import json
-import datetime
-import collections
 
+import fatcat_openapi_client
 import pytest
+from fixtures import api
 
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
 from fatcat_tools.importers.datacite import (
-    find_original_language_title,
-    parse_datacite_titles,
-    parse_datacite_dates,
     clean_doi,
+    contributor_list_contains_contributor,
+    find_original_language_title,
     index_form_to_display_name,
     lookup_license_slug,
-    contributor_list_contains_contributor,
+    parse_datacite_dates,
+    parse_datacite_titles,
 )
 from fatcat_tools.transforms import entity_to_dict
-import fatcat_openapi_client
-from fixtures import api
-import json
 
 
 @pytest.fixture(scope="function")

@@ -1,14 +1,15 @@
 
-import sys
-import json
 import datetime
+import json
+import sys
+
 import requests
+from confluent_kafka import Consumer, KafkaException, Producer, TopicPartition
 from requests.adapters import HTTPAdapter
+
 # unclear why pylint chokes on this import. Recent 'requests' and 'urllib3' are
 # in Pipenv.lock, and there are no errors in QA
-from requests.packages.urllib3.util.retry import Retry # pylint: disable=import-error
-from confluent_kafka import Producer, Consumer, TopicPartition, KafkaException
-
+from requests.packages.urllib3.util.retry import Retry  # pylint: disable=import-error
 
 # Used for parsing ISO date format (YYYY-MM-DD)
 DATE_FMT = "%Y-%m-%d"

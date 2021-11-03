@@ -7,10 +7,10 @@ TODO:
 - create entity from JSON (?)
 """
 
-import sys
 import argparse
+import sys
 
-from fatcat_tools import uuid2fcid, fcid2uuid, authenticated_api
+from fatcat_tools import authenticated_api, fcid2uuid, uuid2fcid
 
 
 def run_uuid2fcid(args):

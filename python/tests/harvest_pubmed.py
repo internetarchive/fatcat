@@ -2,8 +2,9 @@
 Test pubmed FTP harvest.
 """
 
-import os
 import datetime
+import os
+
 import pytest
 
 from fatcat_tools.harvest import *

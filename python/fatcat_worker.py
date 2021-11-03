@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
-import sys
 import argparse
+import sys
+
 import raven
 
 from fatcat_tools import public_api
-from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker, ElasticsearchContainerWorker, ElasticsearchChangelogWorker
+from fatcat_tools.workers import (
+    ChangelogWorker,
+    ElasticsearchChangelogWorker,
+    ElasticsearchContainerWorker,
+    ElasticsearchReleaseWorker,
+    EntityUpdatesWorker,
+)
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()

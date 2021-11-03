@@ -1,8 +1,8 @@
 
-import json
-import pytest
 import datetime
+import json
 
+import pytest
 from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 

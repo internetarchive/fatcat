@@ -1,7 +1,7 @@
 
-import pytest
 import datetime
 
+import pytest
 from fatcat_openapi_client import *
 from fixtures import *
 

@@ -1,15 +1,15 @@
 
+import datetime
+import json
 import re
 import sys
-import json
-import datetime
+
+import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from pylatexenc.latex2text import LatexNodes2Text
 
-import fatcat_openapi_client
 from .common import EntityImporter
 from .crossref import lookup_license_slug
-
 
 latex2text = LatexNodes2Text()
 

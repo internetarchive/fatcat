@@ -10,8 +10,8 @@ functions (parse_datacite_...), which may help testing.
 
 import collections
 import datetime
-import re
 import json
+import re
 import sqlite3
 import sys
 

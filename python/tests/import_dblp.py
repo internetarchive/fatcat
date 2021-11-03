@@ -1,10 +1,16 @@
 
 import io
+
 import pytest
 from bs4 import BeautifulSoup
-
-from fatcat_tools.importers import DblpReleaseImporter, DblpContainerImporter, Bs4XmlLargeFilePusher, JsonLinePusher
 from fixtures import *
+
+from fatcat_tools.importers import (
+    Bs4XmlLargeFilePusher,
+    DblpContainerImporter,
+    DblpReleaseImporter,
+    JsonLinePusher,
+)
 
 
 @pytest.fixture(scope="function")

@@ -2,7 +2,7 @@
 import pytest
 from fatcat_openapi_client.rest import ApiException
 
-from fatcat_tools import public_api, authenticated_api
+from fatcat_tools import authenticated_api, public_api
 
 
 def test_authenticated_api():

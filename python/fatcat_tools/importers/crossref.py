@@ -1,13 +1,12 @@
 
-import sqlite3
 import datetime
-from typing import Dict, Optional, Any
+import sqlite3
+from typing import Any, Dict, Optional
 
 import fatcat_openapi_client
 from fatcat_openapi_client import ReleaseEntity
 
 from .common import EntityImporter, clean
-
 
 # The docs/guide should be the canonical home for these mappings; update there
 # first

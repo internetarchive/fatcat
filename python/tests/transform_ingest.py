@@ -1,10 +1,11 @@
 
 import json
 
-from fatcat_tools.transforms import release_ingest_request
 from fatcat_openapi_client import *
 from fixtures import api
 from import_crossref import crossref_importer
+
+from fatcat_tools.transforms import release_ingest_request
 
 
 def test_basic_ingest_release(crossref_importer):

@@ -1,14 +1,14 @@
 
-import json
 import datetime
+import json
 
-import pytest
 import elasticsearch
 import fatcat_openapi_client
+import pytest
+from fixtures import *
 
 from fatcat_tools.importers import DoajArticleImporter, JsonLinePusher
 from fatcat_tools.transforms import entity_to_dict
-from fixtures import *
 
 
 @pytest.fixture(scope="function")

@@ -1,6 +1,7 @@
 
-from fatcat_tools.importers import CrossrefImporter, OrcidImporter
 from fixtures import *
+
+from fatcat_tools.importers import CrossrefImporter, OrcidImporter
 
 
 def test_issnl_mapping_lookup(api):

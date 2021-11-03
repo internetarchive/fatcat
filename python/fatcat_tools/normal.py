@@ -4,10 +4,10 @@ A bunch of helpers to parse and normalize strings: external identifiers,
 free-form input, titles, etc.
 """
 
-import re
 import base64
-from typing import Optional, Union
+import re
 import unicodedata
+from typing import Optional, Union
 
 import ftfy
 import langdetect

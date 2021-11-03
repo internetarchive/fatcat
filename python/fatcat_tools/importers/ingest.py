@@ -2,6 +2,7 @@
 import datetime
 
 import fatcat_openapi_client
+
 from .common import EntityImporter, make_rel_url
 
 

@@ -1,13 +1,12 @@
 
+import elasticsearch
+import fatcat_openapi_client
 import pytest
 from dotenv import load_dotenv
-import elasticsearch
+from fatcat_openapi_client import *
 
 import fatcat_web
-import fatcat_openapi_client
-from fatcat_openapi_client import *
 from fatcat_tools import authenticated_api
-
 
 ES_CONTAINER_STATS_RESP = {
     'timed_out': False,

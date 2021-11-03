@@ -1,9 +1,9 @@
 
-import time
 import datetime
 import subprocess
+import time
 from collections import Counter
-from typing import Optional, List, Any
+from typing import Any, List, Optional
 
 import fatcat_openapi_client
 

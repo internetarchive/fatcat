@@ -2,6 +2,7 @@
 import fatcat_openapi_client
 
 from fatcat_tools import entity_from_dict
+
 from .common import EntityImporter
 
 

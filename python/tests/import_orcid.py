@@ -1,9 +1,10 @@
 
 import json
-import pytest
 
-from fatcat_tools.importers import OrcidImporter, JsonLinePusher
+import pytest
 from fixtures import *
+
+from fatcat_tools.importers import JsonLinePusher, OrcidImporter
 
 
 @pytest.fixture(scope="function")

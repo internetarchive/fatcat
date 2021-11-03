@@ -1,14 +1,15 @@
 # flake8: noqa
 
 # bunch of libraries one might want
-import uuid
-import datetime
-import requests
 import argparse
+import datetime
+import uuid
 
 import fatcat_openapi_client
+import requests
 from fatcat_openapi_client import *
 from fatcat_openapi_client.rest import ApiException
+
 from fatcat_tools import *
 
 if __name__ == '__main__':

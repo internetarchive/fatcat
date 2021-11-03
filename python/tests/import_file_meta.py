@@ -1,10 +1,11 @@
 
 import json
-import pytest
 
-from fatcat_tools.importers import FileMetaImporter, JsonLinePusher
+import pytest
 from fatcat_openapi_client import FileEntity
 from fixtures import *
+
+from fatcat_tools.importers import FileMetaImporter, JsonLinePusher
 
 
 @pytest.fixture(scope="function")

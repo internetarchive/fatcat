@@ -1,8 +1,8 @@
 
 import pytest
+from fatcat_openapi_client import *
 
 from fatcat_tools.importers.common import EntityImporter
-from fatcat_openapi_client import *
 
 
 def test_file_update_generic():

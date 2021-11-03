@@ -1,8 +1,9 @@
 
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
 
 import pygal
 from pygal.style import CleanStyle
+
 
 def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
     """
