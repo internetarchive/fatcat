@@ -4,6 +4,7 @@ Flask endpoints for reference (citation) endpoints. Eg, listing references
 """
 
 import json
+from typing import Optional
 
 from flask import Response, jsonify, render_template, request
 from fuzzycat.grobid_unstructured import (
@@ -23,14 +24,18 @@ from fatcat_tools.references import (
 )
 from fatcat_tools.transforms.access import release_access_options
 from fatcat_tools.transforms.entities import entity_to_dict
-from fatcat_web import api, app
+from fatcat_web import AnyResponse, api, app
 from fatcat_web.cors import crossdomain
 from fatcat_web.entity_helpers import generic_get_entity
 from fatcat_web.forms import ReferenceMatchForm
 
 
 def _refs_web(
-    direction, release_ident=None, work_ident=None, openlibrary_id=None, wikipedia_article=None
+    direction: str,
+    release_ident: Optional[str] = None,
+    work_ident: Optional[str] = None,
+    openlibrary_id: Optional[str] = None,
+    wikipedia_article: Optional[str] = None,
 ) -> RefHitsEnriched:
     offset_arg = request.args.get("offset", "0")
     offset: int = max(0, int(offset_arg)) if offset_arg.isnumeric() else 0
@@ -74,7 +79,7 @@ def _refs_web(
 
 
 @app.route("/release/<string(length=26):ident>/refs-in", methods=["GET"])
-def release_view_refs_inbound(ident):
+def release_view_refs_inbound(ident: str) -> AnyResponse:
     if request.accept_mimetypes.best == "application/json":
         return release_view_refs_inbound_json(ident)
 
@@ -89,7 +94,7 @@ def release_view_refs_inbound(ident):
 
 
 @app.route("/release/<string(length=26):ident>/refs-out", methods=["GET"])
-def release_view_refs_outbound(ident):
+def release_view_refs_outbound(ident: str) -> AnyResponse:
     if request.accept_mimetypes.best == "application/json":
         return release_view_refs_outbound_json(ident)
 
@@ -104,7 +109,7 @@ def release_view_refs_outbound(ident):
 
 
 @app.route("/openlibrary/OL<int:id_num>W/refs-in", methods=["GET"])
-def openlibrary_view_refs_inbound(id_num):
+def openlibrary_view_refs_inbound(id_num: int) -> AnyResponse:
     if request.accept_mimetypes.best == "application/json":
         return openlibrary_view_refs_inbound_json(id_num)
 
@@ -124,7 +129,7 @@ def openlibrary_view_refs_inbound(id_num):
 @app.route(
     "/wikipedia/<string(length=2):wiki_lang>:<string:wiki_article>/refs-out", methods=["GET"]
 )
-def wikipedia_view_refs_outbound(wiki_lang: str, wiki_article: str):
+def wikipedia_view_refs_outbound(wiki_lang: str, wiki_article: str) -> AnyResponse:
     if request.accept_mimetypes.best == "application/json":
         return wikipedia_view_refs_outbound_json(wiki_lang, wiki_article)
 
@@ -146,7 +151,7 @@ def wikipedia_view_refs_outbound(wiki_lang: str, wiki_article: str):
 
 
 @app.route("/reference/match", methods=["GET", "POST"])
-def reference_match():
+def reference_match() -> AnyResponse:
 
     grobid_status = None
     grobid_dict = None
@@ -230,21 +235,21 @@ def reference_match():
 
 @app.route("/release/<string(length=26):ident>/refs-out.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def release_view_refs_outbound_json(ident):
+def release_view_refs_outbound_json(ident: str) -> AnyResponse:
     hits = _refs_web("out", release_ident=ident)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")
 
 
 @app.route("/release/<string(length=26):ident>/refs-in.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def release_view_refs_inbound_json(ident):
+def release_view_refs_inbound_json(ident: str) -> AnyResponse:
     hits = _refs_web("in", release_ident=ident)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")
 
 
 @app.route("/openlibrary/OL<int:id_num>W/refs-in.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def openlibrary_view_refs_inbound_json(id_num):
+def openlibrary_view_refs_inbound_json(id_num: int) -> AnyResponse:
     openlibrary_id = f"OL{id_num}W"
     hits = _refs_web("in", openlibrary_id=openlibrary_id)
     return Response(hits.json(exclude_unset=True), mimetype="application/json")
@@ -255,7 +260,7 @@ def openlibrary_view_refs_inbound_json(id_num):
     methods=["GET", "OPTIONS"],
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def wikipedia_view_refs_outbound_json(wiki_lang: str, wiki_article: str):
+def wikipedia_view_refs_outbound_json(wiki_lang: str, wiki_article: str) -> AnyResponse:
     wiki_article = wiki_article.replace("_", " ")
     wikipedia_article = wiki_lang + ":" + wiki_article
     hits = _refs_web("out", wikipedia_article=wikipedia_article)
@@ -264,7 +269,7 @@ def wikipedia_view_refs_outbound_json(wiki_lang: str, wiki_article: str):
 
 @app.route("/reference/match.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def reference_match_json():
+def reference_match_json() -> AnyResponse:
     form = ReferenceMatchForm(request.args)
     if form.validate():
         if form.submit_type.data == "match":

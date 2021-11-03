@@ -1,15 +1,17 @@
 import re
 
+from fatcat_openapi_client import WebcaptureEntity
+
 STRIP_EXTLINK_XML_RE = re.compile(r"<ext-link.*xlink:type=\"simple\">")
 
 
-def strip_extlink_xml(unstr):
+def strip_extlink_xml(unstr: str) -> str:
     unstr = unstr.replace("</ext-link>", "")
     unstr = STRIP_EXTLINK_XML_RE.sub("", unstr)
     return unstr
 
 
-def test_strip_extlink_xml():
+def test_strip_extlink_xml() -> None:
     assert strip_extlink_xml("asdf") == "asdf"
     assert (
         strip_extlink_xml(
@@ -19,7 +21,7 @@ def test_strip_extlink_xml():
     )
 
 
-def wayback_suffix(entity):
+def wayback_suffix(entity: WebcaptureEntity) -> str:
     """
     Takes a webcapture entity and returns a suffix to be appended to wayback URLs
     """

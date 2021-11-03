@@ -5,18 +5,19 @@ This snippet from: http://flask.pocoo.org/snippets/56/
 
 from datetime import timedelta
 from functools import update_wrapper
+from typing import Any
 
 from flask import current_app, make_response, request
 
 
 def crossdomain(
-    origin=None,
-    methods=None,
-    headers=None,
-    max_age=21600,
-    attach_to_all=True,
-    automatic_options=True,
-):
+    origin: Any = None,
+    methods: Any = None,
+    headers: Any = None,
+    max_age: Any = 21600,
+    attach_to_all: bool = True,
+    automatic_options: bool = True,
+) -> Any:
     if methods is not None:
         methods = ", ".join(sorted(x.upper() for x in methods))
     if headers is not None and not isinstance(headers, str):
@@ -26,15 +27,15 @@ def crossdomain(
     if isinstance(max_age, timedelta):
         max_age = max_age.total_seconds()
 
-    def get_methods():
+    def get_methods() -> Any:
         if methods is not None:
             return methods
 
         options_resp = current_app.make_default_options_response()
         return options_resp.headers["allow"]
 
-    def decorator(f):
-        def wrapped_function(*args, **kwargs):
+    def decorator(f: Any) -> Any:
+        def wrapped_function(*args, **kwargs) -> Any:
             if automatic_options and request.method == "OPTIONS":
                 resp = current_app.make_default_options_response()
             else:

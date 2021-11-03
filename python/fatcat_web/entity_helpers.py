@@ -1,6 +1,10 @@
+from typing import Any, Tuple
+
 from fatcat_openapi_client import (
     ContainerEntity,
     CreatorEntity,
+    Editgroup,
+    EntityEdit,
     FileEntity,
     FilesetEntity,
     ReleaseEntity,
@@ -20,7 +24,7 @@ from fatcat_web import api
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 
 
-def enrich_container_entity(entity):
+def enrich_container_entity(entity: ContainerEntity) -> ContainerEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     if entity.state == "active":
@@ -28,7 +32,7 @@ def enrich_container_entity(entity):
     return entity
 
 
-def enrich_creator_entity(entity):
+def enrich_creator_entity(entity: CreatorEntity) -> CreatorEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     entity._releases = None
@@ -37,13 +41,13 @@ def enrich_creator_entity(entity):
     return entity
 
 
-def enrich_file_entity(entity):
+def enrich_file_entity(entity: FileEntity) -> FileEntity:
     if entity.state == "active":
         entity._es = file_to_elasticsearch(entity)
     return entity
 
 
-def enrich_fileset_entity(entity):
+def enrich_fileset_entity(entity: FilesetEntity) -> FilesetEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     entity._total_size = None
@@ -52,14 +56,14 @@ def enrich_fileset_entity(entity):
     return entity
 
 
-def enrich_webcapture_entity(entity):
+def enrich_webcapture_entity(entity: WebcaptureEntity) -> WebcaptureEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     entity._wayback_suffix = wayback_suffix(entity)
     return entity
 
 
-def enrich_release_entity(entity):
+def enrich_release_entity(entity: ReleaseEntity) -> ReleaseEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     if entity.state == "active":
@@ -126,7 +130,7 @@ def enrich_release_entity(entity):
     return entity
 
 
-def enrich_work_entity(entity):
+def enrich_work_entity(entity: WorkEntity) -> WorkEntity:
     if entity.state in ("redirect", "deleted"):
         return entity
     entity._releases = None
@@ -135,7 +139,7 @@ def enrich_work_entity(entity):
     return entity
 
 
-def generic_get_entity(entity_type, ident):
+def generic_get_entity(entity_type: str, ident: str) -> Any:
     try:
         if entity_type == "container":
             return enrich_container_entity(api.get_container(ident))
@@ -161,7 +165,7 @@ def generic_get_entity(entity_type, ident):
         abort(400)
 
 
-def generic_get_entity_revision(entity_type, revision_id):
+def generic_get_entity_revision(entity_type: str, revision_id: str) -> Any:
     try:
         if entity_type == "container":
             return enrich_container_entity(api.get_container_revision(revision_id))
@@ -191,9 +195,9 @@ def generic_get_entity_revision(entity_type, revision_id):
         abort(400)
 
 
-def generic_deleted_entity(entity_type, ident):
+def generic_deleted_entity(entity_type: str, ident: str) -> Any:
     if entity_type == "container":
-        entity = ContainerEntity()
+        entity: Any = ContainerEntity()
     elif entity_type == "creator":
         entity = CreatorEntity()
     elif entity_type == "file":
@@ -212,7 +216,9 @@ def generic_deleted_entity(entity_type, ident):
     return entity
 
 
-def generic_get_editgroup_entity(editgroup, entity_type, ident):
+def generic_get_editgroup_entity(
+    editgroup: Editgroup, entity_type: str, ident: str
+) -> Tuple[Any, EntityEdit]:
     if entity_type == "container":
         edits = editgroup.edits.containers
     elif entity_type == "creator":

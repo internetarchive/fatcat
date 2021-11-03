@@ -4,7 +4,7 @@ import pygal
 from pygal.style import CleanStyle
 
 
-def ia_coverage_histogram(rows: List[Tuple]) -> pygal.Graph:
+def ia_coverage_histogram(rows: List[Tuple[int, bool, int]]) -> pygal.Graph:
     """
     Note: this returns a raw pygal chart; it does not render it to SVG/PNG
 

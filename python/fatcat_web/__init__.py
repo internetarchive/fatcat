@@ -55,7 +55,7 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
 
-def auth_api(token):
+def auth_api(token: str) -> fatcat_openapi_client.DefaultApi:
     conf = fatcat_openapi_client.Configuration()
     conf.api_key["Authorization"] = token
     conf.api_key_prefix["Authorization"] = "Bearer"

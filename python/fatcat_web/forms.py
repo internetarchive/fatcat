@@ -4,6 +4,7 @@ but can't find one that is actually maintained.
 """
 
 import datetime
+from typing import Any, Dict, List, Tuple
 
 import toml
 from fatcat_openapi_client import (
@@ -30,7 +31,7 @@ from wtforms import (
 
 from fatcat_tools.transforms import entity_to_toml
 
-release_type_options = [
+release_type_options: List[Tuple[str, str]] = [
     ("", "Unknown (blank)"),
     ("article-journal", "Journal Article"),
     ("paper-conference", "Conference Proceeding"),
@@ -40,7 +41,7 @@ release_type_options = [
     ("dataset", "Dataset"),
     ("stub", "Invalid/Stub"),
 ]
-release_stage_options = [
+release_stage_options: List[Tuple[str, str]] = [
     ("", "Unknown (blank)"),
     ("draft", "Draft"),
     ("submitted", "Submitted"),
@@ -48,7 +49,7 @@ release_stage_options = [
     ("published", "Published"),
     ("updated", "Updated"),
 ]
-withdrawn_status_options = [
+withdrawn_status_options: List[Tuple[str, str]] = [
     ("", "Not Withdrawn (blank)"),
     ("retracted", "Retracted"),
     ("withdrawn", "Withdrawn"),
@@ -58,7 +59,7 @@ withdrawn_status_options = [
     ("safety", "Public Safety"),
     ("national-security", "National Security"),
 ]
-role_type_options = [
+role_type_options: List[Tuple[str, str]] = [
     ("author", "Author"),
     ("editor", "Editor"),
     ("translator", "Translator"),
@@ -87,7 +88,7 @@ class ReleaseContribForm(FlaskForm):
     role = SelectField([validators.DataRequired()], choices=role_type_options, default="author")
 
 
-RELEASE_SIMPLE_ATTRS = [
+RELEASE_SIMPLE_ATTRS: List[str] = [
     "title",
     "original_title",
     "work_id",
@@ -105,17 +106,17 @@ RELEASE_SIMPLE_ATTRS = [
     "license_slug",
 ]
 
-RELEASE_EXTID_ATTRS = ["doi", "wikidata_qid", "isbn13", "pmid", "pmcid"]
+RELEASE_EXTID_ATTRS: List[str] = ["doi", "wikidata_qid", "isbn13", "pmid", "pmcid"]
 
 
-def valid_year(form, field):
+def valid_year(form: Any, field: Any) -> None:
     if field.data > datetime.date.today().year + 5:
         raise ValidationError(f"Year is too far in the future: {field.data}")
     if field.data < 10:
         raise ValidationError(f"Year is too far in the past: {field.data}")
 
 
-def valid_2char_ascii(form, field):
+def valid_2char_ascii(form: Any, field: Any) -> None:
     if (
         len(field.data) != 2
         or len(field.data.encode("utf-8")) != 2
@@ -179,7 +180,7 @@ class ReleaseEntityForm(EntityEditForm):
     # abstracts
 
     @staticmethod
-    def from_entity(re):
+    def from_entity(re: ReleaseEntity) -> "ReleaseEntityForm":
         """
         Initializes form with values from an existing release entity.
         """
@@ -198,13 +199,13 @@ class ReleaseEntityForm(EntityEditForm):
             ref.contribs.append_entry(rcf)
         return ref
 
-    def to_entity(self):
+    def to_entity(self) -> ReleaseEntity:
         assert self.title.data
         entity = ReleaseEntity(title=self.title.data, ext_ids=ReleaseExtIds())
         self.update_entity(entity)
         return entity
 
-    def update_entity(self, re):
+    def update_entity(self, re: ReleaseEntity) -> None:
         """
         Mutates a release entity in place, updating fields with values from
         this form.
@@ -249,7 +250,7 @@ class ReleaseEntityForm(EntityEditForm):
             re.edit_extra = dict(description=self.edit_description.data)
 
 
-container_type_options = (
+container_type_options: List[Tuple[str, str]] = [
     ("", "Unknown (blank)"),
     ("journal", "Scholarly Journal"),
     ("proceedings", "Proceedings"),
@@ -258,9 +259,9 @@ container_type_options = (
     ("magazine", "Magazine"),
     ("trade", "Trade Magazine"),
     ("test", "Test / Dummy"),
-)
+]
 
-CONTAINER_SIMPLE_ATTRS = [
+CONTAINER_SIMPLE_ATTRS: List[str] = [
     "name",
     "container_type",
     "publisher",
@@ -269,7 +270,7 @@ CONTAINER_SIMPLE_ATTRS = [
     "issne",
     "issnp",
 ]
-CONTAINER_EXTRA_ATTRS = ["original_name", "country"]
+CONTAINER_EXTRA_ATTRS: List[str] = ["original_name", "country"]
 
 
 class ContainerEntityForm(EntityEditForm):
@@ -296,7 +297,7 @@ class ContainerEntityForm(EntityEditForm):
     )
 
     @staticmethod
-    def from_entity(ce):
+    def from_entity(ce: ContainerEntity) -> "ContainerEntityForm":
         """
         Initializes form with values from an existing container entity.
         """
@@ -314,13 +315,13 @@ class ContainerEntityForm(EntityEditForm):
                     cef.urls.append_entry(url)
         return cef
 
-    def to_entity(self):
+    def to_entity(self) -> ContainerEntity:
         assert self.name.data
         entity = ContainerEntity(name=self.name.data)
         self.update_entity(entity)
         return entity
 
-    def update_entity(self, ce):
+    def update_entity(self, ce: ContainerEntity) -> None:
         """
         Mutates a container entity in place, updating fields with values from
         this form.
@@ -350,7 +351,7 @@ class ContainerEntityForm(EntityEditForm):
             ce.extra = None
 
 
-url_rel_options = [
+url_rel_options: List[Tuple[str, str]] = [
     ("web", "Public Web"),
     ("webarchive", "Web Archive"),
     ("repository", "Repository"),
@@ -361,7 +362,7 @@ url_rel_options = [
     ("aggregator", "Aggregator"),
 ]
 
-FILE_SIMPLE_ATTRS = ["size", "md5", "sha1", "sha256", "mimetype"]
+FILE_SIMPLE_ATTRS: List[str] = ["size", "md5", "sha1", "sha256", "mimetype"]
 
 
 class FileUrlForm(FlaskForm):
@@ -392,7 +393,7 @@ class FileEntityForm(EntityEditForm):
     )
 
     @staticmethod
-    def from_entity(fe):
+    def from_entity(fe: FileEntity) -> "FileEntityForm":
         """
         Initializes form with values from an existing file entity.
         """
@@ -409,13 +410,13 @@ class FileEntityForm(EntityEditForm):
             ref.release_ids.append_entry(r)
         return ref
 
-    def to_entity(self):
+    def to_entity(self) -> FileEntity:
         assert self.sha1.data
         entity = FileEntity()
         self.update_entity(entity)
         return entity
 
-    def update_entity(self, fe):
+    def update_entity(self, fe: FileEntity) -> None:
         """
         Mutates in place, updating fields with values from this form.
 
@@ -445,7 +446,7 @@ class FileEntityForm(EntityEditForm):
             fe.edit_extra = dict(description=self.edit_description.data)
 
 
-INGEST_TYPE_OPTIONS = [
+INGEST_TYPE_OPTIONS: List[Tuple[str, str]] = [
     ("pdf", "PDF Fulltext"),
     ("html", "HTML Fulltext"),
     ("xml", "XML Fulltext"),
@@ -465,7 +466,9 @@ class SavePaperNowForm(FlaskForm):
         default="",
     )
 
-    def to_ingest_request(self, release, ingest_request_source="savepapernow"):
+    def to_ingest_request(
+        self, release: ReleaseEntity, ingest_request_source: str = "savepapernow"
+    ) -> Dict[str, Any]:
         base_url = self.base_url.data
         ext_ids = release.ext_ids.to_dict()
         # by default this dict has a bunch of empty values
@@ -496,7 +499,7 @@ class SavePaperNowForm(FlaskForm):
         return ingest_request
 
 
-def valid_toml(form, field):
+def valid_toml(form: Any, field: Any) -> None:
     try:
         toml.loads(field.data)
     except toml.TomlDecodeError as tpe:
@@ -514,7 +517,7 @@ class EntityTomlForm(EntityEditForm):
     )
 
     @staticmethod
-    def from_entity(entity):
+    def from_entity(entity: Any) -> "EntityTomlForm":
         """
         Initializes form with TOML version of existing entity
         """
@@ -569,7 +572,9 @@ class ReferenceMatchForm(FlaskForm):
     release_stage = StringField("Release Stage")
 
     @staticmethod
-    def from_grobid_parse(parse_dict, raw_citation):
+    def from_grobid_parse(
+        parse_dict: Dict[str, Any], raw_citation: str
+    ) -> "ReferenceMatchForm":
         """
         Initializes form from GROBID extraction
         """

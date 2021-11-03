@@ -1,9 +1,13 @@
+from typing import Any, Dict, Optional
+
 import requests
 
 from fatcat_web import Config
 
 
-def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
+def kafka_pixy_produce(
+    topic: str, msg: str, key: Optional[bytes] = None, sync: bool = True, timeout: float = 25
+) -> None:
     """
     Simple helper to public a message to the given Kafka topic, via the
     configured kafka-pixy HTTP gateway
@@ -17,7 +21,7 @@ def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
     if not Config.KAFKA_PIXY_ENDPOINT:
         raise Exception("Kafka produce error: kafka-pixy endpoint not configured")
 
-    params = dict()
+    params: Dict[str, Any] = dict()
     if key:
         params["key"] = key
     if sync:

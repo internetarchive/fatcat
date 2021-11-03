@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import Any, Dict, Optional
 
 import fatcat_openapi_client
 import pymacaroons
@@ -6,10 +7,10 @@ import requests
 from flask import abort, flash, redirect, render_template, session
 from flask_login import UserMixin, login_user, logout_user
 
-from fatcat_web import Config, api, app, login_manager, priv_api
+from fatcat_web import AnyResponse, Config, api, app, login_manager, priv_api
 
 
-def handle_logout():
+def handle_logout() -> None:
     logout_user()
     for k in ("editor", "api_token"):
         if k in session:
@@ -17,7 +18,7 @@ def handle_logout():
     session.clear()
 
 
-def handle_token_login(token):
+def handle_token_login(token: str) -> AnyResponse:
     try:
         m = pymacaroons.Macaroon.deserialize(token)
     except pymacaroons.exceptions.MacaroonDeserializationException:
@@ -51,7 +52,7 @@ def handle_token_login(token):
 
 
 # This will need to login/signup via fatcatd API, then set token in session
-def handle_oauth(remote, token, user_info):
+def handle_oauth(remote: Any, token: Optional[str], user_info: Dict[str, Any]) -> AnyResponse:
     if user_info:
         # fetch api login/signup using user_info
         # ISS is basically the API url (though more formal in OIDC)
@@ -98,7 +99,7 @@ def handle_oauth(remote, token, user_info):
     raise Exception("didn't receive OAuth user_info")
 
 
-def handle_ia_xauth(email, password):
+def handle_ia_xauth(email: str, password: str) -> AnyResponse:
     resp = requests.post(
         Config.IA_XAUTH_URI,
         params={"op": "authenticate"},
@@ -153,7 +154,7 @@ def handle_ia_xauth(email, password):
     return handle_oauth(remote, None, oauth_info)
 
 
-def handle_wmoauth(username):
+def handle_wmoauth(username: str) -> AnyResponse:
     # pass off "as if" we did OAuth successfully
     FakeOAuthRemote = namedtuple("FakeOAuthRemote", ["name", "OAUTH_CONFIG"])
     remote = FakeOAuthRemote(
@@ -169,7 +170,7 @@ def handle_wmoauth(username):
 
 
 @login_manager.user_loader
-def load_user(editor_id):
+def load_user(editor_id: str) -> UserMixin:
     # looks for extra info in session, and updates the user object with that.
     # If session isn't loaded/valid, should return None
     if (not session.get("editor")) or (not session.get("api_token")):

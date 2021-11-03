@@ -6,7 +6,7 @@ the formal API)
 import datetime
 import sys
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import elasticsearch
 import elasticsearch_dsl.response
@@ -33,8 +33,8 @@ class ReleaseQuery:
     container_id: Optional[str] = None
     recent: bool = False
 
-    @classmethod
-    def from_args(cls, args) -> "ReleaseQuery":
+    @staticmethod
+    def from_args(args: Dict[str, Any]) -> "ReleaseQuery":
 
         query_str = args.get("q") or "*"
 
@@ -66,8 +66,8 @@ class GenericQuery:
     limit: Optional[int] = None
     offset: Optional[int] = None
 
-    @classmethod
-    def from_args(cls, args) -> "GenericQuery":
+    @staticmethod
+    def from_args(args: Dict[str, Any]) -> "GenericQuery":
         query_str = args.get("q")
         if not query_str:
             query_str = "*"
@@ -154,7 +154,7 @@ def wrap_es_execution(search: Search) -> Any:
     return resp
 
 
-def agg_to_dict(agg) -> dict:
+def agg_to_dict(agg: Any) -> Dict[str, Any]:
     """
     Takes a simple term aggregation result (with buckets) and returns a simple
     dict with keys as terms and counts as values. Includes an extra value
@@ -289,7 +289,7 @@ def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> Searc
     )
 
 
-def get_elastic_container_random_releases(ident: str, limit=5) -> List[Dict[str, Any]]:
+def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Dict[str, Any]]:
     """
     Returns a list of releases from the container.
     """
@@ -453,8 +453,12 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
 
 
 def get_elastic_container_stats(
-    ident, issnl=None, es_client=None, es_index=None, merge_shadows=None
-):
+    ident: str,
+    issnl: Optional[str] = None,
+    es_client: Optional[elasticsearch.Elasticsearch] = None,
+    es_index: Optional[str] = None,
+    merge_shadows: Optional[bool] = None,
+) -> Dict[str, Any]:
     """
     Returns dict:
         ident
@@ -535,7 +539,7 @@ def get_elastic_container_stats(
     return stats
 
 
-def get_elastic_container_histogram_legacy(ident) -> List:
+def get_elastic_container_histogram_legacy(ident: str) -> List[Tuple[int, bool, int]]:
     """
     Fetches a stacked histogram of {year, in_ia}. This is for the older style
     of coverage graph (SVG or JSON export). This function should be DEPRECATED
@@ -603,7 +607,7 @@ def get_elastic_container_histogram_legacy(ident) -> List:
     return vals
 
 
-def get_elastic_preservation_by_year(query) -> List[dict]:
+def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]]:
     """
     Fetches a stacked histogram of {year, preservation}.
 
@@ -685,7 +689,7 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
     return sorted(year_dicts.values(), key=lambda x: x["year"])
 
 
-def get_elastic_preservation_by_date(query) -> List[dict]:
+def get_elastic_preservation_by_date(query: ReleaseQuery) -> List[dict]:
     """
     Fetches a stacked histogram of {date, preservation}.
 

@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any, Callable, Dict, List, Optional
 
 import citeproc_styles
 from fatcat_openapi_client import EditgroupAnnotation
@@ -30,7 +31,7 @@ from fatcat_tools.normal import (
     clean_sha256,
 )
 from fatcat_tools.transforms import citeproc_csl, release_to_csl
-from fatcat_web import Config, api, app, auth_api, mwoauth, priv_api
+from fatcat_web import AnyResponse, Config, api, app, auth_api, mwoauth, priv_api
 from fatcat_web.auth import (
     handle_ia_xauth,
     handle_logout,
@@ -73,7 +74,7 @@ from fatcat_web.search import (
 
 
 @app.route("/container/<string(length=26):ident>/history", methods=["GET"])
-def container_history(ident):
+def container_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_container(ident)
         history = api.get_container_history(ident)
@@ -86,7 +87,7 @@ def container_history(ident):
 
 
 @app.route("/creator/<string(length=26):ident>/history", methods=["GET"])
-def creator_history(ident):
+def creator_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_creator(ident)
         history = api.get_creator_history(ident)
@@ -98,7 +99,7 @@ def creator_history(ident):
 
 
 @app.route("/file/<string(length=26):ident>/history", methods=["GET"])
-def file_history(ident):
+def file_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_file(ident)
         history = api.get_file_history(ident)
@@ -110,7 +111,7 @@ def file_history(ident):
 
 
 @app.route("/fileset/<string(length=26):ident>/history", methods=["GET"])
-def fileset_history(ident):
+def fileset_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_fileset(ident)
         history = api.get_fileset_history(ident)
@@ -122,7 +123,7 @@ def fileset_history(ident):
 
 
 @app.route("/webcapture/<string(length=26):ident>/history", methods=["GET"])
-def webcapture_history(ident):
+def webcapture_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_webcapture(ident)
         history = api.get_webcapture_history(ident)
@@ -134,7 +135,7 @@ def webcapture_history(ident):
 
 
 @app.route("/release/<string(length=26):ident>/history", methods=["GET"])
-def release_history(ident):
+def release_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_release(ident)
         history = api.get_release_history(ident)
@@ -146,7 +147,7 @@ def release_history(ident):
 
 
 @app.route("/work/<string(length=26):ident>/history", methods=["GET"])
-def work_history(ident):
+def work_history(ident: str) -> AnyResponse:
     try:
         entity = api.get_work(ident)
         history = api.get_work_history(ident)
@@ -157,7 +158,9 @@ def work_history(ident):
     )
 
 
-def generic_lookup_view(entity_type, lookup_template, extid_types, lookup_lambda):
+def generic_lookup_view(
+    entity_type: str, lookup_template: str, extid_types: List[str], lookup_lambda: Callable
+) -> AnyResponse:
     extid = None
     for key in extid_types:
         if request.args.get(key):
@@ -195,48 +198,48 @@ def generic_lookup_view(entity_type, lookup_template, extid_types, lookup_lambda
 
 
 @app.route("/container/lookup", methods=["GET"])
-def container_lookup():
+def container_lookup() -> AnyResponse:
     return generic_lookup_view(
         "container",
         "container_lookup.html",
-        ("issn", "issne", "issnp", "issnl", "wikidata_qid"),
+        ["issn", "issne", "issnp", "issnl", "wikidata_qid"],
         lambda p: api.lookup_container(**p),
     )
 
 
 @app.route("/creator/lookup", methods=["GET"])
-def creator_lookup():
+def creator_lookup() -> AnyResponse:
     return generic_lookup_view(
         "creator",
         "creator_lookup.html",
-        ("orcid", "wikidata_qid"),
+        ["orcid", "wikidata_qid"],
         lambda p: api.lookup_creator(**p),
     )
 
 
 @app.route("/file/lookup", methods=["GET"])
-def file_lookup():
+def file_lookup() -> AnyResponse:
     return generic_lookup_view(
-        "file", "file_lookup.html", ("md5", "sha1", "sha256"), lambda p: api.lookup_file(**p)
+        "file", "file_lookup.html", ["md5", "sha1", "sha256"], lambda p: api.lookup_file(**p)
     )
 
 
 @app.route("/fileset/lookup", methods=["GET"])
-def fileset_lookup():
+def fileset_lookup() -> AnyResponse:
     abort(404)
 
 
 @app.route("/webcapture/lookup", methods=["GET"])
-def webcapture_lookup():
+def webcapture_lookup() -> AnyResponse:
     abort(404)
 
 
 @app.route("/release/lookup", methods=["GET"])
-def release_lookup():
+def release_lookup() -> AnyResponse:
     return generic_lookup_view(
         "release",
         "release_lookup.html",
-        (
+        [
             "doi",
             "wikidata_qid",
             "pmid",
@@ -249,20 +252,20 @@ def release_lookup():
             "mag",
             "oai",
             "hdl",
-        ),
+        ],
         lambda p: api.lookup_release(**p),
     )
 
 
 @app.route("/work/lookup", methods=["GET"])
-def work_lookup():
+def work_lookup() -> AnyResponse:
     abort(404)
 
 
 ### More Generic Entity Views ###############################################
 
 
-def generic_entity_view(entity_type, ident, view_template):
+def generic_entity_view(entity_type: str, ident: str, view_template: str) -> AnyResponse:
     entity = generic_get_entity(entity_type, ident)
 
     if entity.state == "redirect":
@@ -288,7 +291,9 @@ def generic_entity_view(entity_type, ident, view_template):
     )
 
 
-def generic_entity_revision_view(entity_type, revision_id, view_template):
+def generic_entity_revision_view(
+    entity_type: str, revision_id: str, view_template: str
+) -> AnyResponse:
     entity = generic_get_entity_revision(entity_type, revision_id)
 
     metadata = entity.to_dict()
@@ -300,7 +305,9 @@ def generic_entity_revision_view(entity_type, revision_id, view_template):
     )
 
 
-def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_template):
+def generic_editgroup_entity_view(
+    editgroup_id: Optional[str], entity_type: str, ident: str, view_template: str
+) -> AnyResponse:
     try:
         editgroup = api.get_editgroup(editgroup_id)
     except ApiException as ae:
@@ -323,40 +330,40 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
 
 
 @app.route("/container/<string(length=26):ident>", methods=["GET"])
-def container_view(ident):
+def container_view(ident: str) -> AnyResponse:
     return generic_entity_view("container", ident, "container_view.html")
 
 
 @app.route("/container_<string(length=26):ident>", methods=["GET"])
-def container_underscore_view(ident):
+def container_underscore_view(ident: str) -> AnyResponse:
     return redirect("/container/{}".format(ident))
 
 
 @app.route("/container/<string(length=26):ident>/coverage", methods=["GET"])
-def container_view_coverage(ident):
+def container_view_coverage(ident: str) -> AnyResponse:
     # note: there is a special hack to add entity._type_preservation for this endpoint
     return generic_entity_view("container", ident, "container_view_coverage.html")
 
 
 @app.route("/container/<string(length=26):ident>/metadata", methods=["GET"])
-def container_view_metadata(ident):
+def container_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("container", ident, "entity_view_metadata.html")
 
 
 @app.route("/container/rev/<uuid:revision_id>", methods=["GET"])
-def container_revision_view(revision_id):
+def container_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("container", str(revision_id), "container_view.html")
 
 
 @app.route("/container/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def container_revision_view_metadata(revision_id):
+def container_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "container", str(revision_id), "entity_view_metadata.html"
     )
 
 
 @app.route("/editgroup/<editgroup_id>/container/<string(length=26):ident>", methods=["GET"])
-def container_editgroup_view(editgroup_id, ident):
+def container_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "container", ident, "container_view.html"
     )
@@ -365,160 +372,160 @@ def container_editgroup_view(editgroup_id, ident):
 @app.route(
     "/editgroup/<editgroup_id>/container/<string(length=26):ident>/metadata", methods=["GET"]
 )
-def container_editgroup_view_metadata(editgroup_id, ident):
+def container_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "container", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/creator/<string(length=26):ident>", methods=["GET"])
-def creator_view(ident):
+def creator_view(ident: str) -> AnyResponse:
     return generic_entity_view("creator", ident, "creator_view.html")
 
 
 @app.route("/creator_<string(length=26):ident>", methods=["GET"])
-def creator_underscore_view(ident):
+def creator_underscore_view(ident: str) -> AnyResponse:
     return redirect("/creator/{}".format(ident))
 
 
 @app.route("/creator/<string(length=26):ident>/metadata", methods=["GET"])
-def creator_view_metadata(ident):
+def creator_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("creator", ident, "entity_view_metadata.html")
 
 
 @app.route("/creator/rev/<uuid:revision_id>", methods=["GET"])
-def creator_revision_view(revision_id):
+def creator_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("creator", str(revision_id), "creator_view.html")
 
 
 @app.route("/creator/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def creator_revision_view_metadata(revision_id):
+def creator_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "creator", str(revision_id), "entity_view_metadata.html"
     )
 
 
 @app.route("/editgroup/<editgroup_id>/creator/<string(length=26):ident>", methods=["GET"])
-def creator_editgroup_view(editgroup_id, ident):
+def creator_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(editgroup_id, "creator", ident, "creator_view.html")
 
 
 @app.route(
     "/editgroup/<editgroup_id>/creator/<string(length=26):ident>/metadata", methods=["GET"]
 )
-def creator_editgroup_view_metadata(editgroup_id, ident):
+def creator_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "creator", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/file/<string(length=26):ident>", methods=["GET"])
-def file_view(ident):
+def file_view(ident: str) -> AnyResponse:
     return generic_entity_view("file", ident, "file_view.html")
 
 
 @app.route("/file_<string(length=26):ident>", methods=["GET"])
-def file_underscore_view(ident):
+def file_underscore_view(ident: str) -> AnyResponse:
     return redirect("/file/{}".format(ident))
 
 
 @app.route("/file/<string(length=26):ident>/metadata", methods=["GET"])
-def file_view_metadata(ident):
+def file_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("file", ident, "entity_view_metadata.html")
 
 
 @app.route("/file/rev/<uuid:revision_id>", methods=["GET"])
-def file_revision_view(revision_id):
+def file_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("file", str(revision_id), "file_view.html")
 
 
 @app.route("/file/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def file_revision_view_metadata(revision_id):
+def file_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("file", str(revision_id), "entity_view_metadata.html")
 
 
 @app.route("/editgroup/<editgroup_id>/file/<string(length=26):ident>", methods=["GET"])
-def file_editgroup_view(editgroup_id, ident):
+def file_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(editgroup_id, "file", ident, "file_view.html")
 
 
 @app.route("/editgroup/<editgroup_id>/file/<string(length=26):ident>/metadata", methods=["GET"])
-def file_editgroup_view_metadata(editgroup_id, ident):
+def file_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "file", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/fileset/<string(length=26):ident>", methods=["GET"])
-def fileset_view(ident):
+def fileset_view(ident: str) -> AnyResponse:
     return generic_entity_view("fileset", ident, "fileset_view.html")
 
 
 @app.route("/fileset_<string(length=26):ident>", methods=["GET"])
-def fileset_underscore_view(ident):
+def fileset_underscore_view(ident: str) -> AnyResponse:
     return redirect("/fileset/{}".format(ident))
 
 
 @app.route("/fileset/<string(length=26):ident>/metadata", methods=["GET"])
-def fileset_view_metadata(ident):
+def fileset_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("fileset", ident, "entity_view_metadata.html")
 
 
 @app.route("/fileset/rev/<uuid:revision_id>", methods=["GET"])
-def fileset_revision_view(revision_id):
+def fileset_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("fileset", str(revision_id), "fileset_view.html")
 
 
 @app.route("/fileset/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def fileset_revision_view_metadata(revision_id):
+def fileset_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "fileset", str(revision_id), "entity_view_metadata.html"
     )
 
 
 @app.route("/editgroup/<editgroup_id>/fileset/<string(length=26):ident>", methods=["GET"])
-def fileset_editgroup_view(editgroup_id, ident):
+def fileset_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(editgroup_id, "fileset", ident, "fileset_view.html")
 
 
 @app.route(
     "/editgroup/<editgroup_id>/fileset/<string(length=26):ident>/metadata", methods=["GET"]
 )
-def fileset_editgroup_view_metadata(editgroup_id, ident):
+def fileset_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "fileset", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/webcapture/<string(length=26):ident>", methods=["GET"])
-def webcapture_view(ident):
+def webcapture_view(ident: str) -> AnyResponse:
     return generic_entity_view("webcapture", ident, "webcapture_view.html")
 
 
 @app.route("/webcapture_<string(length=26):ident>", methods=["GET"])
-def webcapture_underscore_view(ident):
+def webcapture_underscore_view(ident: str) -> AnyResponse:
     return redirect("/webcapture/{}".format(ident))
 
 
 @app.route("/webcapture/<string(length=26):ident>/metadata", methods=["GET"])
-def webcapture_view_metadata(ident):
+def webcapture_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("webcapture", ident, "entity_view_metadata.html")
 
 
 @app.route("/webcapture/rev/<uuid:revision_id>", methods=["GET"])
-def webcapture_revision_view(revision_id):
+def webcapture_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("webcapture", str(revision_id), "webcapture_view.html")
 
 
 @app.route("/webcapture/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def webcapture_revision_view_metadata(revision_id):
+def webcapture_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "webcapture", str(revision_id), "entity_view_metadata.html"
     )
 
 
 @app.route("/editgroup/<editgroup_id>/webcapture/<string(length=26):ident>", methods=["GET"])
-def webcapture_editgroup_view(editgroup_id, ident):
+def webcapture_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "webcapture", ident, "webcapture_view.html"
     )
@@ -527,72 +534,72 @@ def webcapture_editgroup_view(editgroup_id, ident):
 @app.route(
     "/editgroup/<editgroup_id>/webcapture/<string(length=26):ident>/metadata", methods=["GET"]
 )
-def webcapture_editgroup_view_metadata(editgroup_id, ident):
+def webcapture_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "webcapture", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/release/<string(length=26):ident>", methods=["GET"])
-def release_view(ident):
+def release_view(ident: str) -> AnyResponse:
     return generic_entity_view("release", ident, "release_view.html")
 
 
 @app.route("/release_<string(length=26):ident>", methods=["GET"])
-def release_underscore_view(ident):
+def release_underscore_view(ident: str) -> AnyResponse:
     return redirect("/release/{}".format(ident))
 
 
 @app.route("/release/<string(length=26):ident>/contribs", methods=["GET"])
-def release_view_contribs(ident):
+def release_view_contribs(ident: str) -> AnyResponse:
     return generic_entity_view("release", ident, "release_view_contribs.html")
 
 
 @app.route("/release/<string(length=26):ident>/references", methods=["GET"])
-def release_view_references(ident):
+def release_view_references(ident: str) -> AnyResponse:
     return generic_entity_view("release", ident, "release_view_references.html")
 
 
 @app.route("/release/<string(length=26):ident>/metadata", methods=["GET"])
-def release_view_metadata(ident):
+def release_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("release", ident, "entity_view_metadata.html")
 
 
 @app.route("/release/rev/<uuid:revision_id>", methods=["GET"])
-def release_revision_view(revision_id):
+def release_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("release", str(revision_id), "release_view.html")
 
 
 @app.route("/release/rev/<uuid:revision_id>/contribs", methods=["GET"])
-def release_revision_view_contribs(revision_id):
+def release_revision_view_contribs(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "release", str(revision_id), "release_view_contribs.html"
     )
 
 
 @app.route("/release/rev/<uuid:revision_id>/references", methods=["GET"])
-def release_revision_view_references(revision_id):
+def release_revision_view_references(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "release", str(revision_id), "release_view_references.html"
     )
 
 
 @app.route("/release/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def release_revision_view_metadata(revision_id):
+def release_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view(
         "release", str(revision_id), "entity_view_metadata.html"
     )
 
 
 @app.route("/editgroup/<editgroup_id>/release/<string(length=26):ident>", methods=["GET"])
-def release_editgroup_view(editgroup_id, ident):
+def release_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(editgroup_id, "release", ident, "release_view.html")
 
 
 @app.route(
     "/editgroup/<editgroup_id>/release/<string(length=26):ident>/contribs", methods=["GET"]
 )
-def release_editgroup_view_contribs(editgroup_id, ident):
+def release_editgroup_view_contribs(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "release", ident, "release_view_contribs.html"
     )
@@ -601,7 +608,7 @@ def release_editgroup_view_contribs(editgroup_id, ident):
 @app.route(
     "/editgroup/<editgroup_id>/release/<string(length=26):ident>/references", methods=["GET"]
 )
-def release_editgroup_view_references(editgroup_id, ident):
+def release_editgroup_view_references(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "release", ident, "release_view_references.html"
     )
@@ -610,44 +617,44 @@ def release_editgroup_view_references(editgroup_id, ident):
 @app.route(
     "/editgroup/<editgroup_id>/release/<string(length=26):ident>/metadata", methods=["GET"]
 )
-def release_editgroup_view_metadata(editgroup_id, ident):
+def release_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "release", ident, "entity_view_metadata.html"
     )
 
 
 @app.route("/work/<string(length=26):ident>", methods=["GET"])
-def work_view(ident):
+def work_view(ident: str) -> AnyResponse:
     return generic_entity_view("work", ident, "work_view.html")
 
 
 @app.route("/work_<string(length=26):ident>", methods=["GET"])
-def work_underscore_view(ident):
+def work_underscore_view(ident: str) -> AnyResponse:
     return redirect("/work/{}".format(ident))
 
 
 @app.route("/work/<string(length=26):ident>/metadata", methods=["GET"])
-def work_view_metadata(ident):
+def work_view_metadata(ident: str) -> AnyResponse:
     return generic_entity_view("work", ident, "entity_view_metadata.html")
 
 
 @app.route("/work/rev/<uuid:revision_id>", methods=["GET"])
-def work_revision_view(revision_id):
+def work_revision_view(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("work", str(revision_id), "work_view.html")
 
 
 @app.route("/work/rev/<uuid:revision_id>/metadata", methods=["GET"])
-def work_revision_view_metadata(revision_id):
+def work_revision_view_metadata(revision_id: str) -> AnyResponse:
     return generic_entity_revision_view("work", str(revision_id), "entity_view_metadata.html")
 
 
 @app.route("/editgroup/<editgroup_id>/work/<string(length=26):ident>", methods=["GET"])
-def work_editgroup_view(editgroup_id, ident):
+def work_editgroup_view(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(editgroup_id, "work", ident, "work_view.html")
 
 
 @app.route("/editgroup/<editgroup_id>/work/<string(length=26):ident>/metadata", methods=["GET"])
-def work_editgroup_view_metadata(editgroup_id, ident):
+def work_editgroup_view_metadata(editgroup_id: str, ident: str) -> AnyResponse:
     return generic_editgroup_entity_view(
         editgroup_id, "work", ident, "entity_view_metadata.html"
     )
@@ -657,7 +664,7 @@ def work_editgroup_view_metadata(editgroup_id, ident):
 
 
 @app.route("/editgroup/<string(length=26):ident>", methods=["GET"])
-def editgroup_view(ident):
+def editgroup_view(ident: str) -> AnyResponse:
     try:
         eg = api.get_editgroup(str(ident))
         eg.editor = api.get_editor(eg.editor_id)
@@ -684,7 +691,7 @@ def editgroup_view(ident):
 
 @app.route("/editgroup/<string(length=26):ident>/annotation", methods=["POST"])
 @login_required
-def editgroup_create_annotation(ident):
+def editgroup_create_annotation(ident: str) -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
     comment_markdown = request.form.get("comment_markdown")
@@ -710,7 +717,7 @@ def editgroup_create_annotation(ident):
 
 @app.route("/editgroup/<string(length=26):ident>/accept", methods=["POST"])
 @login_required
-def editgroup_accept(ident):
+def editgroup_accept(ident: str) -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
     # on behalf of user...
@@ -728,7 +735,7 @@ def editgroup_accept(ident):
 
 @app.route("/editgroup/<string(length=26):ident>/unsubmit", methods=["POST"])
 @login_required
-def editgroup_unsubmit(ident):
+def editgroup_unsubmit(ident: str) -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
     # on behalf of user...
@@ -746,7 +753,7 @@ def editgroup_unsubmit(ident):
 
 @app.route("/editgroup/<string(length=26):ident>/submit", methods=["POST"])
 @login_required
-def editgroup_submit(ident):
+def editgroup_submit(ident: str) -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
     # on behalf of user...
@@ -763,7 +770,7 @@ def editgroup_submit(ident):
 
 
 @app.route("/editor/<string(length=26):ident>", methods=["GET"])
-def editor_view(ident):
+def editor_view(ident: str) -> AnyResponse:
     try:
         entity = api.get_editor(ident)
     except ApiException as ae:
@@ -772,7 +779,7 @@ def editor_view(ident):
 
 
 @app.route("/editor/<string(length=26):ident>/editgroups", methods=["GET"])
-def editor_editgroups(ident):
+def editor_editgroups(ident: str) -> AnyResponse:
     try:
         editor = api.get_editor(ident)
         editgroups = api.get_editor_editgroups(ident, limit=50)
@@ -785,7 +792,7 @@ def editor_editgroups(ident):
 
 
 @app.route("/editor/<string(length=26):ident>/annotations", methods=["GET"])
-def editor_annotations(ident):
+def editor_annotations(ident: str) -> AnyResponse:
     try:
         editor = api.get_editor(ident)
         annotations = api.get_editor_annotations(ident, limit=50)
@@ -795,7 +802,7 @@ def editor_annotations(ident):
 
 
 @app.route("/u/<string:username>", methods=["GET", "HEAD"])
-def editor_username_redirect(username):
+def editor_username_redirect(username: str) -> AnyResponse:
     try:
         editor = api.lookup_editor(username=username)
     except ApiException as ae:
@@ -804,7 +811,7 @@ def editor_username_redirect(username):
 
 
 @app.route("/changelog", methods=["GET"])
-def changelog_view():
+def changelog_view() -> AnyResponse:
     try:
         # limit = int(request.args.get('limit', 10))
         entries = api.get_changelog()  # TODO: expand="editors"
@@ -814,7 +821,7 @@ def changelog_view():
 
 
 @app.route("/changelog/<int:index>", methods=["GET"])
-def changelog_entry_view(index):
+def changelog_entry_view(index: int) -> AnyResponse:
     try:
         entry = api.get_changelog_entry(int(index))
         entry.editgroup.editor = api.get_editor(entry.editgroup.editor_id)
@@ -827,7 +834,7 @@ def changelog_entry_view(index):
 
 
 @app.route("/reviewable", methods=["GET"])
-def reviewable_view():
+def reviewable_view() -> AnyResponse:
     try:
         # limit = int(request.args.get('limit', 10))
         entries = api.get_editgroups_reviewable(expand="editors")
@@ -837,7 +844,7 @@ def reviewable_view():
 
 
 @app.route("/release/<string(length=26):ident>/save", methods=["GET", "POST"])
-def release_save(ident):
+def release_save(ident: str) -> AnyResponse:
 
     form = SavePaperNowForm()
 
@@ -902,7 +909,7 @@ def release_save(ident):
 
 
 @app.route("/search", methods=["GET", "POST"])
-def generic_search():
+def generic_search() -> AnyResponse:
     if "q" not in request.args.keys():
         return redirect("/release/search")
     query = request.args.get("q").strip()
@@ -932,7 +939,7 @@ def generic_search():
 
 
 @app.route("/release/search", methods=["GET", "POST"])
-def release_search():
+def release_search() -> AnyResponse:
 
     if "q" not in request.args.keys():
         return render_template("release_search.html", query=ReleaseQuery(), found=None)
@@ -960,7 +967,7 @@ def release_search():
 
 
 @app.route("/container/search", methods=["GET", "POST"])
-def container_search():
+def container_search() -> AnyResponse:
 
     if "q" not in request.args.keys():
         return render_template("container_search.html", query=GenericQuery(), found=None)
@@ -977,7 +984,7 @@ def container_search():
 
 
 @app.route("/coverage/search", methods=["GET", "POST"])
-def coverage_search():
+def coverage_search() -> AnyResponse:
 
     if "q" not in request.args.keys():
         return render_template(
@@ -1032,7 +1039,7 @@ def coverage_search():
     )
 
 
-def get_changelog_stats():
+def get_changelog_stats() -> Dict[str, Any]:
     stats = {}
     latest_changelog = api.get_changelog(limit=1)[0]
     stats["changelog"] = {
@@ -1045,7 +1052,7 @@ def get_changelog_stats():
 
 
 @app.route("/stats", methods=["GET"])
-def stats_page():
+def stats_page() -> AnyResponse:
     try:
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
@@ -1060,7 +1067,7 @@ def stats_page():
 
 @app.route("/stats.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def stats_json():
+def stats_json() -> AnyResponse:
     try:
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
@@ -1072,7 +1079,7 @@ def stats_json():
 
 @app.route("/container/issnl/<issnl>/stats.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_issnl_stats(issnl):
+def container_issnl_stats(issnl: str) -> AnyResponse:
     if not (len(issnl) == 9 and issnl[4] == "-"):
         abort(400, "Not a valid ISSN-L: {}".format(issnl))
     try:
@@ -1089,7 +1096,7 @@ def container_issnl_stats(issnl):
 
 @app.route("/container/<string(length=26):ident>/stats.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_stats(ident):
+def container_ident_stats(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1106,7 +1113,7 @@ def container_ident_stats(ident):
     "/container/<string(length=26):ident>/ia_coverage_years.json", methods=["GET", "OPTIONS"]
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_ia_coverage_years_json(ident):
+def container_ident_ia_coverage_years_json(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1124,7 +1131,7 @@ def container_ident_ia_coverage_years_json(ident):
     "/container/<string(length=26):ident>/ia_coverage_years.svg", methods=["GET", "OPTIONS"]
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_ia_coverage_years_svg(ident):
+def container_ident_ia_coverage_years_svg(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1141,7 +1148,7 @@ def container_ident_ia_coverage_years_svg(ident):
     "/container/<string(length=26):ident>/preservation_by_year.json", methods=["GET", "OPTIONS"]
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_preservation_by_year_json(ident):
+def container_ident_preservation_by_year_json(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1159,7 +1166,7 @@ def container_ident_preservation_by_year_json(ident):
     "/container/<string(length=26):ident>/preservation_by_year.svg", methods=["GET", "OPTIONS"]
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_preservation_by_year_svg(ident):
+def container_ident_preservation_by_year_svg(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1181,7 +1188,7 @@ def container_ident_preservation_by_year_svg(ident):
     methods=["GET", "OPTIONS"],
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_preservation_by_volume_json(ident):
+def container_ident_preservation_by_volume_json(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1199,7 +1206,7 @@ def container_ident_preservation_by_volume_json(ident):
     methods=["GET", "OPTIONS"],
 )
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def container_ident_preservation_by_volume_svg(ident):
+def container_ident_preservation_by_volume_svg(ident: str) -> AnyResponse:
     try:
         container = api.get_container(ident)
     except ApiException as ae:
@@ -1216,7 +1223,7 @@ def container_ident_preservation_by_volume_svg(ident):
 
 
 @app.route("/release/<string(length=26):ident>.bib", methods=["GET"])
-def release_bibtex(ident):
+def release_bibtex(ident: str) -> AnyResponse:
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
@@ -1227,7 +1234,7 @@ def release_bibtex(ident):
 
 
 @app.route("/release/<string(length=26):ident>/citeproc", methods=["GET"])
-def release_citeproc(ident):
+def release_citeproc(ident: str) -> AnyResponse:
     style = request.args.get("style", "harvard1")
     is_html = request.args.get("html", False)
     if is_html and is_html.lower() in ("yes", "1", "true", "y", "t"):
@@ -1254,7 +1261,7 @@ def release_citeproc(ident):
 
 @app.route("/health.json", methods=["GET", "OPTIONS"])
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
-def health_json():
+def health_json() -> AnyResponse:
     return jsonify({"ok": True})
 
 
@@ -1262,7 +1269,7 @@ def health_json():
 
 
 @app.route("/auth/login")
-def login():
+def login() -> AnyResponse:
     # show the user a list of login options
     if not priv_api:
         app.log.warn(
@@ -1272,7 +1279,7 @@ def login():
 
 
 @app.route("/auth/ia/login", methods=["GET", "POST"])
-def ia_xauth_login():
+def ia_xauth_login() -> AnyResponse:
     if "email" in request.form:
         # if a login attempt...
         return handle_ia_xauth(request.form.get("email"), request.form.get("password"))
@@ -1281,7 +1288,7 @@ def ia_xauth_login():
 
 
 @app.route("/auth/token_login", methods=["GET", "POST"])
-def token_login():
+def token_login() -> AnyResponse:
     # show the user a list of login options
     if "token" in request.args:
         return handle_token_login(request.args.get("token"))
@@ -1292,7 +1299,7 @@ def token_login():
 
 @app.route("/auth/change_username", methods=["POST"])
 @login_required
-def change_username():
+def change_username() -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
     # show the user a list of login options
@@ -1315,7 +1322,7 @@ def change_username():
 
 @app.route("/auth/create_token", methods=["POST"])
 @login_required
-def create_auth_token():
+def create_auth_token() -> AnyResponse:
     if not app.testing:
         app.csrf.protect()
 
@@ -1346,14 +1353,14 @@ def create_auth_token():
 
 
 @app.route("/auth/logout")
-def logout():
+def logout() -> AnyResponse:
     handle_logout()
     return render_template("auth_logout.html")
 
 
 @app.route("/auth/account")
 @login_required
-def auth_account():
+def auth_account() -> AnyResponse:
     # auth check on account page
     user_api = auth_api(session["api_token"])
     resp = user_api.auth_check()
@@ -1365,7 +1372,7 @@ def auth_account():
 
 
 @app.route("/auth/wikipedia/auth")
-def wp_oauth_rewrite():
+def wp_oauth_rewrite() -> AnyResponse:
     """
     This is a dirty hack to rewrite '/auth/wikipedia/auth' to '/auth/wikipedia/oauth-callback'
     """
@@ -1376,7 +1383,7 @@ def wp_oauth_rewrite():
 
 
 @app.route("/auth/wikipedia/finish-login")
-def wp_oauth_finish_login():
+def wp_oauth_finish_login() -> AnyResponse:
     wp_username = mwoauth.get_current_user(cached=True)
     assert wp_username
     return handle_wmoauth(wp_username)
@@ -1386,33 +1393,33 @@ def wp_oauth_finish_login():
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(e: Exception) -> AnyResponse:
     return render_template("404.html"), 404
 
 
 @app.errorhandler(401)
 @app.errorhandler(403)
-def page_not_authorized(e):
+def page_not_authorized(e: Exception) -> AnyResponse:
     return render_template("403.html"), 403
 
 
 @app.errorhandler(405)
-def page_method_not_allowed(e):
+def page_method_not_allowed(e: Exception) -> AnyResponse:
     return render_template("405.html"), 405
 
 
 @app.errorhandler(400)
-def page_bad_request(e):
+def page_bad_request(e: Exception) -> AnyResponse:
     return render_template("400.html", err=e), 400
 
 
 @app.errorhandler(409)
-def page_edit_conflict(e):
+def page_edit_conflict(e: Exception) -> AnyResponse:
     return render_template("409.html"), 409
 
 
 @app.errorhandler(500)
-def page_server_error(e):
+def page_server_error(e: Exception) -> AnyResponse:
     app.log.error(e)
     return render_template("500.html"), 500
 
@@ -1420,13 +1427,13 @@ def page_server_error(e):
 @app.errorhandler(502)
 @app.errorhandler(503)
 @app.errorhandler(504)
-def page_server_down(e):
+def page_server_down(e: Exception) -> AnyResponse:
     app.log.error(e)
     return render_template("503.html"), 503
 
 
 @app.errorhandler(ApiException)
-def page_fatcat_api_error(ae):
+def page_fatcat_api_error(ae: ApiException) -> AnyResponse:
     """
     Generic error handler for fatcat API problems. With this error handler,
     don't need to explicitly catch API exceptions: they should get caught and
@@ -1450,7 +1457,7 @@ def page_fatcat_api_error(ae):
 
 
 @app.errorhandler(ApiValueError)
-def page_fatcat_api_value_error(ae):
+def page_fatcat_api_value_error(ae: ApiValueError) -> AnyResponse:
     ae.status = 400
     ae.error_name = "ValueError"
     ae.message = str(ae)
@@ -1458,27 +1465,27 @@ def page_fatcat_api_value_error(ae):
 
 
 @app.errorhandler(CSRFError)
-def page_csrf_error(e):
+def page_csrf_error(e: CSRFError) -> AnyResponse:
     return render_template("csrf_error.html", reason=e.description), 400
 
 
 @app.route("/", methods=["GET"])
-def page_home():
+def page_home() -> AnyResponse:
     return render_template("home.html")
 
 
 @app.route("/about", methods=["GET"])
-def page_about():
+def page_about() -> AnyResponse:
     return render_template("about.html")
 
 
 @app.route("/rfc", methods=["GET"])
-def page_rfc():
+def page_rfc() -> AnyResponse:
     return render_template("rfc.html")
 
 
 @app.route("/robots.txt", methods=["GET"])
-def page_robots_txt():
+def page_robots_txt() -> AnyResponse:
     if app.config["FATCAT_DOMAIN"] == "fatcat.wiki":
         robots_path = "robots.txt"
     else:
@@ -1489,7 +1496,7 @@ def page_robots_txt():
 
 
 @app.route("/sitemap.xml", methods=["GET"])
-def page_sitemap_xml():
+def page_sitemap_xml() -> AnyResponse:
     return send_from_directory(
         os.path.join(app.root_path, "static"), "sitemap.xml", mimetype="text/xml"
     )
