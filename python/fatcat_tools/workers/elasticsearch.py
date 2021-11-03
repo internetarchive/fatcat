@@ -133,8 +133,9 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     key = entity.index
                     # might need to fetch from API
                     if not (
-                        entity.editgroup and entity.editgroup.editor
-                    ):  # pylint: disable=no-member # (TODO)
+                        entity.editgroup  # pylint: disable=no-member # (TODO)
+                        and entity.editgroup.editor  # pylint: disable=no-member # (TODO)
+                    ):
                         entity = api.get_changelog_entry(entity.index)
                 else:
                     key = entity.ident  # pylint: disable=no-member # (TODO)

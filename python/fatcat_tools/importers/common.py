@@ -21,9 +21,9 @@ from fatcat_openapi_client.rest import ApiException
 from fuzzycat.matching import match_release_fuzzy
 
 # TODO: refactor so remove need for this (re-imports for backwards compatibility)
-from fatcat_tools.normal import LANG_MAP_MARC, b32_hex
+from fatcat_tools.normal import is_cjk  # noqa: F401
+from fatcat_tools.normal import LANG_MAP_MARC, b32_hex  # noqa: F401
 from fatcat_tools.normal import clean_str as clean  # noqa: F401
-from fatcat_tools.normal import is_cjk
 from fatcat_tools.transforms import entity_to_dict
 
 DATE_FMT: str = "%Y-%m-%d"
