@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 
 import elasticsearch
 import fatcat_openapi_client
@@ -17,7 +18,10 @@ from raven.contrib.flask import Sentry
 from fatcat_web.web_config import Config
 
 toolbar = DebugToolbarExtension()
-app = Flask(__name__, static_url_path="/static")
+
+# TODO: annotating Flask object as Any because we insert fields (like log,
+# csrf). Should refactor to make this separate globals and not inject them
+app: Any = Flask(__name__, static_url_path="/static")
 app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
