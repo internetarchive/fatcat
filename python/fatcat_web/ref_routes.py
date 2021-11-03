@@ -5,18 +5,28 @@ Flask endpoints for reference (citation) endpoints. Eg, listing references
 
 import json
 
-from flask import render_template, request, Response, jsonify
-from fatcat_openapi_client import *
-from fuzzycat.grobid_unstructured import grobid_api_process_citation, transform_grobid_ref_xml, grobid_ref_to_release
+from flask import Response, jsonify, render_template, request
+from fuzzycat.grobid_unstructured import (
+    grobid_api_process_citation,
+    grobid_ref_to_release,
+    transform_grobid_ref_xml,
+)
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
 
-from fatcat_tools.references import enrich_inbound_refs, enrich_outbound_refs, get_inbound_refs, get_outbound_refs, RefHits
+from fatcat_tools.references import (
+    RefHits,
+    enrich_inbound_refs,
+    enrich_outbound_refs,
+    get_inbound_refs,
+    get_outbound_refs,
+)
 from fatcat_tools.transforms.access import release_access_options
 from fatcat_tools.transforms.entities import entity_to_dict
-from fatcat_web import app, api
+from fatcat_web import api, app
 from fatcat_web.cors import crossdomain
-from fatcat_web.forms import *
-from fatcat_web.entity_helpers import *
+from fatcat_web.entity_helpers import generic_get_entity
+from fatcat_web.forms import ReferenceMatchForm
+
 
 def _refs_web(direction, release_ident=None, work_ident=None, openlibrary_id=None, wikipedia_article=None) -> RefHits:
     offset = request.args.get('offset', '0')

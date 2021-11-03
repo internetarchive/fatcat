@@ -1,25 +1,74 @@
 
-import os
 import json
+import os
+
 import citeproc_styles
-from flask import render_template, make_response, send_from_directory, \
-    request, url_for, abort, redirect, jsonify, session, Response
+from fatcat_openapi_client import EditgroupAnnotation
+from fatcat_openapi_client.rest import ApiException, ApiValueError
+from flask import (
+    Response,
+    abort,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+    url_for,
+)
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
-from fatcat_openapi_client import EditgroupAnnotation
-from fatcat_openapi_client.rest import ApiException
-from fatcat_tools.transforms import *
-from fatcat_tools.normal import *
-from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
-from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
+from fatcat_tools.normal import (
+    clean_arxiv_id,
+    clean_doi,
+    clean_isbn13,
+    clean_issn,
+    clean_orcid,
+    clean_pmcid,
+    clean_sha1,
+    clean_sha256,
+)
+from fatcat_tools.transforms import citeproc_csl, release_to_csl
+from fatcat_web import Config, api, app, auth_api, mwoauth, priv_api
+from fatcat_web.auth import (
+    handle_ia_xauth,
+    handle_logout,
+    handle_token_login,
+    handle_wmoauth,
+    load_user,
+)
 from fatcat_web.cors import crossdomain
-from fatcat_web.search import *
-from fatcat_web.entity_helpers import *
-from fatcat_web.graphics import *
-from fatcat_web.kafka import *
+from fatcat_web.entity_helpers import (
+    generic_get_editgroup_entity,
+    generic_get_entity,
+    generic_get_entity_revision,
+)
 from fatcat_web.forms import SavePaperNowForm
-
+from fatcat_web.graphics import (
+    ia_coverage_histogram,
+    preservation_by_date_histogram,
+    preservation_by_volume_histogram,
+    preservation_by_year_histogram,
+)
+from fatcat_web.kafka import kafka_pixy_produce
+from fatcat_web.search import (
+    FatcatSearchError,
+    GenericQuery,
+    ReleaseQuery,
+    do_container_search,
+    do_release_search,
+    get_elastic_container_histogram_legacy,
+    get_elastic_container_preservation_by_volume,
+    get_elastic_container_random_releases,
+    get_elastic_container_stats,
+    get_elastic_entity_stats,
+    get_elastic_preservation_by_date,
+    get_elastic_preservation_by_type,
+    get_elastic_preservation_by_year,
+    get_elastic_search_coverage,
+)
 
 ### Generic Entity Views ####################################################
 

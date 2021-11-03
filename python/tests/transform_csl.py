@@ -2,8 +2,8 @@
 import json
 
 import pytest
-from fatcat_openapi_client import *
-from fixtures import *
+from fatcat_openapi_client import ReleaseEntity
+from fixtures import api
 from import_crossref import crossref_importer
 
 from fatcat_tools.transforms import citeproc_csl, entity_from_json, release_to_csl

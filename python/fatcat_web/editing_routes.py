@@ -1,17 +1,31 @@
 
 from typing import Optional
 
-from flask import render_template, abort, redirect, session, flash
+from fatcat_openapi_client import (
+    ContainerEntity,
+    CreatorEntity,
+    Editgroup,
+    EntityEdit,
+    FileEntity,
+    FilesetEntity,
+    ReleaseEntity,
+    WebcaptureEntity,
+    WorkEntity,
+)
+from fatcat_openapi_client.rest import ApiException
+from flask import abort, flash, redirect, render_template, session
 from flask_login import login_required
 
-from fatcat_openapi_client import *
-from fatcat_openapi_client.rest import ApiException
-from fatcat_tools.transforms import *
-from fatcat_web import app, api, auth_api
-from fatcat_web.search import *
-from fatcat_web.forms import *
-from fatcat_web.entity_helpers import *
-
+from fatcat_tools.transforms import entity_from_toml
+from fatcat_web import api, app, auth_api
+from fatcat_web.entity_helpers import generic_get_editgroup_entity, generic_get_entity
+from fatcat_web.forms import (
+    ContainerEntityForm,
+    EntityEditForm,
+    EntityTomlForm,
+    FileEntityForm,
+    ReleaseEntityForm,
+)
 
 ### Helper Methods ##########################################################
 

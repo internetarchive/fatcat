@@ -1,13 +1,15 @@
 
-import sys
-import json
 import datetime
+import json
+import sys
 import warnings
-from bs4 import BeautifulSoup
 
 import fatcat_openapi_client
-from fatcat_tools.normal import *
-from .common import EntityImporter, clean, LANG_MAP_MARC
+from bs4 import BeautifulSoup
+
+from fatcat_tools.normal import clean_doi, clean_issn, clean_pmcid, clean_pmid
+
+from .common import LANG_MAP_MARC, EntityImporter, clean
 
 # from: https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly
 PUBMED_RELEASE_TYPE_MAP = {

@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import json
-import magic
-import urllib
 import hashlib
+import json
 import mimetypes
+import os
 import subprocess
+import sys
+import urllib
 
 import fatcat_openapi_client
-from fatcat_openapi_client import *
+import magic
+from fatcat_openapi_client import (
+    Editgroup,
+    FilesetEntity,
+    FilesetFile,
+    ReleaseAbstract,
+    ReleaseContrib,
+    ReleaseEntity,
+    ReleaseExtIds,
+)
+
 from .common import clean
 from .crossref import lookup_license_slug
 

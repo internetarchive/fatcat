@@ -1,13 +1,50 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
-import argparse
+
 import raven
 
 from fatcat_tools import authenticated_api
-from fatcat_tools.importers import *
-
+from fatcat_tools.importers import (
+    ARABESQUE_MATCH_WHERE_CLAUSE,
+    ArabesqueMatchImporter,
+    ArxivRawImporter,
+    Bs4XmlFileListPusher,
+    Bs4XmlFilePusher,
+    Bs4XmlLargeFilePusher,
+    Bs4XmlLinesPusher,
+    ChoculaImporter,
+    CrossrefImporter,
+    DataciteImporter,
+    DblpContainerImporter,
+    DblpReleaseImporter,
+    DoajArticleImporter,
+    FileMetaImporter,
+    FilesetImporter,
+    GrobidMetadataImporter,
+    IngestFileResultImporter,
+    IngestFilesetResultImporter,
+    IngestWebResultImporter,
+    JalcImporter,
+    JournalMetadataImporter,
+    JsonLinePusher,
+    JstorImporter,
+    KafkaBs4XmlPusher,
+    KafkaJsonPusher,
+    LinePusher,
+    MatchedImporter,
+    OrcidImporter,
+    PubmedImporter,
+    SavePaperNowFileImporter,
+    SavePaperNowFilesetImporter,
+    SavePaperNowWebImporter,
+    ShadowLibraryImporter,
+    SqlitePusher,
+    auto_cdl_dash_dat,
+    auto_wayback_static,
+)
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()

@@ -1,10 +1,25 @@
 
-from flask import abort
-from fatcat_openapi_client import *
+from fatcat_openapi_client import (
+    ContainerEntity,
+    CreatorEntity,
+    FileEntity,
+    FilesetEntity,
+    ReleaseEntity,
+    ReleaseExtIds,
+    WebcaptureEntity,
+    WorkEntity,
+)
 from fatcat_openapi_client.rest import ApiException, ApiValueError
-from fatcat_tools.transforms import *
+from flask import abort
+
+from fatcat_tools.transforms import (
+    container_to_elasticsearch,
+    file_to_elasticsearch,
+    release_to_elasticsearch,
+)
 from fatcat_web import api
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
+
 
 def enrich_container_entity(entity):
     if entity.state in ('redirect', 'deleted'):

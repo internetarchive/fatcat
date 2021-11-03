@@ -6,16 +6,23 @@ Helpers to create Web Capture entities from extracted wayback content.
 Works as a stand-alone script (for debugging) or as library routines.
 """
 
-import sys
-import json
-import hashlib
-import requests
-import datetime
 import argparse
+import datetime
+import hashlib
+import json
 import subprocess
-from bs4 import BeautifulSoup
+import sys
 
-from fatcat_openapi_client import *
+import requests
+from bs4 import BeautifulSoup
+from fatcat_openapi_client import (
+    ApiClient,
+    Editgroup,
+    WebcaptureCdxLine,
+    WebcaptureEntity,
+    WebcaptureUrl,
+)
+
 from .common import b32_hex
 
 CDX_API_BASE = "https://web.archive.org/cdx/search/cdx"

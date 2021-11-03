@@ -1,8 +1,9 @@
 
 import fatcat_openapi_client
 
-from fatcat_tools.normal import *
-from .common import EntityImporter, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
+from fatcat_tools.normal import clean_doi
+
+from .common import SANE_MAX_RELEASES, SANE_MAX_URLS, EntityImporter, make_rel_url
 
 
 class MatchedImporter(EntityImporter):
