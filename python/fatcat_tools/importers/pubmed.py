@@ -495,12 +495,12 @@ class PubmedImporter(EntityImporter):
             release_year = int(pub_date.Year.string)
             if pub_date.find("Day") and pub_date.find("Month"):
                 try:
-                    release_date = datetime.date(
+                    release_date_date = datetime.date(
                         release_year,
                         MONTH_ABBR_MAP[pub_date.Month.string],
                         int(pub_date.Day.string),
                     )
-                    release_date = release_date.isoformat()
+                    release_date = release_date_date.isoformat()
                 except ValueError as ve:
                     print("bad date, skipping: {}".format(ve), file=sys.stderr)
                     release_date = None
@@ -595,8 +595,6 @@ class PubmedImporter(EntityImporter):
             )
             if abst.content:
                 abstracts.append(abst)
-        if not abstracts:
-            abstracts = None
 
         ### Contribs
         contribs = []
@@ -663,8 +661,6 @@ class PubmedImporter(EntityImporter):
         for i, contrib in enumerate(contribs):
             if contrib.raw_name != "et al.":
                 contrib.index = i
-        if not contribs:
-            contribs = None
 
         ### References
         refs = []
@@ -692,16 +688,12 @@ class PubmedImporter(EntityImporter):
                 ref_raw = ref.Citation
                 if ref_raw:
                     ref_extra["unstructured"] = ref_raw.get_text()
-                if not ref_extra:
-                    ref_extra = None
                 refs.append(
                     fatcat_openapi_client.ReleaseRef(
                         target_release_id=ref_release_id,
-                        extra=ref_extra,
+                        extra=ref_extra or None,
                     )
                 )
-        if not refs:
-            refs = None
 
         # extra:
         #   translation_of
@@ -711,8 +703,6 @@ class PubmedImporter(EntityImporter):
         #   pubmed: retraction refs
         if extra_pubmed:
             extra["pubmed"] = extra_pubmed
-        if not extra:
-            extra = None
 
         title = clean(title)
         if not title:
@@ -739,11 +729,11 @@ class PubmedImporter(EntityImporter):
             # publisher  # not included?
             language=language,
             # license_slug   # not in MEDLINE
-            abstracts=abstracts,
-            contribs=contribs,
-            refs=refs,
+            abstracts=abstracts or None,
+            contribs=contribs or None,
+            refs=refs or None,
             container_id=container_id,
-            extra=extra,
+            extra=extra or None,
         )
         return re
 

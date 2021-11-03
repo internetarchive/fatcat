@@ -88,7 +88,7 @@ class GrobidMetadataImporter(EntityImporter):
             )
             abstracts = [abobj]
         else:
-            abstracts = None
+            abstracts = []
 
         contribs = []
         for i, a in enumerate(obj.get("authors", [])):
@@ -118,14 +118,12 @@ class GrobidMetadataImporter(EntityImporter):
             if raw.get("authors"):
                 cite_extra["authors"] = [clean(a["name"]) for a in raw["authors"]]
 
-            if not cite_extra:
-                cite_extra = None
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     key=clean(raw.get("id")),
                     year=year,
                     title=clean(raw["title"]),
-                    extra=cite_extra,
+                    extra=cite_extra or None,
                 )
             )
 
@@ -147,12 +145,11 @@ class GrobidMetadataImporter(EntityImporter):
             extra["grobid"] = extra_grobid
         if self.longtail_oa:
             extra["longtail_oa"] = True
-        if not extra:
-            extra = None
 
-        title = clean(obj["title"], force_xml=True)
-        if not title or len(title) < 2:
+        clean_title = clean(obj["title"], force_xml=True)
+        if not clean_title or len(clean_title) < 2:
             return None
+        title = clean_title
 
         re = fatcat_openapi_client.ReleaseEntity(
             title=title,

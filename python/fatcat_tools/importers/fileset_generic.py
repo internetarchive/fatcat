@@ -43,7 +43,8 @@ class FilesetImporter(EntityImporter):
             self.counts["skip-no-files"] += 1
             return False
 
-        for f in row.get("manifest"):
+        manifest: List[Dict[str, Any]] = row.get("manifest") or []
+        for f in manifest:
             for k in ("sha1", "md5"):
                 if not f.get(k):
                     self.counts["skip-missing-file-field"] += 1

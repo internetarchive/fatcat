@@ -314,7 +314,7 @@ class DataciteImporter(EntityImporter):
 
         if not doi:
             print("skipping record without a DOI", file=sys.stderr)
-            return
+            return None
 
         if not str.isascii(doi):
             print("[{}] skipping non-ascii doi for now".format(doi))
@@ -455,9 +455,11 @@ class DataciteImporter(EntityImporter):
             container_type = CONTAINER_TYPE_MAP.get(container["type"])
             if container.get("identifier") and container.get("identifierType") == "ISSN":
                 issn = container.get("identifier")
-                if len(issn) == 8:
+                if issn and len(issn) == 8:
                     issn = issn[:4] + "-" + issn[4:]
-                issnl = self.issn2issnl(issn)
+                    issnl = self.issn2issnl(issn)
+                else:
+                    issnl = None
                 if issnl is not None:
                     container_id = self.lookup_issnl(issnl)
 
@@ -620,12 +622,10 @@ class DataciteImporter(EntityImporter):
             ref_extra = dict()
             if rel.get("relatedIdentifierType", "") == "DOI":
                 ref_extra["doi"] = rel.get("relatedIdentifier")
-            if not ref_extra:
-                ref_extra = None
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     index=ref_index,
-                    extra=ref_extra,
+                    extra=ref_extra or None,
                 )
             )
             ref_index += 1
@@ -651,7 +651,7 @@ class DataciteImporter(EntityImporter):
             extra_datacite["metadataVersion"] = metadata_version
 
         # Include resource types.
-        types = attributes.get("types", {}) or {}
+        types = attributes.get("types") or {}
         resource_type = types.get("resourceType", "") or ""
         resource_type_general = types.get("resourceTypeGeneral", "") or ""
 
@@ -1296,7 +1296,9 @@ def parse_datacite_dates(
             if release_date is None and release_year is None:
                 continue
 
-            if release_year < 1000 or release_year > today.year + 5:
+            if release_year is not None and (
+                release_year < 1000 or release_year > today.year + 5
+            ):
                 # Skip possibly bogus dates.
                 release_year = None
                 continue

@@ -97,7 +97,7 @@ class DoajArticleImporter(EntityImporter):
         for issn in bibjson["journal"]["issns"]:
             issnl = self.issn2issnl(issn)
             if issnl:
-                container_id = self.lookup_issnl(self.issn2issnl(issn))
+                container_id = self.lookup_issnl(issnl)
             if container_id:
                 # don't store container_name when we have an exact match
                 container_name = None
@@ -145,8 +145,8 @@ class DoajArticleImporter(EntityImporter):
 
         doaj_article_id = obj["id"].lower()
         ext_ids = self.doaj_ext_ids(bibjson["identifier"], doaj_article_id)
-        abstracts = self.doaj_abstracts(bibjson)
-        contribs = self.doaj_contribs(bibjson.get("author") or [])
+        abstracts = self.doaj_abstracts(bibjson) or []
+        contribs = self.doaj_contribs(bibjson.get("author") or []) or []
 
         # DOAJ-specific extra
         doaj_extra: Dict[str, Any] = dict()
@@ -169,8 +169,6 @@ class DoajArticleImporter(EntityImporter):
 
         if doaj_extra:
             extra["doaj"] = doaj_extra
-        if not extra:
-            extra = None
 
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
@@ -182,13 +180,13 @@ class DoajArticleImporter(EntityImporter):
             # release_date,
             publisher=publisher,
             ext_ids=ext_ids,
-            contribs=contribs,
+            contribs=contribs or None,
             volume=volume,
             issue=issue,
             pages=pages,
             language=language,
-            abstracts=abstracts,
-            extra=extra,
+            abstracts=abstracts or None,
+            extra=extra or None,
             license_slug=license_slug,
         )
         re = self.biblio_hacks(re)

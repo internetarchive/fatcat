@@ -52,6 +52,8 @@ class JstorImporter(EntityImporter):
         self.read_issn_map_file(issn_map_file)
 
     def map_container_type(self, crossref_type: Optional[str]) -> Optional[str]:
+        if not crossref_type:
+            return None
         return CONTAINER_TYPE_MAP.get(crossref_type)
 
     def want(self, raw_record: Any) -> bool:
@@ -75,7 +77,12 @@ class JstorImporter(EntityImporter):
         elif title and not title.get_text():
             title = None
 
-        if not title and release_type.startswith("review") and article_meta.product.source:
+        if (
+            not title
+            and release_type
+            and release_type.startswith("review")
+            and article_meta.product.source
+        ):
             title = "Review: {}".format(
                 article_meta.product.source.replace("\n", " ").get_text()
             )
@@ -240,8 +247,6 @@ class JstorImporter(EntityImporter):
         #   pubmed: retraction refs
         if extra_jstor:
             extra["jstor"] = extra_jstor
-        if not extra:
-            extra = None
 
         re = fatcat_openapi_client.ReleaseEntity(
             # work_id
@@ -270,7 +275,7 @@ class JstorImporter(EntityImporter):
             #   name, type, publisher, issnl
             #   extra: issnp, issne, original_name, languages, country
             container_id=container_id,
-            extra=extra,
+            extra=extra or None,
         )
         return re
 

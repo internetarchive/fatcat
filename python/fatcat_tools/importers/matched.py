@@ -102,20 +102,20 @@ class MatchedImporter(EntityImporter):
             return None
 
         # parse URLs and CDX
-        urls = set()
+        urls_set = set()
         for url in obj.get("urls", []):
             url = make_rel_url(url, default_link_rel=self.default_link_rel)
             if url is not None:
-                urls.add(url)
+                urls_set.add(url)
         for cdx in obj.get("cdx", []):
             original = cdx["url"]
             if cdx.get("dt"):
                 wayback = "https://web.archive.org/web/{}/{}".format(cdx["dt"], original)
-                urls.add(("webarchive", wayback))
+                urls_set.add(("webarchive", wayback))
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url is not None:
-                urls.add(url)
-        urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
+                urls_set.add(url)
+        urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls_set]
         if len(urls) == 0:
             self.counts["skip-no-urls"] += 1
             return None
@@ -195,11 +195,11 @@ class MatchedImporter(EntityImporter):
 
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts["skip-update-too-many-url"] += 1
-            return None
+            return False
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         if len(existing.release_ids) > SANE_MAX_RELEASES:
             self.counts["skip-update-too-many-releases"] += 1
-            return None
+            return False
         existing.mimetype = existing.mimetype or fe.mimetype
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5

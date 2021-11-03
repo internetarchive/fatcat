@@ -227,9 +227,9 @@ class DblpReleaseImporter(EntityImporter):
         volume = clean_str(xml_elem.volume and xml_elem.volume.text)
         issue = clean_str(xml_elem.number and xml_elem.number.text)
         pages = clean_str(xml_elem.pages and xml_elem.pages.text)
-        release_year = clean_str(xml_elem.year and xml_elem.year.text)
-        if release_year and release_year.isdigit():
-            release_year = int(release_year)
+        release_year_str = clean_str(xml_elem.year and xml_elem.year.text)
+        if release_year_str and release_year_str.isdigit():
+            release_year: Optional[int] = int(release_year_str)
         else:
             release_year = None
         release_month = parse_month(clean_str(xml_elem.month and xml_elem.month.text))
@@ -243,7 +243,7 @@ class DblpReleaseImporter(EntityImporter):
             release_month = None
             release_year = None
 
-        contribs = self.dblp_contribs(xml_elem or [])
+        contribs = self.dblp_contribs(xml_elem)
         ext_ids = self.dblp_ext_ids(xml_elem, dblp_key)
         if isbn:
             ext_ids.isbn13 = isbn
@@ -281,8 +281,6 @@ class DblpReleaseImporter(EntityImporter):
 
         if dblp_extra:
             extra["dblp"] = dblp_extra
-        if not extra:
-            extra = None
 
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
@@ -295,11 +293,11 @@ class DblpReleaseImporter(EntityImporter):
             # release_date,
             publisher=publisher,
             ext_ids=ext_ids,
-            contribs=contribs,
+            contribs=contribs or None,
             volume=volume,
             issue=issue,
             pages=pages,
-            extra=extra,
+            extra=extra or None,
         )
         re = self.biblio_hacks(re)
 

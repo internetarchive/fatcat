@@ -193,6 +193,9 @@ class JalcImporter(EntityImporter):
         doi = None
         if record.doi:
             doi = clean_doi(record.doi.string.strip().lower())
+            # TODO: following code is redundant with clean_doi()
+            if not doi:
+                return None
             if doi.startswith("http://dx.doi.org/"):
                 doi = doi.replace("http://dx.doi.org/", "")
             elif doi.startswith("https://dx.doi.org/"):
@@ -220,11 +223,11 @@ class JalcImporter(EntityImporter):
         if date:
             date = date.string
             if len(date) == 10:
-                release_date = datetime.datetime.strptime(
+                release_date_date = datetime.datetime.strptime(
                     date["completed-date"], DATE_FMT
                 ).date()
-                release_year = release_date.year
-                release_date = release_date.isoformat()
+                release_year = release_date_date.year
+                release_date = release_date_date.isoformat()
             elif len(date) == 4 and date.isdigit():
                 release_year = int(date)
 
@@ -252,7 +255,10 @@ class JalcImporter(EntityImporter):
             # if we wanted the other ISSNs, would also need to uniq the list.
             # But we only need one to lookup ISSN-L/container
             issn = issn_list[0].string
-        issnl = self.issn2issnl(issn)
+        if issn:
+            issnl = self.issn2issnl(issn)
+        else:
+            issnl = None
         container_id = None
         if issnl:
             container_id = self.lookup_issnl(issnl)

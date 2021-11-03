@@ -279,8 +279,6 @@ class CrossrefImporter(EntityImporter):
                         ]
                 if am.get("sequence") and am.get("sequence") != "additional":
                     extra["seq"] = clean(am.get("sequence"))
-                if not extra:
-                    extra = None
                 assert ctype in ("author", "editor", "translator")
                 raw_name = clean(raw_name)
                 contribs.append(
@@ -292,7 +290,7 @@ class CrossrefImporter(EntityImporter):
                         surname=clean(am.get("family")),
                         raw_affiliation=clean(raw_affiliation),
                         role=ctype,
-                        extra=extra,
+                        extra=extra or None,
                     )
                 )
             return contribs

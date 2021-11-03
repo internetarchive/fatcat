@@ -642,15 +642,16 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
 
     def want_fileset(self, row: Dict[str, Any]) -> bool:
 
-        if not row.get("manifest") or len(row.get("manifest")) == 0:
+        manifest: Optional[List[Any]] = row.get("manifest")
+        if not manifest or len(manifest) == 0:
             self.counts["skip-empty-manifest"] += 1
             return False
 
-        if len(row.get("manifest")) == 1:
+        if len(manifest) == 1:
             self.counts["skip-single-file"] += 1
             return False
 
-        if len(row.get("manifest")) > self.max_file_count:
+        if len(manifest) > self.max_file_count:
             self.counts["skip-too-many-files"] += 1
             return False
 

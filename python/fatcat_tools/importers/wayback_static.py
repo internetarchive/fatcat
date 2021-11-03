@@ -89,22 +89,23 @@ def lookup_cdx(
 ) -> Optional[WebcaptureCdxLine]:
     sys.stderr.write(embed_url + "\n")
     assert embed_url.startswith("/web/")
-    embed_url = embed_url.split("/")
-    timestamp = embed_url[2]
+    embed_url_segments = embed_url.split("/")
+    timestamp = embed_url_segments[2]
     if timestamp.endswith("_"):
         timestamp = timestamp[:-3]
-    url = "/".join(embed_url[3:])
+    url = "/".join(embed_url_segments[3:])
     # print((timestamp, url))
+    params: Dict = dict(
+        url=url,
+        closest=timestamp,
+        sort="closest",
+        resolveRevisits="true",
+        matchType="exact",
+        limit=1,
+    )
     resp = REQ_SESSION.get(
         CDX_API_BASE,
-        params=dict(
-            url=url,
-            closest=timestamp,
-            sort="closest",
-            resolveRevisits="true",
-            matchType="exact",
-            limit=1,
-        ),
+        params=params,
     )
     resp.raise_for_status()
     # print(resp.url)

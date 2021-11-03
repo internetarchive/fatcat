@@ -96,8 +96,6 @@ def cdl_dash_release(
                 ReleaseAbstract(mimetype="text/html", content=clean(desc["value"]))
             )
             # print(abstracts)
-    if not abstracts:
-        abstracts = None
 
     contribs = []
     for creator in meta["creator"]:
@@ -123,7 +121,7 @@ def cdl_dash_release(
         release_type="dataset",
         license_slug=license_slug,
         contribs=contribs,
-        abstracts=abstracts,
+        abstracts=abstracts or None,
         extra=extra,
     )
     return r

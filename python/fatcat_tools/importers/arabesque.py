@@ -176,11 +176,11 @@ class ArabesqueMatchImporter(EntityImporter):
         ]
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts["skip-update-too-many-url"] += 1
-            return None
+            return False
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         if len(existing.release_ids) > SANE_MAX_RELEASES:
             self.counts["skip-update-too-many-url"] += 1
-            return None
+            return False
         existing.mimetype = existing.mimetype or fe.mimetype
         edit = self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self._edits_inflight.append(edit)
