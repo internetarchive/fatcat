@@ -15,7 +15,6 @@ from fuzzycat.grobid_unstructured import (
 from fuzzycat.simple import close_fuzzy_biblio_matches, close_fuzzy_release_matches
 
 from fatcat_tools.references import (
-    RefHits,
     RefHitsEnriched,
     enrich_inbound_refs,
     enrich_outbound_refs,
