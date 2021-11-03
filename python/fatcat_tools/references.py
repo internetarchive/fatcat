@@ -8,7 +8,7 @@ See bulk citation and citation API proposals for design documentation.
 import argparse
 import datetime
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import elasticsearch
 from elasticsearch_dsl import Search
@@ -65,7 +65,7 @@ class BiblioRef(BaseModel):
     target_unstructured: Optional[str]
     target_csl: Optional[Dict[str, Any]]
 
-    def hacks(self):
+    def hacks(self) -> "BiblioRef":
         """
         Temporary (?) hacks to work around schema/data issues
         """
@@ -105,7 +105,7 @@ class EnrichedBiblioRef(BaseModel):
 
     @validator("release")
     @classmethod
-    def check_release(cls, v):
+    def check_release(cls: Any, v: ReleaseEntity) -> ReleaseEntity:
         if v is not None and not isinstance(v, ReleaseEntity):
             raise ValueError("expected a ReleaseEntity")
         return v
@@ -399,7 +399,7 @@ def enrich_outbound_refs(
     return enriched
 
 
-def run_ref_query(args) -> None:
+def run_ref_query(args: argparse.Namespace) -> None:
     """
     CLI helper/debug tool (prints to stdout)
     """

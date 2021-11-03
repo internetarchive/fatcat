@@ -14,7 +14,7 @@ import sys
 from fatcat_tools import entity_to_dict, public_api, uuid2fcid
 
 
-def run_export_releases(args):
+def run_export_releases(args: argparse.Namespace) -> None:
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
         release = args.api.get_release(ident=ident, expand="all")
@@ -23,7 +23,7 @@ def run_export_releases(args):
         )
 
 
-def run_export_changelog(args):
+def run_export_changelog(args: argparse.Namespace) -> None:
     end = args.end
     if end is None:
         latest = args.api.get_changelog(limit=1)[0]
@@ -36,7 +36,7 @@ def run_export_changelog(args):
         )
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"

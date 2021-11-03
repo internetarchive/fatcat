@@ -1,7 +1,9 @@
+from typing import Any, Optional
+
 from confluent_kafka import KafkaException, Producer
 
 
-def kafka_fail_fast(err, msg):
+def kafka_fail_fast(err: Optional[Any], _msg: Any) -> None:
     if err is not None:
         print("Kafka producer delivery error: {}".format(err))
         print("Bailing out...")
@@ -9,7 +11,11 @@ def kafka_fail_fast(err, msg):
         raise KafkaException(err)
 
 
-def simple_kafka_producer(kafka_hosts):
+def simple_kafka_producer(kafka_hosts: str) -> Producer:
+    """
+    kafka_hosts should be a string with hostnames separated by ',', not a list
+    of hostnames
+    """
 
     kafka_config = {
         "bootstrap.servers": kafka_hosts,

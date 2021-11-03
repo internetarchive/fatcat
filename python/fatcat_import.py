@@ -50,7 +50,7 @@ from fatcat_tools.importers import (
 sentry_client = raven.Client()
 
 
-def run_crossref(args):
+def run_crossref(args: argparse.Namespace) -> None:
     fci = CrossrefImporter(
         args.api,
         args.issn_map_file,
@@ -71,12 +71,12 @@ def run_crossref(args):
         JsonLinePusher(fci, args.json_file).run()
 
 
-def run_jalc(args):
+def run_jalc(args: argparse.Namespace) -> None:
     ji = JalcImporter(args.api, args.issn_map_file, extid_map_file=args.extid_map_file)
     Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
 
 
-def run_arxiv(args):
+def run_arxiv(args: argparse.Namespace) -> None:
     ari = ArxivRawImporter(args.api, edit_batch_size=args.batch_size)
     if args.kafka_mode:
         KafkaBs4XmlPusher(
@@ -92,7 +92,7 @@ def run_arxiv(args):
         Bs4XmlFilePusher(ari, args.xml_file, "record").run()
 
 
-def run_pubmed(args):
+def run_pubmed(args: argparse.Namespace) -> None:
     pi = PubmedImporter(
         args.api,
         args.issn_map_file,
@@ -116,27 +116,27 @@ def run_pubmed(args):
         ).run()
 
 
-def run_jstor(args):
+def run_jstor(args: argparse.Namespace) -> None:
     ji = JstorImporter(args.api, args.issn_map_file, edit_batch_size=args.batch_size)
     Bs4XmlFileListPusher(ji, args.list_file, "article").run()
 
 
-def run_orcid(args):
+def run_orcid(args: argparse.Namespace) -> None:
     foi = OrcidImporter(args.api, edit_batch_size=args.batch_size)
     JsonLinePusher(foi, args.json_file).run()
 
 
-def run_journal_metadata(args):
+def run_journal_metadata(args: argparse.Namespace) -> None:
     fii = JournalMetadataImporter(args.api, edit_batch_size=args.batch_size)
     JsonLinePusher(fii, args.json_file).run()
 
 
-def run_chocula(args):
+def run_chocula(args: argparse.Namespace) -> None:
     fii = ChoculaImporter(args.api, edit_batch_size=args.batch_size, do_updates=args.do_updates)
     JsonLinePusher(fii, args.json_file).run()
 
 
-def run_matched(args):
+def run_matched(args: argparse.Namespace) -> None:
     fmi = MatchedImporter(
         args.api,
         edit_batch_size=args.batch_size,
@@ -147,7 +147,7 @@ def run_matched(args):
     JsonLinePusher(fmi, args.json_file).run()
 
 
-def run_arabesque_match(args):
+def run_arabesque_match(args: argparse.Namespace) -> None:
     if (args.sqlite_file and args.json_file) or not (args.sqlite_file or args.json_file):
         print("Supply one of --sqlite-file or --json-file")
     ami = ArabesqueMatchImporter(
@@ -166,7 +166,7 @@ def run_arabesque_match(args):
         JsonLinePusher(ami, args.json_file).run()
 
 
-def run_ingest_file(args):
+def run_ingest_file(args: argparse.Namespace) -> None:
     ifri = IngestFileResultImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -190,7 +190,7 @@ def run_ingest_file(args):
         JsonLinePusher(ifri, args.json_file).run()
 
 
-def run_ingest_web(args):
+def run_ingest_web(args: argparse.Namespace) -> None:
     iwri = IngestWebResultImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -214,7 +214,7 @@ def run_ingest_web(args):
         JsonLinePusher(iwri, args.json_file).run()
 
 
-def run_ingest_fileset(args):
+def run_ingest_fileset(args: argparse.Namespace) -> None:
     ifri = IngestFilesetResultImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -238,7 +238,7 @@ def run_ingest_fileset(args):
         JsonLinePusher(ifri, args.json_file).run()
 
 
-def run_savepapernow_file(args):
+def run_savepapernow_file(args: argparse.Namespace) -> None:
     ifri = SavePaperNowFileImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -259,7 +259,7 @@ def run_savepapernow_file(args):
         JsonLinePusher(ifri, args.json_file).run()
 
 
-def run_savepapernow_web(args):
+def run_savepapernow_web(args: argparse.Namespace) -> None:
     ifri = SavePaperNowWebImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -280,7 +280,7 @@ def run_savepapernow_web(args):
         JsonLinePusher(ifri, args.json_file).run()
 
 
-def run_savepapernow_fileset(args):
+def run_savepapernow_fileset(args: argparse.Namespace) -> None:
     ifri = SavePaperNowFilesetImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
@@ -301,7 +301,7 @@ def run_savepapernow_fileset(args):
         JsonLinePusher(ifri, args.json_file).run()
 
 
-def run_grobid_metadata(args):
+def run_grobid_metadata(args: argparse.Namespace) -> None:
     fmi = GrobidMetadataImporter(
         args.api,
         edit_batch_size=args.batch_size,
@@ -311,12 +311,12 @@ def run_grobid_metadata(args):
     LinePusher(fmi, args.tsv_file).run()
 
 
-def run_shadow_lib(args):
+def run_shadow_lib(args: argparse.Namespace) -> None:
     fmi = ShadowLibraryImporter(args.api, edit_batch_size=100)
     JsonLinePusher(fmi, args.json_file).run()
 
 
-def run_wayback_static(args):
+def run_wayback_static(args: argparse.Namespace) -> None:
     api = args.api
 
     # find the release
@@ -348,7 +348,7 @@ def run_wayback_static(args):
     print("link: https://fatcat.wiki/webcapture/{}".format(wc.ident))
 
 
-def run_cdl_dash_dat(args):
+def run_cdl_dash_dat(args: argparse.Namespace) -> None:
     api = args.api
 
     # create it
@@ -363,7 +363,7 @@ def run_cdl_dash_dat(args):
     print("link: https://fatcat.wiki/fileset/{}".format(fs.ident))
 
 
-def run_datacite(args):
+def run_datacite(args: argparse.Namespace) -> None:
     dci = DataciteImporter(
         args.api,
         args.issn_map_file,
@@ -386,7 +386,7 @@ def run_datacite(args):
         JsonLinePusher(dci, args.json_file).run()
 
 
-def run_doaj_article(args):
+def run_doaj_article(args: argparse.Namespace) -> None:
     dai = DoajArticleImporter(
         args.api,
         args.issn_map_file,
@@ -406,7 +406,7 @@ def run_doaj_article(args):
         JsonLinePusher(dai, args.json_file).run()
 
 
-def run_dblp_release(args):
+def run_dblp_release(args: argparse.Namespace) -> None:
     dri = DblpReleaseImporter(
         args.api,
         dblp_container_map_file=args.dblp_container_map_file,
@@ -422,7 +422,7 @@ def run_dblp_release(args):
     ).run()
 
 
-def run_dblp_container(args):
+def run_dblp_container(args: argparse.Namespace) -> None:
     dci = DblpContainerImporter(
         args.api,
         args.issn_map_file,
@@ -434,7 +434,7 @@ def run_dblp_container(args):
     JsonLinePusher(dci, args.json_file).run()
 
 
-def run_file_meta(args):
+def run_file_meta(args: argparse.Namespace) -> None:
     # do_updates defaults to true for this importer
     fmi = FileMetaImporter(
         args.api,
@@ -444,7 +444,7 @@ def run_file_meta(args):
     JsonLinePusher(fmi, args.json_file).run()
 
 
-def run_fileset(args):
+def run_fileset(args: argparse.Namespace) -> None:
     fmi = FilesetImporter(
         args.api,
         edit_batch_size=100,
@@ -453,7 +453,7 @@ def run_fileset(args):
     JsonLinePusher(fmi, args.json_file).run()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--host-url", default="http://localhost:9411/v0", help="connect to this host/port"

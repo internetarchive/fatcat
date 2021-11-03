@@ -12,7 +12,7 @@ from fatcat_tools.reviewers import DummyReviewBot
 sentry_client = raven.Client()
 
 
-def run_dummy(args):
+def run_dummy(args: argparse.Namespace) -> None:
     reviewer = DummyReviewBot(args.api, poll_interval=args.poll_interval, verbose=args.verbose)
     if args.editgroup:
         annotation = reviewer.run_single(args.editgroup, args.annotate)
@@ -21,7 +21,7 @@ def run_dummy(args):
         reviewer.run()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--verbose", action="store_true", help="enable verbose output")
     parser.add_argument(

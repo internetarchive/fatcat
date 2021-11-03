@@ -1,27 +1,28 @@
 import os
 import sys
+from typing import Optional
 
-import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, Configuration, DefaultApi
 
 
-def public_api(host_uri):
+def public_api(host_uri: str) -> DefaultApi:
     """
     Note: unlike the authenticated variant, this helper might get called even
     if the API isn't going to be used, so it's important that it doesn't try to
     actually connect to the API host or something.
     """
-    conf = fatcat_openapi_client.Configuration()
+    conf = Configuration()
     conf.host = host_uri
-    return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
+    return DefaultApi(ApiClient(conf))
 
 
-def authenticated_api(host_uri, token=None):
+def authenticated_api(host_uri: str, token: Optional[str] = None) -> DefaultApi:
     """
     Note: if this helper is called, it's implied that an actual API connection
     is needed, so it does try to connect and verify credentials.
     """
 
-    conf = fatcat_openapi_client.Configuration()
+    conf = Configuration()
     conf.host = host_uri
     if not token:
         token = os.environ["FATCAT_API_AUTH_TOKEN"]
@@ -33,7 +34,7 @@ def authenticated_api(host_uri, token=None):
 
     conf.api_key["Authorization"] = token
     conf.api_key_prefix["Authorization"] = "Bearer"
-    api = fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
+    api = DefaultApi(ApiClient(conf))
 
     # verify up front that auth is working
     api.auth_check()

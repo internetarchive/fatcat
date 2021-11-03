@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import pytest
 from fatcat_openapi_client import ReleaseEntity
@@ -8,7 +9,7 @@ from import_crossref import crossref_importer
 from fatcat_tools.transforms import citeproc_csl, entity_from_json, release_to_csl
 
 
-def test_csl_crossref(crossref_importer):
+def test_csl_crossref(crossref_importer: Any) -> None:
     with open("tests/files/crossref-works.single.json", "r") as f:
         # not a single line
         raw = json.loads(f.read())
@@ -30,7 +31,7 @@ def test_csl_crossref(crossref_importer):
         citeproc_csl(csl, "csl-json")
 
 
-def test_csl_pubmed(crossref_importer):
+def test_csl_pubmed(crossref_importer: Any) -> None:
     with open("tests/files/example_releases_pubmed19n0972.json", "r") as f:
         # multiple single lines
         for line in f:
@@ -42,7 +43,7 @@ def test_csl_pubmed(crossref_importer):
             citeproc_csl(csl, "harvard1", html=True)
 
 
-def test_csl_pubmed_bibtex(crossref_importer):
+def test_csl_pubmed_bibtex(crossref_importer: Any) -> None:
     with open("tests/files/example_releases_pubmed19n0972.json", "r") as f:
         r = entity_from_json(f.readline(), ReleaseEntity)
     csl = release_to_csl(r)

@@ -19,7 +19,7 @@ from fatcat_tools.harvest import (
 sentry_client = raven.Client()
 
 
-def run_crossref(args):
+def run_crossref(args: argparse.Namespace) -> None:
     worker = HarvestCrossrefWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.api-crossref",
@@ -31,7 +31,7 @@ def run_crossref(args):
     worker.run(continuous=args.continuous)
 
 
-def run_datacite(args):
+def run_datacite(args: argparse.Namespace) -> None:
     worker = HarvestDataciteWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.api-datacite",
@@ -43,7 +43,7 @@ def run_datacite(args):
     worker.run(continuous=args.continuous)
 
 
-def run_arxiv(args):
+def run_arxiv(args: argparse.Namespace) -> None:
     worker = HarvestArxivWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.oaipmh-arxiv",
@@ -54,7 +54,7 @@ def run_arxiv(args):
     worker.run(continuous=args.continuous)
 
 
-def run_pubmed(args):
+def run_pubmed(args: argparse.Namespace) -> None:
     worker = PubmedFTPWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.ftp-pubmed",
@@ -65,7 +65,7 @@ def run_pubmed(args):
     worker.run(continuous=args.continuous)
 
 
-def run_doaj_article(args):
+def run_doaj_article(args: argparse.Namespace) -> None:
     worker = HarvestDoajArticleWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.oaipmh-doaj-article",
@@ -76,7 +76,7 @@ def run_doaj_article(args):
     worker.run(continuous=args.continuous)
 
 
-def run_doaj_journal(args):
+def run_doaj_journal(args: argparse.Namespace) -> None:
     worker = HarvestDoajJournalWorker(
         kafka_hosts=args.kafka_hosts,
         produce_topic=f"fatcat-{args.env}.oaipmh-doaj-journal",
@@ -87,11 +87,11 @@ def run_doaj_journal(args):
     worker.run(continuous=args.continuous)
 
 
-def mkdate(raw):
+def mkdate(raw: str) -> datetime.date:
     return datetime.datetime.strptime(raw, "%Y-%m-%d").date()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--kafka-hosts",

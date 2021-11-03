@@ -14,7 +14,7 @@ from fatcat_tools.importers import JsonLinePusher
 sentry_client = raven.Client()
 
 
-def run_files(args):
+def run_files(args: argparse.Namespace) -> None:
     fmi = FileCleaner(
         args.api,
         dry_run_mode=args.dry_run,
@@ -24,7 +24,7 @@ def run_files(args):
     JsonLinePusher(fmi, args.json_file).run()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"

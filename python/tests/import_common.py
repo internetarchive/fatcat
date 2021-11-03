@@ -6,7 +6,7 @@ import elasticsearch
 import fatcat_openapi_client
 import fuzzycat.matching
 import pytest
-from fatcat_openapi_client import ReleaseEntity, ReleaseExtIds
+from fatcat_openapi_client import ReleaseContrib, ReleaseEntity, ReleaseExtIds
 from fixtures import *
 
 from fatcat_tools.importers import EntityImporter

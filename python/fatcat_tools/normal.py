@@ -70,7 +70,7 @@ def clean_doi(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_doi():
+def test_clean_doi() -> None:
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
@@ -117,7 +117,7 @@ def clean_arxiv_id(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_arxiv_id():
+def test_clean_arxiv_id() -> None:
     assert clean_arxiv_id("0806.2878v1") == "0806.2878v1"
     assert clean_arxiv_id("0806.2878") == "0806.2878"
     assert clean_arxiv_id("1501.00001v1") == "1501.00001v1"
@@ -146,7 +146,7 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("08062878v1") is None
 
 
-def clean_wikidata_qid(raw):
+def clean_wikidata_qid(raw: Optional[str]) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip()
@@ -157,7 +157,7 @@ def clean_wikidata_qid(raw):
     return None
 
 
-def test_clean_wikidata_qid():
+def test_clean_wikidata_qid() -> None:
     assert clean_wikidata_qid("Q1234") == "Q1234"
     assert clean_wikidata_qid("Q1") == "Q1"
     assert clean_wikidata_qid(" Q1234 ") == "Q1234"
@@ -181,7 +181,7 @@ def clean_pmid(raw: Optional[str]) -> Optional[str]:
     return None
 
 
-def test_clean_pmid():
+def test_clean_pmid() -> None:
     assert clean_pmid("1234") == "1234"
     assert clean_pmid("1234 ") == "1234"
     assert clean_pmid("PMC123") is None
@@ -214,7 +214,7 @@ def clean_sha1(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_sha1():
+def test_clean_sha1() -> None:
     assert (
         clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b")
         == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
@@ -242,7 +242,7 @@ def clean_sha256(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_sha256():
+def test_clean_sha256() -> None:
     assert (
         clean_sha256("6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f")
         == "6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f"
@@ -264,7 +264,7 @@ def clean_issn(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_issn():
+def test_clean_issn() -> None:
     assert clean_issn("1234-4567") == "1234-4567"
     assert clean_issn("1234-456X") == "1234-456X"
     assert clean_issn("134-4567") is None
@@ -283,7 +283,7 @@ def clean_isbn13(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_isbn13():
+def test_clean_isbn13() -> None:
     assert clean_isbn13("978-1-56619-909-4") == "978-1-56619-909-4"
     assert clean_isbn13("978-1-4028-9462-6") == "978-1-4028-9462-6"
     assert clean_isbn13("978-1-56619-909-4 ") == "978-1-56619-909-4"
@@ -302,7 +302,7 @@ def clean_orcid(raw: Optional[str]) -> Optional[str]:
     return raw
 
 
-def test_clean_orcid():
+def test_clean_orcid() -> None:
     assert clean_orcid("0123-4567-3456-6789") == "0123-4567-3456-6789"
     assert clean_orcid("0123-4567-3456-678X") == "0123-4567-3456-678X"
     assert clean_orcid("0123-4567-3456-6789 ") == "0123-4567-3456-6789"
@@ -313,7 +313,7 @@ def test_clean_orcid():
 HDL_REGEX = re.compile(r"^\d+(\.\d+)*/\S+$")
 
 
-def clean_hdl(raw):
+def clean_hdl(raw: Optional[str]) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().lower()
@@ -332,7 +332,7 @@ def clean_hdl(raw):
     return raw
 
 
-def test_clean_hdl():
+def test_clean_hdl() -> None:
     assert clean_hdl("20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
     assert clean_hdl("hdl:20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
     assert (
@@ -373,7 +373,7 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
     return fixed
 
 
-def test_clean_str():
+def test_clean_str() -> None:
 
     assert clean_str(None) is None
     assert clean_str("") is None
@@ -384,7 +384,7 @@ def test_clean_str():
     assert clean_str("<b>a&amp;b</b>", force_xml=True) == "<b>a&b</b>"
 
 
-def b32_hex(s):
+def b32_hex(s: str) -> str:
     s = s.strip().split()[0].lower()
     if s.startswith("sha1:"):
         s = s[5:]
@@ -393,7 +393,7 @@ def b32_hex(s):
     return base64.b16encode(base64.b32decode(s.upper())).lower().decode("utf-8")
 
 
-def is_cjk(s):
+def is_cjk(s: Optional[str]) -> bool:
     if not s:
         return False
     for c in s:
@@ -403,7 +403,7 @@ def is_cjk(s):
     return False
 
 
-def test_is_cjk():
+def test_is_cjk() -> None:
     assert is_cjk(None) is False
     assert is_cjk("") is False
     assert is_cjk("blah") is False
@@ -593,7 +593,7 @@ def parse_country_name(s: Optional[str]) -> Optional[str]:
         return None
 
 
-def test_parse_country_name():
+def test_parse_country_name() -> None:
     assert parse_country_name("") is None
     assert parse_country_name("asdf blah") is None
     assert parse_country_name("us") == "us"

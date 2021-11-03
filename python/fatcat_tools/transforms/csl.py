@@ -1,4 +1,5 @@
 import json
+from typing import Any, Dict, List
 
 from citeproc import (
     Citation,
@@ -9,20 +10,21 @@ from citeproc import (
 )
 from citeproc.source.json import CiteProcJSON
 from citeproc_styles import get_style_filepath
+from fatcat_openapi_client import ReleaseContrib, ReleaseEntity
 
 
-def contribs_by_role(contribs, role):
+def contribs_by_role(contribs: List[ReleaseContrib], role: str) -> List[ReleaseContrib]:
     ret = [c.copy() for c in contribs if c["role"] == role]
     [c.pop("role") for c in ret]
     # TODO: some note to self here
     [c.pop("literal") for c in ret if "literal" in c]
     if not ret:
-        return None
+        return []
     else:
         return ret
 
 
-def release_to_csl(entity):
+def release_to_csl(entity: ReleaseEntity) -> Dict[str, Any]:
     """
     Returns a python dict which can be json.dumps() to get a CSL-JSON (aka,
     citeproc-JSON, aka Citation Style Language JSON)
@@ -188,9 +190,9 @@ def release_to_csl(entity):
     return csl
 
 
-def refs_to_csl(entity):
+def refs_to_csl(entity: ReleaseEntity) -> List[Dict[str, Any]]:
     ret = []
-    for ref in entity.refs:
+    for ref in entity.refs or []:
         if ref.release_id and False:
             # TODO: fetch full entity from API and convert with release_to_csl
             raise NotImplementedError
@@ -207,7 +209,7 @@ def refs_to_csl(entity):
     return ret
 
 
-def citeproc_csl(csl_json, style, html=False):
+def citeproc_csl(csl_json: Dict[str, Any], style: str, html: bool = False) -> str:
     """
     Renders a release entity to a styled citation.
 

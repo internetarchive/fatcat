@@ -25,7 +25,7 @@ from fatcat_tools.transforms import (
 from fatcat_web.search import get_elastic_container_stats
 
 
-def run_elasticsearch_releases(args):
+def run_elasticsearch_releases(args: argparse.Namespace) -> None:
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -36,7 +36,7 @@ def run_elasticsearch_releases(args):
         args.json_output.write(json.dumps(release_to_elasticsearch(entity)) + "\n")
 
 
-def run_elasticsearch_containers(args):
+def run_elasticsearch_containers(args: argparse.Namespace) -> None:
     es_client = elasticsearch.Elasticsearch(args.fatcat_elasticsearch_url)
     es_release_index = "fatcat_release"
     for line in args.json_input:
@@ -63,7 +63,7 @@ def run_elasticsearch_containers(args):
         args.json_output.write(json.dumps(es_doc) + "\n")
 
 
-def run_elasticsearch_files(args):
+def run_elasticsearch_files(args: argparse.Namespace) -> None:
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -74,7 +74,7 @@ def run_elasticsearch_files(args):
         args.json_output.write(json.dumps(file_to_elasticsearch(entity)) + "\n")
 
 
-def run_elasticsearch_changelogs(args):
+def run_elasticsearch_changelogs(args: argparse.Namespace) -> None:
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -83,7 +83,7 @@ def run_elasticsearch_changelogs(args):
         args.json_output.write(json.dumps(changelog_to_elasticsearch(entity)) + "\n")
 
 
-def run_citeproc_releases(args):
+def run_citeproc_releases(args: argparse.Namespace) -> None:
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -97,7 +97,7 @@ def run_citeproc_releases(args):
         args.json_output.write(out + "\n")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"

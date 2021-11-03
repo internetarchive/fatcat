@@ -13,24 +13,24 @@ import sys
 from fatcat_tools import authenticated_api, fcid2uuid, uuid2fcid
 
 
-def run_uuid2fcid(args):
+def run_uuid2fcid(args: argparse.Namespace) -> None:
     print(uuid2fcid(args.uuid))
 
 
-def run_fcid2uuid(args):
+def run_fcid2uuid(args: argparse.Namespace) -> None:
     print(fcid2uuid(args.fcid))
 
 
-def run_editgroup_accept(args):
+def run_editgroup_accept(args: argparse.Namespace) -> None:
     args.api.accept_editgroup(args.editgroup_id)
 
 
-def run_editgroup_submit(args):
+def run_editgroup_submit(args: argparse.Namespace) -> None:
     eg = args.api.get_editgroup(args.editgroup_id)
     args.api.update_editgroup(args.editgroup_id, eg, submit=True)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"

@@ -21,7 +21,7 @@ from fatcat_tools.transforms import release_ingest_request
 sentry_client = raven.Client()
 
 
-def _init_search(args):
+def _init_search(args: argparse.Namespace) -> Search:
 
     # ensure API connection works
     args.api.get_changelog()
@@ -31,7 +31,7 @@ def _init_search(args):
     return search
 
 
-def _run_search_dump(args, search):
+def _run_search_dump(args: argparse.Namespace, search: Search) -> None:
 
     if args.dry_run:
         print("=== THIS IS A DRY RUN ===")
@@ -122,7 +122,7 @@ def _run_search_dump(args, search):
         print("=== THIS WAS A DRY RUN ===")
 
 
-def run_ingest_container(args):
+def run_ingest_container(args: argparse.Namespace) -> None:
     """
     This command queries elasticsearch for releases from a given container (eg,
     journal), and prepares ingest requests for them.
@@ -151,7 +151,7 @@ def run_ingest_container(args):
     return _run_search_dump(args, search)
 
 
-def run_ingest_query(args):
+def run_ingest_query(args: argparse.Namespace) -> None:
     """
     Accepts a free-form Lucene query language string. Intended to work the same
     way as searches in the fatcat web interface.
@@ -173,7 +173,7 @@ def run_ingest_query(args):
     return _run_search_dump(args, search)
 
 
-def run_ingest_extid(args):
+def run_ingest_extid(args: argparse.Namespace) -> None:
     """
     Selects release entities where the external identifier (extid) exists
     """
@@ -183,7 +183,7 @@ def run_ingest_extid(args):
     return _run_search_dump(args, search)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--fatcat-api-url", default="http://localhost:9411/v0", help="connect to this host/port"

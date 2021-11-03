@@ -5,7 +5,7 @@ import argparse
 from fatcat_web import app
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--debug",

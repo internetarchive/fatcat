@@ -18,7 +18,7 @@ from fatcat_tools.workers import (
 sentry_client = raven.Client()
 
 
-def run_changelog(args):
+def run_changelog(args: argparse.Namespace) -> None:
     topic = "fatcat-{}.changelog".format(args.env)
     worker = ChangelogWorker(
         args.api, args.kafka_hosts, topic, poll_interval=args.poll_interval
@@ -26,7 +26,7 @@ def run_changelog(args):
     worker.run()
 
 
-def run_entity_updates(args):
+def run_entity_updates(args: argparse.Namespace) -> None:
     changelog_topic = "fatcat-{}.changelog".format(args.env)
     release_topic = "fatcat-{}.release-updates-v03".format(args.env)
     file_topic = "fatcat-{}.file-updates".format(args.env)
@@ -46,7 +46,7 @@ def run_entity_updates(args):
     worker.run()
 
 
-def run_elasticsearch_release(args):
+def run_elasticsearch_release(args: argparse.Namespace) -> None:
     consume_topic = "fatcat-{}.release-updates-v03".format(args.env)
     worker = ElasticsearchReleaseWorker(
         args.kafka_hosts,
@@ -57,7 +57,7 @@ def run_elasticsearch_release(args):
     worker.run()
 
 
-def run_elasticsearch_container(args):
+def run_elasticsearch_container(args: argparse.Namespace) -> None:
     consume_topic = "fatcat-{}.container-updates".format(args.env)
     worker = ElasticsearchContainerWorker(
         args.kafka_hosts,
@@ -70,7 +70,7 @@ def run_elasticsearch_container(args):
     worker.run()
 
 
-def run_elasticsearch_changelog(args):
+def run_elasticsearch_changelog(args: argparse.Namespace) -> None:
     consume_topic = "fatcat-{}.changelog".format(args.env)
     worker = ElasticsearchChangelogWorker(
         args.kafka_hosts,
@@ -81,7 +81,7 @@ def run_elasticsearch_changelog(args):
     worker.run()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--api-host-url", default="http://localhost:9411/v0", help="fatcat API host/port to use"

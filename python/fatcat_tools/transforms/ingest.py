@@ -1,4 +1,8 @@
-INGEST_TYPE_CONTAINER_MAP = {
+from typing import Any, Dict, Optional
+
+from fatcat_openapi_client import ReleaseEntity
+
+INGEST_TYPE_CONTAINER_MAP: Dict[str, str] = {
     # Optica
     "twtpsm6ytje3nhuqfu3pa7ca7u": "html",
     # Optics Express
@@ -14,7 +18,11 @@ INGEST_TYPE_CONTAINER_MAP = {
 }
 
 
-def release_ingest_request(release, ingest_request_source="fatcat", ingest_type=None):
+def release_ingest_request(
+    release: ReleaseEntity,
+    ingest_request_source: str = "fatcat",
+    ingest_type: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
     """
     Takes a full release entity object and returns an ingest request (as dict),
     or None if it seems like this release shouldn't be ingested.
