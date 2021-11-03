@@ -314,6 +314,7 @@ def ftpretr(
                 time.sleep(retry_delay)
         else:
             return f.name
+    assert False, "Unreachable code branch"
 
 
 def ftpretr_via_http_proxy(
@@ -348,6 +349,7 @@ def ftpretr_via_http_proxy(
             if i + 1 == max_retries:
                 raise
             time.sleep(retry_delay)
+    assert False, "Unreachable code branch"
 
 
 def xmlstream(filename: str, tag: str, encoding: str = "utf-8") -> Generator[Any, Any, Any]:
