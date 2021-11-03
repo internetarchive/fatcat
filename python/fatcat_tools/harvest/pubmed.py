@@ -330,14 +330,14 @@ def ftpretr_via_http_proxy(
     2021-10-15; just switch to NIH's http version).
     """
     parsed = urlparse(url)
-    server, path = parsed.netloc, parsed.path
+    _, path = parsed.netloc, parsed.path
     for i in range(max_retries):
         try:
             url = "http://{}{}".format(proxy_hostport, path)
             print("retrieving file via proxy (ftpup) from {}".format(url), file=sys.stderr)
             with tempfile.NamedTemporaryFile(prefix="fatcat-ftp-tmp-", delete=False) as f:
                 cmd = ["wget", "-c", url, "-O", f.name]
-                result = subprocess.run(cmd)
+                subprocess.run(cmd)
                 return f.name
         except (subprocess.CalledProcessError, OSError, ValueError) as exc:
             print(
