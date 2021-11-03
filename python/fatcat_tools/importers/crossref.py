@@ -269,18 +269,19 @@ class CrossrefImporter(EntityImporter):
                 else:
                     index = None
                 raw_affiliation = None
-                if am.get("affiliation"):
-                    if len(am.get("affiliation")) > 0:
-                        raw_affiliation = am.get("affiliation")[0]["name"]
-                    if len(am.get("affiliation")) > 1:
+                affiliation_list = am.get("affiliation") or []
+                if affiliation_list and len(affiliation_list) > 0:
+                    raw_affiliation = affiliation_list[0]["name"]
+                    if len(affiliation_list) > 1:
                         # note: affiliation => more_affiliations
                         extra["more_affiliations"] = [
-                            clean(a["name"]) for a in am.get("affiliation")[1:]
+                            clean(a["name"]) for a in affiliation_list[1:]
                         ]
                 if am.get("sequence") and am.get("sequence") != "additional":
                     extra["seq"] = clean(am.get("sequence"))
                 assert ctype in ("author", "editor", "translator")
                 raw_name = clean(raw_name)
+                # TODO: what if 'raw_name' is None?
                 contribs.append(
                     ReleaseContrib(
                         creator_id=creator_id,

@@ -113,15 +113,15 @@ def lookup_cdx(
         hit = resp.content.decode("utf-8").split("\n")[0]
         if cdx_output:
             cdx_output.write(hit + "\n")
-        cdx = hit.split(" ")
-        cdx = [x if (x and x != "-") else None for x in cdx]
+        cdx_chunks = hit.split(" ")
+        cdx = [x if (x and x != "-") else None for x in cdx_chunks]
         webcapture_cdx = WebcaptureCdxLine(
             surt=cdx[0],
-            timestamp=parse_wbm_timestamp(cdx[1]).isoformat() + "Z",
+            timestamp=parse_wbm_timestamp(cdx[1] or "").isoformat() + "Z",
             url=cdx[2],
             mimetype=cdx[3],
-            status_code=(cdx[4] and int(cdx[4])) or None,
-            sha1=b32_hex(cdx[5]),
+            status_code=int(cdx[4] or ""),
+            sha1=b32_hex(cdx[5] or ""),
             sha256=None,
         )
         if verify_hashes:

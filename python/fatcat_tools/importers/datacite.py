@@ -376,10 +376,11 @@ class DataciteImporter(EntityImporter):
         # check for blocklisted "spam", e.g. "FULL MOVIE"
         for rule in DATACITE_TITLE_SPAM_WORDGROUPS:
             seen = set()
-            for token in rule.get("tokens", []):
+            token_list: List[str] = rule.get("tokens") or []
+            for token in token_list:
                 if token in title.lower():
                     seen.add(token)
-            if len(seen) >= rule.get("min"):
+            if len(seen) >= rule["min"]:
                 print("[{}] skipping spammy title: {}".format(doi, obj), file=sys.stderr)
                 return False
 
