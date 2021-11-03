@@ -1,4 +1,3 @@
-
 import requests
 
 from fatcat_web import Config
@@ -20,9 +19,9 @@ def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
 
     params = dict()
     if key:
-        params['key'] = key
+        params["key"] = key
     if sync:
-        params['sync'] = True
+        params["sync"] = True
     resp = requests.post(
         "{}/topics/{}/messages".format(Config.KAFKA_PIXY_ENDPOINT, topic),
         params=params,
@@ -31,4 +30,4 @@ def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
         timeout=timeout,
     )
     resp.raise_for_status()
-    #print(resp.json())
+    # print(resp.json())

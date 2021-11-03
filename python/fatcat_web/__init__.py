@@ -1,4 +1,3 @@
-
 import sys
 
 import elasticsearch
@@ -18,7 +17,7 @@ from raven.contrib.flask import Sentry
 from fatcat_web.web_config import Config
 
 toolbar = DebugToolbarExtension()
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path="/static")
 app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
@@ -26,7 +25,8 @@ app.csrf = CSRFProtect(app)
 app.log = create_logger(app)
 
 # This is the Markdown processor; setting default here
-Misaka(app,
+Misaka(
+    app,
     autolink=True,
     no_intra_emphasis=True,
     strikethrough=True,
@@ -49,12 +49,14 @@ api = fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
+
 def auth_api(token):
     conf = fatcat_openapi_client.Configuration()
     conf.api_key["Authorization"] = token
     conf.api_key_prefix["Authorization"] = "Bearer"
     conf.host = Config.FATCAT_API_HOST
     return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
+
 
 if Config.FATCAT_API_AUTH_TOKEN:
     print("Found and using privileged token (eg, for account signup)", file=sys.stderr)
@@ -69,9 +71,10 @@ else:
 mwoauth = MWOAuth(
     consumer_key=Config.WIKIPEDIA_CLIENT_ID or "dummy",
     consumer_secret=Config.WIKIPEDIA_CLIENT_SECRET or "dummy",
-    default_return_to='wp_oauth_finish_login')
+    default_return_to="wp_oauth_finish_login",
+)
 mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
-app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
+app.register_blueprint(mwoauth.bp, url_prefix="/auth/wikipedia")
 
 app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND)
 
@@ -80,12 +83,12 @@ from fatcat_web import auth, cors, editing_routes, forms, ref_routes, routes
 # TODO: blocking on ORCID support in loginpass
 if Config.ORCID_CLIENT_ID:
     orcid_bp = create_flask_blueprint(ORCiD, oauth, auth.handle_oauth)
-    app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
+    app.register_blueprint(orcid_bp, url_prefix="/auth/orcid")
 
 if Config.GITLAB_CLIENT_ID:
     gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
-    app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')
+    app.register_blueprint(gitlab_bp, url_prefix="/auth/gitlab")
 
 if Config.GITHUB_CLIENT_ID:
     github_bp = create_flask_blueprint(GitHub, oauth, auth.handle_oauth)
-    app.register_blueprint(github_bp, url_prefix='/auth/github')
+    app.register_blueprint(github_bp, url_prefix="/auth/github")

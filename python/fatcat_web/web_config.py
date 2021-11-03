@@ -1,4 +1,3 @@
-
 """
 Default configuration for fatcat web interface (Flask application).
 
@@ -16,26 +15,43 @@ import raven
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config(object):
-    GIT_REVISION = subprocess.check_output(["git", "describe", "--tags", "--long", "--always"]).strip().decode('utf-8')
+    GIT_REVISION = (
+        subprocess.check_output(["git", "describe", "--tags", "--long", "--always"])
+        .strip()
+        .decode("utf-8")
+    )
 
     # This is, effectively, the QA/PROD flag
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="dev.fatcat.wiki")
     FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
-    FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default=f"https://api.{FATCAT_DOMAIN}/v0")
+    FATCAT_API_HOST = os.environ.get(
+        "FATCAT_API_HOST", default=f"https://api.{FATCAT_DOMAIN}/v0"
+    )
     public_host_default = f"https://api.{FATCAT_DOMAIN}/v0"
     if FATCAT_DOMAIN == "dev.fatcat.wiki":
         public_host_default = FATCAT_API_HOST
-    FATCAT_PUBLIC_API_HOST = os.environ.get("FATCAT_PUBLIC_API_HOST", default=public_host_default)
+    FATCAT_PUBLIC_API_HOST = os.environ.get(
+        "FATCAT_PUBLIC_API_HOST", default=public_host_default
+    )
 
     # can set this to https://search.fatcat.wiki for some experimentation
-    ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
-    ELASTICSEARCH_RELEASE_INDEX = os.environ.get("ELASTICSEARCH_RELEASE_INDEX", default="fatcat_release")
-    ELASTICSEARCH_CONTAINER_INDEX = os.environ.get("ELASTICSEARCH_CONTAINER_INDEX", default="fatcat_container")
+    ELASTICSEARCH_BACKEND = os.environ.get(
+        "ELASTICSEARCH_BACKEND", default="http://localhost:9200"
+    )
+    ELASTICSEARCH_RELEASE_INDEX = os.environ.get(
+        "ELASTICSEARCH_RELEASE_INDEX", default="fatcat_release"
+    )
+    ELASTICSEARCH_CONTAINER_INDEX = os.environ.get(
+        "ELASTICSEARCH_CONTAINER_INDEX", default="fatcat_container"
+    )
 
     # for save-paper-now. set to None if not configured, so we don't display forms/links
     KAFKA_PIXY_ENDPOINT = os.environ.get("KAFKA_PIXY_ENDPOINT", default=None) or None
-    KAFKA_SAVEPAPERNOW_TOPIC = os.environ.get("KAFKA_SAVEPAPERNOW_TOPIC", default="sandcrawler-dev.ingest-file-requests-priority")
+    KAFKA_SAVEPAPERNOW_TOPIC = os.environ.get(
+        "KAFKA_SAVEPAPERNOW_TOPIC", default="sandcrawler-dev.ingest-file-requests-priority"
+    )
 
     # for flask things, like session cookies
     FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
@@ -59,11 +75,17 @@ class Config(object):
 
     # analytics; used in production
     ENABLE_GOATCOUNTER = bool(os.environ.get("ENABLE_GOATCOUNTER", default=False))
-    GOATCOUNTER_ENDPOINT = os.environ.get("GOATCOUNTER_ENDPOINT", default="https://goatcounter.fatcat.wiki/count")
-    GOATCOUNTER_SCRIPT_URL = os.environ.get("GOATCOUNTER_SCRIPT_URL", default="https://goatcounter.fatcat.wiki/count.js")
+    GOATCOUNTER_ENDPOINT = os.environ.get(
+        "GOATCOUNTER_ENDPOINT", default="https://goatcounter.fatcat.wiki/count"
+    )
+    GOATCOUNTER_SCRIPT_URL = os.environ.get(
+        "GOATCOUNTER_SCRIPT_URL", default="https://goatcounter.fatcat.wiki/count.js"
+    )
 
     # controls granularity of "shadow_only" preservation category
-    FATCAT_MERGE_SHADOW_PRESERVATION = os.environ.get("FATCAT_MERGE_SHADOW_PRESERVATION", default=False)
+    FATCAT_MERGE_SHADOW_PRESERVATION = os.environ.get(
+        "FATCAT_MERGE_SHADOW_PRESERVATION", default=False
+    )
 
     # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
     # forms)
@@ -75,27 +97,27 @@ class Config(object):
 
     if FATCAT_DOMAIN == "dev.fatcat.wiki":
         # "Even more verbose" debug options
-        #SQLALCHEMY_ECHO = True
-        #DEBUG = True
+        # SQLALCHEMY_ECHO = True
+        # DEBUG = True
         pass
     else:
         # protect cookies (which include API tokens)
         SESSION_COOKIE_HTTPONLY = True
         SESSION_COOKIE_SECURE = True
-        SESSION_COOKIE_SAMESITE = 'Lax'
-        PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
+        SESSION_COOKIE_SAMESITE = "Lax"
+        PERMANENT_SESSION_LIFETIME = 2678400  # 31 days, in seconds
 
     try:
-        GIT_RELEASE = raven.fetch_git_sha('..')
+        GIT_RELEASE = raven.fetch_git_sha("..")
     except Exception as e:
         print("WARNING: couldn't set sentry git release automatically: " + str(e))
         GIT_RELEASE = None
 
     SENTRY_CONFIG = {
         #'include_paths': ['fatcat_web', 'fatcat_openapi_client', 'fatcat_tools'],
-        'enable-threads': True, # for uWSGI
-        'release': GIT_RELEASE,
-        'tags': {
-            'fatcat_domain': FATCAT_DOMAIN,
+        "enable-threads": True,  # for uWSGI
+        "release": GIT_RELEASE,
+        "tags": {
+            "fatcat_domain": FATCAT_DOMAIN,
         },
     }

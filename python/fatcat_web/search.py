@@ -1,4 +1,3 @@
-
 """
 Helpers for doing elasticsearch queries (used in the web interface; not part of
 the formal API)
@@ -17,13 +16,13 @@ from fatcat_web import app
 
 
 class FatcatSearchError(Exception):
-
     def __init__(self, status_code: int, name: str, description: str = None):
         if status_code == "N/A":
             status_code = 503
         self.status_code = status_code
         self.name = name
         self.description = description
+
 
 @dataclass
 class ReleaseQuery:
@@ -35,30 +34,31 @@ class ReleaseQuery:
     recent: bool = False
 
     @classmethod
-    def from_args(cls, args) -> 'ReleaseQuery':
+    def from_args(cls, args) -> "ReleaseQuery":
 
-        query_str = args.get('q') or '*'
+        query_str = args.get("q") or "*"
 
-        container_id = args.get('container_id')
+        container_id = args.get("container_id")
         # TODO: as filter, not in query string
         if container_id:
             query_str += ' container_id:"{}"'.format(container_id)
 
         # TODO: where are container_issnl queries actually used?
-        issnl = args.get('container_issnl')
+        issnl = args.get("container_issnl")
         if issnl and query_str:
             query_str += ' container_issnl:"{}"'.format(issnl)
 
-        offset = args.get('offset', '0')
+        offset = args.get("offset", "0")
         offset = max(0, int(offset)) if offset.isnumeric() else 0
 
         return ReleaseQuery(
             q=query_str,
             offset=offset,
-            fulltext_only=bool(args.get('fulltext_only')),
+            fulltext_only=bool(args.get("fulltext_only")),
             container_id=container_id,
-            recent=bool(args.get('recent')),
+            recent=bool(args.get("recent")),
         )
+
 
 @dataclass
 class GenericQuery:
@@ -67,17 +67,18 @@ class GenericQuery:
     offset: Optional[int] = None
 
     @classmethod
-    def from_args(cls, args) -> 'GenericQuery':
-        query_str = args.get('q')
+    def from_args(cls, args) -> "GenericQuery":
+        query_str = args.get("q")
         if not query_str:
-            query_str = '*'
-        offset = args.get('offset', '0')
+            query_str = "*"
+        offset = args.get("offset", "0")
         offset = max(0, int(offset)) if offset.isnumeric() else 0
 
         return GenericQuery(
             q=query_str,
             offset=offset,
         )
+
 
 @dataclass
 class SearchHits:
@@ -89,6 +90,7 @@ class SearchHits:
     query_time_ms: int
     results: List[Any]
 
+
 def _hits_total_int(val: Any) -> int:
     """
     Compatibility hack between ES 6.x and 7.x. In ES 6x, total is returned as
@@ -97,7 +99,7 @@ def _hits_total_int(val: Any) -> int:
     if isinstance(val, int):
         return val
     else:
-        return int(val['value'])
+        return int(val["value"])
 
 
 def results_to_dict(response: elasticsearch_dsl.response.Response) -> List[dict]:
@@ -120,6 +122,7 @@ def results_to_dict(response: elasticsearch_dsl.response.Response) -> List[dict]
             if type(h[key]) is str:
                 h[key] = h[key].encode("utf8", "ignore").decode("utf8")
     return results
+
 
 def wrap_es_execution(search: Search) -> Any:
     """
@@ -146,6 +149,7 @@ def wrap_es_execution(search: Search) -> Any:
         raise FatcatSearchError(e.status_code, str(e.error), description)
     return resp
 
+
 def agg_to_dict(agg) -> dict:
     """
     Takes a simple term aggregation result (with buckets) and returns a simple
@@ -157,14 +161,13 @@ def agg_to_dict(agg) -> dict:
     for bucket in agg.buckets:
         result[bucket.key] = bucket.doc_count
     if agg.sum_other_doc_count:
-        result['_other'] = agg.sum_other_doc_count
+        result["_other"] = agg.sum_other_doc_count
     return result
 
-def do_container_search(
-    query: GenericQuery, deep_page_limit: int = 2000
-) -> SearchHits:
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_CONTAINER_INDEX'])
+def do_container_search(query: GenericQuery, deep_page_limit: int = 2000) -> SearchHits:
+
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_CONTAINER_INDEX"])
 
     search = search.query(
         "query_string",
@@ -199,11 +202,10 @@ def do_container_search(
         results=results,
     )
 
-def do_release_search(
-    query: ReleaseQuery, deep_page_limit: int = 2000
-) -> SearchHits:
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> SearchHits:
+
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
 
     # availability filters
     if query.fulltext_only:
@@ -240,7 +242,11 @@ def do_release_search(
 
     search = search.query(
         "boosting",
-        positive=Q("bool", must=basic_biblio, should=[has_fulltext],),
+        positive=Q(
+            "bool",
+            must=basic_biblio,
+            should=[has_fulltext],
+        ),
         negative=poor_metadata,
         negative_boost=0.5,
     )
@@ -260,9 +266,13 @@ def do_release_search(
 
     for h in results:
         # Ensure 'contrib_names' is a list, not a single string
-        if type(h['contrib_names']) is not list:
-            h['contrib_names'] = [h['contrib_names'], ]
-        h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
+        if type(h["contrib_names"]) is not list:
+            h["contrib_names"] = [
+                h["contrib_names"],
+            ]
+        h["contrib_names"] = [
+            name.encode("utf8", "ignore").decode("utf8") for name in h["contrib_names"]
+        ]
 
     return SearchHits(
         count_returned=len(results),
@@ -274,6 +284,7 @@ def do_release_search(
         results=results,
     )
 
+
 def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
     """
     Returns a list of releases from the container.
@@ -281,16 +292,16 @@ def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
 
     assert limit > 0 and limit <= 100
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
-        'bool',
+        "bool",
         must=[
-            Q('term', container_id=ident),
-            Q('range', release_year={ "lte": datetime.datetime.today().year }),
-        ]
+            Q("term", container_id=ident),
+            Q("range", release_year={"lte": datetime.datetime.today().year}),
+        ],
     )
-    search = search.sort('-in_web', '-release_date')
-    search = search[:int(limit)]
+    search = search.sort("-in_web", "-release_date")
+    search = search[: int(limit)]
 
     search = search.params(request_cache=True)
     # not needed: search = search.params(track_total_hits=True)
@@ -298,6 +309,7 @@ def get_elastic_container_random_releases(ident: str, limit=5) -> dict:
     results = results_to_dict(resp)
 
     return results
+
 
 def get_elastic_entity_stats() -> dict:
     """
@@ -312,11 +324,11 @@ def get_elastic_entity_stats() -> dict:
     stats = {}
 
     # release totals
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search.aggs.bucket(
-        'release_ref_count',
-        'sum',
-        field='ref_count',
+        "release_ref_count",
+        "sum",
+        field="ref_count",
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
@@ -324,15 +336,15 @@ def get_elastic_entity_stats() -> dict:
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
-    stats['release'] = {
+    stats["release"] = {
         "total": _hits_total_int(resp.hits.total),
         "refs_total": int(resp.aggregations.release_ref_count.value),
     }
 
     # paper counts
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
-        'terms',
+        "terms",
         release_type=[
             "article-journal",
             "paper-conference",
@@ -341,17 +353,21 @@ def get_elastic_entity_stats() -> dict:
         ],
     )
     search.aggs.bucket(
-        'paper_like',
-        'filters',
+        "paper_like",
+        "filters",
         filters={
-            "in_web": { "term": { "in_web": "true" } },
-            "is_oa": { "term": { "is_oa": "true" } },
-            "in_kbart": { "term": { "in_kbart": "true" } },
-            "in_web_not_kbart": { "bool": { "filter": [
-                { "term": { "in_web": "true" } },
-                { "term": { "in_kbart": "false" } },
-            ]}},
-        }
+            "in_web": {"term": {"in_web": "true"}},
+            "is_oa": {"term": {"is_oa": "true"}},
+            "in_kbart": {"term": {"in_kbart": "true"}},
+            "in_web_not_kbart": {
+                "bool": {
+                    "filter": [
+                        {"term": {"in_web": "true"}},
+                        {"term": {"in_kbart": "false"}},
+                    ]
+                }
+            },
+        },
     )
     search = search[:0]
 
@@ -359,35 +375,36 @@ def get_elastic_entity_stats() -> dict:
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
     buckets = resp.aggregations.paper_like.buckets
-    stats['papers'] = {
-        'total': _hits_total_int(resp.hits.total),
-        'in_web': buckets.in_web.doc_count,
-        'is_oa': buckets.is_oa.doc_count,
-        'in_kbart': buckets.in_kbart.doc_count,
-        'in_web_not_kbart': buckets.in_web_not_kbart.doc_count,
+    stats["papers"] = {
+        "total": _hits_total_int(resp.hits.total),
+        "in_web": buckets.in_web.doc_count,
+        "is_oa": buckets.is_oa.doc_count,
+        "in_kbart": buckets.in_kbart.doc_count,
+        "in_web_not_kbart": buckets.in_web_not_kbart.doc_count,
     }
 
     # container counts
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_CONTAINER_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_CONTAINER_INDEX"])
     search.aggs.bucket(
-        'release_ref_count',
-        'sum',
-        field='ref_count',
+        "release_ref_count",
+        "sum",
+        field="ref_count",
     )
     search = search[:0]  # pylint: disable=unsubscriptable-object
 
     search = search.params(request_cache=True)
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
-    stats['container'] = {
+    stats["container"] = {
         "total": _hits_total_int(resp.hits.total),
     }
 
     return stats
 
+
 def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
         "query_string",
         query=query.q,
@@ -398,10 +415,10 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
         fields=["biblio"],
     )
     search.aggs.bucket(
-        'preservation',
-        'terms',
-        field='preservation',
-        missing='_unknown',
+        "preservation",
+        "terms",
+        field="preservation",
+        missing="_unknown",
     )
     if query.recent:
         date_today = datetime.date.today()
@@ -416,21 +433,24 @@ def get_elastic_search_coverage(query: ReleaseQuery) -> dict:
     resp = wrap_es_execution(search)
 
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
-    preservation_bucket['total'] = _hits_total_int(resp.hits.total)
-    for k in ('bright', 'dark', 'shadows_only', 'none'):
+    preservation_bucket["total"] = _hits_total_int(resp.hits.total)
+    for k in ("bright", "dark", "shadows_only", "none"):
         if k not in preservation_bucket:
             preservation_bucket[k] = 0
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
-        preservation_bucket['none'] += preservation_bucket['shadows_only']
-        preservation_bucket['shadows_only'] = 0
+    if app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]:
+        preservation_bucket["none"] += preservation_bucket["shadows_only"]
+        preservation_bucket["shadows_only"] = 0
     stats = {
-        'total': _hits_total_int(resp.hits.total),
-        'preservation': preservation_bucket,
+        "total": _hits_total_int(resp.hits.total),
+        "preservation": preservation_bucket,
     }
 
     return stats
 
-def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None, merge_shadows=None):
+
+def get_elastic_container_stats(
+    ident, issnl=None, es_client=None, es_index=None, merge_shadows=None
+):
     """
     Returns dict:
         ident
@@ -444,41 +464,41 @@ def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None
     if not es_client:
         es_client = app.es_client
     if not es_index:
-        es_index = app.config['ELASTICSEARCH_RELEASE_INDEX']
+        es_index = app.config["ELASTICSEARCH_RELEASE_INDEX"]
     if merge_shadows is None:
-        merge_shadows = app.config['FATCAT_MERGE_SHADOW_PRESERVATION']
+        merge_shadows = app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]
 
     search = Search(using=es_client, index=es_index)
     search = search.query(
-        'term',
+        "term",
         container_id=ident,
     )
     search.aggs.bucket(
-        'container_stats',
-        'filters',
+        "container_stats",
+        "filters",
         filters={
             "in_web": {
-                "term": { "in_web": True },
+                "term": {"in_web": True},
             },
             "in_kbart": {
-                "term": { "in_kbart": True },
+                "term": {"in_kbart": True},
             },
             "is_preserved": {
-                "term": { "is_preserved": True },
+                "term": {"is_preserved": True},
             },
         },
     )
     search.aggs.bucket(
-        'preservation',
-        'terms',
-        field='preservation',
-        missing='_unknown',
+        "preservation",
+        "terms",
+        field="preservation",
+        missing="_unknown",
     )
     search.aggs.bucket(
-        'release_type',
-        'terms',
-        field='release_type',
-        missing='_unknown',
+        "release_type",
+        "terms",
+        field="release_type",
+        missing="_unknown",
     )
 
     search = search[:0]
@@ -489,26 +509,27 @@ def get_elastic_container_stats(ident, issnl=None, es_client=None, es_index=None
 
     container_stats = resp.aggregations.container_stats.buckets
     preservation_bucket = agg_to_dict(resp.aggregations.preservation)
-    preservation_bucket['total'] = _hits_total_int(resp.hits.total)
-    for k in ('bright', 'dark', 'shadows_only', 'none'):
+    preservation_bucket["total"] = _hits_total_int(resp.hits.total)
+    for k in ("bright", "dark", "shadows_only", "none"):
         if k not in preservation_bucket:
             preservation_bucket[k] = 0
     if merge_shadows:
-        preservation_bucket['none'] += preservation_bucket['shadows_only']
-        preservation_bucket['shadows_only'] = 0
+        preservation_bucket["none"] += preservation_bucket["shadows_only"]
+        preservation_bucket["shadows_only"] = 0
     release_type_bucket = agg_to_dict(resp.aggregations.release_type)
     stats = {
-        'ident': ident,
-        'issnl': issnl,
-        'total': _hits_total_int(resp.hits.total),
-        'in_web': container_stats['in_web']['doc_count'],
-        'in_kbart': container_stats['in_kbart']['doc_count'],
-        'is_preserved': container_stats['is_preserved']['doc_count'],
-        'preservation': preservation_bucket,
-        'release_type': release_type_bucket,
+        "ident": ident,
+        "issnl": issnl,
+        "total": _hits_total_int(resp.hits.total),
+        "in_web": container_stats["in_web"]["doc_count"],
+        "in_kbart": container_stats["in_kbart"]["doc_count"],
+        "is_preserved": container_stats["is_preserved"]["doc_count"],
+        "preservation": preservation_bucket,
+        "release_type": release_type_bucket,
     }
 
     return stats
+
 
 def get_elastic_container_histogram_legacy(ident) -> List:
     """
@@ -522,48 +543,58 @@ def get_elastic_container_histogram_legacy(ident) -> List:
         (year, in_ia, count)
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
-        'bool',
+        "bool",
         must=[
-            Q("range", release_year={
-                "gte": datetime.datetime.today().year - 499,
-                "lte": datetime.datetime.today().year,
-            }),
+            Q(
+                "range",
+                release_year={
+                    "gte": datetime.datetime.today().year - 499,
+                    "lte": datetime.datetime.today().year,
+                },
+            ),
         ],
         filter=[
-            Q("bool", minimum_should_match=1, should=[
-                Q("match", container_id=ident),
-            ]),
+            Q(
+                "bool",
+                minimum_should_match=1,
+                should=[
+                    Q("match", container_id=ident),
+                ],
+            ),
         ],
     )
     search.aggs.bucket(
-        'year_in_ia',
-        'composite',
+        "year_in_ia",
+        "composite",
         size=1000,
         sources=[
-            {"year": {
-                "histogram": {
-                    "field": "release_year",
-                    "interval": 1,
-                },
-            }},
-            {"in_ia": {
-                "terms": {
-                    "field": "in_ia",
-                },
-            }},
+            {
+                "year": {
+                    "histogram": {
+                        "field": "release_year",
+                        "interval": 1,
+                    },
+                }
+            },
+            {
+                "in_ia": {
+                    "terms": {
+                        "field": "in_ia",
+                    },
+                }
+            },
         ],
     )
     search = search[:0]
 
-    search = search.params(request_cache='true')
+    search = search.params(request_cache="true")
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_in_ia.buckets
-    vals = [(int(h['key']['year']), h['key']['in_ia'], h['doc_count'])
-            for h in buckets]
+    vals = [(int(h["key"]["year"]), h["key"]["in_ia"], h["doc_count"]) for h in buckets]
     vals = sorted(vals)
     return vals
 
@@ -580,7 +611,7 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
         {year (int), bright (int), dark (int), shadows_only (int), none (int)}
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     if query.q not in [None, "*"]:
         search = search.query(
             "query_string",
@@ -607,41 +638,47 @@ def get_elastic_preservation_by_year(query) -> List[dict]:
     )
 
     search.aggs.bucket(
-        'year_preservation',
-        'composite',
+        "year_preservation",
+        "composite",
         size=1500,
         sources=[
-            {"year": {
-                "histogram": {
-                    "field": "release_year",
-                    "interval": 1,
-                },
-            }},
-            {"preservation": {
-                "terms": {
-                    "field": "preservation",
-                },
-            }},
+            {
+                "year": {
+                    "histogram": {
+                        "field": "release_year",
+                        "interval": 1,
+                    },
+                }
+            },
+            {
+                "preservation": {
+                    "terms": {
+                        "field": "preservation",
+                    },
+                }
+            },
         ],
     )
     search = search[:0]
-    search = search.params(request_cache='true')
+    search = search.params(request_cache="true")
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_preservation.buckets
-    year_nums = set([int(h['key']['year']) for h in buckets])
+    year_nums = set([int(h["key"]["year"]) for h in buckets])
     year_dicts = dict()
     if year_nums:
-        for num in range(min(year_nums), max(year_nums)+1):
+        for num in range(min(year_nums), max(year_nums) + 1):
             year_dicts[num] = dict(year=num, bright=0, dark=0, shadows_only=0, none=0)
         for row in buckets:
-            year_dicts[int(row['key']['year'])][row['key']['preservation']] = int(row['doc_count'])
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+            year_dicts[int(row["key"]["year"])][row["key"]["preservation"]] = int(
+                row["doc_count"]
+            )
+    if app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]:
         for k in year_dicts.keys():
-            year_dicts[k]['none'] += year_dicts[k]['shadows_only']
-            year_dicts[k]['shadows_only'] = 0
-    return sorted(year_dicts.values(), key=lambda x: x['year'])
+            year_dicts[k]["none"] += year_dicts[k]["shadows_only"]
+            year_dicts[k]["shadows_only"] = 0
+    return sorted(year_dicts.values(), key=lambda x: x["year"])
 
 
 def get_elastic_preservation_by_date(query) -> List[dict]:
@@ -656,7 +693,7 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
         {date (str), bright (int), dark (int), shadows_only (int), none (int)}
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     if query.q not in [None, "*"]:
         search = search.query(
             "query_string",
@@ -678,32 +715,37 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
     start_date = date_today - datetime.timedelta(days=60)
     end_date = date_today + datetime.timedelta(days=1)
     search = search.filter(
-        "range", release_date=dict(
+        "range",
+        release_date=dict(
             gte=str(start_date),
             lte=str(end_date),
-        )
+        ),
     )
 
     search.aggs.bucket(
-        'date_preservation',
-        'composite',
+        "date_preservation",
+        "composite",
         size=1500,
         sources=[
-            {"date": {
-                "histogram": {
-                    "field": "release_date",
-                    "interval": 1,
-                },
-            }},
-            {"preservation": {
-                "terms": {
-                    "field": "preservation",
-                },
-            }},
+            {
+                "date": {
+                    "histogram": {
+                        "field": "release_date",
+                        "interval": 1,
+                    },
+                }
+            },
+            {
+                "preservation": {
+                    "terms": {
+                        "field": "preservation",
+                    },
+                }
+            },
         ],
     )
     search = search[:0]
-    search = search.params(request_cache='true')
+    search = search.params(request_cache="true")
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
@@ -711,15 +753,18 @@ def get_elastic_preservation_by_date(query) -> List[dict]:
     date_dicts = dict()
     this_date = start_date
     while this_date <= end_date:
-        date_dicts[str(this_date)] = dict(date=str(this_date), bright=0, dark=0, shadows_only=0, none=0)
+        date_dicts[str(this_date)] = dict(
+            date=str(this_date), bright=0, dark=0, shadows_only=0, none=0
+        )
         this_date = this_date + datetime.timedelta(days=1)
     for row in buckets:
-        date_dicts[row['key']['date'][0:10]][row['key']['preservation']] = int(row['doc_count'])
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        date_dicts[row["key"]["date"][0:10]][row["key"]["preservation"]] = int(row["doc_count"])
+    if app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]:
         for k in date_dicts.keys():
-            date_dicts[k]['none'] += date_dicts[k]['shadows_only']
-            date_dicts[k]['shadows_only'] = 0
-    return sorted(date_dicts.values(), key=lambda x: x['date'])
+            date_dicts[k]["none"] += date_dicts[k]["shadows_only"]
+            date_dicts[k]["shadows_only"] = 0
+    return sorted(date_dicts.values(), key=lambda x: x["date"])
+
 
 def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict]:
     """
@@ -733,52 +778,64 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
         {year (int), bright (int), dark (int), shadows_only (int), none (int)}
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
-        'bool',
+        "bool",
         filter=[
-            Q("bool", must=[
-                Q("match", container_id=container_id),
-                Q("exists", field="volume"),
-            ]),
+            Q(
+                "bool",
+                must=[
+                    Q("match", container_id=container_id),
+                    Q("exists", field="volume"),
+                ],
+            ),
         ],
     )
     search.aggs.bucket(
-        'volume_preservation',
-        'composite',
+        "volume_preservation",
+        "composite",
         size=1500,
         sources=[
-            {"volume": {
-                "terms": {
-                    "field": "volume",
-                },
-            }},
-            {"preservation": {
-                "terms": {
-                    "field": "preservation",
-                },
-            }},
+            {
+                "volume": {
+                    "terms": {
+                        "field": "volume",
+                    },
+                }
+            },
+            {
+                "preservation": {
+                    "terms": {
+                        "field": "preservation",
+                    },
+                }
+            },
         ],
     )
     search = search[:0]
-    search = search.params(request_cache='true')
+    search = search.params(request_cache="true")
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.volume_preservation.buckets
-    volume_nums = set([int(h['key']['volume']) for h in buckets if h['key']['volume'].isdigit()])
+    volume_nums = set(
+        [int(h["key"]["volume"]) for h in buckets if h["key"]["volume"].isdigit()]
+    )
     volume_dicts = dict()
     if volume_nums:
-        for num in range(min(volume_nums), max(volume_nums)+1):
+        for num in range(min(volume_nums), max(volume_nums) + 1):
             volume_dicts[num] = dict(volume=num, bright=0, dark=0, shadows_only=0, none=0)
         for row in buckets:
-            if row['key']['volume'].isdigit():
-                volume_dicts[int(row['key']['volume'])][row['key']['preservation']] = int(row['doc_count'])
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+            if row["key"]["volume"].isdigit():
+                volume_dicts[int(row["key"]["volume"])][row["key"]["preservation"]] = int(
+                    row["doc_count"]
+                )
+    if app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]:
         for k in volume_dicts.keys():
-            volume_dicts[k]['none'] += volume_dicts[k]['shadows_only']
-            volume_dicts[k]['shadows_only'] = 0
-    return sorted(volume_dicts.values(), key=lambda x: x['volume'])
+            volume_dicts[k]["none"] += volume_dicts[k]["shadows_only"]
+            volume_dicts[k]["shadows_only"] = 0
+    return sorted(volume_dicts.values(), key=lambda x: x["volume"])
+
 
 def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
     """
@@ -789,7 +846,7 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
         {year (int), bright (int), dark (int), shadows_only (int), none (int)}
     """
 
-    search = Search(using=app.es_client, index=app.config['ELASTICSEARCH_RELEASE_INDEX'])
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     if query.q not in [None, "*"]:
         search = search.query(
             "query_string",
@@ -804,11 +861,14 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
         )
     if query.container_id:
         search = search.query(
-            'bool',
+            "bool",
             filter=[
-                Q("bool", must=[
-                    Q("match", container_id=query.container_id),
-                ]),
+                Q(
+                    "bool",
+                    must=[
+                        Q("match", container_id=query.container_id),
+                    ],
+                ),
             ],
         )
     if query.recent:
@@ -817,39 +877,45 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
         end_date = str(date_today + datetime.timedelta(days=1))
         search = search.filter("range", release_date=dict(gte=start_date, lte=end_date))
     search.aggs.bucket(
-        'type_preservation',
-        'composite',
+        "type_preservation",
+        "composite",
         size=1500,
         sources=[
-            {"release_type": {
-                "terms": {
-                    "field": "release_type",
-                },
-            }},
-            {"preservation": {
-                "terms": {
-                    "field": "preservation",
-                },
-            }},
+            {
+                "release_type": {
+                    "terms": {
+                        "field": "release_type",
+                    },
+                }
+            },
+            {
+                "preservation": {
+                    "terms": {
+                        "field": "preservation",
+                    },
+                }
+            },
         ],
     )
     search = search[:0]
-    search = search.params(request_cache='true')
+    search = search.params(request_cache="true")
     search = search.params(track_total_hits=True)
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.type_preservation.buckets
-    type_set = set([h['key']['release_type'] for h in buckets])
+    type_set = set([h["key"]["release_type"] for h in buckets])
     type_dicts = dict()
     for k in type_set:
         type_dicts[k] = dict(release_type=k, bright=0, dark=0, shadows_only=0, none=0, total=0)
     for row in buckets:
-        type_dicts[row['key']['release_type']][row['key']['preservation']] = int(row['doc_count'])
+        type_dicts[row["key"]["release_type"]][row["key"]["preservation"]] = int(
+            row["doc_count"]
+        )
     for k in type_set:
-        for p in ('bright', 'dark', 'shadows_only', 'none'):
-            type_dicts[k]['total'] += type_dicts[k][p]
-    if app.config['FATCAT_MERGE_SHADOW_PRESERVATION']:
+        for p in ("bright", "dark", "shadows_only", "none"):
+            type_dicts[k]["total"] += type_dicts[k][p]
+    if app.config["FATCAT_MERGE_SHADOW_PRESERVATION"]:
         for k in type_set:
-            type_dicts[k]['none'] += type_dicts[k]['shadows_only']
-            type_dicts[k]['shadows_only'] = 0
-    return sorted(type_dicts.values(), key=lambda x: x['total'], reverse=True)
+            type_dicts[k]["none"] += type_dicts[k]["shadows_only"]
+            type_dicts[k]["shadows_only"] = 0
+    return sorted(type_dicts.values(), key=lambda x: x["total"], reverse=True)
