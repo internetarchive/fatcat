@@ -1,5 +1,7 @@
+import datetime
 import sys
 import time
+from typing import Any, Optional
 
 import sickle
 from confluent_kafka import KafkaException, Producer
@@ -24,7 +26,14 @@ class HarvestOaiPmhWorker:
     would want something similar operationally. Oh well!
     """
 
-    def __init__(self, kafka_hosts, produce_topic, state_topic, start_date=None, end_date=None):
+    def __init__(
+        self,
+        kafka_hosts: str,
+        produce_topic: str,
+        state_topic: str,
+        start_date: Optional[datetime.date] = None,
+        end_date: Optional[datetime.date] = None,
+    ):
 
         self.produce_topic = produce_topic
         self.state_topic = state_topic
@@ -42,8 +51,8 @@ class HarvestOaiPmhWorker:
         self.state.initialize_from_kafka(self.state_topic, self.kafka_config)
         print(self.state, file=sys.stderr)
 
-    def fetch_date(self, date):
-        def fail_fast(err, msg):
+    def fetch_date(self, date: datetime.date) -> None:
+        def fail_fast(err: Any, _msg: Any) -> None:
             if err is not None:
                 print("Kafka producer delivery error: {}".format(err), file=sys.stderr)
                 print("Bailing out...", file=sys.stderr)
@@ -93,7 +102,7 @@ class HarvestOaiPmhWorker:
             )
         producer.flush()
 
-    def run(self, continuous=False):
+    def run(self, continuous: bool = False) -> None:
 
         while True:
             current = self.state.next_span(continuous)

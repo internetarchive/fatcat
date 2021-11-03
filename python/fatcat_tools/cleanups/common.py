@@ -2,6 +2,7 @@ import copy
 import json
 import subprocess
 from collections import Counter
+from typing import Any, Dict, List
 
 from fatcat_openapi_client import ApiClient, Editgroup
 
@@ -27,7 +28,7 @@ class EntityCleaner:
     This class is pretty similar to EntityImporter, but isn't subclassed.
     """
 
-    def __init__(self, api, entity_type, **kwargs):
+    def __init__(self, api: ApiClient, entity_type: Any, **kwargs) -> None:
 
         eg_extra = kwargs.get("editgroup_extra", dict())
         eg_extra["git_rev"] = eg_extra.get(
@@ -49,14 +50,14 @@ class EntityCleaner:
         if self.dry_run_mode:
             print("Running in dry-run mode!")
 
-    def reset(self):
+    def reset(self) -> None:
         self.counts = Counter({"lines": 0, "cleaned": 0, "updated": 0})
         self._edit_count = 0
         self._editgroup_id = None
-        self._entity_queue = []
-        self._idents_inflight = []
+        self._entity_queue: List[Any] = []
+        self._idents_inflight: List[str] = []
 
-    def push_record(self, record):
+    def push_record(self, record: Dict[str, Any]) -> None:
         """
         Intended to be called by "pusher" class (which could be pulling from
         JSON file, Kafka, whatever).
@@ -106,14 +107,14 @@ class EntityCleaner:
             self._idents_inflight = []
         return
 
-    def clean_entity(self, entity):
+    def clean_entity(self, entity: Any) -> Any:
         """
         Mutates entity in-place and returns it
         """
         # implementations should fill this in
         raise NotImplementedError
 
-    def try_update(self, entity):
+    def try_update(self, entity: Any) -> int:
         """
         Returns edit count (number of entities updated).
 
@@ -123,7 +124,7 @@ class EntityCleaner:
         # implementations should fill this in
         raise NotImplementedError
 
-    def finish(self):
+    def finish(self) -> Counter:
         if self._edit_count > 0:
             self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
@@ -132,7 +133,7 @@ class EntityCleaner:
 
         return self.counts
 
-    def get_editgroup_id(self):
+    def get_editgroup_id(self) -> str:
 
         if not self._editgroup_id:
             eg = self.api.create_editgroup(

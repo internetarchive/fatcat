@@ -1,4 +1,4 @@
-from fatcat_openapi_client.models import FileEntity
+from fatcat_openapi_client import ApiClient, FileEntity
 from fatcat_openapi_client.rest import ApiException
 
 from .common import EntityCleaner
@@ -9,7 +9,7 @@ class FileCleaner(EntityCleaner):
     File fixups!
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -25,7 +25,7 @@ class FileCleaner(EntityCleaner):
             **kwargs
         )
 
-    def clean_entity(self, entity):
+    def clean_entity(self, entity: FileEntity) -> FileEntity:
         """
         TODO: mimetype is bogus like (???) => clean mimetype
         """
@@ -54,7 +54,7 @@ class FileCleaner(EntityCleaner):
 
         return entity
 
-    def try_update(self, entity):
+    def try_update(self, entity: FileEntity) -> int:
 
         try:
             existing = self.api.get_file(entity.ident)
