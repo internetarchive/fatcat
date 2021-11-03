@@ -1274,6 +1274,7 @@ def parse_datacite_dates(
             print("fallback for {}".format(value), file=sys.stderr)
             release_date, release_month, release_year = parse_single_date(value)
 
+        # XXX: result has not been updated since the above line
         if result is None:
             # Unparsable date.
             return release_date, release_month, release_year
