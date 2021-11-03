@@ -1191,7 +1191,7 @@ def parse_single_date(
         return None, None, None
     if isinstance(value, int):
         value = str(value)
-    parser = dateparser.DateDataParser()
+    parser = dateparser.date.DateDataParser()
     try:
         # Results in a dict with keys: date_obj, period, locale.
         parse_result = parser.get_date_data(value)
