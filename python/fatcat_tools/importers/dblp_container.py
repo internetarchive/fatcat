@@ -1,4 +1,3 @@
-
 """
 Importer for DBLP container-level (journal/conference/series) metadata,
 pre-scraped in to JSON from HTML pages.
@@ -13,17 +12,17 @@ from fatcat_tools.normal import clean_str
 
 
 class DblpContainerImporter(EntityImporter):
+    def __init__(
+        self, api, issn_map_file, dblp_container_map_file, dblp_container_map_output, **kwargs
+    ):
 
-    def __init__(self, api, issn_map_file, dblp_container_map_file, dblp_container_map_output, **kwargs):
-
-        eg_desc = kwargs.get('editgroup_description',
-            "Automated import of container-level metadata scraped from dblp HTML")
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.DblpContainerImporter')
-        super().__init__(api,
-            editgroup_description=eg_desc,
-            editgroup_extra=eg_extra,
-            **kwargs)
+        eg_desc = kwargs.get(
+            "editgroup_description",
+            "Automated import of container-level metadata scraped from dblp HTML",
+        )
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.DblpContainerImporter")
+        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
         self.dblp_container_map_output = dblp_container_map_output
         self.read_dblp_container_map_file(dblp_container_map_file)
@@ -40,7 +39,10 @@ class DblpContainerImporter(EntityImporter):
             assert len(container_id) == 26
             self._dblp_container_map[prefix] = container_id
             print("\t".join([prefix, container_id]), file=self.dblp_container_map_output)
-        print("Got {} existing dblp container mappings.".format(len(self._dblp_container_map)), file=sys.stderr)
+        print(
+            "Got {} existing dblp container mappings.".format(len(self._dblp_container_map)),
+            file=sys.stderr,
+        )
 
     def lookup_dblp_prefix(self, prefix):
         if not prefix:
@@ -57,48 +59,48 @@ class DblpContainerImporter(EntityImporter):
         returns a ContainerEntity (or None if invalid or couldn't parse)
         """
 
-        dblp_prefix = row.get('key') or row.get('dblp_prefix')
+        dblp_prefix = row.get("key") or row.get("dblp_prefix")
         assert dblp_prefix
-        assert row['title']
+        assert row["title"]
 
         container_type = None
-        if dblp_prefix.startswith('conf/'):
+        if dblp_prefix.startswith("conf/"):
             container_type = "conference-series"
-        elif dblp_prefix.startswith('journals/'):
+        elif dblp_prefix.startswith("journals/"):
             container_type = "journal"
-        elif dblp_prefix.startswith('series/'):
+        elif dblp_prefix.startswith("series/"):
             container_type = "book-series"
 
         issnl = None
-        for issn in row.get('issns', []):
+        for issn in row.get("issns", []):
             issnl = self.issn2issnl(issn)
             if issnl:
                 break
 
         extra = {
-            'dblp': {
-                'prefix': dblp_prefix,
+            "dblp": {
+                "prefix": dblp_prefix,
             },
         }
 
-        if row.get('homepage_url'):
-            extra['urls'] = [row['homepage_url']]
+        if row.get("homepage_url"):
+            extra["urls"] = [row["homepage_url"]]
 
-        if row.get('acronym'):
-            extra['acronym'] = row['acronym']
+        if row.get("acronym"):
+            extra["acronym"] = row["acronym"]
 
         ce = fatcat_openapi_client.ContainerEntity(
-            name=clean_str(row['title']),
+            name=clean_str(row["title"]),
             container_type=container_type,
             issnl=issnl,
-            wikidata_qid=row.get('wikidata_qid'),
+            wikidata_qid=row.get("wikidata_qid"),
             extra=extra,
         )
         return ce
 
     def try_update(self, ce):
 
-        dblp_prefix = ce.extra['dblp']['prefix']
+        dblp_prefix = ce.extra["dblp"]["prefix"]
         existing = None
         existing_container_id = self.lookup_dblp_prefix(dblp_prefix)
         if existing_container_id:
@@ -123,8 +125,11 @@ class DblpContainerImporter(EntityImporter):
             return True
 
         if existing:
-            self.counts['exists'] += 1
-            print("\t".join([ce.extra['dblp']['prefix'], existing.ident]), file=self.dblp_container_map_output)
+            self.counts["exists"] += 1
+            print(
+                "\t".join([ce.extra["dblp"]["prefix"], existing.ident]),
+                file=self.dblp_container_map_output,
+            )
             return False
 
         # shouldn't get here
@@ -135,11 +140,17 @@ class DblpContainerImporter(EntityImporter):
         Because we want to print a prefix/container_id match for each row, we
         require a special batch insert method
         """
-        eg = self.api.create_container_auto_batch(fatcat_openapi_client.ContainerAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        eg = self.api.create_container_auto_batch(
+            fatcat_openapi_client.ContainerAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )
         for c_edit in eg.edits.containers:
             c = self.api.get_container(c_edit.ident)
-            print("\t".join([c.extra['dblp']['prefix'], c.ident]), file=self.dblp_container_map_output)
+            print(
+                "\t".join([c.extra["dblp"]["prefix"], c.ident]),
+                file=self.dblp_container_map_output,
+            )

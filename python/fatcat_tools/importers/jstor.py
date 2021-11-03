@@ -1,4 +1,3 @@
-
 import datetime
 import json
 import sys
@@ -12,10 +11,10 @@ from .crossref import CONTAINER_TYPE_MAP
 
 # TODO: more entries?
 JSTOR_CONTRIB_MAP = {
-    'author': 'author',
-    'editor': 'editor',
-    'translator': 'translator',
-    'illustrator': 'illustrator',
+    "author": "author",
+    "editor": "editor",
+    "translator": "translator",
+    "illustrator": "illustrator",
 }
 
 JSTOR_TYPE_MAP = {
@@ -26,6 +25,7 @@ JSTOR_TYPE_MAP = {
     "research-article": "article-journal",
 }
 
+
 class JstorImporter(EntityImporter):
     """
     Importer for JSTOR bulk XML metadata (eg, from their Early Journals
@@ -34,17 +34,18 @@ class JstorImporter(EntityImporter):
 
     def __init__(self, api, issn_map_file, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
-            "Automated import of JSTOR XML metadata")
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.JstorImporter')
-        super().__init__(api,
+        eg_desc = kwargs.get("editgroup_description", "Automated import of JSTOR XML metadata")
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.JstorImporter")
+        super().__init__(
+            api,
             issn_map_file=issn_map_file,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
-            **kwargs)
+            **kwargs
+        )
 
-        self.create_containers = kwargs.get('create_containers', True)
+        self.create_containers = kwargs.get("create_containers", True)
 
         self.read_issn_map_file(issn_map_file)
 
@@ -62,20 +63,22 @@ class JstorImporter(EntityImporter):
         extra = dict()
         extra_jstor = dict()
 
-        release_type = JSTOR_TYPE_MAP.get(article['article-type'])
+        release_type = JSTOR_TYPE_MAP.get(article["article-type"])
         title = article_meta.find("article-title")
         if title and title.get_text():
-            title = title.get_text().replace('\n', ' ').strip()
+            title = title.get_text().replace("\n", " ").strip()
         elif title and not title.get_text():
             title = None
 
-        if not title and release_type.startswith('review') and article_meta.product.source:
-            title = "Review: {}".format(article_meta.product.source.replace('\n', ' ').get_text())
+        if not title and release_type.startswith("review") and article_meta.product.source:
+            title = "Review: {}".format(
+                article_meta.product.source.replace("\n", " ").get_text()
+            )
 
         if not title:
             return None
 
-        if title.endswith('.'):
+        if title.endswith("."):
             title = title[:-1]
 
         if "[Abstract]" in title:
@@ -93,12 +96,12 @@ class JstorImporter(EntityImporter):
             title = title[1:-1]
 
         # JSTOR journal-id
-        journal_ids = [j.string for j in journal_meta.find_all('journal-id')]
+        journal_ids = [j.string for j in journal_meta.find_all("journal-id")]
         if journal_ids:
-            extra_jstor['journal_ids'] = journal_ids
+            extra_jstor["journal_ids"] = journal_ids
 
-        journal_title = journal_meta.find("journal-title").get_text().replace('\n', ' ')
-        publisher = journal_meta.find("publisher-name").get_text().replace('\n', ' ')
+        journal_title = journal_meta.find("journal-title").get_text().replace("\n", " ")
+        publisher = journal_meta.find("publisher-name").get_text().replace("\n", " ")
         issn = journal_meta.find("issn")
         if issn:
             issn = issn.string
@@ -113,13 +116,18 @@ class JstorImporter(EntityImporter):
             container_id = self.lookup_issnl(issnl)
 
         # create container if it doesn't exist
-        if (container_id is None and self.create_containers and (issnl is not None)
-                and journal_title):
+        if (
+            container_id is None
+            and self.create_containers
+            and (issnl is not None)
+            and journal_title
+        ):
             ce = fatcat_openapi_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
-                name=clean(journal_title, force_xml=True))
+                name=clean(journal_title, force_xml=True),
+            )
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
             self._issnl_id_map[issnl] = container_id
@@ -132,8 +140,8 @@ class JstorImporter(EntityImporter):
         if jstor_id:
             jstor_id = jstor_id.string.strip()
         if not jstor_id and doi:
-            assert doi.startswith('10.2307/')
-            jstor_id = doi.replace('10.2307/', '')
+            assert doi.startswith("10.2307/")
+            jstor_id = doi.replace("10.2307/", "")
         assert jstor_id and int(jstor_id)
 
         contribs = []
@@ -142,13 +150,13 @@ class JstorImporter(EntityImporter):
             for c in cgroup.find_all("contrib"):
                 given = c.find("given-names")
                 if given:
-                    given = clean(given.get_text().replace('\n', ' '))
+                    given = clean(given.get_text().replace("\n", " "))
                 surname = c.find("surname")
                 if surname:
-                    surname = clean(surname.get_text().replace('\n', ' '))
+                    surname = clean(surname.get_text().replace("\n", " "))
                 raw_name = c.find("string-name")
                 if raw_name:
-                    raw_name = clean(raw_name.get_text().replace('\n', ' '))
+                    raw_name = clean(raw_name.get_text().replace("\n", " "))
 
                 if not raw_name:
                     if given and surname:
@@ -156,15 +164,17 @@ class JstorImporter(EntityImporter):
                     elif surname:
                         raw_name = surname
 
-                role = JSTOR_CONTRIB_MAP.get(c.get('contrib-type', 'author'))
-                if not role and c.get('contrib-type'):
-                    sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}\n".format(c['contrib-type']))
-                contribs.append(fatcat_openapi_client.ReleaseContrib(
-                    role=role,
-                    raw_name=raw_name,
-                    given_name=given,
-                    surname=surname,
-                ))
+                role = JSTOR_CONTRIB_MAP.get(c.get("contrib-type", "author"))
+                if not role and c.get("contrib-type"):
+                    sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}\n".format(c["contrib-type"]))
+                contribs.append(
+                    fatcat_openapi_client.ReleaseContrib(
+                        role=role,
+                        raw_name=raw_name,
+                        given_name=given,
+                        surname=surname,
+                    )
+                )
 
         for i, contrib in enumerate(contribs):
             if contrib.raw_name != "et al.":
@@ -172,14 +182,13 @@ class JstorImporter(EntityImporter):
 
         release_year = None
         release_date = None
-        pub_date = article_meta.find('pub-date')
+        pub_date = article_meta.find("pub-date")
         if pub_date and pub_date.year:
             release_year = int(pub_date.year.string)
             if pub_date.month and pub_date.day:
                 release_date = datetime.date(
-                    release_year,
-                    int(pub_date.month.string),
-                    int(pub_date.day.string))
+                    release_year, int(pub_date.month.string), int(pub_date.day.string)
+                )
                 if release_date.day == 1 and release_date.month == 1:
                     # suspect jan 1st dates get set by JSTOR when actual
                     # date not known (citation needed), so drop them
@@ -208,10 +217,10 @@ class JstorImporter(EntityImporter):
                 warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
 
         # JSTOR issue-id
-        if article_meta.find('issue-id'):
-            issue_id = clean(article_meta.find('issue-id').string)
+        if article_meta.find("issue-id"):
+            issue_id = clean(article_meta.find("issue-id").string)
             if issue_id:
-                extra_jstor['issue_id'] = issue_id
+                extra_jstor["issue_id"] = issue_id
 
         # everything in JSTOR is published
         release_stage = "published"
@@ -225,14 +234,14 @@ class JstorImporter(EntityImporter):
         #   group-title
         #   pubmed: retraction refs
         if extra_jstor:
-            extra['jstor'] = extra_jstor
+            extra["jstor"] = extra_jstor
         if not extra:
             extra = None
 
         re = fatcat_openapi_client.ReleaseEntity(
-            #work_id
+            # work_id
             title=title,
-            #original_title
+            # original_title
             release_type=release_type,
             release_stage=release_stage,
             release_date=release_date,
@@ -246,21 +255,16 @@ class JstorImporter(EntityImporter):
             pages=pages,
             publisher=publisher,
             language=language,
-            #license_slug
-
+            # license_slug
             # content, mimetype, lang
-            #abstracts=abstracts,
-
+            # abstracts=abstracts,
             contribs=contribs,
-
             # key, year, container_name, title, locator
             # extra: volume, authors, issue, publisher, identifiers
-            #refs=refs,
-
+            # refs=refs,
             #   name, type, publisher, issnl
             #   extra: issnp, issne, original_name, languages, country
             container_id=container_id,
-
             extra=extra,
         )
         return re
@@ -289,12 +293,12 @@ class JstorImporter(EntityImporter):
 
         if existing and existing.ext_ids.jstor:
             # don't update if it already has JSTOR ID
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
         elif existing:
             # but do update if only DOI was set
             existing.ext_ids.jstor = re.ext_ids.jstor
-            existing.extra['jstor'] = re.extra['jstor']
+            existing.extra["jstor"] = re.extra["jstor"]
             # better release_type detection, and some other fields
             # TODO: don't do this over-writing in the future? assuming here
             # this is a one-time batch import over/extending bootstrap crossref
@@ -304,17 +308,20 @@ class JstorImporter(EntityImporter):
             existing.contribs = re.contribs
             existing.language = re.language
             self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
-            self.counts['update'] += 1
+            self.counts["update"] += 1
             return False
 
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        self.api.create_release_auto_batch(
+            fatcat_openapi_client.ReleaseAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )
 
     def parse_file(self, handle):
 
@@ -325,8 +332,9 @@ class JstorImporter(EntityImporter):
         for article in soup.find_all("article"):
             resp = self.parse_record(article)
             print(json.dumps(resp))
-            #sys.exit(-1)
+            # sys.exit(-1)
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     parser = JstorImporter(None, None)
     parser.parse_file(open(sys.argv[1]))

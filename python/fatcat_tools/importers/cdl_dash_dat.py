@@ -34,15 +34,15 @@ def single_file(prefix, path):
         hashlib.sha1(),
         hashlib.sha256(),
     ]
-    with open(full, 'rb') as fp:
+    with open(full, "rb") as fp:
         while True:
-            data = fp.read(2**20)
+            data = fp.read(2 ** 20)
             if not data:
                 break
             for h in hashes:
                 h.update(data)
     mime = magic.Magic(mime=True).from_file(full)
-    if mime == 'application/octet-stream':
+    if mime == "application/octet-stream":
         # magic apparently isn't that great; try using filename as well
         guess = mimetypes.guess_type(full)[0]
         if guess:
@@ -54,8 +54,10 @@ def single_file(prefix, path):
         md5=hashes[0].hexdigest(),
         sha1=hashes[1].hexdigest(),
         sha256=hashes[2].hexdigest(),
-        extra=dict(mimetype=mime))
+        extra=dict(mimetype=mime),
+    )
     return fsf
+
 
 def make_manifest(base_dir):
     manifest = []
@@ -70,47 +72,49 @@ def cdl_dash_release(meta, extra=None):
     if not extra:
         extra = dict()
 
-    assert meta['identifier']['type'] == 'DOI'
-    doi = meta['identifier']['value'].lower()
-    assert doi.startswith('10.')
+    assert meta["identifier"]["type"] == "DOI"
+    doi = meta["identifier"]["value"].lower()
+    assert doi.startswith("10.")
 
     ark_id = None
-    for extid in meta.get('alternativeIdentifiers', []):
-        if extid['value'].startswith('ark:'):
-            ark_id = extid['value']
+    for extid in meta.get("alternativeIdentifiers", []):
+        if extid["value"].startswith("ark:"):
+            ark_id = extid["value"]
     assert ark_id
 
-    license_slug = lookup_license_slug(meta['rights']['uri'])
+    license_slug = lookup_license_slug(meta["rights"]["uri"])
 
     abstracts = []
-    for desc in meta['descriptions']:
-        if desc['type'] == "abstract":
-            abstracts.append(ReleaseAbstract(
-                mimetype="text/html",
-                content=clean(desc['value'])))
-            #print(abstracts)
+    for desc in meta["descriptions"]:
+        if desc["type"] == "abstract":
+            abstracts.append(
+                ReleaseAbstract(mimetype="text/html", content=clean(desc["value"]))
+            )
+            # print(abstracts)
     if not abstracts:
         abstracts = None
 
     contribs = []
-    for creator in meta['creator']:
-        contribs.append(ReleaseContrib(
-            given_name=creator['given'],
-            surname=creator['family'],
-            # sorry everybody
-            raw_name="{} {}".format(creator['given'], creator['family']),
-            raw_affiliation=creator.get('affiliation'),
-            role="author", # presumably, for these datasets?
-        ))
+    for creator in meta["creator"]:
+        contribs.append(
+            ReleaseContrib(
+                given_name=creator["given"],
+                surname=creator["family"],
+                # sorry everybody
+                raw_name="{} {}".format(creator["given"], creator["family"]),
+                raw_affiliation=creator.get("affiliation"),
+                role="author",  # presumably, for these datasets?
+            )
+        )
 
     r = ReleaseEntity(
         ext_ids=ReleaseExtIds(
             doi=doi,
             ark=ark_id,
         ),
-        title=clean(meta['title'], force_xml=True),
-        publisher=clean(meta['publisher']),
-        release_year=int(meta['publicationYear']),
+        title=clean(meta["title"], force_xml=True),
+        publisher=clean(meta["publisher"]),
+        release_year=int(meta["publicationYear"]),
         release_type="dataset",
         license_slug=license_slug,
         contribs=contribs,
@@ -119,66 +123,66 @@ def cdl_dash_release(meta, extra=None):
     )
     return r
 
+
 def make_release_fileset(dat_path):
 
-    if dat_path.endswith('/'):
+    if dat_path.endswith("/"):
         dat_path = dat_path[:-1]
     dat_discovery = dat_path
     extra = dict()
     assert len(dat_discovery) == 64
 
-    with open(dat_path + "/cdl_dash_metadata.json", 'r') as fp:
+    with open(dat_path + "/cdl_dash_metadata.json", "r") as fp:
         meta_dict = json.loads(fp.read())
 
     release = cdl_dash_release(meta_dict)
-    ark_id = release.extra['ark_id']
+    ark_id = release.extra["ark_id"]
 
     dash_version = None
     # really crude XML parse-out
-    with open(dat_path + "/stash-wrapper.xml", 'r') as fp:
+    with open(dat_path + "/stash-wrapper.xml", "r") as fp:
         for line in fp:
             line = line.strip()
             if line.startswith("<st:version_number>"):
-                dash_version = int(line[19:].split('<')[0])
+                dash_version = int(line[19:].split("<")[0])
     assert dash_version is not None
-    extra['cdl_dash'] = dict(version=dash_version)
-    release.extra['cdl_dash'] = dict(version=dash_version)
+    extra["cdl_dash"] = dict(version=dash_version)
+    release.extra["cdl_dash"] = dict(version=dash_version)
 
     manifest = make_manifest(dat_path + "/files/")
 
     bundle_url = dict(
         url="https://merritt.cdlib.org/u/{}/{}".format(
-            urllib.parse.quote(ark_id, safe=''),
-            dash_version),
-        rel="repo-bundle")
+            urllib.parse.quote(ark_id, safe=""), dash_version
+        ),
+        rel="repo-bundle",
+    )
     repo_url = dict(
         url="https://merritt.cdlib.org/d/{}/{}/".format(
-            urllib.parse.quote(ark_id, safe=''),
-            dash_version),
-        rel="repo")
-    dat_url = dict(
-        url="dat://{}/files/".format(dat_discovery),
-        rel="dweb")
+            urllib.parse.quote(ark_id, safe=""), dash_version
+        ),
+        rel="repo",
+    )
+    dat_url = dict(url="dat://{}/files/".format(dat_discovery), rel="dweb")
     fs = FilesetEntity(
-        urls=[bundle_url, repo_url, dat_url],
-        release_ids=None,
-        manifest=manifest,
-        extra=extra)
+        urls=[bundle_url, repo_url, dat_url], release_ids=None, manifest=manifest, extra=extra
+    )
     return (release, fs)
+
 
 def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
 
-    git_rev = subprocess.check_output(
-        ["git", "describe", "--always"]).strip().decode('utf-8')
+    git_rev = subprocess.check_output(["git", "describe", "--always"]).strip().decode("utf-8")
 
     (release, fileset) = make_release_fileset(dat_path)
 
     if not editgroup_id:
-        eg = api.create_editgroup(Editgroup(
-            description="One-off import of dataset(s) from CDL/DASH repository (via IA, Dat dweb pilot project)",
-            extra=dict(
-                git_rev=git_rev,
-                agent="fatcat_tools.auto_cdl_dash_dat")))
+        eg = api.create_editgroup(
+            Editgroup(
+                description="One-off import of dataset(s) from CDL/DASH repository (via IA, Dat dweb pilot project)",
+                extra=dict(git_rev=git_rev, agent="fatcat_tools.auto_cdl_dash_dat"),
+            )
+        )
         editgroup_id = eg.editgroup_id
 
     if not release_id and release.ext_ids.doi:
@@ -201,6 +205,7 @@ def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
     fileset = api.get_fileset(edit.ident)
     return (editgroup_id, release, fileset)
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     # pass this a discovery key that has been cloned to the local directory
     print(make_release_fileset(sys.argv[1]))

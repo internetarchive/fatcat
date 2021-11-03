@@ -1,4 +1,3 @@
-
 import datetime
 import sqlite3
 import sys
@@ -33,26 +32,24 @@ def parse_jalc_persons(raw_persons):
 
     # first parse out into language-agnostic dics
     for raw in raw_persons:
-        name = raw.find('name') or None
+        name = raw.find("name") or None
         if name:
-            name = clean(name.get_text().replace('\n', ' '))
-        surname = raw.find('familyName') or None
+            name = clean(name.get_text().replace("\n", " "))
+        surname = raw.find("familyName") or None
         if surname:
-            surname = clean(surname.get_text().replace('\n', ' '))
-        given_name = raw.find('givenName') or None
+            surname = clean(surname.get_text().replace("\n", " "))
+        given_name = raw.find("givenName") or None
         if given_name:
-            given_name = clean(given_name.get_text().replace('\n', ' '))
-        lang = 'en'
+            given_name = clean(given_name.get_text().replace("\n", " "))
+        lang = "en"
         if is_cjk(name):
-            lang = 'ja'
-        if lang == 'en' and surname and given_name:
+            lang = "ja"
+        if lang == "en" and surname and given_name:
             # english names order is flipped
             name = "{} {}".format(given_name, surname)
         rc = fatcat_openapi_client.ReleaseContrib(
-            raw_name=name,
-            surname=surname,
-            given_name=given_name,
-            role="author")
+            raw_name=name, surname=surname, given_name=given_name, role="author"
+        )
         # add an extra hint field; won't end up in serialized object
         rc._lang = lang
         persons.append(rc)
@@ -60,12 +57,12 @@ def parse_jalc_persons(raw_persons):
     if not persons:
         return []
 
-    if all([p._lang == 'en' for p in persons]) or all([p._lang == 'ja' for p in persons]):
+    if all([p._lang == "en" for p in persons]) or all([p._lang == "ja" for p in persons]):
         # all english names, or all japanese names
         return persons
 
     # for debugging
-    #if len([1 for p in persons if p._lang == 'en']) != len([1 for p in persons if p._lang == 'ja']):
+    # if len([1 for p in persons if p._lang == 'en']) != len([1 for p in persons if p._lang == 'ja']):
     #    print("INTERESTING: {}".format(persons[0]))
 
     start_lang = persons[0]._lang
@@ -74,10 +71,10 @@ def parse_jalc_persons(raw_persons):
         if p._lang == start_lang:
             contribs.append(p)
         else:
-            if p._lang == 'en' and contribs[-1]._lang == 'ja':
+            if p._lang == "en" and contribs[-1]._lang == "ja":
                 eng = p
                 jpn = contribs[-1]
-            elif p._lang == 'ja' and contribs[-1]._lang == 'en':
+            elif p._lang == "ja" and contribs[-1]._lang == "en":
                 eng = contribs[-1]
                 jpn = p
             else:
@@ -85,11 +82,11 @@ def parse_jalc_persons(raw_persons):
                 contribs.append(p)
                 continue
             eng.extra = {
-                'original_name': {
-                    'lang': jpn._lang,
-                    'raw_name': jpn.raw_name,
-                    'given_name': jpn.given_name,
-                    'surname': jpn.surname,
+                "original_name": {
+                    "lang": jpn._lang,
+                    "raw_name": jpn.raw_name,
+                    "given_name": jpn.given_name,
+                    "surname": jpn.surname,
                 },
             }
             contribs[-1] = eng
@@ -105,18 +102,19 @@ class JalcImporter(EntityImporter):
 
     def __init__(self, api, issn_map_file, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
-            "Automated import of JALC DOI metadata")
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.JalcImporter')
-        super().__init__(api,
+        eg_desc = kwargs.get("editgroup_description", "Automated import of JALC DOI metadata")
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.JalcImporter")
+        super().__init__(
+            api,
             issn_map_file=issn_map_file,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
-            **kwargs)
+            **kwargs
+        )
 
-        self.create_containers = kwargs.get('create_containers', True)
-        extid_map_file = kwargs.get('extid_map_file')
+        self.create_containers = kwargs.get("create_containers", True)
+        extid_map_file = kwargs.get("extid_map_file")
         self.extid_map_db = None
         if extid_map_file:
             db_uri = "file:{}?mode=ro".format(extid_map_file)
@@ -129,12 +127,27 @@ class JalcImporter(EntityImporter):
 
     def lookup_ext_ids(self, doi):
         if self.extid_map_db is None:
-            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
-        row = self.extid_map_db.execute("SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
-            [doi.lower()]).fetchone()
+            return dict(
+                core_id=None,
+                pmid=None,
+                pmcid=None,
+                wikidata_qid=None,
+                arxiv_id=None,
+                jstor_id=None,
+            )
+        row = self.extid_map_db.execute(
+            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
+        ).fetchone()
         if row is None:
-            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
-        row = [str(cell or '') or None for cell in row]
+            return dict(
+                core_id=None,
+                pmid=None,
+                pmcid=None,
+                wikidata_qid=None,
+                arxiv_id=None,
+                jstor_id=None,
+            )
+        row = [str(cell or "") or None for cell in row]
         return dict(
             core_id=row[0],
             pmid=row[1],
@@ -163,27 +176,27 @@ class JalcImporter(EntityImporter):
         titles = record.find_all("title")
         if not titles:
             return None
-        title = titles[0].get_text().replace('\n', ' ').strip()
+        title = titles[0].get_text().replace("\n", " ").strip()
         original_title = None
-        if title.endswith('.'):
+        if title.endswith("."):
             title = title[:-1]
         if len(titles) > 1:
-            original_title = titles[1].get_text().replace('\n', ' ').strip()
-            if original_title.endswith('.'):
+            original_title = titles[1].get_text().replace("\n", " ").strip()
+            if original_title.endswith("."):
                 original_title = original_title[:-1]
 
         doi = None
         if record.doi:
             doi = clean_doi(record.doi.string.strip().lower())
-            if doi.startswith('http://dx.doi.org/'):
-                doi = doi.replace('http://dx.doi.org/', '')
-            elif doi.startswith('https://dx.doi.org/'):
-                doi = doi.replace('https://dx.doi.org/', '')
-            elif doi.startswith('http://doi.org/'):
-                doi = doi.replace('http://doi.org/', '')
-            elif doi.startswith('https://doi.org/'):
-                doi = doi.replace('https://doi.org/', '')
-            if not (doi.startswith('10.') and '/' in doi):
+            if doi.startswith("http://dx.doi.org/"):
+                doi = doi.replace("http://dx.doi.org/", "")
+            elif doi.startswith("https://dx.doi.org/"):
+                doi = doi.replace("https://dx.doi.org/", "")
+            elif doi.startswith("http://doi.org/"):
+                doi = doi.replace("http://doi.org/", "")
+            elif doi.startswith("https://doi.org/"):
+                doi = doi.replace("https://doi.org/", "")
+            if not (doi.startswith("10.") and "/" in doi):
                 sys.stderr.write("bogus JALC DOI: {}\n".format(doi))
                 doi = None
         if not doi:
@@ -202,7 +215,9 @@ class JalcImporter(EntityImporter):
         if date:
             date = date.string
             if len(date) == 10:
-                release_date = datetime.datetime.strptime(date['completed-date'], DATE_FMT).date()
+                release_date = datetime.datetime.strptime(
+                    date["completed-date"], DATE_FMT
+                ).date()
                 release_year = release_date.year
                 release_date = release_date.isoformat()
             elif len(date) == 4 and date.isdigit():
@@ -214,7 +229,7 @@ class JalcImporter(EntityImporter):
             if record.endingPage and record.endingPage.string.strip():
                 pages = "{}-{}".format(pages, record.endingPage.string.strip())
         # double check to prevent "-" as pages
-        if pages and pages.strip() == '-':
+        if pages and pages.strip() == "-":
             pages = None
 
         volume = None
@@ -242,9 +257,13 @@ class JalcImporter(EntityImporter):
         container_extra = dict()
 
         if record.publicationName:
-            pubs = [p.get_text().replace('\n', ' ').strip() for p in record.find_all("publicationName") if p.get_text()]
+            pubs = [
+                p.get_text().replace("\n", " ").strip()
+                for p in record.find_all("publicationName")
+                if p.get_text()
+            ]
             pubs = [clean(p) for p in pubs if p]
-            assert(pubs)
+            assert pubs
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
             if len(pubs) > 1 and is_cjk(pubs[0]):
@@ -252,10 +271,14 @@ class JalcImporter(EntityImporter):
                 pubs = [pubs[1], pubs[0]]
             container_name = clean(pubs[0])
             if len(pubs) > 1:
-                container_extra['original_name'] = clean(pubs[1])
+                container_extra["original_name"] = clean(pubs[1])
 
         if record.publisher:
-            pubs = [p.get_text().replace('\n', ' ').strip() for p in record.find_all("publisher") if p.get_text()]
+            pubs = [
+                p.get_text().replace("\n", " ").strip()
+                for p in record.find_all("publisher")
+                if p.get_text()
+            ]
             pubs = [p for p in pubs if p]
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
@@ -265,20 +288,25 @@ class JalcImporter(EntityImporter):
             if pubs:
                 publisher = clean(pubs[0])
                 if len(pubs) > 1:
-                    container_extra['publisher_aliases'] = pubs[1:]
+                    container_extra["publisher_aliases"] = pubs[1:]
 
-        if (container_id is None and self.create_containers and (issnl is not None)
-                and container_name):
+        if (
+            container_id is None
+            and self.create_containers
+            and (issnl is not None)
+            and container_name
+        ):
             # name, type, publisher, issnl
             # extra: issnp, issne, original_name, languages, country
-            container_extra['country'] = 'jp'
-            container_extra['languages'] = ['ja']
+            container_extra["country"] = "jp"
+            container_extra["languages"] = ["ja"]
             ce = fatcat_openapi_client.ContainerEntity(
                 name=container_name,
-                container_type='journal',
+                container_type="journal",
                 publisher=publisher,
                 issnl=issnl,
-                extra=(container_extra or None))
+                extra=(container_extra or None),
+            )
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
             # short-cut future imports in same batch
@@ -301,7 +329,7 @@ class JalcImporter(EntityImporter):
         #   group-title
         # always put at least an empty dict here to indicate the DOI registrar
         # (informally)
-        extra['jalc'] = extra_jalc
+        extra["jalc"] = extra_jalc
 
         title = clean(title)
         if not title:
@@ -312,24 +340,24 @@ class JalcImporter(EntityImporter):
             title=title,
             original_title=clean(original_title),
             release_type=release_type,
-            release_stage='published',
+            release_stage="published",
             release_date=release_date,
             release_year=release_year,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids['pmid'],
-                pmcid=extids['pmcid'],
-                wikidata_qid=extids['wikidata_qid'],
-                core=extids['core_id'],
-                arxiv=extids['arxiv_id'],
-                jstor=extids['jstor_id'],
+                pmid=extids["pmid"],
+                pmcid=extids["pmcid"],
+                wikidata_qid=extids["wikidata_qid"],
+                core=extids["core_id"],
+                arxiv=extids["arxiv_id"],
+                jstor=extids["jstor_id"],
             ),
             volume=volume,
             issue=issue,
             pages=pages,
             publisher=publisher,
             language=lang,
-            #license_slug
+            # license_slug
             container_id=container_id,
             contribs=contribs,
             extra=extra,
@@ -351,17 +379,20 @@ class JalcImporter(EntityImporter):
         # eventually we'll want to support "updates", but for now just skip if
         # entity already exists
         if existing:
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
 
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        self.api.create_release_auto_batch(
+            fatcat_openapi_client.ReleaseAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )
 
     def parse_file(self, handle):
         """
@@ -374,11 +405,11 @@ class JalcImporter(EntityImporter):
         # 2. iterate over articles, call parse_article on each
         for record in soup.find_all("Description"):
             resp = self.parse_record(record)
-            #print(json.dumps(resp))
+            # print(json.dumps(resp))
             print(resp)
-            #sys.exit(-1)
+            # sys.exit(-1)
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     parser = JalcImporter(None, None)
     parser.parse_file(open(sys.argv[1]))

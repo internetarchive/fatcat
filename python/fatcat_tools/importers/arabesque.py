@@ -1,9 +1,9 @@
-
 import fatcat_openapi_client
 
 from .common import SANE_MAX_RELEASES, SANE_MAX_URLS, EntityImporter, b32_hex, make_rel_url
 
-ARABESQUE_MATCH_WHERE_CLAUSE='WHERE hit = 1 AND identifier IS NOT NULL'
+ARABESQUE_MATCH_WHERE_CLAUSE = "WHERE hit = 1 AND identifier IS NOT NULL"
+
 
 class ArabesqueMatchImporter(EntityImporter):
     """
@@ -38,17 +38,17 @@ class ArabesqueMatchImporter(EntityImporter):
 
     def __init__(self, api, extid_type, require_grobid=True, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description', None) or "Match web crawl files to releases based on identifier/URL seedlist"
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ArabesqueMatchImporter')
-        if kwargs.get('crawl_id'):
-            eg_extra['crawl_id'] = kwargs.get('crawl_id')
-        kwargs['do_updates'] = kwargs.get("do_updates", False)
-        super().__init__(api,
-            editgroup_description=eg_desc,
-            editgroup_extra=eg_extra,
-            **kwargs)
-        assert extid_type in ('doi', 'pmcid', 'pmid')
+        eg_desc = (
+            kwargs.get("editgroup_description", None)
+            or "Match web crawl files to releases based on identifier/URL seedlist"
+        )
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.ArabesqueMatchImporter")
+        if kwargs.get("crawl_id"):
+            eg_extra["crawl_id"] = kwargs.get("crawl_id")
+        kwargs["do_updates"] = kwargs.get("do_updates", False)
+        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
+        assert extid_type in ("doi", "pmcid", "pmid")
         self.extid_type = extid_type
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
@@ -60,33 +60,35 @@ class ArabesqueMatchImporter(EntityImporter):
             print("NOT checking GROBID status column")
 
     def want(self, row):
-        if self.require_grobid and not row['postproc_status'] == "200":
+        if self.require_grobid and not row["postproc_status"] == "200":
             return False
-        if (bool(row['hit']) is True
-                and row['final_sha1']
-                and row['final_timestamp']
-                and row['final_timestamp'] != "-"
-                and len(row['final_timestamp']) == 14
-                and row['final_mimetype']
-                and bool(row['hit']) is True
-                and row['identifier']):
+        if (
+            bool(row["hit"]) is True
+            and row["final_sha1"]
+            and row["final_timestamp"]
+            and row["final_timestamp"] != "-"
+            and len(row["final_timestamp"]) == 14
+            and row["final_mimetype"]
+            and bool(row["hit"]) is True
+            and row["identifier"]
+        ):
             return True
         else:
             return False
 
     def parse_record(self, row):
 
-        extid = row['identifier'].strip()
+        extid = row["identifier"].strip()
 
         # check/cleanup DOI
-        if self.extid_type == 'doi':
+        if self.extid_type == "doi":
             extid = extid.lower()
-            extid.replace('http://doi.org/', '')
-            extid.replace('https://doi.org/', '')
-            if extid.startswith('doi:'):
+            extid.replace("http://doi.org/", "")
+            extid.replace("https://doi.org/", "")
+            if extid.startswith("doi:"):
                 extid = extid[4:]
-            if not extid.startswith('10.'):
-                self.counts['skip-extid-invalid']
+            if not extid.startswith("10."):
+                self.counts["skip-extid-invalid"]
                 return None
 
         # lookup extid
@@ -95,35 +97,35 @@ class ArabesqueMatchImporter(EntityImporter):
         except fatcat_openapi_client.rest.ApiException as err:
             if err.status == 404:
                 # bail on 404 (release not in DB)
-                self.counts['skip-extid-not-found'] += 1
+                self.counts["skip-extid-not-found"] += 1
                 return None
             elif err.status == 400:
-                self.counts['skip-extid-invalid'] += 1
+                self.counts["skip-extid-invalid"] += 1
                 return None
             else:
                 raise err
 
-        url = make_rel_url(row['final_url'], self.default_link_rel)
+        url = make_rel_url(row["final_url"], self.default_link_rel)
         if not url:
-            self.counts['skip-url'] += 1
+            self.counts["skip-url"] += 1
             return None
-        if not row['final_timestamp']:
-            self.counts['skip-missing-timestamp'] += 1
+        if not row["final_timestamp"]:
+            self.counts["skip-missing-timestamp"] += 1
             return None
         wayback = "https://web.archive.org/web/{}/{}".format(
-            row['final_timestamp'],
-            row['final_url'])
+            row["final_timestamp"], row["final_url"]
+        )
         urls = [url, ("webarchive", wayback)]
 
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
 
         if len(urls) > SANE_MAX_URLS:
-            self.counts['skip-too-many-url'] += 1
+            self.counts["skip-too-many-url"] += 1
             return None
 
         fe = fatcat_openapi_client.FileEntity(
-            sha1=b32_hex(row['final_sha1']),
-            mimetype=row['final_mimetype'] or self.default_mimetype,
+            sha1=b32_hex(row["final_sha1"]),
+            mimetype=row["final_mimetype"] or self.default_mimetype,
             release_ids=[re.ident],
             urls=urls,
         )
@@ -143,15 +145,15 @@ class ArabesqueMatchImporter(EntityImporter):
 
         if (fe.release_ids[0] in existing.release_ids) and existing.urls:
             # TODO: could still, in theory update with the new URL?
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
 
         if not self.do_updates:
-            self.counts['skip-update-disabled'] += 1
+            self.counts["skip-update-disabled"] += 1
             return False
 
         if existing.ident in [e.ident for e in self._edits_inflight]:
-            self.counts['skip-update-inflight'] += 1
+            self.counts["skip-update-inflight"] += 1
             return False
 
         # TODO: this code path never gets hit because of the check above
@@ -159,28 +161,33 @@ class ArabesqueMatchImporter(EntityImporter):
             existing_urls = set([u.url for u in existing.urls])
             new_urls = set([u.url for u in fe.urls])
             if existing_urls.issuperset(new_urls):
-                self.counts['skip-update-nothing-new'] += 1
+                self.counts["skip-update-nothing-new"] += 1
                 return False
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
+        existing.urls = [
+            fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls
+        ]
         if len(existing.urls) > SANE_MAX_URLS:
-            self.counts['skip-update-too-many-url'] += 1
+            self.counts["skip-update-too-many-url"] += 1
             return None
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         if len(existing.release_ids) > SANE_MAX_RELEASES:
-            self.counts['skip-update-too-many-url'] += 1
+            self.counts["skip-update-too-many-url"] += 1
             return None
         existing.mimetype = existing.mimetype or fe.mimetype
         edit = self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self._edits_inflight.append(edit)
-        self.counts['update'] += 1
+        self.counts["update"] += 1
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        self.api.create_file_auto_batch(
+            fatcat_openapi_client.FileAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )

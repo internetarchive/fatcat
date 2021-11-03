@@ -1,4 +1,3 @@
-
 from enum import Enum
 from typing import List, Optional
 
@@ -15,6 +14,7 @@ class AccessType(str, Enum):
     repository = "repository"
     openlibrary = "openlibrary"
     wikipedia = "wikipedia"
+
 
 class AccessOption(BaseModel):
 
@@ -40,27 +40,31 @@ def release_access_options(release: ReleaseEntity) -> List[AccessOption]:
     option found
     """
     options = []
-    for f in (release.files or []):
+    for f in release.files or []:
         thumbnail_url = None
-        if f.mimetype == 'application/pdf' and f.sha1 and f.urls:
+        if f.mimetype == "application/pdf" and f.sha1 and f.urls:
             # NOTE: scholar.archive.org does an actual database check before
             # generating these URLs, but we skip that for speed
             thumbnail_url = f"https://blobs.fatcat.wiki/thumbnail/pdf/{f.sha1[0:2]}/{f.sha1[2:4]}/{f.sha1}.180px.jpg"
-        for u in (f.urls or []):
-            if '://web.archive.org/' in u.url:
-                return [AccessOption(
-                    access_type="wayback",
-                    access_url=u.url,
-                    mimetype=f.mimetype,
-                    size_bytes=f.size,
-                    thumbnail_url=thumbnail_url,
-                )]
-            elif '://archive.org/' in u.url:
-                return [AccessOption(
-                    access_type="ia_file",
-                    access_url=u.url,
-                    mimetype=f.mimetype,
-                    size_bytes=f.size,
-                    thumbnail_url=thumbnail_url,
-                )]
+        for u in f.urls or []:
+            if "://web.archive.org/" in u.url:
+                return [
+                    AccessOption(
+                        access_type="wayback",
+                        access_url=u.url,
+                        mimetype=f.mimetype,
+                        size_bytes=f.size,
+                        thumbnail_url=thumbnail_url,
+                    )
+                ]
+            elif "://archive.org/" in u.url:
+                return [
+                    AccessOption(
+                        access_type="ia_file",
+                        access_url=u.url,
+                        mimetype=f.mimetype,
+                        size_bytes=f.size,
+                        thumbnail_url=thumbnail_url,
+                    )
+                ]
     return options

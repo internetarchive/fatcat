@@ -1,4 +1,3 @@
-
 import os
 import sys
 
@@ -15,6 +14,7 @@ def public_api(host_uri):
     conf.host = host_uri
     return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
+
 def authenticated_api(host_uri, token=None):
     """
     Note: if this helper is called, it's implied that an actual API connection
@@ -24,10 +24,11 @@ def authenticated_api(host_uri, token=None):
     conf = fatcat_openapi_client.Configuration()
     conf.host = host_uri
     if not token:
-        token = os.environ['FATCAT_API_AUTH_TOKEN']
+        token = os.environ["FATCAT_API_AUTH_TOKEN"]
     if not token:
         sys.stderr.write(
-            'This client requires a fatcat API token (eg, in env var FATCAT_API_AUTH_TOKEN)\n')
+            "This client requires a fatcat API token (eg, in env var FATCAT_API_AUTH_TOKEN)\n"
+        )
         sys.exit(-1)
 
     conf.api_key["Authorization"] = token

@@ -1,4 +1,3 @@
-
 import fatcat_openapi_client
 
 from fatcat_tools.normal import clean_doi, clean_isbn13, clean_pmid
@@ -30,25 +29,25 @@ class ShadowLibraryImporter(EntityImporter):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.pop('editgroup_description', None) or "Import of 'Shadow Library' file/release matches"
-        eg_extra = kwargs.pop('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ShadowLibraryImporter')
-        super().__init__(api,
-            editgroup_description=eg_desc,
-            editgroup_extra=eg_extra,
-            **kwargs)
+        eg_desc = (
+            kwargs.pop("editgroup_description", None)
+            or "Import of 'Shadow Library' file/release matches"
+        )
+        eg_extra = kwargs.pop("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.ShadowLibraryImporter")
+        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
 
     def want(self, raw_record):
         """
         Only want to import records with complete file-level metadata
         """
-        fm = raw_record['file_meta']
-        if not (fm['mimetype'] and fm['md5hex'] and fm['sha256hex'] and fm['size_bytes']):
-            self.counts['skip-file-meta-incomplete'] += 1
+        fm = raw_record["file_meta"]
+        if not (fm["mimetype"] and fm["md5hex"] and fm["sha256hex"] and fm["size_bytes"]):
+            self.counts["skip-file-meta-incomplete"] += 1
             return False
-        if fm['mimetype'] != 'application/pdf':
-            self.counts['skip-not-pdf'] += 1
+        if fm["mimetype"] != "application/pdf":
+            self.counts["skip-not-pdf"] += 1
             return False
         return True
 
@@ -57,23 +56,23 @@ class ShadowLibraryImporter(EntityImporter):
         We do the release lookup in this method. Try DOI, then PMID, last ISBN13.
         """
 
-        shadow_corpus = obj['shadow']['shadow_corpus']
+        shadow_corpus = obj["shadow"]["shadow_corpus"]
         assert shadow_corpus == shadow_corpus.strip().lower()
-        doi = clean_doi(obj['shadow'].get('doi'))
-        pmid = clean_pmid(obj['shadow'].get('pmid'))
-        isbn13 = clean_isbn13(obj['shadow'].get('isbn13'))
-        shadow_id = obj['shadow'].get('shadow_id').strip()
+        doi = clean_doi(obj["shadow"].get("doi"))
+        pmid = clean_pmid(obj["shadow"].get("pmid"))
+        isbn13 = clean_isbn13(obj["shadow"].get("isbn13"))
+        shadow_id = obj["shadow"].get("shadow_id").strip()
         assert shadow_id
 
-        extra = { '{}_id'.format(shadow_corpus): shadow_id }
-        for (ext_type, ext_id) in [('doi', doi), ('pmid', pmid), ('isbn13', isbn13)]:
+        extra = {"{}_id".format(shadow_corpus): shadow_id}
+        for (ext_type, ext_id) in [("doi", doi), ("pmid", pmid), ("isbn13", isbn13)]:
             if not ext_id:
                 continue
-            extra['{}_{}'.format(shadow_corpus, ext_type)] = ext_id
+            extra["{}_{}".format(shadow_corpus, ext_type)] = ext_id
 
         # lookup release via several idents
         re = None
-        for (ext_type, ext_id) in [('doi', doi), ('pmid', pmid), ('isbn13', isbn13)]:
+        for (ext_type, ext_id) in [("doi", doi), ("pmid", pmid), ("isbn13", isbn13)]:
             if not ext_id:
                 continue
             try:
@@ -86,29 +85,31 @@ class ShadowLibraryImporter(EntityImporter):
                 break
 
         if not re:
-            self.counts['skip-release-not-found'] += 1
+            self.counts["skip-release-not-found"] += 1
             return None
 
-        release_ids = [re.ident,]
+        release_ids = [
+            re.ident,
+        ]
 
         # parse single CDX into URLs (if exists)
         urls = []
-        if obj.get('cdx'):
-            url = make_rel_url(obj['cdx']['url'], default_link_rel=self.default_link_rel)
+        if obj.get("cdx"):
+            url = make_rel_url(obj["cdx"]["url"], default_link_rel=self.default_link_rel)
             if url is not None:
                 urls.append(url)
             wayback = "https://web.archive.org/web/{}/{}".format(
-                obj['cdx']['datetime'],
-                obj['cdx']['url'])
+                obj["cdx"]["datetime"], obj["cdx"]["url"]
+            )
             urls.append(("webarchive", wayback))
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
 
         fe = fatcat_openapi_client.FileEntity(
-            md5=obj['file_meta']['md5hex'],
-            sha1=obj['file_meta']['sha1hex'],
-            sha256=obj['file_meta']['sha256hex'],
-            size=int(obj['file_meta']['size_bytes']),
-            mimetype=obj['file_meta']['mimetype'] or None,
+            md5=obj["file_meta"]["md5hex"],
+            sha1=obj["file_meta"]["sha1hex"],
+            sha256=obj["file_meta"]["sha256hex"],
+            size=int(obj["file_meta"]["size_bytes"]),
+            mimetype=obj["file_meta"]["mimetype"] or None,
             release_ids=release_ids,
             urls=urls,
             extra=dict(shadows=extra),
@@ -130,45 +131,50 @@ class ShadowLibraryImporter(EntityImporter):
         if not existing.extra:
             existing.extra = {}
 
-        if existing.extra.get('shadows') and list(fe.extra['shadows'].keys())[0] in existing.extra['shadows']:
+        if (
+            existing.extra.get("shadows")
+            and list(fe.extra["shadows"].keys())[0] in existing.extra["shadows"]
+        ):
             # already imported from this shadow library; skip
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
 
         # check for edit conflicts
         if existing.ident in [e.ident for e in self._edits_inflight]:
-            self.counts['skip-update-inflight'] += 1
+            self.counts["skip-update-inflight"] += 1
             return False
         if fe.sha1 in [e.sha1 for e in self._edits_inflight]:
             raise Exception("Inflight insert; shouldn't happen")
 
         # minimum viable "existing" URL cleanup to fix dupes and broken links:
         # remove 'None' wayback URLs, and set archive.org rel 'archive'
-        existing.urls = [u for u in existing.urls if not ('://web.archive.org/web/None/' in u.url)]
+        existing.urls = [
+            u for u in existing.urls if not ("://web.archive.org/web/None/" in u.url)
+        ]
         for i in range(len(existing.urls)):
             u = existing.urls[i]
-            if u.rel == 'repository' and '://archive.org/download/' in u.url:
-                existing.urls[i].rel = 'archive'
-            if u.rel == 'social':
-                u.rel = 'academicsocial'
+            if u.rel == "repository" and "://archive.org/download/" in u.url:
+                existing.urls[i].rel = "archive"
+            if u.rel == "social":
+                u.rel = "academicsocial"
 
         # merge the existing into this one and update
         merged_urls = {}
         for u in fe.urls + existing.urls:
             merged_urls[u.url] = u
         existing.urls = list(merged_urls.values())
-        if not existing.extra.get('shadows'):
-            existing.extra['shadows'] = fe.extra['shadows']
+        if not existing.extra.get("shadows"):
+            existing.extra["shadows"] = fe.extra["shadows"]
         else:
-            existing.extra['shadows'].update(fe.extra['shadows'])
+            existing.extra["shadows"].update(fe.extra["shadows"])
 
         # do these "plus ones" because we really want to do these updates when possible
         if len(existing.urls) > SANE_MAX_URLS + 1:
-            self.counts['skip-update-too-many-url'] += 1
+            self.counts["skip-update-too-many-url"] += 1
             return None
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         if len(existing.release_ids) > SANE_MAX_RELEASES + 1:
-            self.counts['skip-update-too-many-releases'] += 1
+            self.counts["skip-update-too-many-releases"] += 1
             return None
         existing.mimetype = existing.mimetype or fe.mimetype
         existing.size = existing.size or fe.size
@@ -180,12 +186,15 @@ class ShadowLibraryImporter(EntityImporter):
         # group-level de-dupe
         edit.sha1 = existing.sha1
         self._edits_inflight.append(edit)
-        self.counts['update'] += 1
+        self.counts["update"] += 1
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        self.api.create_file_auto_batch(
+            fatcat_openapi_client.FileAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )

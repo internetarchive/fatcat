@@ -1,4 +1,3 @@
-
 """
 A bunch of helpers to parse and normalize strings: external identifiers,
 free-form input, titles, etc.
@@ -32,7 +31,7 @@ def clean_doi(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().lower()
-    if '\u2013' in raw:
+    if "\u2013" in raw:
         # Do not attempt to normalize "en dash" and since FC does not allow
         # unicode in DOI, treat this as invalid.
         return None
@@ -54,7 +53,7 @@ def clean_doi(raw: str) -> Optional[str]:
     # fatcatd uses same REGEX, but Rust regex rejects these characters, while
     # python doesn't. DOIs are syntaxtually valid, but very likely to be typos;
     # for now filter them out.
-    for c in ('¬', ):
+    for c in ("¬",):
         if c in raw:
             return None
 
@@ -70,6 +69,7 @@ def clean_doi(raw: str) -> Optional[str]:
         return None
     return raw
 
+
 def test_clean_doi():
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
@@ -81,7 +81,9 @@ def test_clean_doi():
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/ asdf ") is None
     assert clean_doi("10.4149/gpb¬_2017042") is None  # "logical negation" character
-    assert clean_doi("10.6002/ect.2020.häyry") is None  # this example via pubmed (pmid:32519616)
+    assert (
+        clean_doi("10.6002/ect.2020.häyry") is None
+    )  # this example via pubmed (pmid:32519616)
     assert clean_doi("10.30466/vrf.2019.98547.2350\u200e") is None
     assert clean_doi("10.12016/j.issn.2096⁃1456.2017.06.014") is None
     assert clean_doi("10.4025/diálogos.v17i2.36030") is None
@@ -91,6 +93,7 @@ def test_clean_doi():
 
 
 ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
+
 
 def clean_arxiv_id(raw: str) -> Optional[str]:
     """
@@ -112,6 +115,7 @@ def clean_arxiv_id(raw: str) -> Optional[str]:
     if not ARXIV_ID_REGEX.fullmatch(raw):
         return None
     return raw
+
 
 def test_clean_arxiv_id():
     assert clean_arxiv_id("0806.2878v1") == "0806.2878v1"
@@ -141,15 +145,17 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("0806.v1") is None
     assert clean_arxiv_id("08062878v1") is None
 
+
 def clean_wikidata_qid(raw):
     if not raw:
         return None
     raw = raw.strip()
     if len(raw.split()) != 1 or len(raw) < 2:
         return None
-    if raw[0] == 'Q' and raw[1] != '0' and raw[1:].isdigit():
+    if raw[0] == "Q" and raw[1] != "0" and raw[1:].isdigit():
         return raw
     return None
+
 
 def test_clean_wikidata_qid():
     assert clean_wikidata_qid("Q1234") == "Q1234"
@@ -163,6 +169,7 @@ def test_clean_wikidata_qid():
     assert clean_wikidata_qid("qfba3") is None
     assert clean_wikidata_qid("") is None
 
+
 def clean_pmid(raw: str) -> Optional[str]:
     if not raw:
         return None
@@ -173,12 +180,14 @@ def clean_pmid(raw: str) -> Optional[str]:
         return raw
     return None
 
+
 def test_clean_pmid():
     assert clean_pmid("1234") == "1234"
     assert clean_pmid("1234 ") == "1234"
     assert clean_pmid("PMC123") is None
     assert clean_pmid("qfba3") is None
     assert clean_pmid("") is None
+
 
 def clean_pmcid(raw: str) -> Optional[str]:
     if not raw:
@@ -189,6 +198,7 @@ def clean_pmcid(raw: str) -> Optional[str]:
     if raw.startswith("PMC") and raw[3:] and raw[3:].isdigit():
         return raw
     return None
+
 
 def clean_sha1(raw: str) -> Optional[str]:
     if not raw:
@@ -203,12 +213,20 @@ def clean_sha1(raw: str) -> Optional[str]:
             return None
     return raw
 
+
 def test_clean_sha1():
-    assert clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
-    assert clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b ") == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
+    assert (
+        clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b")
+        == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
+    )
+    assert (
+        clean_sha1("0fba3fba0e1937aa0297de3836b768b5dfb23d7b ")
+        == "0fba3fba0e1937aa0297de3836b768b5dfb23d7b"
+    )
     assert clean_sha1("fba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
     assert clean_sha1("qfba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
     assert clean_sha1("0fba3fb a0e1937aa0297de3836b768b5dfb23d7b") is None
+
 
 def clean_sha256(raw: str) -> Optional[str]:
     raw = raw.strip().lower()
@@ -221,11 +239,17 @@ def clean_sha256(raw: str) -> Optional[str]:
             return None
     return raw
 
+
 def test_clean_sha256():
-    assert clean_sha256("6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f") == "6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f"
+    assert (
+        clean_sha256("6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f")
+        == "6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f"
+    )
     assert clean_sha256("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") is None
 
+
 ISSN_REGEX = re.compile(r"^\d{4}-\d{3}[0-9X]$")
+
 
 def clean_issn(raw: str) -> Optional[str]:
     if not raw:
@@ -237,13 +261,16 @@ def clean_issn(raw: str) -> Optional[str]:
         return None
     return raw
 
+
 def test_clean_issn():
     assert clean_issn("1234-4567") == "1234-4567"
     assert clean_issn("1234-456X") == "1234-456X"
     assert clean_issn("134-4567") is None
     assert clean_issn("123X-4567") is None
 
+
 ISBN13_REGEX = re.compile(r"^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
+
 
 def clean_isbn13(raw: str) -> Optional[str]:
     if not raw:
@@ -253,13 +280,16 @@ def clean_isbn13(raw: str) -> Optional[str]:
         return None
     return raw
 
+
 def test_clean_isbn13():
     assert clean_isbn13("978-1-56619-909-4") == "978-1-56619-909-4"
     assert clean_isbn13("978-1-4028-9462-6") == "978-1-4028-9462-6"
     assert clean_isbn13("978-1-56619-909-4 ") == "978-1-56619-909-4"
     assert clean_isbn13("9781566199094") is None
 
+
 ORCID_REGEX = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
+
 
 def clean_orcid(raw: str) -> Optional[str]:
     if not raw:
@@ -268,6 +298,7 @@ def clean_orcid(raw: str) -> Optional[str]:
     if not ORCID_REGEX.fullmatch(raw):
         return None
     return raw
+
 
 def test_clean_orcid():
     assert clean_orcid("0123-4567-3456-6789") == "0123-4567-3456-6789"
@@ -278,6 +309,7 @@ def test_clean_orcid():
 
 
 HDL_REGEX = re.compile(r"^\d+(\.\d+)*/\S+$")
+
 
 def clean_hdl(raw):
     if not raw:
@@ -293,14 +325,17 @@ def clean_hdl(raw):
         raw = raw[15:]
     if not HDL_REGEX.fullmatch(raw):
         return None
-    if raw.startswith('10.'):
+    if raw.startswith("10."):
         return None
     return raw
+
 
 def test_clean_hdl():
     assert clean_hdl("20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
     assert clean_hdl("hdl:20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
-    assert clean_hdl("https://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    assert (
+        clean_hdl("https://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
+    )
     assert clean_hdl("http://hdl.handle.net/20.500.23456/ABC/DUMMY") == "20.500.23456/abc/dummy"
     assert clean_hdl("21.1234/aksjdfh") == "21.1234/aksjdfh"
     assert clean_hdl("2381/12775") == "2381/12775"
@@ -326,7 +361,7 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
     """
     if not thing:
         return None
-    unescape_html: Union[str, bool] = 'auto'
+    unescape_html: Union[str, bool] = "auto"
     if force_xml:
         unescape_html = True
     fixed = ftfy.fix_text(thing, unescape_html=unescape_html).strip()
@@ -335,15 +370,17 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
         return None
     return fixed
 
+
 def test_clean_str():
 
     assert clean_str(None) is None
-    assert clean_str('') is None
-    assert clean_str('1') is None
-    assert clean_str('123') == '123'
-    assert clean_str('a&amp;b') == 'a&b'
-    assert clean_str('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
-    assert clean_str('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
+    assert clean_str("") is None
+    assert clean_str("1") is None
+    assert clean_str("123") == "123"
+    assert clean_str("a&amp;b") == "a&b"
+    assert clean_str("<b>a&amp;b</b>") == "<b>a&amp;b</b>"
+    assert clean_str("<b>a&amp;b</b>", force_xml=True) == "<b>a&b</b>"
+
 
 def b32_hex(s):
     s = s.strip().split()[0].lower()
@@ -351,7 +388,8 @@ def b32_hex(s):
         s = s[5:]
     if len(s) != 32:
         return s
-    return base64.b16encode(base64.b32decode(s.upper())).lower().decode('utf-8')
+    return base64.b16encode(base64.b32decode(s.upper())).lower().decode("utf-8")
+
 
 def is_cjk(s):
     if not s:
@@ -359,37 +397,52 @@ def is_cjk(s):
     for c in s:
         if c.isalpha():
             lang_prefix = unicodedata.name(c).split()[0]
-            return lang_prefix in ('CJK', 'HIRAGANA', 'KATAKANA', 'HANGUL')
+            return lang_prefix in ("CJK", "HIRAGANA", "KATAKANA", "HANGUL")
     return False
+
 
 def test_is_cjk():
     assert is_cjk(None) is False
-    assert is_cjk('') is False
-    assert is_cjk('blah') is False
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼') is True
-    assert is_cjk('[岡, 鹿, 梨, 阜, 埼]') is True
-    assert is_cjk('菊') is True
-    assert is_cjk('岡, 鹿, 梨, 阜, 埼 with eng after') is True
-    assert is_cjk('水道') is True
-    assert is_cjk('オウ, イク') is True # kanji
-    assert is_cjk('ひヒ') is True
-    assert is_cjk('き゚ゅ') is True
-    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') is True
+    assert is_cjk("") is False
+    assert is_cjk("blah") is False
+    assert is_cjk("岡, 鹿, 梨, 阜, 埼") is True
+    assert is_cjk("[岡, 鹿, 梨, 阜, 埼]") is True
+    assert is_cjk("菊") is True
+    assert is_cjk("岡, 鹿, 梨, 阜, 埼 with eng after") is True
+    assert is_cjk("水道") is True
+    assert is_cjk("オウ, イク") is True  # kanji
+    assert is_cjk("ひヒ") is True
+    assert is_cjk("き゚ゅ") is True
+    assert is_cjk("ㄴ, ㄹ, ㅁ, ㅂ, ㅅ") is True
+
 
 MONTH_MAP = {
-    "jan":  1, "january":   1,
-    "feb":  2, "febuary":   2,
-    "mar":  3, "march":     3,
-    "apr":  4, "april":     4,
-    "may":  5, "may":       5,
-    "jun":  6, "june":      6,
-    "jul":  7, "july":      7,
-    "aug":  8, "august":    8,
-    "sep":  9, "september": 9,
-    "oct": 10, "october":   10,
-    "nov": 11, "nov":       11,
-    "dec": 12, "december":  12,
+    "jan": 1,
+    "january": 1,
+    "feb": 2,
+    "febuary": 2,
+    "mar": 3,
+    "march": 3,
+    "apr": 4,
+    "april": 4,
+    "may": 5,
+    "may": 5,
+    "jun": 6,
+    "june": 6,
+    "jul": 7,
+    "july": 7,
+    "aug": 8,
+    "august": 8,
+    "sep": 9,
+    "september": 9,
+    "oct": 10,
+    "october": 10,
+    "nov": 11,
+    "nov": 11,
+    "dec": 12,
+    "december": 12,
 }
+
 
 def parse_month(raw: Optional[str]) -> Optional[int]:
     """
@@ -408,6 +461,7 @@ def parse_month(raw: Optional[str]) -> Optional[int]:
         return MONTH_MAP[raw]
     return None
 
+
 def test_parse_month() -> None:
 
     assert parse_month(None) is None
@@ -416,6 +470,7 @@ def test_parse_month() -> None:
     assert parse_month("10") == 10
     assert parse_month("jan") == 1
     assert parse_month("September") == 9
+
 
 def detect_text_lang(raw: str) -> Optional[str]:
     """
@@ -427,12 +482,13 @@ def detect_text_lang(raw: str) -> Optional[str]:
         return None
     try:
         lang = langdetect.detect(raw)
-        lang = lang.split('-')[0]
+        lang = lang.split("-")[0]
         assert len(lang) == 2
         return lang
     except (langdetect.lang_detect_exception.LangDetectException, TypeError):
         return None
     return None
+
 
 def test_detect_text_lang() -> None:
     assert detect_text_lang("") is None
@@ -443,6 +499,7 @@ def test_detect_text_lang() -> None:
     ZH_SAMPLE = "随着分布式清洁能源的普及,通信技术在协调各个分布式电源的控制中显得尤为重要。在电力信息传输的过程中,不同的网络状态下表现出不同的通信特性,严重的甚至会发生信息错乱丢包等行为,这对电网的实时控制产生严重影响。为研究信息系统对电力物理系统的实时影响,搭建了电力信息物理融合仿真平台,运用RT-LAB与OPNET两款实时仿真器,通过TCP/IP进行数据交互,对微电网电压、频率的集中式恢复与分布式恢复问题展开研究。仿真结果表明,该平台能有效地反映通信网络对电网控制的影响,提供了一种可靠的未来电力信息物理融合系统研究技术。随着分布式清洁能源的普及,通信技术在协调各个分布式电源的控制中显得尤为重要。在电力信息传输的过程中,不同的网络状态下表现出不同的通信特性,严重的甚至会发生信息错乱丢包等行为,这对电网的实时控制产生严重影响。为研究信息系统对电力物理系统的实时影响,搭建了电力信息物理融合仿真平台,运用RT-LAB与OPNET两款实时仿真器,通过TCP/IP进行数据交互,对微电网电压、频率的集中式恢复与分布式恢复问题展开研究。仿真结果表明,该平台能有效地反映通信网络对电网控制的影响,提供了一种可靠的未来电力信息物理融合系统研究技术。"
     # XXX: why does this detect as `ko` sometimes?
     assert detect_text_lang(ZH_SAMPLE) in ("zh", "ko")
+
 
 def parse_lang_name(raw: Optional[str]) -> Optional[str]:
     """
@@ -456,12 +513,13 @@ def parse_lang_name(raw: Optional[str]) -> Optional[str]:
             return None
         return lang.alpha_2.lower()
     except LookupError:
-        #print(f"  unknown language: '{raw}', file=sys.stderr)
+        # print(f"  unknown language: '{raw}', file=sys.stderr)
         return None
     except AttributeError:
-        #print(f"  partial language metadata: '{lang}', file=sys.stderr)
+        # print(f"  partial language metadata: '{lang}', file=sys.stderr)
         return None
     return None
+
 
 def test_parse_lang_name() -> None:
 
@@ -544,86 +602,85 @@ def test_parse_country_name():
     assert parse_country_name("Russia") == "ru"
     assert parse_country_name("Japan") == "jp"
 
+
 # These are very close, but maybe not exactly 1-to-1 with 639-2? Some mix of
 # 2/T and 2/B?
 # PubMed/MEDLINE and JSTOR use these MARC codes
 # https://www.loc.gov/marc/languages/language_name.html
 LANG_MAP_MARC = {
-    'afr': 'af',
-    'alb': 'sq',
-    'amh': 'am',
-    'ara': 'ar',
-    'arm': 'hy',
-    'aze': 'az',
-    'ben': 'bn',
-    'bos': 'bs',
-    'bul': 'bg',
-    'cat': 'ca',
-    'chi': 'zh',
-    'cze': 'cs',
-    'dan': 'da',
-    'dut': 'nl',
-    'eng': 'en',
-    'epo': 'eo',
-    'est': 'et',
-    'fin': 'fi',
-    'fre': 'fr',
-    'geo': 'ka',
-    'ger': 'de',
-    'gla': 'gd',
-    'gre': 'el',
-    'heb': 'he',
-    'hin': 'hi',
-    'hrv': 'hr',
-    'hun': 'hu',
-    'ice': 'is',
-    'ind': 'id',
-    'ita': 'it',
-    'jpn': 'ja',
-    'kin': 'rw',
-    'kor': 'ko',
-    'lat': 'la',
-    'lav': 'lv',
-    'lit': 'lt',
-    'mac': 'mk',
-    'mal': 'ml',
-    'mao': 'mi',
-    'may': 'ms',
-    'nor': 'no',
-    'per': 'fa',
-    'per': 'fa',
-    'pol': 'pl',
-    'por': 'pt',
-    'pus': 'ps',
-    'rum': 'ro',
-    'rus': 'ru',
-    'san': 'sa',
-    'slo': 'sk',
-    'slv': 'sl',
-    'spa': 'es',
-    'srp': 'sr',
-    'swe': 'sv',
-    'tha': 'th',
-    'tur': 'tr',
-    'ukr': 'uk',
-    'urd': 'ur',
-    'vie': 'vi',
-    'wel': 'cy',
-
-# additions
-    'gle': 'ga', # "Irish" (Gaelic)
-    'jav': 'jv', # Javanese
-    'welsh': 'cy', # Welsh
-    'oci': 'oc', # Occitan
-
-# Don't have ISO 639-1 codes
-    'grc': 'el', # Ancient Greek; map to modern greek
-    'map': None, # Austronesian (collection)
-    'syr': None, # Syriac, Modern
-    'gem': None, # Old Saxon
-    'non': None, # Old Norse
-    'emg': None, # Eastern Meohang
-    'neg': None, # Negidal
-    'mul': None, # Multiple languages
-    'und': None, # Undetermined
+    "afr": "af",
+    "alb": "sq",
+    "amh": "am",
+    "ara": "ar",
+    "arm": "hy",
+    "aze": "az",
+    "ben": "bn",
+    "bos": "bs",
+    "bul": "bg",
+    "cat": "ca",
+    "chi": "zh",
+    "cze": "cs",
+    "dan": "da",
+    "dut": "nl",
+    "eng": "en",
+    "epo": "eo",
+    "est": "et",
+    "fin": "fi",
+    "fre": "fr",
+    "geo": "ka",
+    "ger": "de",
+    "gla": "gd",
+    "gre": "el",
+    "heb": "he",
+    "hin": "hi",
+    "hrv": "hr",
+    "hun": "hu",
+    "ice": "is",
+    "ind": "id",
+    "ita": "it",
+    "jpn": "ja",
+    "kin": "rw",
+    "kor": "ko",
+    "lat": "la",
+    "lav": "lv",
+    "lit": "lt",
+    "mac": "mk",
+    "mal": "ml",
+    "mao": "mi",
+    "may": "ms",
+    "nor": "no",
+    "per": "fa",
+    "per": "fa",
+    "pol": "pl",
+    "por": "pt",
+    "pus": "ps",
+    "rum": "ro",
+    "rus": "ru",
+    "san": "sa",
+    "slo": "sk",
+    "slv": "sl",
+    "spa": "es",
+    "srp": "sr",
+    "swe": "sv",
+    "tha": "th",
+    "tur": "tr",
+    "ukr": "uk",
+    "urd": "ur",
+    "vie": "vi",
+    "wel": "cy",
+    # additions
+    "gle": "ga",  # "Irish" (Gaelic)
+    "jav": "jv",  # Javanese
+    "welsh": "cy",  # Welsh
+    "oci": "oc",  # Occitan
+    # Don't have ISO 639-1 codes
+    "grc": "el",  # Ancient Greek; map to modern greek
+    "map": None,  # Austronesian (collection)
+    "syr": None,  # Syriac, Modern
+    "gem": None,  # Old Saxon
+    "non": None,  # Old Norse
+    "emg": None,  # Eastern Meohang
+    "neg": None,  # Negidal
+    "mul": None,  # Multiple languages
+    "und": None,  # Undetermined
 }

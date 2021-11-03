@@ -1,4 +1,3 @@
-
 import datetime
 import json
 import re
@@ -13,6 +12,7 @@ from .crossref import lookup_license_slug
 
 latex2text = LatexNodes2Text()
 
+
 def latex_to_text(raw):
     try:
         return latex2text.latex_to_text(raw).strip()
@@ -21,13 +21,14 @@ def latex_to_text(raw):
     except IndexError:
         return raw.strip()
 
+
 def parse_arxiv_authors(raw):
     if not raw:
         return []
-    raw = raw.replace('*', '')
-    if '(' in raw:
-        raw = re.sub(r'\(.*\)', '', raw)
-    authors = raw.split(', ')
+    raw = raw.replace("*", "")
+    if "(" in raw:
+        raw = re.sub(r"\(.*\)", "", raw)
+    authors = raw.split(", ")
     if authors:
         last = authors[-1].split(" and ")
         if len(last) == 2:
@@ -39,9 +40,12 @@ def parse_arxiv_authors(raw):
     authors = [a for a in authors if a]
     return authors
 
+
 def test_parse_arxiv_authors():
 
-    assert parse_arxiv_authors("Raphael Chetrite, Shamik Gupta, Izaak Neri and \\'Edgar Rold\\'an") == [
+    assert parse_arxiv_authors(
+        "Raphael Chetrite, Shamik Gupta, Izaak Neri and \\'Edgar Rold\\'an"
+    ) == [
         "Raphael Chetrite",
         "Shamik Gupta",
         "Izaak Neri",
@@ -63,7 +67,9 @@ def test_parse_arxiv_authors():
         "Raphael Chetrite Shamik Gupta",
     ]
 
-    assert parse_arxiv_authors("B. P. Lanyon, T. J. Weinhold, N. K. Langford, M. Barbieri, D. F. V.  James*, A. Gilchrist, and A. G. White (University of Queensland, *University of Toronto)") == [
+    assert parse_arxiv_authors(
+        "B. P. Lanyon, T. J. Weinhold, N. K. Langford, M. Barbieri, D. F. V.  James*, A. Gilchrist, and A. G. White (University of Queensland, *University of Toronto)"
+    ) == [
         "B. P. Lanyon",
         "T. J. Weinhold",
         "N. K. Langford",
@@ -84,17 +90,21 @@ class ArxivRawImporter(EntityImporter):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
-            "Automated import of arxiv metadata via arXivRaw OAI-PMH feed")
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ArxivRawImporter')
+        eg_desc = kwargs.get(
+            "editgroup_description",
+            "Automated import of arxiv metadata via arXivRaw OAI-PMH feed",
+        )
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.ArxivRawImporter")
         # lower batch size, because multiple versions per entry (guessing 2-3 on average?)
-        batch_size = kwargs.get('edit_batch_size', 50)
-        super().__init__(api,
+        batch_size = kwargs.get("edit_batch_size", 50)
+        super().__init__(
+            api,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
             batch_size=batch_size,
-            **kwargs)
+            **kwargs
+        )
         self._test_override = False
 
     def parse_record(self, record):
@@ -114,53 +124,56 @@ class ArxivRawImporter(EntityImporter):
         doi = None
         if metadata.doi and metadata.doi.string:
             doi = metadata.doi.string.lower().split()[0].strip()
-            if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
+            if not (doi.startswith("10.") and "/" in doi and doi.split("/")[1]):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
-        title = latex_to_text(metadata.title.get_text().replace('\n', ' '))
-        authors = parse_arxiv_authors(metadata.authors.get_text().replace('\n', ' '))
-        contribs = [fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
+        title = latex_to_text(metadata.title.get_text().replace("\n", " "))
+        authors = parse_arxiv_authors(metadata.authors.get_text().replace("\n", " "))
+        contribs = [
+            fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role="author")
+            for i, a in enumerate(authors)
+        ]
 
-        lang = "en"     # the vast majority in english
+        lang = "en"  # the vast majority in english
         if metadata.comments and metadata.comments.get_text():
-            comments = metadata.comments.get_text().replace('\n', ' ').strip()
-            extra_arxiv['comments'] = comments
-            if 'in french' in comments.lower():
-                lang = 'fr'
-            elif 'in spanish' in comments.lower():
-                lang = 'es'
-            elif 'in portuguese' in comments.lower():
-                lang = 'pt'
-            elif 'in hindi' in comments.lower():
-                lang = 'hi'
-            elif 'in japanese' in comments.lower():
-                lang = 'ja'
-            elif 'in german' in comments.lower():
-                lang = 'de'
-            elif 'simplified chinese' in comments.lower():
-                lang = 'zh'
-            elif 'in russian' in comments.lower():
-                lang = 'ru'
+            comments = metadata.comments.get_text().replace("\n", " ").strip()
+            extra_arxiv["comments"] = comments
+            if "in french" in comments.lower():
+                lang = "fr"
+            elif "in spanish" in comments.lower():
+                lang = "es"
+            elif "in portuguese" in comments.lower():
+                lang = "pt"
+            elif "in hindi" in comments.lower():
+                lang = "hi"
+            elif "in japanese" in comments.lower():
+                lang = "ja"
+            elif "in german" in comments.lower():
+                lang = "de"
+            elif "simplified chinese" in comments.lower():
+                lang = "zh"
+            elif "in russian" in comments.lower():
+                lang = "ru"
             # more languages?
 
         number = None
-        if metadata.find('journal-ref') and metadata.find('journal-ref').get_text():
-            journal_ref = metadata.find('journal-ref').get_text().replace('\n', ' ').strip()
-            extra_arxiv['journal_ref'] = journal_ref
+        if metadata.find("journal-ref") and metadata.find("journal-ref").get_text():
+            journal_ref = metadata.find("journal-ref").get_text().replace("\n", " ").strip()
+            extra_arxiv["journal_ref"] = journal_ref
             if "conf." in journal_ref.lower() or "proc." in journal_ref.lower():
                 release_type = "paper-conference"
-        if metadata.find('report-no') and metadata.find('report-no').string:
-            number = metadata.find('report-no').string.strip()
+        if metadata.find("report-no") and metadata.find("report-no").string:
+            number = metadata.find("report-no").string.strip()
             # at least some people plop extra metadata in here. hrmf!
-            if 'ISSN ' in number or 'ISBN ' in number or len(number.split()) > 2:
-                extra_arxiv['report-no'] = number
+            if "ISSN " in number or "ISBN " in number or len(number.split()) > 2:
+                extra_arxiv["report-no"] = number
                 number = None
             else:
                 release_type = "report"
-        if metadata.find('acm-class') and metadata.find('acm-class').string:
-            extra_arxiv['acm_class'] = metadata.find('acm-class').string.strip()
+        if metadata.find("acm-class") and metadata.find("acm-class").string:
+            extra_arxiv["acm_class"] = metadata.find("acm-class").string.strip()
         if metadata.categories and metadata.categories.get_text():
-            extra_arxiv['categories'] = metadata.categories.get_text().split()
+            extra_arxiv["categories"] = metadata.categories.get_text().split()
         license_slug = None
         if metadata.license and metadata.license.get_text():
             license_slug = lookup_license_slug(metadata.license.get_text())
@@ -170,21 +183,29 @@ class ArxivRawImporter(EntityImporter):
             abstracts = []
             abst = metadata.abstract.get_text().strip()
             orig = None
-            if '-----' in abst:
-                both = abst.split('-----')
+            if "-----" in abst:
+                both = abst.split("-----")
                 abst = both[0].strip()
                 orig = both[1].strip()
-            if '$' in abst or '{' in abst:
+            if "$" in abst or "{" in abst:
                 mime = "application/x-latex"
                 abst_plain = latex_to_text(abst)
-                abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=abst_plain, mimetype="text/plain", lang="en"))
+                abstracts.append(
+                    fatcat_openapi_client.ReleaseAbstract(
+                        content=abst_plain, mimetype="text/plain", lang="en"
+                    )
+                )
             else:
                 mime = "text/plain"
-            abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=abst, mimetype=mime, lang="en"))
+            abstracts.append(
+                fatcat_openapi_client.ReleaseAbstract(content=abst, mimetype=mime, lang="en")
+            )
             if orig:
-                abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=orig, mimetype=mime))
+                abstracts.append(
+                    fatcat_openapi_client.ReleaseAbstract(content=orig, mimetype=mime)
+                )
                 # indicates that fulltext probably isn't english either
-                if lang == 'en':
+                if lang == "en":
                     lang = None
 
         # extra:
@@ -195,39 +216,43 @@ class ArxivRawImporter(EntityImporter):
         #   container_name
         #   group-title
         #   arxiv: comments, categories, etc
-        extra_arxiv['base_id'] = base_id
-        extra['superceded'] = True
-        extra['arxiv'] = extra_arxiv
+        extra_arxiv["base_id"] = base_id
+        extra["superceded"] = True
+        extra["arxiv"] = extra_arxiv
 
         versions = []
-        for version in metadata.find_all('version'):
-            arxiv_id = base_id + version['version']
+        for version in metadata.find_all("version"):
+            arxiv_id = base_id + version["version"]
             release_date = version.date.string.strip()
-            release_date = datetime.datetime.strptime(release_date, "%a, %d %b %Y %H:%M:%S %Z").date()
+            release_date = datetime.datetime.strptime(
+                release_date, "%a, %d %b %Y %H:%M:%S %Z"
+            ).date()
             # TODO: source_type?
-            versions.append(fatcat_openapi_client.ReleaseEntity(
-                work_id=None,
-                title=title,
-                #original_title
-                version=version['version'],
-                release_type=release_type,
-                release_stage='submitted',
-                release_date=release_date.isoformat(),
-                release_year=release_date.year,
-                ext_ids=fatcat_openapi_client.ReleaseExtIds(
-                    arxiv=arxiv_id,
-                ),
-                number=number,
-                language=lang,
-                license_slug=license_slug,
-                abstracts=abstracts,
-                contribs=contribs,
-                extra=extra.copy(),
-            ))
+            versions.append(
+                fatcat_openapi_client.ReleaseEntity(
+                    work_id=None,
+                    title=title,
+                    # original_title
+                    version=version["version"],
+                    release_type=release_type,
+                    release_stage="submitted",
+                    release_date=release_date.isoformat(),
+                    release_year=release_date.year,
+                    ext_ids=fatcat_openapi_client.ReleaseExtIds(
+                        arxiv=arxiv_id,
+                    ),
+                    number=number,
+                    language=lang,
+                    license_slug=license_slug,
+                    abstracts=abstracts,
+                    contribs=contribs,
+                    extra=extra.copy(),
+                )
+            )
         # TODO: assert that versions are actually in order?
         assert versions
 
-        versions[-1].extra.pop('superceded')
+        versions[-1].extra.pop("superceded")
 
         # only apply DOI to most recent version (HACK)
         if doi:
@@ -306,7 +331,7 @@ class ArxivRawImporter(EntityImporter):
         for v in versions:
             if v._existing_work_id:
                 if not v._updated:
-                    self.counts['exists'] += 1
+                    self.counts["exists"] += 1
                 continue
             if not any_work_id and last_edit:
                 # fetch the last inserted release from this group
@@ -315,7 +340,7 @@ class ArxivRawImporter(EntityImporter):
                 any_work_id = r.work_id
             v.work_id = any_work_id
             last_edit = self.api.create_release(self.get_editgroup_id(), v)
-            self.counts['insert'] += 1
+            self.counts["insert"] += 1
 
         return False
 
@@ -323,12 +348,15 @@ class ArxivRawImporter(EntityImporter):
         # there is no batch/bezerk mode for arxiv importer, except for testing
         if self._test_override:
             for batch in batch_batch:
-                self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
-                    editgroup=fatcat_openapi_client.Editgroup(
-                        description=self.editgroup_description,
-                        extra=self.editgroup_extra),
-                    entity_list=batch))
-                self.counts['insert'] += len(batch) - 1
+                self.api.create_release_auto_batch(
+                    fatcat_openapi_client.ReleaseAutoBatch(
+                        editgroup=fatcat_openapi_client.Editgroup(
+                            description=self.editgroup_description, extra=self.editgroup_extra
+                        ),
+                        entity_list=batch,
+                    )
+                )
+                self.counts["insert"] += len(batch) - 1
         else:
             raise NotImplementedError()
 
@@ -341,9 +369,9 @@ class ArxivRawImporter(EntityImporter):
         for article in soup.find_all("record"):
             resp = self.parse_record(article)
             print(json.dumps(resp))
-            #sys.exit(-1)
+            # sys.exit(-1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = ArxivRawImporter(None)
     parser.parse_file(open(sys.argv[1]))

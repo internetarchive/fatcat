@@ -22,6 +22,7 @@ from fatcat_tools.transforms.entities import entity_to_dict
 
 class BiblioRef(BaseModel):
     """bibliographic reference"""
+
     # ("release", source_release_ident, ref_index)
     # ("wikipedia", source_wikipedia_article, ref_index)
     _key: Optional[str]
@@ -37,7 +38,7 @@ class BiblioRef(BaseModel):
 
     # context of the reference itself
     # 1-indexed, not 0-indexed
-    ref_index: Optional[int] # TODO: actually optional?
+    ref_index: Optional[int]  # TODO: actually optional?
     # eg, "Lee86", "BIB23"
     ref_key: Optional[str]
     # eg, page number
@@ -74,16 +75,20 @@ class BiblioRef(BaseModel):
         # work-arounds for bad/weird ref_key
         if self.ref_key:
             self.ref_key = self.ref_key.strip()
-            if self.ref_key[0] in ['/', '_']:
+            if self.ref_key[0] in ["/", "_"]:
                 self.ref_key = self.ref_key[1:]
-            if self.ref_key.startswith("10.") and 'SICI' in self.ref_key and '-' in self.ref_key:
-                self.ref_key = self.ref_key.split('-')[-1]
-            if self.ref_key.startswith("10.") and '_' in self.ref_key:
-                self.ref_key = self.ref_key.split('_')[-1]
+            if (
+                self.ref_key.startswith("10.")
+                and "SICI" in self.ref_key
+                and "-" in self.ref_key
+            ):
+                self.ref_key = self.ref_key.split("-")[-1]
+            if self.ref_key.startswith("10.") and "_" in self.ref_key:
+                self.ref_key = self.ref_key.split("_")[-1]
             if len(self.ref_key) > 10 and "#" in self.ref_key:
-                self.ref_key = self.ref_key.split('#')[-1]
+                self.ref_key = self.ref_key.split("#")[-1]
             if len(self.ref_key) > 10 and "_" in self.ref_key:
-                self.ref_key = self.ref_key.split('_')[-1]
+                self.ref_key = self.ref_key.split("_")[-1]
         if not self.ref_key and self.ref_index is not None:
             self.ref_key = str(self.ref_index)
         return self
@@ -98,7 +103,7 @@ class EnrichedBiblioRef(BaseModel):
     # TODO: openlibrary work?
     access: List[AccessOption]
 
-    @validator('release')
+    @validator("release")
     @classmethod
     def check_release(cls, v):
         if v is not None and not isinstance(v, ReleaseEntity):
@@ -119,7 +124,7 @@ class RefHits(BaseModel):
     limit: int
     query_time_ms: int
     query_wall_time_ms: int
-    result_refs: List[Union[BiblioRef,EnrichedBiblioRef]]
+    result_refs: List[Union[BiblioRef, EnrichedBiblioRef]]
 
     class Config:
         json_encoders = {
@@ -145,22 +150,22 @@ def _execute_ref_query(search: Any, limit: int, offset: Optional[int] = None) ->
     except elasticsearch.exceptions.RequestError as e_raw:
         # this is a "user" error
         e: Any = e_raw
-        #logging.warn("elasticsearch 400: " + str(e.info))
+        # logging.warn("elasticsearch 400: " + str(e.info))
         if e.info.get("error", {}).get("root_cause", {}):
             raise ValueError(str(e.info["error"]["root_cause"][0].get("reason"))) from e
         else:
             raise ValueError(str(e.info)) from e
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
-        #logging.warn(f"elasticsearch non-200 status code: {e.info}")
+        # logging.warn(f"elasticsearch non-200 status code: {e.info}")
         raise IOError(str(e.info)) from e
     query_delta = datetime.datetime.now() - query_start
 
     result_refs = []
     for h in resp.hits:
         # might be a list because of consolidation
-        if isinstance(h._d_.get('source_work_ident'), list):
-            h._d_['source_work_ident'] = h._d_['source_work_ident'][0]
+        if isinstance(h._d_.get("source_work_ident"), list):
+            h._d_["source_work_ident"] = h._d_["source_work_ident"][0]
         result_refs.append(BiblioRef.parse_obj(h._d_).hacks())
 
     return RefHits(
@@ -224,7 +229,10 @@ def get_inbound_refs(
         search = search.extra(
             collapse={
                 "field": "source_work_ident",
-                "inner_hits": {"name": "source_more", "size": 0,},
+                "inner_hits": {
+                    "name": "source_more",
+                    "size": 0,
+                },
             }
         )
 
@@ -281,61 +289,87 @@ def count_inbound_refs(
 
 
 # run fatcat API fetches for each ref and return "enriched" refs
-def enrich_inbound_refs(refs: List[BiblioRef], fatcat_api_client: Any, hide: Optional[str] = "refs", expand: Optional[str] = "container,files,webcaptures,filesets") -> List[EnrichedBiblioRef]:
+def enrich_inbound_refs(
+    refs: List[BiblioRef],
+    fatcat_api_client: Any,
+    hide: Optional[str] = "refs",
+    expand: Optional[str] = "container,files,webcaptures,filesets",
+) -> List[EnrichedBiblioRef]:
     enriched = []
     for ref in refs:
         release = None
         access = []
         if ref.source_release_ident:
-            release = fatcat_api_client.get_release(ref.source_release_ident, hide=hide, expand=expand)
+            release = fatcat_api_client.get_release(
+                ref.source_release_ident, hide=hide, expand=expand
+            )
             access = release_access_options(release)
         if ref.source_wikipedia_article:
-            wiki_lang = ref.source_wikipedia_article.split(':')[0]
-            wiki_article = ':'.join(ref.source_wikipedia_article.split(':')[1:]).replace(' ', '_')
-            access.append(AccessOption(
-                access_type="wikipedia",
-                access_url=f"https://{wiki_lang}.wikipedia.org/wiki/{wiki_article}",
-                mimetype=None,
-                size_bytes=None,
-                thumbnail_url=None
-            ))
-        enriched.append(EnrichedBiblioRef(
-            ref=ref,
-            access=access,
-            release=release,
-        ))
+            wiki_lang = ref.source_wikipedia_article.split(":")[0]
+            wiki_article = ":".join(ref.source_wikipedia_article.split(":")[1:]).replace(
+                " ", "_"
+            )
+            access.append(
+                AccessOption(
+                    access_type="wikipedia",
+                    access_url=f"https://{wiki_lang}.wikipedia.org/wiki/{wiki_article}",
+                    mimetype=None,
+                    size_bytes=None,
+                    thumbnail_url=None,
+                )
+            )
+        enriched.append(
+            EnrichedBiblioRef(
+                ref=ref,
+                access=access,
+                release=release,
+            )
+        )
     return enriched
 
 
-def enrich_outbound_refs(refs: List[BiblioRef], fatcat_api_client: Any, hide: Optional[str] = "refs", expand: Optional[str] = "container,files,webcaptures,filesets") -> List[EnrichedBiblioRef]:
+def enrich_outbound_refs(
+    refs: List[BiblioRef],
+    fatcat_api_client: Any,
+    hide: Optional[str] = "refs",
+    expand: Optional[str] = "container,files,webcaptures,filesets",
+) -> List[EnrichedBiblioRef]:
     enriched = []
     for ref in refs:
         release = None
         access = []
         if ref.target_release_ident:
-            release = fatcat_api_client.get_release(ref.target_release_ident, hide=hide, expand=expand)
+            release = fatcat_api_client.get_release(
+                ref.target_release_ident, hide=hide, expand=expand
+            )
             access = release_access_options(release)
         if ref.target_openlibrary_work:
-            access.append(AccessOption(
-                access_type="openlibrary",
-                access_url=f"https://openlibrary.org/works/{ref.target_openlibrary_work}",
-                mimetype=None,
-                size_bytes=None,
-                thumbnail_url=None
-            ))
-        if ref.target_url and '://web.archive.org/' in ref.target_url:
-            access.append(AccessOption(
-                access_type="wayback",
-                access_url=ref.target_url,
-                mimetype=None,
-                size_bytes=None,
-                thumbnail_url=None
-            ))
-        enriched.append(EnrichedBiblioRef(
-            ref=ref,
-            access=access,
-            release=release,
-        ))
+            access.append(
+                AccessOption(
+                    access_type="openlibrary",
+                    access_url=f"https://openlibrary.org/works/{ref.target_openlibrary_work}",
+                    mimetype=None,
+                    size_bytes=None,
+                    thumbnail_url=None,
+                )
+            )
+        if ref.target_url and "://web.archive.org/" in ref.target_url:
+            access.append(
+                AccessOption(
+                    access_type="wayback",
+                    access_url=ref.target_url,
+                    mimetype=None,
+                    size_bytes=None,
+                    thumbnail_url=None,
+                )
+            )
+        enriched.append(
+            EnrichedBiblioRef(
+                ref=ref,
+                access=access,
+                release=release,
+            )
+        )
     return enriched
 
 
@@ -346,21 +380,29 @@ def run_ref_query(args) -> None:
     release_ident = None
     work_ident = None
     if args.ident.startswith("release_"):
-        release_ident = args.ident.split('_')[1]
+        release_ident = args.ident.split("_")[1]
     elif args.ident.startswith("work_"):
-        work_ident = args.ident.split('_')[1]
+        work_ident = args.ident.split("_")[1]
     else:
         release_ident = args.ident
 
     print("## Outbound References")
-    hits = get_outbound_refs(release_ident=release_ident, work_ident=work_ident, es_client=args.es_client)
-    print(f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms")
+    hits = get_outbound_refs(
+        release_ident=release_ident, work_ident=work_ident, es_client=args.es_client
+    )
+    print(
+        f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms"
+    )
 
     if args.enrich == "fatcat":
-        enriched = enrich_outbound_refs(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
+        enriched = enrich_outbound_refs(
+            hits.result_refs, hide="refs,abstracts", fatcat_api_client=args.fatcat_api_client
+        )
         for ref in enriched:
             if ref.release:
-                print(f"{ref.ref.ref_index or '-'}\trelease_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}")
+                print(
+                    f"{ref.ref.ref_index or '-'}\trelease_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}"
+                )
             else:
                 print(f"{ref.ref.ref_index or '-'}\trelease_{ref.target_release_ident}")
     else:
@@ -369,20 +411,29 @@ def run_ref_query(args) -> None:
 
     print()
     print("## Inbound References")
-    hits = get_inbound_refs(release_ident=release_ident, work_ident=work_ident, es_client=args.es_client)
+    hits = get_inbound_refs(
+        release_ident=release_ident, work_ident=work_ident, es_client=args.es_client
+    )
 
-    print(f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms")
+    print(
+        f"Total: {hits.count_total}  Time: {hits.query_wall_time_ms}ms; {hits.query_time_ms}ms"
+    )
 
     if args.enrich == "fatcat":
-        enriched = enrich_inbound_refs(hits.result_refs, hide='refs,abstracts', fatcat_api_client=args.fatcat_api_client)
+        enriched = enrich_inbound_refs(
+            hits.result_refs, hide="refs,abstracts", fatcat_api_client=args.fatcat_api_client
+        )
         for ref in enriched:
             if ref.release:
-                print(f"release_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}")
+                print(
+                    f"release_{ref.release.ident}\t{ref.ref.match_provenance}/{ref.ref.match_status}\t{ref.release.release_year or '-'}\t{ref.release.title}\t{ref.release.ext_ids.pmid or ref.release.ext_ids.doi or '-'}"
+                )
             else:
                 print(f"release_{ref.target_release_ident}")
     else:
         for ref in hits.result_refs:
             print(f"work_{ref.source_work_ident}\trelease_{ref.source_release_ident}")
+
 
 def main() -> None:
     """
@@ -395,9 +446,7 @@ def main() -> None:
         python -m fatcat_tools.references query release_pfrind3kh5hqhgqkueulk2tply
     """
 
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     subparsers = parser.add_subparsers()
 
     parser.add_argument("--fatcat-api-base", default="https://api.fatcat.wiki/v0")
@@ -424,6 +473,7 @@ def main() -> None:
         run_ref_query(args)
     else:
         raise NotImplementedError(args.func)
+
 
 if __name__ == "__main__":
     main()

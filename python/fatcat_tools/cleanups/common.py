@@ -1,4 +1,3 @@
-
 import copy
 import json
 import subprocess
@@ -30,16 +29,19 @@ class EntityCleaner:
 
     def __init__(self, api, entity_type, **kwargs):
 
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['git_rev'] = eg_extra.get('git_rev',
-            subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.EntityCleaner')
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["git_rev"] = eg_extra.get(
+            "git_rev", subprocess.check_output(["git", "describe", "--always"]).strip()
+        ).decode("utf-8")
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.EntityCleaner")
 
         self.api = api
         self.entity_type = entity_type
-        self.dry_run_mode = kwargs.get('dry_run_mode', True)
-        self.edit_batch_size = kwargs.get('edit_batch_size', 50)
-        self.editgroup_description = kwargs.get('editgroup_description', "Generic Entity Cleaner Bot")
+        self.dry_run_mode = kwargs.get("dry_run_mode", True)
+        self.edit_batch_size = kwargs.get("edit_batch_size", 50)
+        self.editgroup_description = kwargs.get(
+            "editgroup_description", "Generic Entity Cleaner Bot"
+        )
         self.editgroup_extra = eg_extra
         self.reset()
         self.ac = ApiClient()
@@ -48,7 +50,7 @@ class EntityCleaner:
             print("Running in dry-run mode!")
 
     def reset(self):
-        self.counts = Counter({'lines': 0, 'cleaned': 0, 'updated': 0})
+        self.counts = Counter({"lines": 0, "cleaned": 0, "updated": 0})
         self._edit_count = 0
         self._editgroup_id = None
         self._entity_queue = []
@@ -63,23 +65,23 @@ class EntityCleaner:
 
         Returns nothing.
         """
-        self.counts['lines'] += 1
-        if (not record):
-            self.counts['skip-null'] += 1
+        self.counts["lines"] += 1
+        if not record:
+            self.counts["skip-null"] += 1
             return
 
         entity = entity_from_dict(record, self.entity_type, api_client=self.ac)
 
-        if entity.state != 'active':
-            self.counts['skip-inactive'] += 1
+        if entity.state != "active":
+            self.counts["skip-inactive"] += 1
             return
 
         cleaned = self.clean_entity(copy.deepcopy(entity))
         if entity == cleaned:
-            self.counts['skip-clean'] += 1
+            self.counts["skip-clean"] += 1
             return
         else:
-            self.counts['cleaned'] += 1
+            self.counts["cleaned"] += 1
 
         if self.dry_run_mode:
             entity_dict = entity_to_dict(entity, api_client=self.ac)
@@ -87,11 +89,13 @@ class EntityCleaner:
             return
 
         if entity.ident in self._idents_inflight:
-            raise ValueError("Entity already part of in-process update: {}".format(entity.ident))
+            raise ValueError(
+                "Entity already part of in-process update: {}".format(entity.ident)
+            )
 
         updated = self.try_update(cleaned)
         if updated:
-            self.counts['updated'] += updated
+            self.counts["updated"] += updated
             self._edit_count += updated
             self._idents_inflight.append(entity.ident)
 
@@ -132,9 +136,8 @@ class EntityCleaner:
 
         if not self._editgroup_id:
             eg = self.api.create_editgroup(
-                Editgroup(
-                    description=self.editgroup_description,
-                    extra=self.editgroup_extra))
+                Editgroup(description=self.editgroup_description, extra=self.editgroup_extra)
+            )
             self._editgroup_id = eg.editgroup_id
 
         return self._editgroup_id

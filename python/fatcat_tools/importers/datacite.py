@@ -30,126 +30,130 @@ MAX_ABSTRACT_LENGTH = 2048
 
 # https://guide.fatcat.wiki/entity_container.html#container_type-vocabulary
 CONTAINER_TYPE_MAP = {
-    'Journal': 'journal',
-    'Series': 'journal',
-    'Book Series': 'book-series',
+    "Journal": "journal",
+    "Series": "journal",
+    "Book Series": "book-series",
 }
 
 # The docs/guide should be the canonical home for these mappings; update there
 # first.  Map various datacite type types to CSL-ish types. None means TODO or
 # remove.
 DATACITE_TYPE_MAP = {
-    'ris': {
-        'THES': 'thesis',
-        'SOUND': 'song', # 99.9% maps to citeproc song, so use that (exception: report)
-        'CHAP': 'chapter',
-        'FIGURE': 'figure',
-        'RPRT': 'report',
-        'JOUR': 'article-journal',
-        'MPCT': 'motion_picture',
-        'GEN': 'article-journal', # GEN consist of 99% article and report, post-weblog, misc - and one dataset
-        'BOOK': 'book',
-        'DATA': 'dataset',
-        'COMP': 'software',
+    "ris": {
+        "THES": "thesis",
+        "SOUND": "song",  # 99.9% maps to citeproc song, so use that (exception: report)
+        "CHAP": "chapter",
+        "FIGURE": "figure",
+        "RPRT": "report",
+        "JOUR": "article-journal",
+        "MPCT": "motion_picture",
+        "GEN": "article-journal",  # GEN consist of 99% article and report, post-weblog, misc - and one dataset
+        "BOOK": "book",
+        "DATA": "dataset",
+        "COMP": "software",
     },
-    'schemaOrg': {
-        'Dataset': 'dataset',
-        'Book': 'book',
-        'ScholarlyArticle': 'article-journal',
-        'ImageObject': 'graphic',
-        'Collection': None,
-        'MediaObject': None,
-        'Event': None,
-        'SoftwareSourceCode': 'software',
-        'Chapter': 'chapter',
-        'CreativeWork': None, # Seems to be a catch-all resourceType, from PGRFA Material, Pamphlet, to music score.
-        'PublicationIssue': 'article',
-        'AudioObject': None,
-        'Thesis': 'thesis',
+    "schemaOrg": {
+        "Dataset": "dataset",
+        "Book": "book",
+        "ScholarlyArticle": "article-journal",
+        "ImageObject": "graphic",
+        "Collection": None,
+        "MediaObject": None,
+        "Event": None,
+        "SoftwareSourceCode": "software",
+        "Chapter": "chapter",
+        "CreativeWork": None,  # Seems to be a catch-all resourceType, from PGRFA Material, Pamphlet, to music score.
+        "PublicationIssue": "article",
+        "AudioObject": None,
+        "Thesis": "thesis",
     },
-    'citeproc': {
-        'article': 'article',
-        'article-journal': 'article-journal',
-        'article-magazine': 'article-magazine',
-        'article-newspaper': 'article-newspaper',
-        'bill': 'bill',
-        'book': 'book',
-        'broadcast': 'broadcast',
-        'chapter': 'chapter',
-        'dataset': 'dataset',
-        'entry-dictionary': 'entry-dictionary',
-        'entry-encyclopedia': 'entry-encyclopedia',
-        'entry': 'entry',
-        'figure': 'figure',
-        'graphic': 'graphic',
-        'interview': 'interview',
-        'legal_case': 'legal_case',
-        'legislation': 'legislation',
-        'manuscript': 'manuscript',
-        'map': 'map',
-        'motion_picture': 'motion_picture',
-        'musical_score': 'musical_score',
-        'pamphlet': 'pamphlet',
-        'paper-conference': 'paper-conference',
-        'patent': 'patent',
-        'personal_communication': 'personal_communication',
-        'post': 'post',
-        'post-weblog': 'post-weblog',
-        'report': 'report',
-        'review-book': 'review-book',
-        'review': 'review',
-        'song': 'song',
-        'speech': 'speech',
-        'thesis': 'thesis',
-        'treaty': 'treaty',
-        'webpage': 'webpage',
+    "citeproc": {
+        "article": "article",
+        "article-journal": "article-journal",
+        "article-magazine": "article-magazine",
+        "article-newspaper": "article-newspaper",
+        "bill": "bill",
+        "book": "book",
+        "broadcast": "broadcast",
+        "chapter": "chapter",
+        "dataset": "dataset",
+        "entry-dictionary": "entry-dictionary",
+        "entry-encyclopedia": "entry-encyclopedia",
+        "entry": "entry",
+        "figure": "figure",
+        "graphic": "graphic",
+        "interview": "interview",
+        "legal_case": "legal_case",
+        "legislation": "legislation",
+        "manuscript": "manuscript",
+        "map": "map",
+        "motion_picture": "motion_picture",
+        "musical_score": "musical_score",
+        "pamphlet": "pamphlet",
+        "paper-conference": "paper-conference",
+        "patent": "patent",
+        "personal_communication": "personal_communication",
+        "post": "post",
+        "post-weblog": "post-weblog",
+        "report": "report",
+        "review-book": "review-book",
+        "review": "review",
+        "song": "song",
+        "speech": "speech",
+        "thesis": "thesis",
+        "treaty": "treaty",
+        "webpage": "webpage",
     },  # https://docs.citationstyles.org/en/master/specification.html#appendix-iii-types
-    'bibtex': {
-        'phdthesis': 'thesis',
-        'inbook': 'chapter',
-        'misc': None,
-        'article': 'article-journal',
-        'book': 'book',
+    "bibtex": {
+        "phdthesis": "thesis",
+        "inbook": "chapter",
+        "misc": None,
+        "article": "article-journal",
+        "book": "book",
     },
-    'resourceTypeGeneral': {
-        'Image': 'graphic',
-        'Dataset': 'dataset',
-        'PhysicalObject': None,
-        'Collection': None,
-        'Text': None, # "Greyliterature, labnotes, accompanyingmaterials"
-        'Sound': None,
-        'InteractiveResource': None,
-        'Event': None,
-        'Software': 'software',
-        'Other': None,
-        'Workflow': None,
-        'Audiovisual': None,
-    } # https://schema.datacite.org/meta/kernel-4.0/doc/DataCite-MetadataKernel_v4.0.pdf#page=32
+    "resourceTypeGeneral": {
+        "Image": "graphic",
+        "Dataset": "dataset",
+        "PhysicalObject": None,
+        "Collection": None,
+        "Text": None,  # "Greyliterature, labnotes, accompanyingmaterials"
+        "Sound": None,
+        "InteractiveResource": None,
+        "Event": None,
+        "Software": "software",
+        "Other": None,
+        "Workflow": None,
+        "Audiovisual": None,
+    },  # https://schema.datacite.org/meta/kernel-4.0/doc/DataCite-MetadataKernel_v4.0.pdf#page=32
 }
 
 # DATACITE_UNKNOWN_MARKERS via https://support.datacite.org/docs/schema-values-unknown-information-v43.
 DATACITE_UNKNOWN_MARKERS = (
-    '(:unac)',  # temporarily inaccessible
-    '(:unal)',  # unallowed, suppressed intentionally
-    '(:unap)',  # not applicable, makes no sense
-    '(:unas)',  # value unassigned (e.g., Untitled)
-    '(:unav)',  # value unavailable, possibly unknown
-    '(:unkn)',  # known to be unknown (e.g., Anonymous, Inconnue)
-    '(:none)',  # never had a value, never will
-    '(:null)',  # explicitly and meaningfully empty
-    '(:tba)',  # to be assigned or announced later
-    '(:etal)',  # too numerous to list (et alia)
+    "(:unac)",  # temporarily inaccessible
+    "(:unal)",  # unallowed, suppressed intentionally
+    "(:unap)",  # not applicable, makes no sense
+    "(:unas)",  # value unassigned (e.g., Untitled)
+    "(:unav)",  # value unavailable, possibly unknown
+    "(:unkn)",  # known to be unknown (e.g., Anonymous, Inconnue)
+    "(:none)",  # never had a value, never will
+    "(:null)",  # explicitly and meaningfully empty
+    "(:tba)",  # to be assigned or announced later
+    "(:etal)",  # too numerous to list (et alia)
 )
 
 # UNKNOWN_MARKERS joins official datacite markers with a generic tokens marking
 # unknown values.
-UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
-    'NA',
-    'NN',
-    'n.a.',
-    '[s.n.]',
-    'Unknown',
-)))
+UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(
+    set(
+        (
+            "NA",
+            "NN",
+            "n.a.",
+            "[s.n.]",
+            "Unknown",
+        )
+    )
+)
 
 # UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blocklist.
 UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
@@ -157,8 +161,20 @@ UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 # Any "min" number of "tokens" will signal "spam", https://fatcat.wiki/release/rzcpjwukobd4pj36ipla22cnoi
 DATACITE_TITLE_SPAM_WORDGROUPS = [
     {
-        "tokens": ('full', 'movies', 'movie', 'watch', 'streaming', 'online',
-                   'free', 'hd', 'download', 'english', 'subtitle', 'bluray'),
+        "tokens": (
+            "full",
+            "movies",
+            "movie",
+            "watch",
+            "streaming",
+            "online",
+            "free",
+            "hd",
+            "download",
+            "english",
+            "subtitle",
+            "bluray",
+        ),
         "min": 4,
     }
 ]
@@ -205,28 +221,25 @@ class DataciteImporter(EntityImporter):
     """
     Importer for datacite records.
     """
-    def __init__(self,
-                 api,
-                 issn_map_file,
-                 debug=False,
-                 insert_log_file=None,
-                 **kwargs):
+
+    def __init__(self, api, issn_map_file, debug=False, insert_log_file=None, **kwargs):
 
         eg_desc = kwargs.get(
-            'editgroup_description',
-            "Automated import of Datacite DOI metadata, harvested from REST API"
+            "editgroup_description",
+            "Automated import of Datacite DOI metadata, harvested from REST API",
         )
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent',
-                                         'fatcat_tools.DataciteImporter')
-        super().__init__(api,
-                         issn_map_file=issn_map_file,
-                         editgroup_description=eg_desc,
-                         editgroup_extra=eg_extra,
-                         **kwargs)
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.DataciteImporter")
+        super().__init__(
+            api,
+            issn_map_file=issn_map_file,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra,
+            **kwargs
+        )
 
-        self.create_containers = kwargs.get('create_containers', True)
-        extid_map_file = kwargs.get('extid_map_file')
+        self.create_containers = kwargs.get("create_containers", True)
+        extid_map_file = kwargs.get("extid_map_file")
         self.extid_map_db = None
         if extid_map_file:
             db_uri = "file:{}?mode=ro".format(extid_map_file)
@@ -240,30 +253,34 @@ class DataciteImporter(EntityImporter):
         self.insert_log_file = insert_log_file
         self.this_year = datetime.datetime.now().year
 
-        print('datacite with debug={}'.format(self.debug), file=sys.stderr)
+        print("datacite with debug={}".format(self.debug), file=sys.stderr)
 
     def lookup_ext_ids(self, doi):
         """
         Return dictionary of identifiers referring to the same things as the given DOI.
         """
         if self.extid_map_db is None:
-            return dict(core_id=None,
-                        pmid=None,
-                        pmcid=None,
-                        wikidata_qid=None,
-                        arxiv_id=None,
-                        jstor_id=None)
+            return dict(
+                core_id=None,
+                pmid=None,
+                pmcid=None,
+                wikidata_qid=None,
+                arxiv_id=None,
+                jstor_id=None,
+            )
         row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
-            [doi.lower()]).fetchone()
+            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
+        ).fetchone()
         if row is None:
-            return dict(core_id=None,
-                        pmid=None,
-                        pmcid=None,
-                        wikidata_qid=None,
-                        arxiv_id=None,
-                        jstor_id=None)
-        row = [str(cell or '') or None for cell in row]
+            return dict(
+                core_id=None,
+                pmid=None,
+                pmcid=None,
+                wikidata_qid=None,
+                arxiv_id=None,
+                jstor_id=None,
+            )
+        row = [str(cell or "") or None for cell in row]
         return dict(
             core_id=row[0],
             pmid=row[1],
@@ -280,22 +297,22 @@ class DataciteImporter(EntityImporter):
         """
         if not obj or not isinstance(obj, dict):
             return None
-        if 'attributes' not in obj:
+        if "attributes" not in obj:
             return None
 
-        attributes = obj['attributes']
-        doi = clean_doi(attributes.get('doi', '').lower())
+        attributes = obj["attributes"]
+        doi = clean_doi(attributes.get("doi", "").lower())
 
         if not doi:
-            print('skipping record without a DOI', file=sys.stderr)
+            print("skipping record without a DOI", file=sys.stderr)
             return
 
         if not str.isascii(doi):
-            print('[{}] skipping non-ascii doi for now'.format(doi))
+            print("[{}] skipping non-ascii doi for now".format(doi))
             return None
 
-        creators = attributes.get('creators', []) or []
-        contributors = attributes.get('contributors', []) or []  # Much fewer than creators.
+        creators = attributes.get("creators", []) or []
+        contributors = attributes.get("contributors", []) or []  # Much fewer than creators.
 
         contribs = self.parse_datacite_creators(creators, doi=doi)
 
@@ -323,7 +340,9 @@ class DataciteImporter(EntityImporter):
         # Related: https://guide.fatcat.wiki/entity_release.html -- role
         # (string, of a set): the type of contribution, from a controlled
         # vocabulary. TODO: vocabulary needs review.
-        contribs_extra_contributors = self.parse_datacite_creators(contributors, set_index=False, doi=doi)
+        contribs_extra_contributors = self.parse_datacite_creators(
+            contributors, set_index=False, doi=doi
+        )
 
         # Unfortunately, creators and contributors might overlap, refs GH59.
         for cc in contribs_extra_contributors:
@@ -333,17 +352,16 @@ class DataciteImporter(EntityImporter):
 
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
-        titles = attributes.get('titles', []) or []
-        title, original_language_title, subtitle = parse_datacite_titles(
-            titles)
+        titles = attributes.get("titles", []) or []
+        title, original_language_title, subtitle = parse_datacite_titles(titles)
 
         if title is None:
-            print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
+            print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
 
         title = clean(title)
         if not title:
-            print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
+            print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
 
         # check for blocklisted "spam", e.g. "FULL MOVIE"
@@ -367,10 +385,13 @@ class DataciteImporter(EntityImporter):
         # "Collected", "Copyrighted", "Created", "Issued", "Submitted",
         # "Updated", "Valid".
         release_date, release_month, release_year = parse_datacite_dates(
-            attributes.get('dates', []))
+            attributes.get("dates", [])
+        )
 
         # block bogus far-future years/dates
-        if release_year is not None and (release_year > (self.this_year + 5) or release_year < 1000):
+        if release_year is not None and (
+            release_year > (self.this_year + 5) or release_year < 1000
+        ):
             release_date = None
             release_month = None
             release_year = None
@@ -378,26 +399,30 @@ class DataciteImporter(EntityImporter):
         # Some records do not use the "dates" field (e.g. micropub), but:
         # "attributes.published" or "attributes.publicationYear"
         if not any((release_date, release_month, release_year)):
-            release_date, release_month, release_year = parse_single_date(attributes.get('publicationYear'))
+            release_date, release_month, release_year = parse_single_date(
+                attributes.get("publicationYear")
+            )
             if not any((release_date, release_month, release_year)):
-                release_date, release_month, release_year = parse_single_date(attributes.get('published'))
+                release_date, release_month, release_year = parse_single_date(
+                    attributes.get("published")
+                )
 
         if not any((release_date, release_month, release_year)):
-            print('[{}] record w/o date: {}'.format(doi, obj), file=sys.stderr)
+            print("[{}] record w/o date: {}".format(doi, obj), file=sys.stderr)
 
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
         # "IsPreviousVersionOf" or "IsNewVersionOf".
-        release_stage = 'published'
+        release_stage = "published"
 
         # TODO(martin): If 'state' is not 'findable' or 'isActive' is not true,
         # we might want something else than 'published'. See also:
         # https://support.datacite.org/docs/doi-states.
 
         # Publisher. A few NA values. A few bogus values.
-        publisher = attributes.get('publisher')
+        publisher = attributes.get("publisher")
 
-        if publisher in UNKNOWN_MARKERS | set(('Unpublished', 'Unknown')):
+        if publisher in UNKNOWN_MARKERS | set(("Unpublished", "Unknown")):
             publisher = None
             release_stage = None
         if publisher is not None and len(publisher) > 80:
@@ -416,24 +441,26 @@ class DataciteImporter(EntityImporter):
         container_id = None
         container_name = None
 
-        container = attributes.get('container', {}) or {}
-        if container.get('type') in CONTAINER_TYPE_MAP.keys():
-            container_type = CONTAINER_TYPE_MAP.get(container['type'])
-            if container.get('identifier') and container.get(
-                    'identifierType') == 'ISSN':
-                issn = container.get('identifier')
+        container = attributes.get("container", {}) or {}
+        if container.get("type") in CONTAINER_TYPE_MAP.keys():
+            container_type = CONTAINER_TYPE_MAP.get(container["type"])
+            if container.get("identifier") and container.get("identifierType") == "ISSN":
+                issn = container.get("identifier")
                 if len(issn) == 8:
                     issn = issn[:4] + "-" + issn[4:]
                 issnl = self.issn2issnl(issn)
                 if issnl is not None:
                     container_id = self.lookup_issnl(issnl)
 
-                    if container_id is None and container.get('title'):
-                        container_name = container.get('title')
+                    if container_id is None and container.get("title"):
+                        container_name = container.get("title")
                         if isinstance(container_name, list):
                             if len(container_name) > 0:
-                                print('[{}] too many container titles: {}'.format(doi,
-                                    len(container_name)))
+                                print(
+                                    "[{}] too many container titles: {}".format(
+                                        doi, len(container_name)
+                                    )
+                                )
                                 container_name = container_name[0]
                         assert isinstance(container_name, str)
                         ce = fatcat_openapi_client.ContainerEntity(
@@ -447,21 +474,24 @@ class DataciteImporter(EntityImporter):
                 else:
                     # TODO(martin): factor this out into a testable function.
                     # TODO(martin): "container_name": "№1(1) (2018)" / 10.26087/inasan.2018.1.1.013
-                    container_name = container.get('title')
+                    container_name = container.get("title")
                     if isinstance(container_name, list):
                         if len(container_name) > 0:
-                            print('[{}] too many container titles: {}'.format(doi,
-                                len(container_name)))
+                            print(
+                                "[{}] too many container titles: {}".format(
+                                    doi, len(container_name)
+                                )
+                            )
                             container_name = container_name[0]
 
         # Exception: https://www.micropublication.org/, see: !MR24.
         if container_id is None and container_name is None:
-            if publisher and publisher.lower().startswith('micropublication'):
+            if publisher and publisher.lower().startswith("micropublication"):
                 container_name = publisher
 
         # Volume and issue.
-        volume = container.get('volume')
-        issue = container.get('issue')
+        volume = container.get("volume")
+        issue = container.get("issue")
 
         if volume:
             volume = clean(volume)
@@ -472,13 +502,13 @@ class DataciteImporter(EntityImporter):
         # Pages.
         pages = None
 
-        first_page = container.get('firstPage')
-        last_page = container.get('lastPage')
+        first_page = container.get("firstPage")
+        last_page = container.get("lastPage")
 
         if first_page and last_page:
             try:
                 _ = int(first_page) < int(last_page)
-                pages = '{}-{}'.format(first_page, last_page)
+                pages = "{}-{}".format(first_page, last_page)
             except ValueError as err:  # noqa: F841
                 # TODO(martin): This is more debug than info.
                 # print('[{}] {}'.format(doi, err), file=sys.stderr)
@@ -491,8 +521,8 @@ class DataciteImporter(EntityImporter):
         license_slug = None
         license_extra = []
 
-        for lic in attributes.get('rightsList', []):
-            slug = lookup_license_slug(lic.get('rightsUri'))
+        for lic in attributes.get("rightsList", []):
+            slug = lookup_license_slug(lic.get("rightsUri"))
             if slug:
                 license_slug = slug
             license_extra.append(lic)
@@ -506,7 +536,7 @@ class DataciteImporter(EntityImporter):
         # library solves it for you." -- TODO(martin): We need more of these.
         language = None
 
-        value = attributes.get('language', '') or ''
+        value = attributes.get("language", "") or ""
         try:
             language = pycountry.languages.lookup(value).alpha_2
         except (LookupError, AttributeError) as err:  # noqa: F841
@@ -520,22 +550,22 @@ class DataciteImporter(EntityImporter):
         # "Other" fields might contain references or related articles (with
         # DOI). TODO(martin): maybe try to parse out some of those refs.
         abstracts = []
-        descs = attributes.get('descriptions', []) or []
+        descs = attributes.get("descriptions", []) or []
         for desc in descs:
-            if not desc.get('descriptionType') == 'Abstract':
+            if not desc.get("descriptionType") == "Abstract":
                 continue
 
             # Description maybe a string, int or list.
-            text = desc.get('description', '')
+            text = desc.get("description", "")
             if not text:
                 continue
             if isinstance(text, int):
-                text = '{}'.format(text)
+                text = "{}".format(text)
             if isinstance(text, list):
                 try:
                     text = "\n".join(text)
                 except TypeError:
-                    continue # Bail out, if it is not a list of strings.
+                    continue  # Bail out, if it is not a list of strings.
 
             # Limit length.
             if len(text) < 10:
@@ -548,7 +578,10 @@ class DataciteImporter(EntityImporter):
             try:
                 lang = langdetect.detect(text)
             except (langdetect.lang_detect_exception.LangDetectException, TypeError) as err:
-                print('[{}] language detection failed with {} on {}'.format(doi, err, text), file=sys.stderr)
+                print(
+                    "[{}] language detection failed with {} on {}".format(doi, err, text),
+                    file=sys.stderr,
+                )
             abstract_text = clean(text)
             if not abstract_text:
                 continue
@@ -557,7 +590,8 @@ class DataciteImporter(EntityImporter):
                     mimetype="text/plain",
                     content=abstract_text,
                     lang=lang,
-                ))
+                )
+            )
 
         # References and relations. Datacite include many relation types in
         # "attributes.relatedIdentifiers[].relationType", e.g.
@@ -570,67 +604,76 @@ class DataciteImporter(EntityImporter):
         # For the moment, we only care about References.
         refs, ref_index = [], 0
 
-        relIds = attributes.get('relatedIdentifiers', []) or []
+        relIds = attributes.get("relatedIdentifiers", []) or []
         for rel in relIds:
-            if not rel.get('relationType', '') in ('References', 'Cites'):
+            if not rel.get("relationType", "") in ("References", "Cites"):
                 continue
             ref_extra = dict()
-            if rel.get('relatedIdentifierType', '') == 'DOI':
-                ref_extra['doi'] = rel.get('relatedIdentifier')
+            if rel.get("relatedIdentifierType", "") == "DOI":
+                ref_extra["doi"] = rel.get("relatedIdentifier")
             if not ref_extra:
                 ref_extra = None
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     index=ref_index,
                     extra=ref_extra,
-                ))
+                )
+            )
             ref_index += 1
 
         # More specific release_type via 'Reviews' relationsship.
         for rel in relIds:
-            if rel.get('relatedIdentifierType', '') != 'Reviews':
+            if rel.get("relatedIdentifierType", "") != "Reviews":
                 continue
-            release_type = 'review'
+            release_type = "review"
 
         # Extra information.
         extra_datacite = dict()
 
         if license_extra:
-            extra_datacite['license'] = license_extra
-        if attributes.get('subjects'):
-            extra_datacite['subjects'] = attributes['subjects']
+            extra_datacite["license"] = license_extra
+        if attributes.get("subjects"):
+            extra_datacite["subjects"] = attributes["subjects"]
 
         # Include version information.
-        metadata_version = attributes.get('metadataVersion') or ''
+        metadata_version = attributes.get("metadataVersion") or ""
 
         if metadata_version:
-            extra_datacite['metadataVersion'] = metadata_version
+            extra_datacite["metadataVersion"] = metadata_version
 
         # Include resource types.
-        types = attributes.get('types', {}) or {}
-        resource_type = types.get('resourceType', '') or ''
-        resource_type_general = types.get('resourceTypeGeneral', '') or ''
+        types = attributes.get("types", {}) or {}
+        resource_type = types.get("resourceType", "") or ""
+        resource_type_general = types.get("resourceTypeGeneral", "") or ""
 
         if resource_type and resource_type.lower() not in UNKNOWN_MARKERS_LOWER:
-            extra_datacite['resourceType'] = resource_type
+            extra_datacite["resourceType"] = resource_type
         if resource_type_general and resource_type_general.lower() not in UNKNOWN_MARKERS_LOWER:
-            extra_datacite['resourceTypeGeneral'] = resource_type_general
+            extra_datacite["resourceTypeGeneral"] = resource_type_general
 
         # Include certain relations from relatedIdentifiers. Keeping the
         # original structure of data here, which is a list of dicts, with
         # relation type, identifier and identifier type (mostly).
         relations = []
         for rel in relIds:
-            if rel.get('relationType') in ('IsPartOf', 'Reviews', 'Continues',
-                                           'IsVariantFormOf', 'IsSupplementTo',
-                                           'HasVersion', 'IsMetadataFor',
-                                           'IsNewVersionOf', 'IsIdenticalTo',
-                                           'IsVersionOf', 'IsDerivedFrom',
-                                           'IsSourceOf'):
+            if rel.get("relationType") in (
+                "IsPartOf",
+                "Reviews",
+                "Continues",
+                "IsVariantFormOf",
+                "IsSupplementTo",
+                "HasVersion",
+                "IsMetadataFor",
+                "IsNewVersionOf",
+                "IsIdenticalTo",
+                "IsVersionOf",
+                "IsDerivedFrom",
+                "IsSourceOf",
+            ):
                 relations.append(rel)
 
         if relations:
-            extra_datacite['relations'] = relations
+            extra_datacite["relations"] = relations
 
         extra = dict()
 
@@ -640,18 +683,18 @@ class DataciteImporter(EntityImporter):
         # Edition", "20191024", "v2.0.0", "v0.9.3", "10149", "2.0", null,
         # "v0.1.1", "3.0", "1.0", "3", "v1.12.2", "20191018", "v0.3.1", "v1.0",
         # "10161", "10010691", "10780", # "Presentación"
-        version = attributes.get('version') or None
+        version = attributes.get("version") or None
 
         # top-level extra keys
         if not container_id and container_name:
-            extra['container_name'] = container_name
+            extra["container_name"] = container_name
 
         # Always include datacite key, even if value is empty (dict).
-        extra['datacite'] = extra_datacite
+        extra["datacite"] = extra_datacite
 
         # Preparation for a schema update.
         if release_month:
-            extra['release_month'] = release_month
+            extra["release_month"] = release_month
 
         extids = self.lookup_ext_ids(doi=doi)
 
@@ -669,12 +712,12 @@ class DataciteImporter(EntityImporter):
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids['pmid'],
-                pmcid=extids['pmcid'],
-                wikidata_qid=extids['wikidata_qid'],
-                core=extids['core_id'],
-                arxiv=extids['arxiv_id'],
-                jstor=extids['jstor_id'],
+                pmid=extids["pmid"],
+                pmcid=extids["pmcid"],
+                wikidata_qid=extids["wikidata_qid"],
+                core=extids["core_id"],
+                arxiv=extids["arxiv_id"],
+                jstor=extids["jstor_id"],
             ),
             contribs=contribs,
             volume=volume,
@@ -702,19 +745,19 @@ class DataciteImporter(EntityImporter):
         """
 
         release_type = None
-        if not attributes.get('types'):
+        if not attributes.get("types"):
             return None
-        types = attributes['types']
+        types = attributes["types"]
 
-        for typeType in ('citeproc', 'ris', 'schemaOrg', 'bibtex', 'resourceTypeGeneral'):
+        for typeType in ("citeproc", "ris", "schemaOrg", "bibtex", "resourceTypeGeneral"):
             value = types.get(typeType)
             release_type = DATACITE_TYPE_MAP.get(typeType, {}).get(value)
             if release_type is not None:
                 break
 
         # special case: figshare "collections" which group other entities
-        if doi.startswith('10.6084/') or doi.startswith('10.25384'):
-            if types.get('resourceType') == "Collection":
+        if doi.startswith("10.6084/") or doi.startswith("10.25384"):
+            if types.get("resourceType") == "Collection":
                 release_type = "stub"
 
         if release_type is None:
@@ -736,35 +779,41 @@ class DataciteImporter(EntityImporter):
         # publishes highly interesting datasets, but titles are mostly the same
         # ("GBIF Occurrence Download" or "Occurrence Download"); set
         # release_type to "stub" (CSL/FC).
-        if re.title == 'GBIF Occurrence Download' and re.ext_ids.doi.startswith('10.15468/dl.'):
-            re.release_type = 'stub'
+        if re.title == "GBIF Occurrence Download" and re.ext_ids.doi.startswith("10.15468/dl."):
+            re.release_type = "stub"
 
         # release_type exception: lots of "Experimental Crystal Structure Determination"
         # publisher: "Cambridge Crystallographic Data Centre"
-        if re.ext_ids.doi.startswith('10.5517/'):
-            re.release_type = 'entry'
+        if re.ext_ids.doi.startswith("10.5517/"):
+            re.release_type = "entry"
 
         # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
-        if re.title.lower().startswith('additional file') and re.release_type in ('article', 'article-journal'):
-            re.release_type = 'component'
+        if re.title.lower().startswith("additional file") and re.release_type in (
+            "article",
+            "article-journal",
+        ):
+            re.release_type = "component"
 
         # figshare
-        if re.ext_ids.doi.startswith('10.6084/') or re.ext_ids.doi.startswith('10.25384'):
+        if re.ext_ids.doi.startswith("10.6084/") or re.ext_ids.doi.startswith("10.25384"):
             # set version if DOI ends with versioned suffix
-            doi_suffix = re.ext_ids.doi.split('.')[-1]
-            if doi_suffix and doi_suffix.startswith('v') and doi_suffix[1:].isdigit():
+            doi_suffix = re.ext_ids.doi.split(".")[-1]
+            if doi_suffix and doi_suffix.startswith("v") and doi_suffix[1:].isdigit():
                 re.version = doi_suffix
             # "Figure 123 from " -> component
             # "Table S1. ;Figure S1;Figure S2. ;Figure S3. ;Figure S4. from Use of organic exudates from two polar diatoms by bacterial isolates from the Arctic ocean"
-            if " from " in re.title and re.release_type not in ('stub', 'graphic'):
+            if " from " in re.title and re.release_type not in ("stub", "graphic"):
                 if re.title.startswith("Figure "):
                     re.release_type = "component"
                 elif re.title.startswith("Table "):
                     re.release_type = "component"
 
         # figshare.com
-        if re.ext_ids.doi.startswith('10.6084/m9.figshare.') and re.extra.get('container_name') is None:
-            re.extra['container_name'] = "figshare.com"
+        if (
+            re.ext_ids.doi.startswith("10.6084/m9.figshare.")
+            and re.extra.get("container_name") is None
+        ):
+            re.extra["container_name"] = "figshare.com"
 
         return re
 
@@ -788,26 +837,28 @@ class DataciteImporter(EntityImporter):
         # eventually we'll want to support "updates", but for now just skip if
         # entity already exists
         if existing:
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
 
         return True
 
     def insert_batch(self, batch):
-        print('inserting batch ({})'.format(len(batch)), file=sys.stderr)
+        print("inserting batch ({})".format(len(batch)), file=sys.stderr)
         if self.insert_log_file:
-            with open(self.insert_log_file, 'a') as f:
+            with open(self.insert_log_file, "a") as f:
                 for doc in batch:
                     json.dump(entity_to_dict(doc, api_client=None), f)
-                    f.write('\n')
+                    f.write("\n")
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(
-                    description=self.editgroup_description,
-                    extra=self.editgroup_extra),
-                entity_list=batch))
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )
 
-    def parse_datacite_creators(self, creators, role='author', set_index=True, doi=None):
+    def parse_datacite_creators(self, creators, role="author", set_index=True, doi=None):
         """
         Parses a list of creators into a list of ReleaseContrib objects. Set
         set_index to False, if the index contrib field should be left blank.
@@ -820,48 +871,53 @@ class DataciteImporter(EntityImporter):
         contribs = []
 
         # Names, that should be ignored right away.
-        name_blocklist = set(('Occdownload Gbif.Org',))
+        name_blocklist = set(("Occdownload Gbif.Org",))
 
         i = 0
         for c in creators:
             if not set_index:
                 i = None
-            nameType = c.get('nameType', '') or ''
-            if nameType in ('', 'Personal'):
+            nameType = c.get("nameType", "") or ""
+            if nameType in ("", "Personal"):
                 creator_id = None
-                for nid in c.get('nameIdentifiers', []) or []:
+                for nid in c.get("nameIdentifiers", []) or []:
                     if not isinstance(nid, dict):
                         # see: fatcat-workers/issues/44035/
-                        print('unexpected nameIdentifiers, expected list of dicts, got: {}'.format(nid), file=sys.stderr)
+                        print(
+                            "unexpected nameIdentifiers, expected list of dicts, got: {}".format(
+                                nid
+                            ),
+                            file=sys.stderr,
+                        )
                         continue
-                    name_scheme = nid.get('nameIdentifierScheme', '') or ''
+                    name_scheme = nid.get("nameIdentifierScheme", "") or ""
                     if not name_scheme.lower() == "orcid":
                         continue
-                    orcid = nid.get('nameIdentifier') or ''
-                    orcid = orcid.replace('https://orcid.org/', '')
+                    orcid = nid.get("nameIdentifier") or ""
+                    orcid = orcid.replace("https://orcid.org/", "")
                     if not orcid:
                         continue
                     creator_id = self.lookup_orcid(orcid)
                     # TODO(martin): If creator_id is None, should we create creators?
 
                 # If there are multiple affiliation strings, use the first one.
-                affiliations = c.get('affiliation', []) or []
+                affiliations = c.get("affiliation", []) or []
                 raw_affiliation = None
                 if len(affiliations) == 0:
                     raw_affiliation = None
                 else:
                     raw_affiliation = clean(affiliations[0])
 
-                name = c.get('name')
-                given_name = c.get('givenName')
-                surname = c.get('familyName')
+                name = c.get("name")
+                given_name = c.get("givenName")
+                surname = c.get("familyName")
 
                 if name:
                     name = clean(name)
                 if not any((name, given_name, surname)):
                     continue
                 if not name:
-                    name = "{} {}".format(given_name or '', surname or '').strip()
+                    name = "{} {}".format(given_name or "", surname or "").strip()
                 if name in name_blocklist:
                     continue
                 if name.lower() in UNKNOWN_MARKERS_LOWER:
@@ -881,7 +937,7 @@ class DataciteImporter(EntityImporter):
                 if not name:
                     continue
 
-                if raw_affiliation == '':
+                if raw_affiliation == "":
                     continue
 
                 extra = None
@@ -891,39 +947,38 @@ class DataciteImporter(EntityImporter):
                 # "RelatedPerson", "ProjectLeader", "Editor", "Other",
                 # "ProjectMember", "Funder", "RightsHolder", "DataCollector",
                 # "Supervisor", "Producer", "HostingInstitution", "ResearchGroup"
-                contributorType = c.get('contributorType', '') or ''
+                contributorType = c.get("contributorType", "") or ""
 
                 if contributorType:
-                    extra = {'type': contributorType}
+                    extra = {"type": contributorType}
 
                 rc = fatcat_openapi_client.ReleaseContrib(
-                        creator_id=creator_id,
-                        index=i,
-                        raw_name=name,
-                        given_name=given_name,
-                        surname=surname,
-                        role=role,
-                        raw_affiliation=raw_affiliation,
-                        extra=extra,
-                    )
+                    creator_id=creator_id,
+                    index=i,
+                    raw_name=name,
+                    given_name=given_name,
+                    surname=surname,
+                    role=role,
+                    raw_affiliation=raw_affiliation,
+                    extra=extra,
+                )
                 # Filter out duplicates early.
                 if not contributor_list_contains_contributor(contribs, rc):
                     contribs.append(rc)
                     if i is not None:
                         i += 1
-            elif nameType == 'Organizational':
-                name = c.get('name', '') or ''
+            elif nameType == "Organizational":
+                name = c.get("name", "") or ""
                 if name in UNKNOWN_MARKERS:
                     continue
                 if len(name) < 3:
                     continue
-                extra = {'organization': name}
-                contribs.append(fatcat_openapi_client.ReleaseContrib(
-                    index=i, extra=extra))
+                extra = {"organization": name}
+                contribs.append(fatcat_openapi_client.ReleaseContrib(index=i, extra=extra))
                 if i is not None:
                     i += 1
             else:
-                print('[{}] unknown name type: {}'.format(doi, nameType), file=sys.stderr)
+                print("[{}] unknown name type: {}".format(doi, nameType), file=sys.stderr)
 
         return contribs
 
@@ -935,8 +990,8 @@ def contributor_list_contains_contributor(contributor_list, contributor):
     for cc in contributor_list:
         if cc.raw_name != contributor.raw_name:
             continue
-        cc_role = cc.role or 'author'
-        contributor_role = contributor.role or 'author'
+        cc_role = cc.role or "author"
+        contributor_role = contributor.role or "author"
         if cc_role != contributor_role:
             continue
         return True
@@ -952,91 +1007,97 @@ def lookup_license_slug(raw):
     if not raw:
         return None
 
-    if 'creativecommons.org/publicdomain/zero' in raw:
-        return 'CC-0'
-    if raw.lower().endswith('/cc0'):
-        return 'CC-0'
+    if "creativecommons.org/publicdomain/zero" in raw:
+        return "CC-0"
+    if raw.lower().endswith("/cc0"):
+        return "CC-0"
 
-    if 'creativecommons' in raw:
+    if "creativecommons" in raw:
         # https://creativecommons.org/publicdomain/mark/1.0/deed.de
-        if 'creativecommons.org/publicdomain' in raw:
-            return 'CC-PUBLICDOMAIN'
-        if 'creativecommons.org/share-your-work/public-domain/cc0' in raw:
-            return 'CC-0'
+        if "creativecommons.org/publicdomain" in raw:
+            return "CC-PUBLICDOMAIN"
+        if "creativecommons.org/share-your-work/public-domain/cc0" in raw:
+            return "CC-0"
         # https://creativecommons.org/licenses/by/4.0/deed.es_ES
         raw = raw.lower()
-        match = re.search(r'creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)', raw, re.IGNORECASE)
+        match = re.search(
+            r"creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)", raw, re.IGNORECASE
+        )
         if not match:
-            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            print("missed potential license: {}".format(raw), file=sys.stderr)
             return None
-        name = match.groupdict().get('name')
+        name = match.groupdict().get("name")
         if not name:
             return None
-        if not name.startswith('cc'):
-            name = 'cc-{}'.format(name)
+        if not name.startswith("cc"):
+            name = "cc-{}".format(name)
         return name.upper()
 
-    if 'opensource.org' in raw:
+    if "opensource.org" in raw:
         # https://opensource.org/licenses/alphabetical, e.g. opensource.org/licenses/EUPL-1.2
-        match = re.search(r'opensource.org/licenses/(?P<name>[^/]+)', raw, re.IGNORECASE)
+        match = re.search(r"opensource.org/licenses/(?P<name>[^/]+)", raw, re.IGNORECASE)
         if not match:
-            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            print("missed potential license: {}".format(raw), file=sys.stderr)
             return None
-        name = match.groupdict().get('name')
+        name = match.groupdict().get("name")
         if not name:
             return None
         if len(name) > 11:
             return None
         return name.upper()
 
-    if 'gnu.org' in raw:
+    if "gnu.org" in raw:
         # http://www.gnu.org/copyleft/gpl, https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
-        match = re.search(r'/(?P<name>fdl(-[0-9.]*[0-9]+)?|gpl(-[0-9.]*[0-9]+)?|lgpl(-[0-9.]*[0-9]+)|aglp(-[0-9.]*[0-9]+)?)', raw, re.IGNORECASE)
+        match = re.search(
+            r"/(?P<name>fdl(-[0-9.]*[0-9]+)?|gpl(-[0-9.]*[0-9]+)?|lgpl(-[0-9.]*[0-9]+)|aglp(-[0-9.]*[0-9]+)?)",
+            raw,
+            re.IGNORECASE,
+        )
         if not match:
-            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            print("missed potential license: {}".format(raw), file=sys.stderr)
             return None
-        name = match.groupdict().get('name')
+        name = match.groupdict().get("name")
         if not name:
             return None
         if len(name) > 8:
             return None
         return name.upper()
 
-    if 'spdx.org' in raw:
-        if 'spdx.org/licenses/CC0' in raw:
-            return 'CC-0'
+    if "spdx.org" in raw:
+        if "spdx.org/licenses/CC0" in raw:
+            return "CC-0"
         # https://spdx.org/licenses/CC-BY-NC-ND-4.0.html
-        match = re.search(r'spdx.org/licenses/(?P<name>[a-z0-9-]+)', raw, re.IGNORECASE)
+        match = re.search(r"spdx.org/licenses/(?P<name>[a-z0-9-]+)", raw, re.IGNORECASE)
         if not match:
-            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            print("missed potential license: {}".format(raw), file=sys.stderr)
             return None
-        name = match.groupdict().get('name')
+        name = match.groupdict().get("name")
         if not name:
             return None
         if len(name) > 36:
             return None
         # cleanup version and extensions
-        name = re.sub('(-[0-9])?[.]?[0-9]?(.json|.html)?', '', name.lower())
+        name = re.sub("(-[0-9])?[.]?[0-9]?(.json|.html)?", "", name.lower())
         return name.upper()
 
-    if 'rightsstatements.org' in raw:
+    if "rightsstatements.org" in raw:
         # http://rightsstatements.org/vocab/InC/1.0/
-        match = re.search(r'rightsstatements.org/(vocab|page)/(?P<name>[^/]*)', raw)
+        match = re.search(r"rightsstatements.org/(vocab|page)/(?P<name>[^/]*)", raw)
         if not match:
-            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            print("missed potential license: {}".format(raw), file=sys.stderr)
             return None
-        name = match.groupdict().get('name')
+        name = match.groupdict().get("name")
         if not name:
             return None
         if len(name) > 9:
             return None
-        return 'RS-{}'.format(name.upper())
+        return "RS-{}".format(name.upper())
 
     # Fallback to mapped values.
     raw = raw.lower()
-    raw = raw.strip().replace('http://', '//').replace('https://', '//')
-    if not raw.endswith('/'):
-        raw = raw + '/'
+    raw = raw.strip().replace("http://", "//").replace("https://", "//")
+    if not raw.endswith("/"):
+        raw = raw + "/"
     return LICENSE_SLUG_MAP.get(raw)
 
 
@@ -1046,23 +1107,21 @@ def find_original_language_title(item, min_length=4, max_questionmarks=3):
 
     Example input: {'title': 'Some title', 'original_language_title': 'Some title'}
     """
-    if 'original_language_title' not in item:
+    if "original_language_title" not in item:
         return None
-    title = item.get('title')
+    title = item.get("title")
     if not title:
         return None
-    original_language_title = item.get('original_language_title')
-    if isinstance(original_language_title,
-                  str) and title != original_language_title:
+    original_language_title = item.get("original_language_title")
+    if isinstance(original_language_title, str) and title != original_language_title:
         if len(original_language_title) < min_length:
             return None
-        if original_language_title.count('?') > max_questionmarks:
+        if original_language_title.count("?") > max_questionmarks:
             return None
         return original_language_title
     if isinstance(original_language_title, dict):
-        content = original_language_title.get('__content__', '') or ''
-        if content and content != title and not content.count(
-                '?') > max_questionmarks:
+        content = original_language_title.get("__content__", "") or ""
+        if content and content != title and not content.count("?") > max_questionmarks:
             return content
     return None
 
@@ -1082,22 +1141,22 @@ def parse_datacite_titles(titles):
         return title, original_language_title, subtitle
     elif len(titles) == 1:
         original_language_title = find_original_language_title(titles[0])
-        title = titles[0].get('title', '') or ''
+        title = titles[0].get("title", "") or ""
         title = title.strip()
         if not title:
             title = None
         return title, original_language_title, subtitle
     else:
         for entry in titles:
-            if not title and ('titleType' not in entry
-                              or not entry.get('titleType')):
-                title = (entry.get('title') or '').strip()
-            if not subtitle and entry.get('titleType') == 'Subtitle':
-                subtitle = entry.get('title', '').strip()
+            if not title and ("titleType" not in entry or not entry.get("titleType")):
+                title = (entry.get("title") or "").strip()
+            if not subtitle and entry.get("titleType") == "Subtitle":
+                subtitle = entry.get("title", "").strip()
             if not original_language_title:
                 original_language_title = find_original_language_title(entry)
 
     return title, original_language_title, subtitle
+
 
 def parse_single_date(value):
     """
@@ -1113,11 +1172,11 @@ def parse_single_date(value):
         # Results in a dict with keys: date_obj, period, locale.
         parse_result = parser.get_date_data(value)
         # A datetime object, later we need a date, only.
-        result = parse_result['date_obj']
+        result = parse_result["date_obj"]
         if result is not None:
-            if parse_result['period'] == 'year':
+            if parse_result["period"] == "year":
                 return None, None, result.year
-            elif parse_result['period'] == 'month':
+            elif parse_result["period"] == "month":
                 return None, result.month, result.year
             else:
                 return result.date(), result.month, result.year
@@ -1125,6 +1184,7 @@ def parse_single_date(value):
         print("{} date parsing failed with: {}".format(value, err), file=sys.stderr)
 
     return None, None, None
+
 
 def parse_datacite_dates(dates):
     """
@@ -1137,37 +1197,37 @@ def parse_datacite_dates(dates):
         return release_date, release_month, release_year
 
     if not isinstance(dates, list):
-        raise ValueError('expected a list of date items')
+        raise ValueError("expected a list of date items")
 
     # Observed values: "Available", "Submitted", "Valid", "Issued", "Accepted",
     # "Collected", "Updated", "Copyrighted", "Created"
     # Ignored for now: "Collected", "Issued"
     date_type_prio = (
-        'Valid',
-        'Available',
-        'Accepted',
-        'Submitted',
-        'Copyrighted',
-        'Created',
-        'Updated',
+        "Valid",
+        "Available",
+        "Accepted",
+        "Submitted",
+        "Copyrighted",
+        "Created",
+        "Updated",
     )
 
     # We need to note the granularity, since a string like "2019" would be
     # parsed into "2019-01-01", even though the month is unknown. Use 3
     # granularity types: 'y', 'm', 'd'.
-    Pattern = collections.namedtuple('Pattern', 'layout granularity')
+    Pattern = collections.namedtuple("Pattern", "layout granularity")
 
     # Before using (expensive) dateparser, try a few common patterns.
     common_patterns = (
-        Pattern('%Y-%m-%d', 'd'),
-        Pattern('%Y-%m', 'm'),
-        Pattern('%Y-%m-%dT%H:%M:%SZ', 'd'),
-        Pattern('%Y-%m-%dT%H:%M:%S', 'd'),
-        Pattern('%Y', 'y'),
+        Pattern("%Y-%m-%d", "d"),
+        Pattern("%Y-%m", "m"),
+        Pattern("%Y-%m-%dT%H:%M:%SZ", "d"),
+        Pattern("%Y-%m-%dT%H:%M:%S", "d"),
+        Pattern("%Y", "y"),
     )
 
     def parse_item(item):
-        result, value, year_only = None, str(item.get('date', '')) or '', False
+        result, value, year_only = None, str(item.get("date", "")) or "", False
         release_date, release_month, release_year = None, None, None
 
         for layout, granularity in common_patterns:
@@ -1176,22 +1236,22 @@ def parse_datacite_dates(dates):
             except ValueError:
                 continue
             else:
-                if granularity == 'y':
+                if granularity == "y":
                     year_only = True
                 break
 
         if result is None:
-            print('fallback for {}'.format(value), file=sys.stderr)
+            print("fallback for {}".format(value), file=sys.stderr)
             release_date, release_month, release_year = parse_single_date(value)
 
         if result is None:
             # Unparsable date.
             return release_date, release_month, release_year
 
-        if granularity != 'y':
+        if granularity != "y":
             release_date = result.date()
         release_year = result.year
-        if granularity in ('m', 'd'):
+        if granularity in ("m", "d"):
             release_month = result.month
 
         return release_date, release_month, release_year
@@ -1200,7 +1260,7 @@ def parse_datacite_dates(dates):
 
     for prio in date_type_prio:
         for item in dates:
-            if not item.get('dateType') == prio:
+            if not item.get("dateType") == prio:
                 continue
 
             release_date, release_month, release_year = parse_item(item)
@@ -1224,45 +1284,49 @@ def parse_datacite_dates(dates):
 
     return release_date, release_month, release_year
 
+
 def index_form_to_display_name(s):
     """
     Try to convert an index form name, like 'Razis, Panos A' into display_name,
     e.g. 'Panos A Razis'.
     """
-    if ',' not in s:
+    if "," not in s:
         return s
-    skip_on_chars = ['(', ')', '*']
+    skip_on_chars = ["(", ")", "*"]
     for char in skip_on_chars:
         if char in s:
             return s
-    if s.count(',') > 1:
+    if s.count(",") > 1:
         # "Dr. Hina, Dr. Muhammad Usman Shahid, Dr. Muhammad Zeeshan Khan"
         return s
 
     # Not names, but sprinkled in fields where authors live.
-    stopwords = [s.lower() for s in (
-        'Archive',
-        'Collection',
-        'Coordinator',
-        'Department',
-        'Germany',
-        'International',
-        'National',
-        'Netherlands',
-        'Office',
-        'Organisation',
-        'Organization',
-        'Service',
-        'Services',
-        'United States',
-        'University',
-        'Verein',
-        'Volkshochschule',
-    )]
+    stopwords = [
+        s.lower()
+        for s in (
+            "Archive",
+            "Collection",
+            "Coordinator",
+            "Department",
+            "Germany",
+            "International",
+            "National",
+            "Netherlands",
+            "Office",
+            "Organisation",
+            "Organization",
+            "Service",
+            "Services",
+            "United States",
+            "University",
+            "Verein",
+            "Volkshochschule",
+        )
+    ]
     lower = s.lower()
     for stop in stopwords:
         if stop in lower:
             return s
 
-    a, b = s.split(',')
-    return '{} {}'.format(b.strip(), a.strip())
+    a, b = s.split(",")
+    return "{} {}".format(b.strip(), a.strip())

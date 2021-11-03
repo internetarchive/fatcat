@@ -1,4 +1,3 @@
-
 import datetime
 import subprocess
 import time
@@ -34,8 +33,8 @@ class CheckResult:
         self.status = status
         self.check_type = check_type
         self.description = description
-        self.ident = kwargs.get('ident')
-        self.rev = kwargs.get('rev')
+        self.ident = kwargs.get("ident")
+        self.rev = kwargs.get("rev")
 
     def __repr__(self):
         return str(self.__dict__)
@@ -72,17 +71,17 @@ class EditCheck:
 
 
 class ReviewBot:
-
     def __init__(self, api, verbose=False, **kwargs):
 
         self.api = api
         self.checks = []
         self.verbose = verbose
-        self.extra = kwargs.get('extra', dict())
-        self.extra['git_rev'] = self.extra.get('git_rev',
-            subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
-        self.extra['agent'] = self.extra.get('agent', 'fatcat_tools.ReviewBot')
-        self.poll_interval = kwargs.get('poll_interval', 10.0)
+        self.extra = kwargs.get("extra", dict())
+        self.extra["git_rev"] = self.extra.get(
+            "git_rev", subprocess.check_output(["git", "describe", "--always"]).strip()
+        ).decode("utf-8")
+        self.extra["agent"] = self.extra.get("agent", "fatcat_tools.ReviewBot")
+        self.poll_interval = kwargs.get("poll_interval", 10.0)
 
     def run_single(self, editgroup_id, annotate=True):
         eg = self.api.get_editgroup(editgroup_id)
@@ -96,7 +95,9 @@ class ReviewBot:
             since = datetime.datetime.utcnow()
         while True:
             # XXX: better isoformat conversion?
-            eg_list = self.api.get_editgroups_reviewable(since=since.isoformat()[:19] + "Z", limit=100)
+            eg_list = self.api.get_editgroups_reviewable(
+                since=since.isoformat()[:19] + "Z", limit=100
+            )
             if not eg_list:
                 print("Sleeping {} seconds...".format(self.poll_interval))
                 time.sleep(self.poll_interval)
@@ -104,8 +105,11 @@ class ReviewBot:
             for eg in eg_list:
                 # TODO: fetch annotations to ensure we haven't already annotated
                 annotation = self.review_editgroup(eg)
-                print("Reviewed {} disposition:{}".format(
-                    eg.editgroup_id, annotation.extra['disposition']))
+                print(
+                    "Reviewed {} disposition:{}".format(
+                        eg.editgroup_id, annotation.extra["disposition"]
+                    )
+                )
                 self.api.create_editgroup_annotation(eg.editgroup_id, annotation)
                 since = eg.submitted
             # to prevent busy loops (TODO: needs review/rethink; multiple
@@ -125,10 +129,9 @@ class ReviewBot:
         else:
             raise ValueError
 
-        for (status, title) in (('fail', 'Failed check'), ('warning', 'Warnings')):
+        for (status, title) in (("fail", "Failed check"), ("warning", "Warnings")):
             if result_counts[status] > 0:
-                comment += "\n\n### {} ({}):\n".format(
-                    status, result_counts[status])
+                comment += "\n\n### {} ({}):\n".format(status, result_counts[status])
             for result in results:
                 if result.status == status and result.check_type == "editgroup":
                     comment += "\n- {description}".format(description=result.description)
@@ -137,15 +140,18 @@ class ReviewBot:
                         check_type=result.check_type,
                         rev=result.rev,
                         entity_type=result.check_type,
-                        description=result.description)
+                        description=result.description,
+                    )
 
         extra = self.extra.copy()
-        extra.update({
-            "disposition": disposition,
-            "submit_timestamp": editgroup.submitted.isoformat(),
-            "checks": [check.name for check in self.checks],
-            "result_counts": dict(result_counts),
-        })
+        extra.update(
+            {
+                "disposition": disposition,
+                "submit_timestamp": editgroup.submitted.isoformat(),
+                "checks": [check.name for check in self.checks],
+                "result_counts": dict(result_counts),
+            }
+        )
         annotation = fatcat_openapi_client.EditgroupAnnotation(
             comment_markdown=comment,
             editgroup_id=editgroup.editgroup_id,
@@ -156,7 +162,7 @@ class ReviewBot:
     def result_counts(self, results):
         counts = Counter()
         for result in results:
-            counts['total'] += 1
+            counts["total"] += 1
             counts[result.status] += 1
         return counts
 
@@ -217,12 +223,17 @@ class DummyCheck(EditCheck):
     name = "DummyCheck"
 
     def check_editgroup(self, editgroup):
-        return CheckResult("pass", "editgroup",
+        return CheckResult(
+            "pass",
+            "editgroup",
             "every edit is precious, thanks [editor {editor_id}](/editor/{editor_id})!".format(
-                editor_id=editgroup.editor_id))
+                editor_id=editgroup.editor_id
+            ),
+        )
 
     def check_work(self, entity, edit):
         return CheckResult("pass", "work", "this work edit is beautiful")
+
 
 class DummyReviewBot(ReviewBot):
     """

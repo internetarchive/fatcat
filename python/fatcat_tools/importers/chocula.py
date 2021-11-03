@@ -1,4 +1,3 @@
-
 import fatcat_openapi_client
 
 from .common import EntityImporter, clean
@@ -15,20 +14,19 @@ class ChoculaImporter(EntityImporter):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
-            "Automated import of container-level metadata from Chocula tool.")
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ChoculaImporter')
-        super().__init__(api,
-            editgroup_description=eg_desc,
-            editgroup_extra=eg_extra,
-            **kwargs)
+        eg_desc = kwargs.get(
+            "editgroup_description",
+            "Automated import of container-level metadata from Chocula tool.",
+        )
+        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.ChoculaImporter")
+        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
     def want(self, raw_record):
-        if not raw_record.get('ident') and not raw_record.get('_known_issnl'):
-            self.counts['skip-unknown-new-issnl'] += 1
+        if not raw_record.get("ident") and not raw_record.get("_known_issnl"):
+            self.counts["skip-unknown-new-issnl"] += 1
             return False
-        if raw_record.get('issnl') and raw_record.get('name'):
+        if raw_record.get("issnl") and raw_record.get("name"):
             return True
         return False
 
@@ -39,42 +37,55 @@ class ChoculaImporter(EntityImporter):
         returns a ContainerEntity (or None if invalid or couldn't parse)
         """
 
-        name = clean(row.get('name'))
+        name = clean(row.get("name"))
         if not name:
             # Name is required (by schema)
             return None
 
         name = name.strip()
 
-        if name.endswith(',  Proceedings of the'):
-            name = "Proceedings of the " + name.split(',')[0]
+        if name.endswith(",  Proceedings of the"):
+            name = "Proceedings of the " + name.split(",")[0]
 
-        if name.endswith('.'):
+        if name.endswith("."):
             name = name[:-1]
 
         extra = dict()
-        for k in ('urls', 'webarchive_urls', 'country',
-                  'sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'languages',
-                  'ia', 'scielo', 'kbart', 'publisher_type', 'platform'):
-            if row['extra'].get(k):
-                extra[k] = row['extra'][k]
+        for k in (
+            "urls",
+            "webarchive_urls",
+            "country",
+            "sherpa_romeo",
+            "ezb",
+            "szczepanski",
+            "doaj",
+            "languages",
+            "ia",
+            "scielo",
+            "kbart",
+            "publisher_type",
+            "platform",
+        ):
+            if row["extra"].get(k):
+                extra[k] = row["extra"][k]
 
         container_type = None
-        if 'proceedings' in name.lower():
-            container_type = 'proceedings'
-        elif 'journal ' in name.lower():
-            container_type = 'journal'
+        if "proceedings" in name.lower():
+            container_type = "proceedings"
+        elif "journal " in name.lower():
+            container_type = "journal"
 
         ce = fatcat_openapi_client.ContainerEntity(
-            issnl=row['issnl'],
-            issnp=row['extra'].get('issnp'),
-            issne=row['extra'].get('issne'),
-            ident=row['ident'],
+            issnl=row["issnl"],
+            issnp=row["extra"].get("issnp"),
+            issne=row["extra"].get("issne"),
+            ident=row["ident"],
             name=name,
             container_type=container_type,
-            publisher=clean(row.get('publisher')),
-            wikidata_qid=row.get('wikidata_qid'),
-            extra=extra)
+            publisher=clean(row.get("publisher")),
+            wikidata_qid=row.get("wikidata_qid"),
+            extra=extra,
+        )
         return ce
 
     def try_update(self, ce):
@@ -86,12 +97,12 @@ class ChoculaImporter(EntityImporter):
             except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
-                self.counts['exists'] += 1
-                self.counts['exists-not-found'] += 1
+                self.counts["exists"] += 1
+                self.counts["exists-not-found"] += 1
                 return False
-            if existing.state != 'active':
-                self.counts['exists'] += 1
-                self.counts['exists-inactive'] += 1
+            if existing.state != "active":
+                self.counts["exists"] += 1
+                self.counts["exists-inactive"] += 1
                 return False
 
         if not existing:
@@ -102,8 +113,8 @@ class ChoculaImporter(EntityImporter):
                 if err.status != 404:
                     raise err
             if existing:
-                self.counts['exists'] += 1
-                self.counts['exists-by-issnl'] += 1
+                self.counts["exists"] += 1
+                self.counts["exists-by-issnl"] += 1
                 return False
             # doesn't exist, always create
             return True
@@ -111,18 +122,22 @@ class ChoculaImporter(EntityImporter):
         # decide whether to update
         do_update = False
         if not self.do_updates:
-            self.counts['exists'] += 1
+            self.counts["exists"] += 1
             return False
         if not existing.extra:
             existing.extra = dict()
-        if ce.extra.get('urls') and set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
+        if ce.extra.get("urls") and set(ce.extra.get("urls", [])) != set(
+            existing.extra.get("urls", [])
+        ):
             do_update = True
-        if ce.extra.get('webarchive_urls') and set(ce.extra.get('webarchive_urls', [])) != set(existing.extra.get('webarchive_urls', [])):
+        if ce.extra.get("webarchive_urls") and set(ce.extra.get("webarchive_urls", [])) != set(
+            existing.extra.get("webarchive_urls", [])
+        ):
             do_update = True
-        for k in ('ezb', 'szczepanski', 'publisher_type', 'platform'):
+        for k in ("ezb", "szczepanski", "publisher_type", "platform"):
             if ce.extra.get(k) and not existing.extra.get(k):
                 do_update = True
-        for k in ('kbart', 'ia', 'doaj'):
+        for k in ("kbart", "ia", "doaj"):
             # always update these fields if not equal (chocula override)
             if ce.extra.get(k) and ce.extra[k] != existing.extra.get(k):
                 do_update = True
@@ -137,41 +152,53 @@ class ChoculaImporter(EntityImporter):
             existing.container_type = existing.container_type or ce.container_type
             existing.issne = existing.issne or ce.issne
             existing.issnp = existing.issnp or ce.issnp
-            for k in ('urls', 'webarchive_urls'):
+            for k in ("urls", "webarchive_urls"):
                 # be conservative about URL updates; don't clobber existing URL lists
                 # may want to make this behavior more sophisticated in the
                 # future, or at least a config flag
                 if ce.extra.get(k) and not existing.extra.get(k):
                     existing.extra[k] = ce.extra.get(k, [])
-            for k in ('sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'ia',
-                      'scielo', 'kbart', 'publisher_type', 'platform'):
+            for k in (
+                "sherpa_romeo",
+                "ezb",
+                "szczepanski",
+                "doaj",
+                "ia",
+                "scielo",
+                "kbart",
+                "publisher_type",
+                "platform",
+            ):
                 # always update (chocula over-rides)
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
-            for k in ('country',):
+            for k in ("country",):
                 # only include if not set (don't clobber human edits)
                 if ce.extra.get(k) and not existing.extra.get(k):
                     existing.extra[k] = ce.extra[k]
-            if ce.extra.get('languages'):
-                if not existing.extra.get('languages'):
-                    existing.extra['languages'] = ce.extra['languages']
-                elif not ce.extra['languages'][0] in existing.extra['languages']:
-                    existing.extra['languages'].append(ce.extra['languages'][0])
+            if ce.extra.get("languages"):
+                if not existing.extra.get("languages"):
+                    existing.extra["languages"] = ce.extra["languages"]
+                elif not ce.extra["languages"][0] in existing.extra["languages"]:
+                    existing.extra["languages"].append(ce.extra["languages"][0])
 
             self.api.update_container(self.get_editgroup_id(), existing.ident, existing)
-            self.counts['update'] += 1
+            self.counts["update"] += 1
             return False
         else:
-            self.counts['exists'] += 1
-            self.counts['exists-skip-update'] += 1
+            self.counts["exists"] += 1
+            self.counts["exists-skip-update"] += 1
             return False
 
         # if we got this far, it's a bug
         raise NotImplementedError
 
     def insert_batch(self, batch):
-        self.api.create_container_auto_batch(fatcat_openapi_client.ContainerAutoBatch(
-            editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
-            entity_list=batch))
+        self.api.create_container_auto_batch(
+            fatcat_openapi_client.ContainerAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description, extra=self.editgroup_extra
+                ),
+                entity_list=batch,
+            )
+        )
