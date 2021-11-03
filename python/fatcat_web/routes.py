@@ -912,7 +912,7 @@ def release_save(ident: str) -> AnyResponse:
 def generic_search() -> AnyResponse:
     if "q" not in request.args.keys():
         return redirect("/release/search")
-    query = request.args.get("q").strip()
+    query = request.args["q"].strip()
 
     if len(query.split()) != 1:
         # multi-term? must be a real search
@@ -1123,8 +1123,8 @@ def container_ident_ia_coverage_years_json(ident: str) -> AnyResponse:
     except Exception as ae:
         app.log.error(ae)
         abort(503)
-    histogram = [dict(year=h[0], in_ia=h[1], count=h[2]) for h in histogram]
-    return jsonify({"container_id": ident, "histogram": histogram})
+    histogram_dicts = [dict(year=h[0], in_ia=h[1], count=h[2]) for h in histogram]
+    return jsonify({"container_id": ident, "histogram": histogram_dicts})
 
 
 @app.route(
@@ -1236,8 +1236,8 @@ def release_bibtex(ident: str) -> AnyResponse:
 @app.route("/release/<string(length=26):ident>/citeproc", methods=["GET"])
 def release_citeproc(ident: str) -> AnyResponse:
     style = request.args.get("style", "harvard1")
-    is_html = request.args.get("html", False)
-    if is_html and is_html.lower() in ("yes", "1", "true", "y", "t"):
+    is_html_arg = request.args.get("html", "false")
+    if is_html_arg and is_html_arg.lower() in ("yes", "1", "true", "y", "t"):
         is_html = True
     else:
         is_html = False
@@ -1280,9 +1280,9 @@ def login() -> AnyResponse:
 
 @app.route("/auth/ia/login", methods=["GET", "POST"])
 def ia_xauth_login() -> AnyResponse:
-    if "email" in request.form:
+    if "email" in request.form and "password" in request.form:
         # if a login attempt...
-        return handle_ia_xauth(request.form.get("email"), request.form.get("password"))
+        return handle_ia_xauth(request.form["email"], request.form["password"])
     # else show form
     return render_template("auth_ia_login.html")
 
@@ -1291,9 +1291,9 @@ def ia_xauth_login() -> AnyResponse:
 def token_login() -> AnyResponse:
     # show the user a list of login options
     if "token" in request.args:
-        return handle_token_login(request.args.get("token"))
+        return handle_token_login(request.args["token"])
     if "token" in request.form:
-        return handle_token_login(request.form.get("token"))
+        return handle_token_login(request.form["token"])
     return render_template("auth_token_login.html")
 
 
@@ -1329,8 +1329,8 @@ def create_auth_token() -> AnyResponse:
     duration_seconds = request.form.get("duration_seconds", None)
     if duration_seconds:
         try:
-            duration_seconds = int(duration_seconds)
-            assert duration_seconds >= 1
+            duration_seconds_int = int(duration_seconds)
+            assert duration_seconds_int >= 1
         except (ValueError, AssertionError):
             abort(400, "duration_seconds must be a positive non-zero integer")
 

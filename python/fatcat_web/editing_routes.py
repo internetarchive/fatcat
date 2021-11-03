@@ -261,6 +261,7 @@ def generic_entity_edit(
                         )
                     )
                 else:  # it's an update
+                    assert existing
                     # all the tricky logic is in the update method
                     form.update_entity(existing)
                     # do we need to try to delete the current in-progress edit first?
@@ -414,6 +415,7 @@ def generic_entity_toml_edit(
                             )
                         )
                 else:  # it's an update
+                    assert existing
                     # TODO: some danger of wiping database state here is
                     # "updated edit" causes, eg, a 4xx error. Better to allow
                     # this in the API itself. For now, form validation *should*
@@ -598,6 +600,8 @@ def generic_edit_delete(
         if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
+
+    assert editgroup is not None
 
     # API on behalf of user
     user_api = auth_api(session["api_token"])
