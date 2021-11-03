@@ -1,4 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FileEntity
 
 from fatcat_tools.normal import clean_doi, clean_isbn13, clean_pmid
 
@@ -27,7 +30,7 @@ class ShadowLibraryImporter(EntityImporter):
         - datetime
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -38,7 +41,7 @@ class ShadowLibraryImporter(EntityImporter):
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         """
         Only want to import records with complete file-level metadata
         """
@@ -51,7 +54,7 @@ class ShadowLibraryImporter(EntityImporter):
             return False
         return True
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[FileEntity]:
         """
         We do the release lookup in this method. Try DOI, then PMID, last ISBN13.
         """
@@ -104,7 +107,7 @@ class ShadowLibraryImporter(EntityImporter):
             urls.append(("webarchive", wayback))
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
 
-        fe = fatcat_openapi_client.FileEntity(
+        fe = FileEntity(
             md5=obj["file_meta"]["md5hex"],
             sha1=obj["file_meta"]["sha1hex"],
             sha256=obj["file_meta"]["sha256hex"],
@@ -116,7 +119,7 @@ class ShadowLibraryImporter(EntityImporter):
         )
         return fe
 
-    def try_update(self, fe):
+    def try_update(self, fe: FileEntity) -> Optional[bool]:
         # lookup sha1, or create new entity
         existing = None
         try:
@@ -189,7 +192,7 @@ class ShadowLibraryImporter(EntityImporter):
         self.counts["update"] += 1
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FileEntity]) -> None:
         self.api.create_file_auto_batch(
             fatcat_openapi_client.FileAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

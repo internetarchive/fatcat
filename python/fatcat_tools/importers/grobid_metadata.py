@@ -2,8 +2,10 @@
 
 import base64
 import json
+from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FileEntity, ReleaseEntity
 
 from .common import EntityImporter, clean, make_rel_url
 
@@ -22,7 +24,7 @@ class GrobidMetadataImporter(EntityImporter):
     TODO: relaxing 'None' constraint on parse_record() might make this refactor-able.
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -34,10 +36,10 @@ class GrobidMetadataImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.longtail_oa = kwargs.get("longtail_oa", False)
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, row):
+    def parse_record(self, row: str) -> Optional[FileEntity]:
 
         fields = row.split("\t")
         sha1_key = fields[0]
@@ -72,12 +74,12 @@ class GrobidMetadataImporter(EntityImporter):
         fe.release_ids.append(release_edit.ident)
         return fe
 
-    def parse_grobid_json(self, obj):
+    def parse_grobid_json(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
 
         if not obj.get("title"):
             return None
 
-        extra_grobid = dict()
+        extra_grobid: Dict[str, Any] = dict()
 
         abstract = obj.get("abstract")
         if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
@@ -103,7 +105,7 @@ class GrobidMetadataImporter(EntityImporter):
 
         refs = []
         for raw in obj.get("citations", []):
-            cite_extra = dict()
+            cite_extra: Dict[str, Any] = dict()
             year = None
             if raw.get("date"):
                 try:
@@ -162,13 +164,15 @@ class GrobidMetadataImporter(EntityImporter):
             publisher=clean(obj["journal"].get("publisher")),
             volume=clean(obj["journal"].get("volume")),
             issue=clean(obj["journal"].get("issue")),
-            abstracts=abstracts,
+            abstracts=abstracts or None,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(),
-            extra=extra,
+            extra=extra or None,
         )
         return re
 
-    def parse_file_metadata(self, sha1_key, cdx, mimetype, file_size):
+    def parse_file_metadata(
+        self, sha1_key: str, cdx: Dict[str, Any], mimetype: str, file_size: int
+    ) -> FileEntity:
 
         sha1 = (
             base64.b16encode(base64.b32decode(sha1_key.replace("sha1:", "")))
@@ -197,11 +201,11 @@ class GrobidMetadataImporter(EntityImporter):
 
         return fe
 
-    def try_update(self, entity):
+    def try_update(self, re: FileEntity) -> bool:
         # did the exists check in 'parse_record()', because we needed to create a release
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FileEntity]) -> None:
         self.api.create_file_auto_batch(
             fatcat_openapi_client.FileAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

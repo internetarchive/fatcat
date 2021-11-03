@@ -1,12 +1,23 @@
 import datetime
+from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
+from fatcat_openapi_client import (
+    ApiClient,
+    FileEntity,
+    FilesetEntity,
+    FilesetUrl,
+    FileUrl,
+    WebcaptureEntity,
+)
 
 from .common import EntityImporter, make_rel_url
 
 
 class IngestFileResultImporter(EntityImporter):
-    def __init__(self, api, require_grobid=True, **kwargs):
+    def __init__(
+        self, api: fatcat_openapi_client.ApiClient, require_grobid: bool = True, **kwargs
+    ) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -41,7 +52,7 @@ class IngestFileResultImporter(EntityImporter):
         if kwargs.get("skip_source_allowlist", False):
             self.ingest_request_source_allowlist = []
 
-    def want_file(self, row) -> bool:
+    def want_file(self, row: Dict[str, Any]) -> bool:
         """
         File-specific part of want(). Generic across general ingest and save-paper-now.
         """
@@ -76,7 +87,7 @@ class IngestFileResultImporter(EntityImporter):
 
         return True
 
-    def want_ingest(self, row) -> bool:
+    def want_ingest(self, row: Dict[str, Any]) -> bool:
         """
         Sandcrawler ingest-specific part of want(). Generic across file and
         webcapture ingest.
@@ -115,7 +126,7 @@ class IngestFileResultImporter(EntityImporter):
 
         return True
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
         """
         Overall logic here probably needs work (TODO):
 
@@ -137,7 +148,7 @@ class IngestFileResultImporter(EntityImporter):
 
         return True
 
-    def parse_ingest_release_ident(self, row):
+    def parse_ingest_release_ident(self, row: Dict[str, Any]) -> Optional[str]:
 
         request = row["request"]
         fatcat = request.get("fatcat")
@@ -178,7 +189,7 @@ class IngestFileResultImporter(EntityImporter):
 
         return release_ident
 
-    def parse_terminal(self, row):
+    def parse_terminal(self, row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         terminal = row.get("terminal")
         if not terminal:
             # support old cdx-only ingest results
@@ -206,7 +217,7 @@ class IngestFileResultImporter(EntityImporter):
         )
         return terminal
 
-    def parse_urls(self, row, terminal):
+    def parse_urls(self, row: Dict[str, Any], terminal: Dict[str, Any]) -> List[FileUrl]:
 
         request = row["request"]
 
@@ -224,10 +235,10 @@ class IngestFileResultImporter(EntityImporter):
         )
         urls = [url, ("webarchive", wayback)]
 
-        urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
+        urls = [FileUrl(rel=rel, url=url) for (rel, url) in urls]
         return urls
 
-    def parse_edit_extra(self, row):
+    def parse_edit_extra(self, row: Dict[str, Any]) -> Dict[str, Any]:
 
         request = row["request"]
         edit_extra = dict()
@@ -251,7 +262,7 @@ class IngestFileResultImporter(EntityImporter):
 
         return edit_extra
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> FileEntity:
 
         request = row["request"]
         file_meta = row["file_meta"]
@@ -283,7 +294,7 @@ class IngestFileResultImporter(EntityImporter):
 
         urls = self.parse_urls(row, terminal)
 
-        fe = fatcat_openapi_client.FileEntity(
+        fe = FileEntity(
             md5=file_meta["md5hex"],
             sha1=file_meta["sha1hex"],
             sha256=file_meta["sha256hex"],
@@ -298,7 +309,7 @@ class IngestFileResultImporter(EntityImporter):
             fe.edit_extra = edit_extra
         return fe
 
-    def try_update(self, fe):
+    def try_update(self, fe: FileEntity) -> bool:
         # lookup sha1, or create new entity
         existing = None
         try:
@@ -330,7 +341,7 @@ class IngestFileResultImporter(EntityImporter):
         self.counts["skip-update-disabled"] += 1
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FileEntity]) -> None:
         if self.submit_mode:
             eg = self.api.create_editgroup(
                 fatcat_openapi_client.Editgroup(
@@ -358,7 +369,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
     them for further human review (as opposed to accepting by default).
     """
 
-    def __init__(self, api, submit_mode=True, **kwargs):
+    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -371,7 +382,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
         kwargs["do_updates"] = False
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
 
         source = row["request"].get("ingest_request_source")
         if not source:
@@ -397,7 +408,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
     into webcapture objects.
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -408,7 +419,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
         kwargs["do_updates"] = False
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
 
         if not self.want_ingest(row):
             return False
@@ -426,7 +437,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
 
         return True
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> Optional[WebcaptureEntity]:
 
         request = row["request"]
         file_meta = row["file_meta"]
@@ -512,7 +523,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
             wc.edit_extra = edit_extra
         return wc
 
-    def try_update(self, wc):
+    def try_update(self, wc: WebcaptureEntity) -> bool:
 
         # check for existing edits-in-progress with same URL
         for other in self._entity_queue:
@@ -539,7 +550,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
         # so go ahead and insert!
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[WebcaptureEntity]) -> None:
         if self.submit_mode:
             eg = self.api.create_editgroup(
                 fatcat_openapi_client.Editgroup(
@@ -565,7 +576,7 @@ class SavePaperNowWebImporter(IngestWebResultImporter):
     Like SavePaperNowFileImporter, but for webcapture (HTML) ingest.
     """
 
-    def __init__(self, api, submit_mode=True, **kwargs):
+    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -577,7 +588,7 @@ class SavePaperNowWebImporter(IngestWebResultImporter):
         kwargs["do_updates"] = False
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
         """
         Relatively custom want() here, a synthesis of other filters.
 
@@ -617,7 +628,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
     results into fileset objects.
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -629,7 +640,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
         self.max_file_count = 300
 
-    def want_fileset(self, row):
+    def want_fileset(self, row: Dict[str, Any]) -> bool:
 
         if not row.get("manifest") or len(row.get("manifest")) == 0:
             self.counts["skip-empty-manifest"] += 1
@@ -645,7 +656,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
 
         return True
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
 
         if not self.want_ingest(row):
             return False
@@ -662,7 +673,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
 
         return True
 
-    def parse_fileset_urls(self, row):
+    def parse_fileset_urls(self, row: Dict[str, Any]) -> List[FilesetUrl]:
         if not row.get("strategy"):
             return []
         strategy = row["strategy"]
@@ -717,7 +728,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             )
         return urls
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> FilesetEntity:
 
         request = row["request"]
 
@@ -735,7 +746,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             self.counts["skip-release-not-found"] += 1
             return None
 
-        entity_extra = dict()
+        entity_extra: Dict[str, Any] = dict()
         edit_extra = self.parse_edit_extra(row)
         edit_extra["ingest_strategy"] = row["ingest_strategy"]
         if row.get("platform"):
@@ -789,12 +800,12 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             fe.edit_extra = edit_extra
         return fe
 
-    def try_update(self, wc):
+    def try_update(self, fse: FilesetEntity) -> bool:
 
         # check for existing edits-in-progress with same URL
         for other in self._entity_queue:
             # XXX: how to duplicate check?
-            if other.original_url == wc.original_url:
+            if other.original_url == fse.original_url:
                 self.counts["skip-in-queue"] += 1
                 return False
 
@@ -802,12 +813,12 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         # existing = None
 
         # NOTE: in lieu of existing checks (by lookup), only allow one fileset per release
-        release = self.api.get_release(wc.release_ids[0], expand="filesets")
+        release = self.api.get_release(fse.release_ids[0], expand="filesets")
         if release.filesets:
             # XXX: how to duplicate check filesets?
             # check if this is an existing match, or just a similar hit
             for other in release.filesets:
-                if wc.original_url == other.original_url:
+                if fse.original_url == other.original_url:
                     # TODO: compare very similar timestamps of same time (different formats)
                     self.counts["exists"] += 1
                     return False
@@ -816,7 +827,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FilesetEntity]) -> None:
         if self.submit_mode:
             eg = self.api.create_editgroup(
                 fatcat_openapi_client.Editgroup(
@@ -842,7 +853,7 @@ class SavePaperNowFilesetImporter(IngestFilesetResultImporter):
     Like SavePaperNowFileImporter, but for fileset/dataset ingest.
     """
 
-    def __init__(self, api, submit_mode=True, **kwargs):
+    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -854,7 +865,7 @@ class SavePaperNowFilesetImporter(IngestFilesetResultImporter):
         kwargs["do_updates"] = False
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
 
         source = row["request"].get("ingest_request_source")
         if not source:

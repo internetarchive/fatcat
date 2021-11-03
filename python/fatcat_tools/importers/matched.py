@@ -1,4 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FileEntity
 
 from fatcat_tools.normal import clean_doi
 
@@ -29,7 +32,7 @@ class MatchedImporter(EntityImporter):
     - core_id, wikidata_id, pmcid, pmid: not as lists
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -41,10 +44,10 @@ class MatchedImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.default_mimetype = kwargs.get("default_mimetype", None)
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[FileEntity]:
         dois = [d.lower() for d in obj.get("dois", [])]
 
         # lookup dois
@@ -129,7 +132,7 @@ class MatchedImporter(EntityImporter):
             if urls[0].url.endswith(".pdf"):
                 mimetype = "application/pdf"
 
-        fe = fatcat_openapi_client.FileEntity(
+        fe = FileEntity(
             md5=obj.get("md5"),
             sha1=obj["sha1"],
             sha256=obj.get("sha256"),
@@ -140,7 +143,7 @@ class MatchedImporter(EntityImporter):
         )
         return fe
 
-    def try_update(self, fe):
+    def try_update(self, fe: FileEntity) -> bool:
         # lookup sha1, or create new entity
         existing = None
         try:
@@ -207,7 +210,7 @@ class MatchedImporter(EntityImporter):
         self.counts["update"] += 1
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FileEntity]) -> None:
         self.api.create_file_auto_batch(
             fatcat_openapi_client.FileAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

@@ -1,4 +1,7 @@
+from typing import Any, Dict
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FileEntity
 
 from .common import EntityImporter
 
@@ -14,7 +17,7 @@ class FileMetaImporter(EntityImporter):
     imported which were missing file size, mimetype, md5, and/or sha256.
     """
 
-    def __init__(self, api, require_grobid=True, **kwargs):
+    def __init__(self, api: ApiClient, require_grobid: bool = True, **kwargs):
 
         eg_desc = kwargs.pop("editgroup_description", None) or "File metadata updates"
         eg_extra = kwargs.pop("editgroup_extra", dict())
@@ -22,14 +25,14 @@ class FileMetaImporter(EntityImporter):
         kwargs["do_updates"] = kwargs.get("do_updates", True)
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, row):
+    def want(self, row: Any) -> bool:
         for k in ("sha1hex", "sha256hex", "md5hex", "size_bytes", "mimetype"):
             if not row.get(k):
                 self.counts["skip-missing-field"] += 1
                 return False
         return True
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> FileEntity:
 
         # bezerk mode doesn't make sense for this importer
         assert self.bezerk_mode is False
@@ -44,7 +47,7 @@ class FileMetaImporter(EntityImporter):
         )
         return fe
 
-    def try_update(self, fe):
+    def try_update(self, fe: FileEntity) -> bool:
 
         # lookup sha1, or create new entity
         existing = None

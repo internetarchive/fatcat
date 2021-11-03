@@ -1,11 +1,13 @@
 import sys
+from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, CreatorEntity
 
 from .common import EntityImporter, clean
 
 
-def value_or_none(e):
+def value_or_none(e: Any) -> Any:
     if type(e) == dict:
         e = e.get("value")
     if type(e) == str and len(e) == 0:
@@ -22,7 +24,7 @@ def value_or_none(e):
 
 
 class OrcidImporter(EntityImporter):
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -32,10 +34,10 @@ class OrcidImporter(EntityImporter):
         eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.OrcidImporter")
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[CreatorEntity]:
         """
         obj is a python dict (parsed from json).
         returns a CreatorEntity
@@ -67,7 +69,7 @@ class OrcidImporter(EntityImporter):
         if not display:
             # must have *some* name
             return None
-        ce = fatcat_openapi_client.CreatorEntity(
+        ce = CreatorEntity(
             orcid=orcid,
             given_name=clean(given),
             surname=clean(sur),
@@ -76,10 +78,10 @@ class OrcidImporter(EntityImporter):
         )
         return ce
 
-    def try_update(self, raw_record):
+    def try_update(self, ce: CreatorEntity) -> bool:
         existing = None
         try:
-            existing = self.api.lookup_creator(orcid=raw_record.orcid)
+            existing = self.api.lookup_creator(orcid=ce.orcid)
         except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
@@ -92,7 +94,7 @@ class OrcidImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[CreatorEntity]) -> None:
         self.api.create_creator_auto_batch(
             fatcat_openapi_client.CreatorAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

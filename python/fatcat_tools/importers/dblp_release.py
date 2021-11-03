@@ -24,10 +24,11 @@ import datetime
 import json
 import sys  # noqa: F401
 import warnings
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import bs4
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, ReleaseEntity
 
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.normal import (
@@ -44,7 +45,9 @@ from fatcat_tools.transforms import entity_to_dict
 
 
 class DblpReleaseImporter(EntityImporter):
-    def __init__(self, api, dblp_container_map_file=None, **kwargs):
+    def __init__(
+        self, api: ApiClient, dblp_container_map_file: Optional[Sequence] = None, **kwargs
+    ) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description", "Automated import of dblp metadata via XML records"
@@ -70,7 +73,7 @@ class DblpReleaseImporter(EntityImporter):
         # "data",  # no instances in 2020-11 dump
     ]
 
-    def read_dblp_container_map_file(self, dblp_container_map_file) -> None:
+    def read_dblp_container_map_file(self, dblp_container_map_file: Optional[Sequence]) -> None:
         self._dblp_container_map = dict()
         if not dblp_container_map_file:
             print(
@@ -91,12 +94,12 @@ class DblpReleaseImporter(EntityImporter):
             file=sys.stderr,
         )
 
-    def lookup_dblp_prefix(self, prefix):
+    def lookup_dblp_prefix(self, prefix: Optional[str]) -> Optional[str]:
         if not prefix:
             return None
         return self._dblp_container_map.get(prefix)
 
-    def want(self, xml_elem):
+    def want(self, xml_elem: Any) -> bool:
         if xml_elem.name not in self.ELEMENT_TYPES:
             self.counts["skip-type"] += 1
             return False
@@ -108,7 +111,8 @@ class DblpReleaseImporter(EntityImporter):
             return False
         return True
 
-    def parse_record(self, xml_elem):
+    # TODO: xml_elem could be typed instead of 'Any' for better type checking
+    def parse_record(self, xml_elem: Any) -> Optional[ReleaseEntity]:
         """
         - title
             => may contain <i>, <sub>, <sup>, <tt>
@@ -255,7 +259,7 @@ class DblpReleaseImporter(EntityImporter):
             dblp_extra["part_of_key"] = part_of_key
 
         # generic extra
-        extra = dict()
+        extra: Dict[str, Any] = dict()
         if not container_id and container_name:
             extra["container_name"] = container_name
 
@@ -312,14 +316,14 @@ class DblpReleaseImporter(EntityImporter):
         return re
 
     @staticmethod
-    def biblio_hacks(re):
+    def biblio_hacks(re: ReleaseEntity) -> ReleaseEntity:
         """
         This function handles known special cases. For example,
         publisher-specific or platform-specific workarounds.
         """
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # lookup existing release by dblp article id
         existing = None
@@ -411,7 +415,7 @@ class DblpReleaseImporter(EntityImporter):
 
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

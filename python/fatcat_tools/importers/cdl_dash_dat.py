@@ -7,10 +7,13 @@ import os
 import subprocess
 import sys
 import urllib
+import urllib.parse
+from typing import Any, Dict, List, Optional, Tuple
 
 import fatcat_openapi_client
 import magic
 from fatcat_openapi_client import (
+    ApiClient,
     Editgroup,
     FilesetEntity,
     FilesetFile,
@@ -24,7 +27,7 @@ from .common import clean
 from .crossref import lookup_license_slug
 
 
-def single_file(prefix, path):
+def single_file(prefix: str, path: str) -> FilesetFile:
 
     full = prefix + path
     size_bytes = os.stat(full).st_size
@@ -59,7 +62,7 @@ def single_file(prefix, path):
     return fsf
 
 
-def make_manifest(base_dir):
+def make_manifest(base_dir: str) -> List[FilesetFile]:
     manifest = []
     for root, dirs, files in os.walk(base_dir):
         for f in files:
@@ -67,7 +70,9 @@ def make_manifest(base_dir):
     return manifest
 
 
-def cdl_dash_release(meta, extra=None):
+def cdl_dash_release(
+    meta: Dict[str, Any], extra: Optional[Dict[str, Any]] = None
+) -> ReleaseEntity:
 
     if not extra:
         extra = dict()
@@ -124,7 +129,7 @@ def cdl_dash_release(meta, extra=None):
     return r
 
 
-def make_release_fileset(dat_path):
+def make_release_fileset(dat_path: str) -> Tuple[ReleaseEntity, FilesetEntity]:
 
     if dat_path.endswith("/"):
         dat_path = dat_path[:-1]
@@ -170,7 +175,12 @@ def make_release_fileset(dat_path):
     return (release, fs)
 
 
-def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
+def auto_cdl_dash_dat(
+    api: ApiClient,
+    dat_path: str,
+    release_id: Optional[str] = None,
+    editgroup_id: Optional[str] = None,
+) -> Tuple[Optional[str], Optional[ReleaseEntity], Optional[FilesetEntity]]:
 
     git_rev = subprocess.check_output(["git", "describe", "--always"]).strip().decode("utf-8")
 

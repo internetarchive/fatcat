@@ -14,11 +14,13 @@ import json
 import re
 import sqlite3
 import sys
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 import dateparser
 import fatcat_openapi_client
 import langdetect
 import pycountry
+from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi
 from fatcat_tools.transforms import entity_to_dict
@@ -29,7 +31,7 @@ from .common import EntityImporter, clean
 MAX_ABSTRACT_LENGTH = 2048
 
 # https://guide.fatcat.wiki/entity_container.html#container_type-vocabulary
-CONTAINER_TYPE_MAP = {
+CONTAINER_TYPE_MAP: Dict[str, str] = {
     "Journal": "journal",
     "Series": "journal",
     "Book Series": "book-series",
@@ -38,7 +40,7 @@ CONTAINER_TYPE_MAP = {
 # The docs/guide should be the canonical home for these mappings; update there
 # first.  Map various datacite type types to CSL-ish types. None means TODO or
 # remove.
-DATACITE_TYPE_MAP = {
+DATACITE_TYPE_MAP: Dict[str, Dict[str, Optional[str]]] = {
     "ris": {
         "THES": "thesis",
         "SOUND": "song",  # 99.9% maps to citeproc song, so use that (exception: report)
@@ -128,7 +130,7 @@ DATACITE_TYPE_MAP = {
 }
 
 # DATACITE_UNKNOWN_MARKERS via https://support.datacite.org/docs/schema-values-unknown-information-v43.
-DATACITE_UNKNOWN_MARKERS = (
+DATACITE_UNKNOWN_MARKERS: List[str] = [
     "(:unac)",  # temporarily inaccessible
     "(:unal)",  # unallowed, suppressed intentionally
     "(:unap)",  # not applicable, makes no sense
@@ -139,11 +141,11 @@ DATACITE_UNKNOWN_MARKERS = (
     "(:null)",  # explicitly and meaningfully empty
     "(:tba)",  # to be assigned or announced later
     "(:etal)",  # too numerous to list (et alia)
-)
+]
 
 # UNKNOWN_MARKERS joins official datacite markers with a generic tokens marking
 # unknown values.
-UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(
+UNKNOWN_MARKERS: Set[str] = set(DATACITE_UNKNOWN_MARKERS).union(
     set(
         (
             "NA",
@@ -159,7 +161,7 @@ UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(
 UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 
 # Any "min" number of "tokens" will signal "spam", https://fatcat.wiki/release/rzcpjwukobd4pj36ipla22cnoi
-DATACITE_TITLE_SPAM_WORDGROUPS = [
+DATACITE_TITLE_SPAM_WORDGROUPS: List[Dict[str, Any]] = [
     {
         "tokens": (
             "full",
@@ -180,7 +182,7 @@ DATACITE_TITLE_SPAM_WORDGROUPS = [
 ]
 
 # TODO(martin): merge this with other maps and lookup functions, eventually.
-LICENSE_SLUG_MAP = {
+LICENSE_SLUG_MAP: Dict[str, str] = {
     "//archaeologydataservice.ac.uk/advice/termsofuseandaccess.xhtml/": "ADS-UK",
     "//archaeologydataservice.ac.uk/advice/termsofuseandaccess/": "ADS-UK",
     "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
@@ -222,7 +224,14 @@ class DataciteImporter(EntityImporter):
     Importer for datacite records.
     """
 
-    def __init__(self, api, issn_map_file, debug=False, insert_log_file=None, **kwargs):
+    def __init__(
+        self,
+        api: ApiClient,
+        issn_map_file: Sequence,
+        debug: bool = False,
+        insert_log_file: bool = None,
+        **kwargs
+    ) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -255,7 +264,7 @@ class DataciteImporter(EntityImporter):
 
         print("datacite with debug={}".format(self.debug), file=sys.stderr)
 
-    def lookup_ext_ids(self, doi):
+    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
         """
         Return dictionary of identifiers referring to the same things as the given DOI.
         """
@@ -291,7 +300,7 @@ class DataciteImporter(EntityImporter):
             jstor_id=None,
         )
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
         Mapping datacite JSON to ReleaseEntity.
         """
@@ -413,7 +422,7 @@ class DataciteImporter(EntityImporter):
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
         # "IsPreviousVersionOf" or "IsNewVersionOf".
-        release_stage = "published"
+        release_stage: Optional[str] = "published"
 
         # TODO(martin): If 'state' is not 'findable' or 'isActive' is not true,
         # we might want something else than 'published'. See also:
@@ -628,7 +637,7 @@ class DataciteImporter(EntityImporter):
             release_type = "review"
 
         # Extra information.
-        extra_datacite = dict()
+        extra_datacite: Dict[str, Any] = dict()
 
         if license_extra:
             extra_datacite["license"] = license_extra
@@ -675,7 +684,7 @@ class DataciteImporter(EntityImporter):
         if relations:
             extra_datacite["relations"] = relations
 
-        extra = dict()
+        extra: Dict[str, Any] = dict()
 
         # "1.0.0", "v1.305.2019", "Final", "v1.0.0", "v0.3.0", "1", "0.19.0",
         # "3.1", "v1.1", "{version}", "4.0", "10329", "11672", "11555",
@@ -734,7 +743,7 @@ class DataciteImporter(EntityImporter):
         return re
 
     @staticmethod
-    def datacite_release_type(doi, attributes):
+    def datacite_release_type(doi: str, attributes: Dict[str, Any]) -> Optional[str]:
         """
         Release type. Try to determine the release type from a variety of types
         supplied in datacite. The "attributes.types.resourceType" is
@@ -766,7 +775,7 @@ class DataciteImporter(EntityImporter):
         return release_type
 
     @staticmethod
-    def biblio_hacks(re):
+    def biblio_hacks(re: ReleaseEntity) -> ReleaseEntity:
         """
         This function handles known special cases. For example,
         publisher-specific or platform-specific workarounds.
@@ -817,7 +826,7 @@ class DataciteImporter(EntityImporter):
 
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
         """
         When debug is true, write the RE to stdout, not to the database. Might
         hide schema mismatch bugs.
@@ -842,7 +851,7 @@ class DataciteImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         print("inserting batch ({})".format(len(batch)), file=sys.stderr)
         if self.insert_log_file:
             with open(self.insert_log_file, "a") as f:
@@ -858,7 +867,13 @@ class DataciteImporter(EntityImporter):
             )
         )
 
-    def parse_datacite_creators(self, creators, role="author", set_index=True, doi=None):
+    def parse_datacite_creators(
+        self,
+        creators: List[Dict[str, Any]],
+        role: str = "author",
+        set_index: bool = True,
+        doi: Optional[str] = None,
+    ) -> List[ReleaseContrib]:
         """
         Parses a list of creators into a list of ReleaseContrib objects. Set
         set_index to False, if the index contrib field should be left blank.
@@ -868,12 +883,12 @@ class DataciteImporter(EntityImporter):
         # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
         # ["LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID",
         # "SCOPUS", "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID"].
-        contribs = []
+        contribs: List[ReleaseContrib] = []
 
         # Names, that should be ignored right away.
         name_blocklist = set(("Occdownload Gbif.Org",))
 
-        i = 0
+        i: Optional[int] = 0
         for c in creators:
             if not set_index:
                 i = None
@@ -983,7 +998,9 @@ class DataciteImporter(EntityImporter):
         return contribs
 
 
-def contributor_list_contains_contributor(contributor_list, contributor):
+def contributor_list_contains_contributor(
+    contributor_list: ReleaseContrib, contributor: ReleaseContrib
+) -> bool:
     """
     Given a list of contributors, determine, whether contrib is in that list.
     """
@@ -998,7 +1015,7 @@ def contributor_list_contains_contributor(contributor_list, contributor):
     return False
 
 
-def lookup_license_slug(raw):
+def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
     """
     Resolve a variety of strings into a some pseudo-canonical form, e.g.
     CC-BY-ND, CC-0, MIT and so on.
@@ -1101,7 +1118,9 @@ def lookup_license_slug(raw):
     return LICENSE_SLUG_MAP.get(raw)
 
 
-def find_original_language_title(item, min_length=4, max_questionmarks=3):
+def find_original_language_title(
+    item: Dict[str, Any], min_length: int = 4, max_questionmarks: int = 3
+) -> Optional[str]:
     """
     Perform a few checks before returning a potential original language title.
 
@@ -1126,7 +1145,9 @@ def find_original_language_title(item, min_length=4, max_questionmarks=3):
     return None
 
 
-def parse_datacite_titles(titles):
+def parse_datacite_titles(
+    titles: List[Dict[str, Any]]
+) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
     Given a list of title items from datacite, return 3-tuple (title,
     original_language_title, subtitle).
@@ -1158,7 +1179,9 @@ def parse_datacite_titles(titles):
     return title, original_language_title, subtitle
 
 
-def parse_single_date(value):
+def parse_single_date(
+    value: Optional[str],
+) -> Tuple[Optional[datetime.date], Optional[int], Optional[int]]:
     """
     Given a single string containing a date in arbitrary format, try to return
     tuple (date: datetime.date, month: int, year: int).
@@ -1186,10 +1209,12 @@ def parse_single_date(value):
     return None, None, None
 
 
-def parse_datacite_dates(dates):
+def parse_datacite_dates(
+    dates: List[Dict[str, Any]],
+) -> Tuple[Optional[datetime.date], Optional[int], Optional[int]]:
     """
     Given a list of date fields (under .dates), return tuple, (release_date,
-    release_year).
+    release_month, release_year).
     """
     release_date, release_month, release_year = None, None, None
 
@@ -1226,9 +1251,13 @@ def parse_datacite_dates(dates):
         Pattern("%Y", "y"),
     )
 
-    def parse_item(item):
+    def parse_item(
+        item: Dict[str, Any]
+    ) -> Tuple[Optional[datetime.date], Optional[int], Optional[int]]:
         result, value, year_only = None, str(item.get("date", "")) or "", False
-        release_date, release_month, release_year = None, None, None
+        release_date: Optional[datetime.date] = None
+        release_month: Optional[int] = None
+        release_year: Optional[int] = None
 
         for layout, granularity in common_patterns:
             try:
@@ -1285,7 +1314,7 @@ def parse_datacite_dates(dates):
     return release_date, release_month, release_year
 
 
-def index_form_to_display_name(s):
+def index_form_to_display_name(s: str) -> str:
     """
     Try to convert an index form name, like 'Razis, Panos A' into display_name,
     e.g. 'Panos A Razis'.

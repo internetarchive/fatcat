@@ -4,8 +4,10 @@ pre-scraped in to JSON from HTML pages.
 """
 
 import sys  # noqa: F401
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, ContainerEntity
 
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.normal import clean_str
@@ -13,8 +15,13 @@ from fatcat_tools.normal import clean_str
 
 class DblpContainerImporter(EntityImporter):
     def __init__(
-        self, api, issn_map_file, dblp_container_map_file, dblp_container_map_output, **kwargs
-    ):
+        self,
+        api: ApiClient,
+        issn_map_file: Sequence,
+        dblp_container_map_file: Sequence,
+        dblp_container_map_output: Any,
+        **kwargs
+    ) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -29,7 +36,7 @@ class DblpContainerImporter(EntityImporter):
         self.read_issn_map_file(issn_map_file)
         print("\t".join(["dblp_prefix", "container_id"]), file=self.dblp_container_map_output)
 
-    def read_dblp_container_map_file(self, dblp_container_map_file) -> None:
+    def read_dblp_container_map_file(self, dblp_container_map_file: Sequence) -> None:
         self._dblp_container_map = dict()
         print("Loading existing dblp prefix container map file...", file=sys.stderr)
         for line in dblp_container_map_file:
@@ -44,15 +51,15 @@ class DblpContainerImporter(EntityImporter):
             file=sys.stderr,
         )
 
-    def lookup_dblp_prefix(self, prefix):
+    def lookup_dblp_prefix(self, prefix: str) -> Optional[str]:
         if not prefix:
             return None
         return self._dblp_container_map.get(prefix)
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> Optional[ContainerEntity]:
         """
         row is a python dict (parsed from JSON).
 
@@ -77,7 +84,7 @@ class DblpContainerImporter(EntityImporter):
             if issnl:
                 break
 
-        extra = {
+        extra: Dict[str, Any] = {
             "dblp": {
                 "prefix": dblp_prefix,
             },
@@ -98,7 +105,7 @@ class DblpContainerImporter(EntityImporter):
         )
         return ce
 
-    def try_update(self, ce):
+    def try_update(self, ce: ContainerEntity) -> bool:
 
         dblp_prefix = ce.extra["dblp"]["prefix"]
         existing = None
@@ -135,7 +142,7 @@ class DblpContainerImporter(EntityImporter):
         # shouldn't get here
         raise NotImplementedError()
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ContainerEntity]) -> None:
         """
         Because we want to print a prefix/container_id match for each row, we
         require a special batch insert method

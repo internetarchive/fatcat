@@ -2,9 +2,11 @@ import datetime
 import json
 import re
 import sys
+from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
+from fatcat_openapi_client import ApiClient, ReleaseEntity
 from pylatexenc.latex2text import LatexNodes2Text
 
 from .common import EntityImporter
@@ -13,7 +15,7 @@ from .crossref import lookup_license_slug
 latex2text = LatexNodes2Text()
 
 
-def latex_to_text(raw):
+def latex_to_text(raw: str) -> str:
     try:
         return latex2text.latex_to_text(raw).strip()
     except AttributeError:
@@ -22,7 +24,7 @@ def latex_to_text(raw):
         return raw.strip()
 
 
-def parse_arxiv_authors(raw):
+def parse_arxiv_authors(raw: str) -> List[str]:
     if not raw:
         return []
     raw = raw.replace("*", "")
@@ -41,7 +43,7 @@ def parse_arxiv_authors(raw):
     return authors
 
 
-def test_parse_arxiv_authors():
+def test_parse_arxiv_authors() -> None:
 
     assert parse_arxiv_authors(
         "Raphael Chetrite, Shamik Gupta, Izaak Neri and \\'Edgar Rold\\'an"
@@ -88,7 +90,7 @@ class ArxivRawImporter(EntityImporter):
           the "most recent" version; can be a simple sort?
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -107,15 +109,17 @@ class ArxivRawImporter(EntityImporter):
         )
         self._test_override = False
 
-    def parse_record(self, record):
+    # TODO: record is really a beautiful soup element, but setting to 'Any' to
+    # make initial type annotations simple
+    def parse_record(self, record: Any) -> Optional[List[ReleaseEntity]]:
 
         if not record:
             return None
         metadata = record.arXivRaw
         if not metadata:
             return None
-        extra = dict()
-        extra_arxiv = dict()
+        extra: Dict[str, Any] = dict()
+        extra_arxiv: Dict[str, Any] = dict()
 
         # don't know!
         release_type = "article"
@@ -134,7 +138,7 @@ class ArxivRawImporter(EntityImporter):
             for i, a in enumerate(authors)
         ]
 
-        lang = "en"  # the vast majority in english
+        lang: Optional[str] = "en"  # the vast majority in english
         if metadata.comments and metadata.comments.get_text():
             comments = metadata.comments.get_text().replace("\n", " ").strip()
             extra_arxiv["comments"] = comments
@@ -229,7 +233,7 @@ class ArxivRawImporter(EntityImporter):
             ).date()
             # TODO: source_type?
             versions.append(
-                fatcat_openapi_client.ReleaseEntity(
+                ReleaseEntity(
                     work_id=None,
                     title=title,
                     # original_title
@@ -261,7 +265,7 @@ class ArxivRawImporter(EntityImporter):
                 versions[-1].release_stage = "accepted"
         return versions
 
-    def try_update(self, versions):
+    def try_update(self, versions: List[ReleaseEntity]) -> bool:
         """
         This is pretty complex! There is no batch/bezerk mode for arxiv importer.
 
@@ -344,7 +348,7 @@ class ArxivRawImporter(EntityImporter):
 
         return False
 
-    def insert_batch(self, batch_batch):
+    def insert_batch(self, batch_batch: List[ReleaseEntity]) -> None:
         # there is no batch/bezerk mode for arxiv importer, except for testing
         if self._test_override:
             for batch in batch_batch:
@@ -360,7 +364,7 @@ class ArxivRawImporter(EntityImporter):
         else:
             raise NotImplementedError()
 
-    def parse_file(self, handle):
+    def parse_file(self, handle: Any) -> None:
 
         # 1. open with beautiful soup
         soup = BeautifulSoup(handle, "xml")

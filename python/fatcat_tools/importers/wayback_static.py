@@ -12,12 +12,14 @@ import hashlib
 import json
 import subprocess
 import sys
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import (
     ApiClient,
     Editgroup,
+    EntityEdit,
     WebcaptureCdxLine,
     WebcaptureEntity,
     WebcaptureUrl,
@@ -30,7 +32,7 @@ GWB_URL_BASE = "https://web.archive.org/web"
 REQ_SESSION = requests.Session()
 
 
-def parse_wbm_url(url):
+def parse_wbm_url(url: str) -> Tuple[str, datetime.datetime, str]:
     """Takes a wayback machine URL, and returns a tuple:
 
     (timestamp, datetime, original_url)
@@ -42,7 +44,7 @@ def parse_wbm_url(url):
     return (chunks[4], parse_wbm_timestamp(chunks[4]), "/".join(chunks[5:]))
 
 
-def test_parse_wbm_url():
+def test_parse_wbm_url() -> None:
     u = "http://web.archive.org/web/20010712114837/http://www.dlib.org/dlib/june01/reich/06reich.html"
     assert parse_wbm_url(u) == (
         "20010712114837",
@@ -51,7 +53,7 @@ def test_parse_wbm_url():
     )
 
 
-def parse_wbm_timestamp(timestamp):
+def parse_wbm_timestamp(timestamp: str) -> datetime.datetime:
     """
     Takes a complete WBM timestamp string (like "20020327115625") and returns a
     python datetime object (UTC)
@@ -71,18 +73,20 @@ def parse_wbm_timestamp(timestamp):
     )
 
 
-def test_parse_wbm_timestamp():
+def test_parse_wbm_timestamp() -> None:
     assert parse_wbm_timestamp("20010712114837") == datetime.datetime(2001, 7, 12, 11, 48, 37)
 
 
-def fetch_wbm(url):
+def fetch_wbm(url: str) -> bytes:
     resp = REQ_SESSION.get(url)
     resp.raise_for_status()
     assert resp.content
     return resp.content
 
 
-def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
+def lookup_cdx(
+    embed_url: str, verify_hashes: bool = True, cdx_output: Any = None
+) -> Optional[WebcaptureCdxLine]:
     sys.stderr.write(embed_url + "\n")
     assert embed_url.startswith("/web/")
     embed_url = embed_url.split("/")
@@ -132,7 +136,7 @@ def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
         return None
 
 
-def wayback_url_to_relative(url):
+def wayback_url_to_relative(url: str) -> Optional[str]:
     """
     Wayback URLs can be relative or absolute in rewritten documents. This
     function converts any form of rewritten URL to a relative (to
@@ -149,7 +153,7 @@ def wayback_url_to_relative(url):
         return None
 
 
-def extract_embeds(soup):
+def extract_embeds(soup: BeautifulSoup) -> List[str]:
 
     embeds = set()
 
@@ -175,7 +179,7 @@ def extract_embeds(soup):
     return list(embeds)
 
 
-def static_wayback_webcapture(wayback_url, cdx_output=None):
+def static_wayback_webcapture(wayback_url: str, cdx_output: Any = None) -> WebcaptureEntity:
     """
     Given a complete wayback machine capture URL, like:
 
@@ -214,7 +218,9 @@ def static_wayback_webcapture(wayback_url, cdx_output=None):
     return wc
 
 
-def auto_wayback_static(api, release_id, wayback_url, editgroup_id=None):
+def auto_wayback_static(
+    api: ApiClient, release_id: str, wayback_url: str, editgroup_id: Optional[str] = None
+) -> Tuple[Optional[str], Optional[EntityEdit]]:
     """
     Returns a tuple: (editgroup_id, edit). If failed, both are None
     """
@@ -250,7 +256,7 @@ def auto_wayback_static(api, release_id, wayback_url, editgroup_id=None):
     return (editgroup_id, edit)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", action="store_true", help="verbose output")
     parser.add_argument("wayback_url", type=str, help="URL of wayback capture to extract from")

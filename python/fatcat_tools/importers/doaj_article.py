@@ -6,9 +6,10 @@ DOAJ API schema and docs: https://doaj.org/api/v1/docs
 
 import datetime
 import warnings
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, ReleaseEntity
 
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.normal import (
@@ -28,7 +29,7 @@ MAX_ABSTRACT_LENGTH = 2048
 
 
 class DoajArticleImporter(EntityImporter):
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -49,10 +50,10 @@ class DoajArticleImporter(EntityImporter):
         self.this_year = datetime.datetime.now().year
         self.read_issn_map_file(issn_map_file)
 
-    def want(self, obj):
+    def want(self, raw_record: Dict[str, Any]) -> bool:
         return True
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
         bibjson {
             abstract (string, optional),
@@ -108,7 +109,7 @@ class DoajArticleImporter(EntityImporter):
         publisher = clean_str(bibjson["journal"].get("publisher"))
 
         try:
-            release_year = int(bibjson.get("year"))
+            release_year: Optional[int] = int(bibjson.get("year"))
         except (TypeError, ValueError):
             release_year = None
         release_month = parse_month(clean_str(bibjson.get("month")))
@@ -148,7 +149,7 @@ class DoajArticleImporter(EntityImporter):
         contribs = self.doaj_contribs(bibjson.get("author") or [])
 
         # DOAJ-specific extra
-        doaj_extra = dict()
+        doaj_extra: Dict[str, Any] = dict()
         if bibjson.get("subject"):
             doaj_extra["subject"] = bibjson.get("subject")
         if bibjson.get("keywords"):
@@ -157,7 +158,7 @@ class DoajArticleImporter(EntityImporter):
             ]
 
         # generic extra
-        extra = dict()
+        extra: Dict[str, Any] = dict()
         if country:
             extra["country"] = country
         if not container_id and container_name:
@@ -194,14 +195,14 @@ class DoajArticleImporter(EntityImporter):
         return re
 
     @staticmethod
-    def biblio_hacks(re):
+    def biblio_hacks(re: ReleaseEntity) -> ReleaseEntity:
         """
         This function handles known special cases. For example,
         publisher-specific or platform-specific workarounds.
         """
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # lookup existing release by DOAJ article id
         existing = None
@@ -276,7 +277,7 @@ class DoajArticleImporter(EntityImporter):
 
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

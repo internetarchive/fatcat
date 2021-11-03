@@ -1,9 +1,9 @@
 import datetime
 import sqlite3
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ReleaseEntity
+from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
 from .common import EntityImporter, clean
 
@@ -90,7 +90,7 @@ LICENSE_SLUG_MAP: Dict[str, str] = {
 }
 
 
-def lookup_license_slug(raw: str) -> Optional[str]:
+def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().replace("http://", "//").replace("https://", "//")
@@ -102,7 +102,7 @@ def lookup_license_slug(raw: str) -> Optional[str]:
     return LICENSE_SLUG_MAP.get(raw)
 
 
-def test_lookup_license_slug():
+def test_lookup_license_slug() -> None:
 
     assert lookup_license_slug("https://creativecommons.org/licenses/by-nc/3.0/") == "CC-BY-NC"
     assert (
@@ -133,13 +133,13 @@ class CrossrefImporter(EntityImporter):
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
 
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc: Optional[str] = kwargs.get(
             "editgroup_description",
             "Automated import of Crossref DOI metadata, harvested from REST API",
         )
-        eg_extra: Optional[dict] = kwargs.get("editgroup_extra", dict())
+        eg_extra: Dict[str, Any] = kwargs.get("editgroup_extra", dict())
         eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.CrossrefImporter")
         super().__init__(
             api,
@@ -249,7 +249,7 @@ class CrossrefImporter(EntityImporter):
         release_type = self.map_release_type(obj["type"])
 
         # contribs
-        def do_contribs(obj_list, ctype):
+        def do_contribs(obj_list: List[Dict[str, Any]], ctype: str) -> List[ReleaseContrib]:
             contribs = []
             for i, am in enumerate(obj_list):
                 creator_id = None
@@ -257,15 +257,15 @@ class CrossrefImporter(EntityImporter):
                     creator_id = self.lookup_orcid(am["ORCID"].split("/")[-1])
                 # Sorry humans :(
                 if am.get("given") and am.get("family"):
-                    raw_name = "{} {}".format(am["given"], am["family"])
+                    raw_name: Optional[str] = "{} {}".format(am["given"], am["family"])
                 elif am.get("family"):
                     raw_name = am["family"]
                 else:
                     # TODO: can end up empty
                     raw_name = am.get("name") or am.get("given")
-                extra = dict()
+                extra: Dict[str, Any] = dict()
                 if ctype == "author":
-                    index = i
+                    index: Optional[int] = i
                 else:
                     index = None
                 raw_affiliation = None
@@ -284,7 +284,7 @@ class CrossrefImporter(EntityImporter):
                 assert ctype in ("author", "editor", "translator")
                 raw_name = clean(raw_name)
                 contribs.append(
-                    fatcat_openapi_client.ReleaseContrib(
+                    ReleaseContrib(
                         creator_id=creator_id,
                         index=index,
                         raw_name=raw_name,
@@ -559,7 +559,7 @@ class CrossrefImporter(EntityImporter):
         )
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # lookup existing DOI (don't need to try other ext idents for crossref)
         existing = None
@@ -577,7 +577,7 @@ class CrossrefImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

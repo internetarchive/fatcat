@@ -1,4 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FileEntity
 
 from .common import SANE_MAX_RELEASES, SANE_MAX_URLS, EntityImporter, b32_hex, make_rel_url
 
@@ -36,7 +39,9 @@ class ArabesqueMatchImporter(EntityImporter):
     - a mode to insert bare files even if identifier not known?
     """
 
-    def __init__(self, api, extid_type, require_grobid=True, **kwargs):
+    def __init__(
+        self, api: ApiClient, extid_type: str, require_grobid: bool = True, **kwargs
+    ) -> None:
 
         eg_desc = (
             kwargs.get("editgroup_description", None)
@@ -59,7 +64,7 @@ class ArabesqueMatchImporter(EntityImporter):
         else:
             print("NOT checking GROBID status column")
 
-    def want(self, row):
+    def want(self, row: Any) -> bool:
         if self.require_grobid and not row["postproc_status"] == "200":
             return False
         if (
@@ -76,7 +81,7 @@ class ArabesqueMatchImporter(EntityImporter):
         else:
             return False
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> Optional[FileEntity]:
 
         extid = row["identifier"].strip()
 
@@ -131,7 +136,7 @@ class ArabesqueMatchImporter(EntityImporter):
         )
         return fe
 
-    def try_update(self, fe):
+    def try_update(self, fe: FileEntity) -> bool:
         # lookup sha1, or create new entity
         existing = None
         try:
@@ -182,7 +187,7 @@ class ArabesqueMatchImporter(EntityImporter):
         self.counts["update"] += 1
         return False
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FileEntity]) -> None:
         self.api.create_file_auto_batch(
             fatcat_openapi_client.FileAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

@@ -1,9 +1,12 @@
+from typing import Any, Dict, List, Optional
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, ContainerEntity
 
 from .common import EntityImporter, clean
 
 
-def or_none(s):
+def or_none(s: Optional[str]) -> Optional[str]:
     if s is None:
         return None
     if len(s) == 0:
@@ -11,7 +14,7 @@ def or_none(s):
     return s
 
 
-def truthy(s):
+def truthy(s: Optional[str]) -> Optional[bool]:
     if s is None:
         return None
     s = s.lower()
@@ -32,7 +35,7 @@ class JournalMetadataImporter(EntityImporter):
     See guide for details on the many 'extra' fields used here.
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",
@@ -42,12 +45,12 @@ class JournalMetadataImporter(EntityImporter):
         eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.JournalMetadataImporter")
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         if raw_record.get("issnl") and raw_record.get("name"):
             return True
         return False
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> Optional[ContainerEntity]:
         """
         row is a python dict (parsed from JSON).
 
@@ -106,7 +109,7 @@ class JournalMetadataImporter(EntityImporter):
         if not name:
             return None
 
-        ce = fatcat_openapi_client.ContainerEntity(
+        ce = ContainerEntity(
             issnl=row["issnl"],
             issne=row.get("issne"),
             issnp=row.get("issnp"),
@@ -118,7 +121,7 @@ class JournalMetadataImporter(EntityImporter):
         )
         return ce
 
-    def try_update(self, ce):
+    def try_update(self, ce: ContainerEntity) -> bool:
 
         existing = None
         try:
@@ -148,7 +151,7 @@ class JournalMetadataImporter(EntityImporter):
         # if we got this far, it's a bug
         raise NotImplementedError
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ContainerEntity]) -> None:
         self.api.create_container_auto_batch(
             fatcat_openapi_client.ContainerAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

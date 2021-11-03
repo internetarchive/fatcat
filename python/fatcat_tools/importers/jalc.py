@@ -1,16 +1,19 @@
 import datetime
 import sqlite3
 import sys
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
+from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi
 
 from .common import DATE_FMT, EntityImporter, clean, is_cjk
 
 
-def parse_jalc_persons(raw_persons):
+# TODO: should be List[Tag] not List[Any] for full type annotations
+def parse_jalc_persons(raw_persons: List[Any]) -> List[ReleaseContrib]:
     """
     For the most part, JALC DC names are in either japanese or english. The
     two common patterns are a list alternating between the two (in which case
@@ -47,7 +50,7 @@ def parse_jalc_persons(raw_persons):
         if lang == "en" and surname and given_name:
             # english names order is flipped
             name = "{} {}".format(given_name, surname)
-        rc = fatcat_openapi_client.ReleaseContrib(
+        rc = ReleaseContrib(
             raw_name=name, surname=surname, given_name=given_name, role="author"
         )
         # add an extra hint field; won't end up in serialized object
@@ -100,7 +103,7 @@ class JalcImporter(EntityImporter):
     NOTE: some JALC DOIs seem to get cross-registered with Crossref
     """
 
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get("editgroup_description", "Automated import of JALC DOI metadata")
         eg_extra = kwargs.get("editgroup_extra", dict())
@@ -125,7 +128,7 @@ class JalcImporter(EntityImporter):
 
         self.read_issn_map_file(issn_map_file)
 
-    def lookup_ext_ids(self, doi):
+    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
         if self.extid_map_db is None:
             return dict(
                 core_id=None,
@@ -158,10 +161,12 @@ class JalcImporter(EntityImporter):
             jstor_id=None,
         )
 
-    def want(self, obj):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, record):
+    # TODO: mypy annotations partially skipped on this function ('Any' instead of 'Tag')
+    # for now because # XML # parsing # annotations are large and complex
+    def parse_record(self, record: Any) -> Optional[ReleaseEntity]:
         """
         record is a beautiful soup object
         returns a ReleaseEntity, or None
@@ -170,8 +175,8 @@ class JalcImporter(EntityImporter):
         fields.
         """
 
-        extra = dict()
-        extra_jalc = dict()
+        extra: Dict[str, Any] = dict()
+        extra_jalc: Dict[str, Any] = dict()
 
         titles = record.find_all("title")
         if not titles:
@@ -254,7 +259,7 @@ class JalcImporter(EntityImporter):
 
         publisher = None
         container_name = None
-        container_extra = dict()
+        container_extra: Dict[str, Any] = dict()
 
         if record.publicationName:
             pubs = [
@@ -335,7 +340,7 @@ class JalcImporter(EntityImporter):
         if not title:
             return None
 
-        re = fatcat_openapi_client.ReleaseEntity(
+        re = ReleaseEntity(
             work_id=None,
             title=title,
             original_title=clean(original_title),
@@ -364,7 +369,7 @@ class JalcImporter(EntityImporter):
         )
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # lookup existing DOI
         existing = None
@@ -384,7 +389,7 @@ class JalcImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(
@@ -394,7 +399,7 @@ class JalcImporter(EntityImporter):
             )
         )
 
-    def parse_file(self, handle):
+    def parse_file(self, handle: Any) -> None:
         """
         Helper for testing; can run this file stand-alone instead of using a pusher
         """
@@ -408,4 +413,3 @@ class JalcImporter(EntityImporter):
             # print(json.dumps(resp))
             print(resp)
             # sys.exit(-1)
-

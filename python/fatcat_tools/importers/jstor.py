@@ -2,9 +2,11 @@ import datetime
 import json
 import sys
 import warnings
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
+from fatcat_openapi_client import ApiClient, ReleaseEntity
 
 from .common import LANG_MAP_MARC, EntityImporter, clean
 from .crossref import CONTAINER_TYPE_MAP
@@ -32,7 +34,7 @@ class JstorImporter(EntityImporter):
     Collection)
     """
 
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get("editgroup_description", "Automated import of JSTOR XML metadata")
         eg_extra = kwargs.get("editgroup_extra", dict())
@@ -49,19 +51,22 @@ class JstorImporter(EntityImporter):
 
         self.read_issn_map_file(issn_map_file)
 
-    def map_container_type(self, crossref_type):
+    def map_container_type(self, crossref_type: Optional[str]) -> Optional[str]:
         return CONTAINER_TYPE_MAP.get(crossref_type)
 
-    def want(self, obj):
+    def want(self, raw_record: Any) -> bool:
         return True
 
-    def parse_record(self, article):
+    # TODO: mypy annotations partially skipped on this function ('Any' instead of
+    # 'BeautifulSoup') for now because XML parsing annotations are large and
+    # complex
+    def parse_record(self, article: Any) -> Optional[ReleaseEntity]:
 
         journal_meta = article.front.find("journal-meta")
         article_meta = article.front.find("article-meta")
 
-        extra = dict()
-        extra_jstor = dict()
+        extra: Dict[str, Any] = dict()
+        extra_jstor: Dict[str, Any] = dict()
 
         release_type = JSTOR_TYPE_MAP.get(article["article-type"])
         title = article_meta.find("article-title")
@@ -269,7 +274,7 @@ class JstorImporter(EntityImporter):
         )
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # first, lookup existing by JSTOR id (which much be defined)
         existing = None
@@ -313,7 +318,7 @@ class JstorImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(
@@ -323,7 +328,7 @@ class JstorImporter(EntityImporter):
             )
         )
 
-    def parse_file(self, handle):
+    def parse_file(self, handle: Any) -> None:
 
         # 1. open with beautiful soup
         soup = BeautifulSoup(handle, "xml")

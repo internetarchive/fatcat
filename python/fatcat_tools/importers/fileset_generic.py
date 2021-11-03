@@ -1,4 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import fatcat_openapi_client
+from fatcat_openapi_client import ApiClient, FilesetEntity
 
 from fatcat_tools import entity_from_dict
 
@@ -17,7 +20,7 @@ class FilesetImporter(EntityImporter):
     Currently only creates (insert), no updates.
     """
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api: ApiClient, **kwargs) -> None:
 
         eg_desc = kwargs.pop("editgroup_description", None) or "Generic Fileset entity import"
         eg_extra = kwargs.pop("editgroup_extra", dict())
@@ -29,7 +32,7 @@ class FilesetImporter(EntityImporter):
         # bezerk mode doesn't make sense for this importer
         assert self.bezerk_mode is False
 
-    def want(self, row):
+    def want(self, row: Dict[str, Any]) -> bool:
         if not row.get("release_ids"):
             self.counts["skip-no-release-ids"] += 1
             return False
@@ -47,7 +50,7 @@ class FilesetImporter(EntityImporter):
                     return False
         return True
 
-    def parse_record(self, row):
+    def parse_record(self, row: Dict[str, Any]) -> Optional[FilesetEntity]:
 
         fse = entity_from_dict(
             row,
@@ -57,7 +60,7 @@ class FilesetImporter(EntityImporter):
         fse = self.generic_fileset_cleanups(fse)
         return fse
 
-    def try_update(self, fse):
+    def try_update(self, fse: FilesetEntity) -> bool:
 
         if not self.skip_release_fileset_check:
             for release_id in fse.release_ids:
@@ -74,7 +77,7 @@ class FilesetImporter(EntityImporter):
         # do the insert
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[FilesetEntity]) -> None:
         self.api.create_fileset_auto_batch(
             fatcat_openapi_client.FilesetAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(

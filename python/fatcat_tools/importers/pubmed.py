@@ -2,9 +2,11 @@ import datetime
 import json
 import sys
 import warnings
+from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
+from fatcat_openapi_client import ApiClient, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi, clean_issn, clean_pmcid, clean_pmid
 
@@ -328,7 +330,9 @@ class PubmedImporter(EntityImporter):
     TODO: MEDLINE doesn't include PMC/OA license; could include in importer?
     """
 
-    def __init__(self, api, issn_map_file, lookup_refs=True, **kwargs):
+    def __init__(
+        self, api: ApiClient, issn_map_file: Sequence, lookup_refs: bool = True, **kwargs
+    ):
 
         eg_desc = kwargs.get(
             "editgroup_description", "Automated import of PubMed/MEDLINE XML metadata"
@@ -347,10 +351,13 @@ class PubmedImporter(EntityImporter):
         self.create_containers = kwargs.get("create_containers", True)
         self.read_issn_map_file(issn_map_file)
 
-    def want(self, obj):
+    def want(self, raw_record: BeautifulSoup) -> bool:
         return True
 
-    def parse_record(self, a):
+    # TODO: mypy annotations partially skipped on this function ('Any' instead of
+    # 'BeautifulSoup') for now because XML parsing annotations are large and
+    # complex
+    def parse_record(self, a: Any) -> ReleaseEntity:
 
         medline = a.MedlineCitation
         # PubmedData isn't required by DTD, but seems to always be present
@@ -482,8 +489,8 @@ class PubmedImporter(EntityImporter):
             pub_date = journal.PubDate
         if not pub_date:
             pub_date = journal.JournalIssue.PubDate
-        release_date = None
-        release_year = None
+        release_date: Optional[str] = None
+        release_year: Optional[int] = None
         if pub_date.Year:
             release_year = int(pub_date.Year.string)
             if pub_date.find("Day") and pub_date.find("Month"):
@@ -578,7 +585,7 @@ class PubmedImporter(EntityImporter):
                         abstracts.append(abst)
         other_abstracts = medline.find_all("OtherAbstract")
         for other in other_abstracts:
-            lang = "en"
+            lang: Optional[str] = "en"
             if other.get("Language"):
                 lang = LANG_MAP_MARC.get(other["Language"])
             abst = fatcat_openapi_client.ReleaseAbstract(
@@ -666,7 +673,7 @@ class PubmedImporter(EntityImporter):
             # that there may be multiple ReferenceList (eg, sometimes one per
             # Reference)
             for ref in pubmed.find_all("Reference"):
-                ref_extra = dict()
+                ref_extra: Dict[str, Any] = dict()
                 ref_doi = ref.find("ArticleId", IdType="doi")
                 if ref_doi:
                     ref_doi = clean_doi(ref_doi.string)
@@ -740,7 +747,7 @@ class PubmedImporter(EntityImporter):
         )
         return re
 
-    def try_update(self, re):
+    def try_update(self, re: ReleaseEntity) -> bool:
 
         # first, lookup existing by PMID (which must be defined)
         existing = None
@@ -831,7 +838,7 @@ class PubmedImporter(EntityImporter):
 
         return True
 
-    def insert_batch(self, batch):
+    def insert_batch(self, batch: List[ReleaseEntity]) -> None:
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
                 editgroup=fatcat_openapi_client.Editgroup(
@@ -841,7 +848,7 @@ class PubmedImporter(EntityImporter):
             )
         )
 
-    def parse_file(self, handle):
+    def parse_file(self, handle: Any) -> None:
 
         # 1. open with beautiful soup
         soup = BeautifulSoup(handle, "xml")
