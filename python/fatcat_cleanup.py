@@ -7,8 +7,7 @@ import sys
 import raven
 
 from fatcat_tools import authenticated_api
-from fatcat_tools.cleanups import FileCleaner
-from fatcat_tools.importers import JsonLinePusher
+from fatcat_tools.cleanups import FileCleaner, JsonLinePusher
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()

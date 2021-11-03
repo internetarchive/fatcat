@@ -1,8 +1,9 @@
 import copy
 import json
 import subprocess
+import sys
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Sequence
 
 from fatcat_openapi_client import ApiClient, Editgroup
 
@@ -143,3 +144,19 @@ class EntityCleaner:
 
         assert self._editgroup_id
         return self._editgroup_id
+
+
+class JsonLinePusher:
+    def __init__(self, cleaner: EntityCleaner, json_file: Sequence, **kwargs) -> None:
+        self.cleaner = cleaner
+        self.json_file = json_file
+
+    def run(self) -> Counter:
+        for line in self.json_file:
+            if not line:
+                continue
+            record = json.loads(line)
+            self.cleaner.push_record(record)
+        counts = self.cleaner.finish()
+        print(counts, file=sys.stderr)
+        return counts
