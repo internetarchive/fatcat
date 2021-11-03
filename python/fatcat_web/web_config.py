@@ -10,10 +10,39 @@ import scripts.
 
 import os
 import subprocess
+from typing import Union
 
 import raven
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def bool_str(raw: Union[str, bool, None]) -> bool:
+    """
+    Helper for parsing environment variables
+    """
+    if not raw:
+        return False
+    if raw is True:
+        return True
+
+    if isinstance(raw, str):
+        raw_str = raw.strip()
+        if raw_str.lower() in ["0", "f", "false", "no", "n"]:
+            return False
+        if raw_str.lower() in ["1", "t", "true", "yes", "y"]:
+            return True
+    raise ValueError("Unparsable boolean value: {raw}")
+
+
+def test_bool_str() -> None:
+    assert bool_str(True) is True
+    assert bool_str(None) is False
+    assert bool_str(False) is False
+    assert bool_str("") is False
+    assert bool_str("0") is False
+    assert bool_str("True") is True
+    assert bool_str("FALSE") is False
 
 
 class Config(object):
@@ -74,7 +103,7 @@ class Config(object):
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
     # analytics; used in production
-    ENABLE_GOATCOUNTER = bool(os.environ.get("ENABLE_GOATCOUNTER", default=False))
+    ENABLE_GOATCOUNTER = bool_str(os.environ.get("ENABLE_GOATCOUNTER", default=False))
     GOATCOUNTER_ENDPOINT = os.environ.get(
         "GOATCOUNTER_ENDPOINT", default="https://goatcounter.fatcat.wiki/count"
     )
@@ -83,8 +112,8 @@ class Config(object):
     )
 
     # controls granularity of "shadow_only" preservation category
-    FATCAT_MERGE_SHADOW_PRESERVATION = os.environ.get(
-        "FATCAT_MERGE_SHADOW_PRESERVATION", default=False
+    FATCAT_MERGE_SHADOW_PRESERVATION = bool_str(
+        os.environ.get("FATCAT_MERGE_SHADOW_PRESERVATION", default=False)
     )
 
     # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
