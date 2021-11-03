@@ -23,7 +23,7 @@ def crossdomain(
     if headers is not None and not isinstance(headers, str):
         headers = ", ".join(x.upper() for x in headers)
     if not isinstance(origin, str):
-        origin = ", ".join(origin)
+        origin = ", ".join(origin)  # type: ignore
     if isinstance(max_age, timedelta):
         max_age = max_age.total_seconds()
 
@@ -45,7 +45,7 @@ def crossdomain(
 
             h = resp.headers
 
-            h["Access-Control-Allow-Origin"] = origin
+            h["Access-Control-Allow-Origin"] = origin  # type: ignore
             h["Access-Control-Allow-Methods"] = get_methods()
             h["Access-Control-Max-Age"] = str(max_age)
             if headers is not None:
