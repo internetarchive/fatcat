@@ -409,7 +409,3 @@ class JalcImporter(EntityImporter):
             print(resp)
             # sys.exit(-1)
 
-
-if __name__ == "__main__":
-    parser = JalcImporter(None, None)
-    parser.parse_file(open(sys.argv[1]))

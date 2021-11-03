@@ -370,8 +370,3 @@ class ArxivRawImporter(EntityImporter):
             resp = self.parse_record(article)
             print(json.dumps(resp))
             # sys.exit(-1)
-
-
-if __name__ == "__main__":
-    parser = ArxivRawImporter(None)
-    parser.parse_file(open(sys.argv[1]))
