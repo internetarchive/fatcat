@@ -141,4 +141,5 @@ class EntityCleaner:
             )
             self._editgroup_id = eg.editgroup_id
 
+        assert self._editgroup_id
         return self._editgroup_id

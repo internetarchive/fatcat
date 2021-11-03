@@ -259,6 +259,7 @@ def generate_date_file_map(host: str = "ftp.ncbi.nlm.nih.gov") -> Dict[str, Any]
             filedate,
         ) = match.groups()  # ('pubmed20n1017.xml', 'Tue Dec 17 15:23:32 EST 2019')
         date = dateparser.parse(filedate)
+        assert date is not None
         fullpath = "/pubmed/updatefiles/{}.gz".format(filename)
         date_str = date.strftime("%Y-%m-%d")
         mapping[date_str].add(fullpath)

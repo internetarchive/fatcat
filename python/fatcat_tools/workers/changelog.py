@@ -35,6 +35,7 @@ class ChangelogWorker(FatcatWorker):
         # topic
         if self.offset is None:
             print("Checking for most recent changelog offset...")
+            assert self.produce_topic
             msg = most_recent_message(self.produce_topic, self.kafka_config)
             if msg:
                 self.offset = json.loads(msg.decode("utf-8"))["index"]
