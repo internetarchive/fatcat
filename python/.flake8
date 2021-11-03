@@ -6,14 +6,15 @@ select = C,E,F,W,ANN
 # E265,E266 are restrictions on comments ('#')
 # E501 is line-too-long, which we enforce with black
 # W503,E203 are allowed by black
-# TODO: additional ignores during prep for black reformatting
-ignore = ANN003,ANN101,ANN204,E265,E266,E501,W503,E203,ANN001,ANN201,E251,E128,E302,E261,E241,E201,E202,E266,E124,E305,E225,W504,E123,E122,E125,E121,E129,E126,E712,W191,E101,F405,E711,E226,E231
+# TODO: additional ignores while prepping for type annotations
+ignore = ANN003,ANN101,ANN204,E265,E266,E501,W503,E203,ANN001,ANN201,ANN205,ANN202,ANN102,ANN002,ANN206
 #ignore = ANN003,ANN101,ANN204,E265,E266,E501,W503,E203
 per-file-ignores =
     */__init__.py: F401
+    fatcat_web/__init__.py: E402,F401
     tests/*.py: F401,F811,ANN201,ANN001,F403,F405
     tests/transform_csl.py: F401,F811,W291
 exclude = .git,__pycache__,.venv
 max-line-length = 96
 # TODO: should reduce max-complexity
-max-complexity = 50
+max-complexity = 100
