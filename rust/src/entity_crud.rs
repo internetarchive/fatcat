@@ -542,7 +542,7 @@ macro_rules! generic_db_get_history {
                     .inner_join($edit_table::table)
                     .inner_join(editor::table)
                     .filter($edit_table::ident_id.eq(ident.to_uuid()))
-                    .order(changelog::id.desc())
+                    .order_by(changelog::id.desc())
                     .limit(limit)
                     .get_results(conn)?;
 
@@ -599,6 +599,7 @@ macro_rules! generic_db_get_redirects {
             let res: Vec<Uuid> = $ident_table::table
                 .select($ident_table::id)
                 .filter($ident_table::redirect_id.eq(ident.to_uuid()))
+                .order_by($ident_table::id.asc())
                 .get_results(conn)?;
             Ok(res.iter().map(|u| FatcatId::from_uuid(u)).collect())
         }
@@ -1100,6 +1101,7 @@ impl EntityCrud for FileEntity {
 
         let urls: Vec<FileUrl> = file_rev_url::table
             .filter(file_rev_url::file_rev.eq(rev_row.id))
+            .order_by(file_rev_url::id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: FileRevUrlRow| FileUrl {
@@ -1110,6 +1112,7 @@ impl EntityCrud for FileEntity {
 
         let release_ids: Vec<FatcatId> = file_rev_release::table
             .filter(file_rev_release::file_rev.eq(rev_row.id))
+            .order_by(file_rev_release::target_release_ident_id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: FileRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
@@ -1303,6 +1306,7 @@ impl EntityCrud for FilesetEntity {
 
         let manifest: Vec<FilesetFile> = fileset_rev_file::table
             .filter(fileset_rev_file::fileset_rev.eq(rev_row.id))
+            .order_by(fileset_rev_file::id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: FilesetRevFileRow| FilesetFile {
@@ -1318,6 +1322,7 @@ impl EntityCrud for FilesetEntity {
 
         let urls: Vec<FilesetUrl> = fileset_rev_url::table
             .filter(fileset_rev_url::fileset_rev.eq(rev_row.id))
+            .order_by(fileset_rev_url::id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: FilesetRevUrlRow| FilesetUrl {
@@ -1328,6 +1333,7 @@ impl EntityCrud for FilesetEntity {
 
         let release_ids: Vec<FatcatId> = fileset_rev_release::table
             .filter(fileset_rev_release::fileset_rev.eq(rev_row.id))
+            .order_by(fileset_rev_release::target_release_ident_id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: FilesetRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
@@ -1545,6 +1551,7 @@ impl EntityCrud for WebcaptureEntity {
 
         let cdx: Vec<WebcaptureCdxLine> = webcapture_rev_cdx::table
             .filter(webcapture_rev_cdx::webcapture_rev.eq(rev_row.id))
+            .order_by(webcapture_rev_cdx::id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|c: WebcaptureRevCdxRow| WebcaptureCdxLine {
@@ -1561,6 +1568,7 @@ impl EntityCrud for WebcaptureEntity {
 
         let archive_urls: Vec<WebcaptureUrl> = webcapture_rev_url::table
             .filter(webcapture_rev_url::webcapture_rev.eq(rev_row.id))
+            .order_by(webcapture_rev_url::id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: WebcaptureRevUrlRow| WebcaptureUrl {
@@ -1571,6 +1579,7 @@ impl EntityCrud for WebcaptureEntity {
 
         let release_ids: Vec<FatcatId> = webcapture_rev_release::table
             .filter(webcapture_rev_release::webcapture_rev.eq(rev_row.id))
+            .order_by(webcapture_rev_release::target_release_ident_id.asc())
             .get_results(conn)?
             .into_iter()
             .map(|r: WebcaptureRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
@@ -1974,7 +1983,7 @@ impl EntityCrud for ReleaseEntity {
                 let mut refs: Vec<ReleaseRef> = refs.into_iter().map(|j| j.into_model()).collect();
                 let ref_rows: Vec<ReleaseRefRow> = release_ref::table
                     .filter(release_ref::release_rev.eq(rev_row.id))
-                    .order(release_ref::index_val.asc())
+                    .order_by(release_ref::index_val.asc())
                     .get_results(conn)?;
                 for index in 0..refs.len() {
                     refs[index].index = Some(index as i64)
@@ -1992,9 +2001,10 @@ impl EntityCrud for ReleaseEntity {
             false => Some(
                 release_contrib::table
                     .filter(release_contrib::release_rev.eq(rev_row.id))
-                    .order((
+                    .order_by((
                         release_contrib::role.asc(),
                         release_contrib::index_val.asc(),
+                        release_contrib::id.asc(),
                     ))
                     .get_results(conn)?
                     .into_iter()
@@ -2022,6 +2032,7 @@ impl EntityCrud for ReleaseEntity {
                 release_rev_abstract::table
                     .inner_join(abstracts::table)
                     .filter(release_rev_abstract::release_rev.eq(rev_row.id))
+                    .order_by(release_rev_abstract::id.asc())
                     .get_results(conn)?
                     .into_iter()
                     .map(|r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseAbstract {
