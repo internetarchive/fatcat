@@ -27,7 +27,10 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
 
     def __init__(self, api: ApiClient, **kwargs):
 
-        eg_desc = kwargs.pop("editgroup_description", None) or "Expand trunacted timestamps in wayback URLs"
+        eg_desc = (
+            kwargs.pop("editgroup_description", None)
+            or "Expand trunacted timestamps in wayback URLs"
+        )
         eg_extra = kwargs.pop("editgroup_extra", dict())
         eg_extra["agent"] = eg_extra.get(
             "agent", "fatcat_tools.FileShortWaybackTimestampCleanup"
@@ -37,7 +40,7 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
             do_updates=True,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
-            **kwargs
+            **kwargs,
         )
         self.testing_mode = False
 
@@ -74,7 +77,7 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
             if fe_url.url in url_expansions:
                 fix_url = url_expansions[fe_url.url]
                 # defensive checks
-                assert partial_ts in fix_url
+                assert f"/web/{partial_ts}" in fix_url
                 assert "://" in fix_url
                 assert fe_url.url.endswith(original_url)
                 assert fix_url.endswith(original_url)
@@ -261,6 +264,38 @@ def test_short_wayback_ts() -> None:
         fe2.urls[1].url
         == "https://web.archive.org/web/20181101002154/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf"
     )
+
+    # ensure URL order is stable
+    example_line3: Dict[str, Any] = {
+        "file_entity": {
+            "release_ids": ["5rin7f2cdvc5hjkqqw53z7sr3i"],
+            "mimetype": "application/pdf",
+            "urls": [
+                {"url": "https://pubs.usgs.gov/bul/1108/report.pdf", "rel": "web"},
+                {
+                    "url": "https://web.archive.org/web/201904291643/https://pubs.usgs.gov/bul/1108/report.pdf",
+                    "rel": "webarchive",
+                },
+            ],
+            "sha256": "714cd48c2577e9b058b8f16b4574765da685f67582cc53898a9d6933e45d6cc0",
+            "sha1": "4efbdb517c0ff3f58136e4efbbec2bd9315400d3",
+            "md5": "89b6e6cc4e0259317e26ddf1a9a336a0",
+            "size": 41265,
+            "revision": "926fcf73-e644-4446-a24b-4d0940a2cf65",
+            "ident": "lvnz23nzijaapf5iti45zez6zu",
+            "state": "active",
+        },
+        "full_urls": {
+            "https://web.archive.org/web/201904291643/https://pubs.usgs.gov/bul/1108/report.pdf": "https://web.archive.org/web/20190429164342/https://pubs.usgs.gov/bul/1108/report.pdf"
+        },
+        "status": "success-db",
+    }
+
+    fe3 = fswtc.parse_record(example_line3)
+    assert len(fe3.urls) == 2
+    assert fe3.urls[0].rel == "web"
+    assert fe3.urls[0].url == "https://pubs.usgs.gov/bul/1108/report.pdf"
+    assert fe3.urls[1].rel == "webarchive"
 
 
 def main() -> None:
