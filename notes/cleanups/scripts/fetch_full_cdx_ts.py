@@ -117,7 +117,7 @@ def process_file(fe, session) -> dict:
         assert seg[3] == "web"
         assert seg[4].isdigit()
         original_url = "/".join(seg[5:])
-        if len(seg[4]) == 12:
+        if len(seg[4]) == 12 or len(seg[4]) == 4:
             short_urls.append(u)
         elif len(seg[4]) == 14:
             self_urls[original_url] = u
@@ -131,14 +131,14 @@ def process_file(fe, session) -> dict:
     for short in list(set(short_urls)):
         seg = short.split('/')
         ts = seg[4]
-        assert len(ts) == 12 and ts.isdigit()
+        assert len(ts) in [12,4] and ts.isdigit()
         original_url = '/'.join(seg[5:])
 
-        if original_url in full_urls:
+        if short in full_urls:
             continue
 
         if original_url in self_urls:
-            full_urls[original_url] = self_urls[original_url]
+            full_urls[short] = self_urls[original_url]
             status = "success-self"
             continue
 
@@ -146,7 +146,7 @@ def process_file(fe, session) -> dict:
         for cdx_row in cdx_row_list:
             if cdx_row['sha1hex'] == fe['sha1'] and cdx_row['url'] == original_url and cdx_row['datetime'].startswith(ts):
                 assert len(cdx_row['datetime']) == 14 and cdx_row['datetime'].isdigit()
-                full_urls[original_url] = f"https://web.archive.org/web/{cdx_row['datetime']}/{original_url}"
+                full_urls[short] = f"https://web.archive.org/web/{cdx_row['datetime']}/{original_url}"
                 status = "success-db"
                 break
             else:
@@ -154,14 +154,14 @@ def process_file(fe, session) -> dict:
                 pass
         cdx_row = None
 
-        if original_url in full_urls:
+        if short in full_urls:
             continue
 
         cdx_record = get_api_cdx(original_url, partial_dt=ts, http_session=session)
         if cdx_record:
             if cdx_record['sha1hex'] == fe['sha1'] and cdx_record['url'] == original_url and cdx_record['datetime'].startswith(ts):
                 assert len(cdx_record['datetime']) == 14 and cdx_record['datetime'].isdigit()
-                full_urls[original_url] = f"https://web.archive.org/web/{cdx_record['datetime']}/{original_url}"
+                full_urls[short] = f"https://web.archive.org/web/{cdx_record['datetime']}/{original_url}"
                 status = "success-api"
                 break
             else:
@@ -169,7 +169,7 @@ def process_file(fe, session) -> dict:
         else:
             print(f"no CDX API record found: {original_url}", file=sys.stderr)
 
-        if original_url not in full_urls:
+        if short not in full_urls:
             return dict(file_entity=fe, full_urls=full_urls, status="fail-not-found")
 
     return dict(
