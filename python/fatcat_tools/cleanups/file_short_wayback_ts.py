@@ -27,7 +27,7 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
 
     def __init__(self, api: ApiClient, **kwargs):
 
-        eg_desc = kwargs.pop("editgroup_description", None) or "Expand short wayback timestamps"
+        eg_desc = kwargs.pop("editgroup_description", None) or "Expand trunacted timestamps in wayback URLs"
         eg_extra = kwargs.pop("editgroup_extra", dict())
         eg_extra["agent"] = eg_extra.get(
             "agent", "fatcat_tools.FileShortWaybackTimestampCleanup"
@@ -150,7 +150,9 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
         # these corrections (entity dump) contains no dupes
 
         if not self.testing_mode:
-            self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
+            # note: passing 'fe' instead of 'existing' here, which is not
+            # usually how it goes!
+            self.api.update_file(self.get_editgroup_id(), fe.ident, fe)
         self.counts["update"] += 1
         return False
 
