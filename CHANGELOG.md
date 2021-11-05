@@ -15,6 +15,32 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
+## [UNRELEASED]
+
+An outward-facing change is that the fatcat API server now attempts to
+"stabilize" array order within JSON responses by sorting elements by
+appropriate identifiers or other keys. In many cases, the order of things like
+URLs for a file, manifest entries for a fileset, or releases associated with a
+file, may be reversed in API responses compared to what was returned
+previously. They should not match what was original supplied when the entity
+was created.
+
+In particular, this may cause broad discrepencies compared to historical bulk
+metadata exports. New bulk exports will be generated with the new ordering.
+
+### Fixed
+
+- API array order stablization, using `ORDER BY` in `fatcatd`. See note above.
+
+### Changed
+
+- broad python code style updates: formatting, lint rules, and type annotations
+
+### Added
+
+- initial fileset importers
+- JSON pseudo-API for reference string match/get interface
+
 ## [0.4.0] - 2021-10-14
 
 Includes small API and SQL schema changes; see
