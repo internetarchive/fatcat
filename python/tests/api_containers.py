@@ -11,6 +11,7 @@ def test_container(api):
         name="some container name",
         container_type="journal",
         publisher="some container publisher",
+        publication_status="active",
         issnl="1234-567X",
         issne="1230-0000",
         issnp="1234-0001",

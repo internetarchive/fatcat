@@ -18,6 +18,10 @@ def test_file(api):
                 url="https://web.archive.org/web/12345542/something.com/blah.pdf",
                 rel="webarchive",
             ),
+            FileUrl(
+                url="https://something.com/blah.pdf",
+                rel="web",
+            ),
         ],
         release_ids=[],
         extra=dict(a=2, b=5),

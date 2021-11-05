@@ -11,15 +11,17 @@ def test_webcapture(api):
     r1 = ReleaseEntity(title="test webcapture release", ext_ids=ReleaseExtIds())
     r1edit = api.create_release(eg.editgroup_id, r1)
 
+    # using datetime.datetime in this object construction to make exact object
+    # comparisons easier. it is also possible to pass an ISO datetime string
+    # (including timezone)
+    now = datetime.datetime.now(datetime.timezone.utc)
     wc1 = WebcaptureEntity(
         original_url="http://example.site",
-        # timestamp = "2012-01-02T03:04:05Z",
-        timestamp=datetime.datetime.now(datetime.timezone.utc),
+        timestamp=now,
         cdx=[
             WebcaptureCdxLine(
                 surt="site,example,)/data/thing.tar.gz",
-                # timestamp="2012-01-02T03:04:05Z",
-                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                timestamp=now,
                 url="http://example.site/data/thing.tar.gz",
                 mimetype="application/gzip",
                 status_code=200,
@@ -29,8 +31,7 @@ def test_webcapture(api):
             ),
             WebcaptureCdxLine(
                 surt="site,example,)/README.md",
-                # timestamp="2012-01-02T03:04:05Z",
-                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                timestamp=now,
                 url="http://example.site/README.md",
                 mimetype="text/markdown",
                 status_code=200,
@@ -59,12 +60,9 @@ def test_webcapture(api):
     assert wc2.timestamp == wc2_rev.timestamp
 
     # check that fields match
-    # I don't know why these aren't equal...
-    # print(wc1.archive_urls)
-    # print(wc2.archive_urls)
-    # assert wc1.archive_urls == wc2.archive_urls
-    assert wc1.archive_urls[0].rel == wc2.archive_urls[0].rel
-    assert wc1.archive_urls[0].url == wc2.archive_urls[0].url
+    for i in range(len(wc1.archive_urls)):
+        assert wc1.archive_urls[i].rel == wc2.archive_urls[i].rel
+        assert wc1.archive_urls[i].url == wc2.archive_urls[i].url
     assert wc1.cdx[0] == wc2.cdx[0]
     assert wc1.cdx[0].size == wc2.cdx[0].size
     assert wc1.cdx == wc2.cdx
@@ -73,9 +71,8 @@ def test_webcapture(api):
     assert wc1.original_url == wc2.original_url
     assert wc1.extra == wc2.extra
 
-    # TODO: check release expansion
+    # check release expansion
     r1 = api.get_release(r1edit.ident, expand="webcaptures")
-    print(r1)
     assert r1.webcaptures[0].cdx == wc1.cdx
 
     # get redirects (none)

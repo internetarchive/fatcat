@@ -50,17 +50,13 @@ def test_fileset(api):
 
     # check that fields match
     assert fs1.urls == fs2.urls
-    # XXX: manifest return order is *NOT* currently stable
-    assert (fs1.manifest == fs2.manifest) or (fs1.manifest == list(reversed(fs2.manifest)))
+    assert fs1.manifest == fs2.manifest
     assert fs1.release_ids == fs2.release_ids
     assert fs1.extra == fs2.extra
 
     # expansion
     r1 = api.get_release(r1edit.ident, expand="filesets")
-    # XXX: manifest return order is *NOT* currently stable
-    assert (r1.filesets[0].manifest == fs1.manifest) or (
-        r1.filesets[0].manifest == list(reversed(fs1.manifest))
-    )
+    assert r1.filesets[0].manifest == fs1.manifest
 
     # get redirects (none)
     assert api.get_fileset_redirects(fs2.ident) == []
