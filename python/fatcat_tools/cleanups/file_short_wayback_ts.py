@@ -216,6 +216,50 @@ def test_short_wayback_ts() -> None:
     print(fswtc.counts)
     assert fswtc.counts["update"] == 1
 
+    # another example, which failed with an assertion in prod due to duplicated URLs
+    example_line2: Dict[str, Any] = {
+        "file_entity": {
+            "release_ids": ["22jt7euq4fafhblzullmnesso4"],
+            "mimetype": "application/pdf",
+            "urls": [
+                {
+                    "url": "https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf",
+                    "rel": "repository",
+                },
+                {
+                    "url": "https://web.archive.org/web/201811010021/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf",
+                    "rel": "webarchive",
+                },
+                {
+                    "url": "https://web.archive.org/web/20181101002154/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf",
+                    "rel": "webarchive",
+                },
+            ],
+            "sha256": "51ec58e7a2325d28d1deb0a4bc6422c0e4ae7b12ffb0b6298981a7b8b7730b19",
+            "sha1": "ad96a584fc6073b9a23736bc61ae0ec4a5661433",
+            "md5": "3d509743359649e34a27ae70c5cd3018",
+            "size": 430665,
+            "extra": {
+                "shadows": {"scimag_doi": "10.4259/ibk.59.1_194", "scimag_id": "69089904"}
+            },
+            "revision": "f1fa11ff-d521-45cf-9db1-cb3c8bd3ea48",
+            "ident": "duymhmxk3fgtzk37yp2pvthtxq",
+            "state": "active",
+        },
+        "full_urls": {
+            "https://web.archive.org/web/201811010021/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf": "https://web.archive.org/web/20181101002154/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf"
+        },
+        "status": "success-self",
+    }
+
+    fe2 = fswtc.parse_record(example_line2)
+    assert len(fe2.urls) == 2
+    assert fe2.urls[0].rel == "repository"
+    assert (
+        fe2.urls[1].url
+        == "https://web.archive.org/web/20181101002154/https://www.jstage.jst.go.jp/article/ibk/59/1/59_KJ00007115297/_pdf"
+    )
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
