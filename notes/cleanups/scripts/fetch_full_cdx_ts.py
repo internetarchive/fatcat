@@ -137,7 +137,7 @@ def process_file(fe, session) -> dict:
         if short in full_urls:
             continue
 
-        if original_url in self_urls:
+        if original_url in self_urls and ts in self_urls[original_url]:
             full_urls[short] = self_urls[original_url]
             status = "success-self"
             continue

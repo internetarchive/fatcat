@@ -311,7 +311,7 @@ def main() -> None:
     parser.add_argument(
         "--host-url", default="http://localhost:9411/v0", help="connect to this host/port"
     )
-    parser.add_argument("--batch-size", help="size of batch to send", default=50, type=int)
+    parser.add_argument("--batch-size", help="size of batch to send", default=100, type=int)
     parser.set_defaults(
         auth_var="FATCAT_AUTH_WORKER_CLEANUP",
     )
