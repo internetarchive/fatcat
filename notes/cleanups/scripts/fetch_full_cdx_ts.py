@@ -157,7 +157,14 @@ def process_file(fe, session) -> dict:
         if short in full_urls:
             continue
 
-        cdx_record = get_api_cdx(original_url, partial_dt=ts, http_session=session)
+        cdx_record = None
+        try:
+            cdx_record = get_api_cdx(original_url, partial_dt=ts, http_session=session)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 403:
+                return dict(file_entity=fe, full_urls=full_urls, status="fail-cdx-403")
+            else:
+                raise
         if cdx_record:
             if cdx_record['sha1hex'] == fe['sha1'] and cdx_record['url'] == original_url and cdx_record['datetime'].startswith(ts):
                 assert len(cdx_record['datetime']) == 14 and cdx_record['datetime'].isdigit()

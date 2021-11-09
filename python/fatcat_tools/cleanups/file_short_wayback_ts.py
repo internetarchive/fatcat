@@ -22,7 +22,7 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
     is not integrated into the `fatcat_import` or `fatcat_cleanup` controller;
     instead it has a __main__ function and is invoked like:
 
-        python -m fatcat_tools.cleans.file_short_wayback-ts < blah.json
+        python -m fatcat_tools.cleans.file_short_wayback_ts - < blah.json
     """
 
     def __init__(self, api: ApiClient, **kwargs):
@@ -77,10 +77,18 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
             if fe_url.url in url_expansions:
                 fix_url = url_expansions[fe_url.url]
                 # defensive checks
-                assert f"/web/{partial_ts}" in fix_url
+                if not (
+                    f"/web/{partial_ts}" in fix_url
+                    and fe_url.url.endswith(original_url)
+                    and fix_url.endswith(original_url)
+                ):
+                    print(
+                        f"bad replacement URL: partial_ts={partial_ts} original={original_url} fix_url={fix_url}",
+                        file=sys.stderr,
+                    )
+                    self.counts["skip-bad-replacement"] += 1
+                    return None
                 assert "://" in fix_url
-                assert fe_url.url.endswith(original_url)
-                assert fix_url.endswith(original_url)
                 fe_url.url = fix_url
                 any_fixed = True
 
@@ -305,7 +313,7 @@ def main() -> None:
     )
     parser.add_argument("--batch-size", help="size of batch to send", default=50, type=int)
     parser.set_defaults(
-        auth_var="FATCAT_API_AUTH_TOKEN",
+        auth_var="FATCAT_AUTH_WORKER_CLEANUP",
     )
     parser.add_argument(
         "json_file",
