@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Union
+from typing import Tuple, Union
 
 from flask import Response as FlaskResponse
 from werkzeug.wrappers import Response as WerkzeugResponse
