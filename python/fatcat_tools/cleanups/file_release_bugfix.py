@@ -142,17 +142,17 @@ class FileReleaseBugfix(EntityImporter):
         # fetch existing history to verify mismatch
         history = self.api.get_file_history(existing.ident)
 
-        if len(history) != 1:
-            self.counts["skip-existing-history-updated"] += 1
-            return False
+        for entry in history:
+            if entry.editgroup.editor.is_bot is not True:
+                self.counts["skip-existing-edit-history-human"] += 1
+                return False
 
-        bad_edit = history[0].edit
+        bad_edit = history[-1].edit
         if bad_edit.extra != fe.edit_extra:
             self.counts["skip-existing-edit-history-extra-mismatch"] += 1
             return False
 
-        bad_editgroup = history[0].editgroup
-
+        bad_editgroup = history[-1].editgroup
         if not bad_editgroup.extra:
             self.counts["skip-existing-editgroup-missing-extra"] += 1
             return False
