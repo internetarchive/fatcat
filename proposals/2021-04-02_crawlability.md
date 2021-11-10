@@ -1,8 +1,15 @@
 
-status: wip
+status: not-implemented
 
 Crawlability Improvements
 --------------------------
+
+NOTE: After some back and forth on this topic, we have decided for now to focus
+on having scholar.archive.org indexed, not fatcat.wiki. This proposal document
+document is being kept as documentation of that decision.
+
+
+## Original Intro
 
 We are interested in making the fatcat corpus more crawlable/indexable by
 aggregators and academic search enginges. For example, CiteseerX, Google
@@ -11,6 +18,7 @@ Scholar, or Microsoft Academic (when themselves get used by other projects).
 Some open questions:
 
 - is the web.archive.org iframe for PDFs ok, or should we redirect to PDFs with `id_` in the datetime?
+
 
 
 ## Redirect URLs and `citation_pdf_url`
