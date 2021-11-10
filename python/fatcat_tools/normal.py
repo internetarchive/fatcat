@@ -611,12 +611,15 @@ def test_parse_country_name() -> None:
 def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
     if not raw:
         return None
-    raw = raw.strip().replace("http://", "//").replace("https://", "//")
-    if "creativecommons.org" in raw.lower():
-        raw = raw.lower()
-        raw = raw.replace("/legalcode", "/").replace("/uk", "")
-        if not raw.endswith("/"):
-            raw = raw + "/"
+    # normalize to lower-case and not ending with a slash
+    raw = raw.strip().lower()
+    if raw.endswith("/"):
+        raw = raw[:-1]
+    # remove http/https prefix
+    raw = raw.replace("http://", "//").replace("https://", "//")
+    # special-case normalization of CC licenses
+    if "creativecommons.org" in raw:
+        raw = raw.replace("/legalcode", "").replace("/uk", "")
     return LICENSE_SLUG_MAP.get(raw)
 
 
