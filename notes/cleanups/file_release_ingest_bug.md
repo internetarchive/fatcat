@@ -142,3 +142,51 @@ And create a sample file:
 
     shuf -n10000 /srv/fatcat/snapshots/file_release_bugfix_20211105.json > /srv/fatcat/snapshots/file_release_bugfix_20211105.10k_sample.json
 
+
+## Testing in QA
+
+    export FATCAT_AUTH_WORKER_CLEANUP=[...]
+
+    head -n10 /srv/fatcat/snapshots/file_release_bugfix_20211105.10k_sample.json \
+        | python -m fatcat_tools.cleanups.file_release_bugfix -
+    # Counter({'total': 10, 'update': 10, 'skip': 0, 'insert': 0, 'exists': 0})
+
+    file_wmjzuybuorfrjdgnr2d32vg5va: was wrong, now correct, no other files
+    file_wgszcwehlffnzmoypr4l2yhvza: was correct, now correct, no other files. multiple articles in single PDF
+    file_p4r5sbminzgrhn4yaiqyr7ahwi: was correct, now wrong (!!!)
+        doi:10.1055/s-0036-1579844
+        PDF says: 10.4103/0028-3886.158210
+        unpaywall still has this incorrect linkage
+    file_n5jtvrnodbfdbccl5d6hshhvw4: now stub, was wrong
+        doi:10.19080/bboaj.2018.04.555640 release_suvtcm7hdbbr3fczcxxt4thgoi seems correct?
+        doi:10.19080/bboaj.4.4 is the bad DOI, not in fatcat. is registered, as an entire issue
+    file_kt5fv4d5lrbk7j3dxxgcm7hph4: was wrong, now correct
+    file_jq4juugnynhsdkh3whkcjod46q: was wrong, now correct
+    file_ef7w6y7k4jhjhgwmfai37yjjmm: was wrong, now correct
+    file_ca2svhd6knfnff4dktuonp45du: was correct, now correct. complicated, multiple DOIs/copies/files of same work
+    file_borst2aewvcwzhucnyth2vf3lm: was correct, now correct. complicated, multiple DOIs, single file of same work
+
+Overall, seems like this might not be as much of an obvious improvement as
+hoped! But still progress and more correct.
+
+    head -n1000 /srv/fatcat/snapshots/file_release_bugfix_20211105.10k_sample.json \
+        | python -m fatcat_tools.cleanups.file_release_bugfix -
+    # Counter({'total': 1000, 'update': 929, 'skip-existing-history-updated': 58, 'skip-existing-fixed': 10, 'skip': 3, 'skip-link-source': 3, 'insert': 0, 'exists': 0})
+
+Looking at `skip-link-source`, it is cases where `link_source` is 'doi' not
+'fatcat-changelog'. Will update filter behavior, 'fatcat-changelog' is a
+`ingest_request_source`.
+
+Checking another 10 examples. They all seem to end up as correct matches.
+
+Did a small update and running the whole batch:
+
+    cat /srv/fatcat/snapshots/file_release_bugfix_20211105.10k_sample.json \
+        | python -m fatcat_tools.cleanups.file_release_bugfix -
+    # Counter({'total': 10000, 'update': 8499, 'skip-existing-fixed': 939, 'skip-existing-history-updated': 560, 'skip': 2, 'skip-wrong-release-is-ok': 2, 'insert': 0, 'exists': 0})
+
+I think this is ready to go! Example with parallel:
+
+    cat /srv/fatcat/snapshots/file_release_bugfix_20211105.10k_sample.json \
+        | parallel -j8 --linebuffer --round-robin --pipe python -m fatcat_tools.cleanups.file_release_bugfix -
+

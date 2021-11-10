@@ -265,3 +265,27 @@ Running in bulk again:
         | gzip \
         > files_20211105_moreshortts.fetched.json.gz
 
+Ran in to one: `requests.exceptions.HTTPError: 503 Server Error: Service
+Temporarily Unavailable for url: [...]`. Will try again, if there are more
+failures may need to split up in smaller chunks.
+
+Unexpected:
+
+    Traceback (most recent call last):
+      File "./fetch_full_cdx_ts.py", line 200, in <module>
+        main()
+      File "./fetch_full_cdx_ts.py", line 197, in main
+        print(json.dumps(process_file(fe, session=session)))
+      File "./fetch_full_cdx_ts.py", line 118, in process_file
+        assert seg[4].isdigit()
+    AssertionError
+    3.96M 3:04:46 [ 357 /s]
+
+Ugh.
+
+    zcat files_20211105_moreshortts.json.gz \
+        | tac \
+        | parallel -j8 --linebuffer --round-robin --pipe ./fetch_full_cdx_ts.py \
+        | pv -l \
+        | gzip \
+        > files_20211105_moreshortts.fetched.json.gz
