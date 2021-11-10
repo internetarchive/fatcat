@@ -8,6 +8,8 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 
+from fatcat_tools.normal import clean_doi
+
 from .common import LANG_MAP_MARC, EntityImporter, clean
 from .crossref import CONTAINER_TYPE_MAP
 
@@ -146,7 +148,9 @@ class JstorImporter(EntityImporter):
 
         doi = article_meta.find("article-id", {"pub-id-type": "doi"})
         if doi:
-            doi = doi.string.lower().strip()
+            doi = clean_doi(doi.string.lower())
+        else:
+            doi = None
 
         jstor_id = article_meta.find("article-id", {"pub-id-type": "jstor"})
         if jstor_id:

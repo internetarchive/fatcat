@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, FileEntity, ReleaseEntity
 
+from fatcat_tools.normal import clean_doi
+
 from .common import EntityImporter, clean, make_rel_url
 
 MAX_ABSTRACT_BYTES = 4096
@@ -133,9 +135,10 @@ class GrobidMetadataImporter(EntityImporter):
             # only returns year, ever?
             release_year = int(obj["date"][:4])
 
-        extra = dict()
-        if obj.get("doi"):
-            extra["doi"] = obj["doi"]
+        extra: Dict[str, Any] = dict()
+        doi = clean_doi(obj.get("doi"))
+        if doi:
+            extra["doi"] = doi
         if obj["journal"] and obj["journal"].get("name"):
             extra["container_name"] = clean(obj["journal"]["name"])
 

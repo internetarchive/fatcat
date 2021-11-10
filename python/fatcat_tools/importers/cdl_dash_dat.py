@@ -23,6 +23,8 @@ from fatcat_openapi_client import (
     ReleaseExtIds,
 )
 
+from fatcat_tools.normal import clean_doi
+
 from .common import clean
 from .crossref import lookup_license_slug
 
@@ -78,8 +80,8 @@ def cdl_dash_release(
         extra = dict()
 
     assert meta["identifier"]["type"] == "DOI"
-    doi = meta["identifier"]["value"].lower()
-    assert doi.startswith("10.")
+    doi = clean_doi(meta["identifier"]["value"].lower())
+    assert doi and doi.startswith("10.")
 
     ark_id = None
     for extid in meta.get("alternativeIdentifiers", []):

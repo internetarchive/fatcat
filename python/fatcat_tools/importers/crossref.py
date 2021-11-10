@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Optional, Sequence
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
+from fatcat_tools.normal import clean_doi
+
 from .common import EntityImporter, clean
 
 # The docs/guide should be the canonical home for these mappings; update there
@@ -467,6 +469,11 @@ class CrossrefImporter(EntityImporter):
                 self.counts["skip-blank-title"] += 1
                 return None
 
+        doi = clean_doi(obj["DOI"].lower())
+        if not doi:
+            self.counts["skip-bad-doi"] += 1
+            return None
+
         subtitle = None
         if obj.get("subtitle"):
             subtitle = clean(obj["subtitle"][0], force_xml=True)
@@ -489,7 +496,7 @@ class CrossrefImporter(EntityImporter):
             release_year=release_year,
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
-                doi=obj["DOI"].lower(),
+                doi=doi,
                 isbn13=isbn13,
             ),
             volume=clean(obj.get("volume")),

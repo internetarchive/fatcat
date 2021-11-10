@@ -29,7 +29,7 @@ from fuzzycat.matching import match_release_fuzzy
 
 # TODO: refactor so remove need for this (re-imports for backwards compatibility)
 from fatcat_tools.normal import is_cjk  # noqa: F401
-from fatcat_tools.normal import LANG_MAP_MARC, b32_hex  # noqa: F401
+from fatcat_tools.normal import LANG_MAP_MARC, b32_hex, clean_doi  # noqa: F401
 from fatcat_tools.normal import clean_str as clean  # noqa: F401
 from fatcat_tools.transforms import entity_to_dict
 
@@ -342,8 +342,7 @@ class EntityImporter:
         return creator_id
 
     def is_doi(self, doi: str) -> bool:
-        # TODO: replace with clean_doi() from fatcat_tools.normal
-        return doi.startswith("10.") and doi.count("/") >= 1
+        return clean_doi(doi) is not None
 
     def lookup_doi(self, doi: str) -> Optional[str]:
         """Caches calls to the doi lookup API endpoint in a local dict
