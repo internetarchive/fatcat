@@ -115,7 +115,8 @@ def process_file(fe, session) -> dict:
         seg = u.split('/')
         assert seg[2] == "web.archive.org"
         assert seg[3] == "web"
-        assert seg[4].isdigit()
+        if not seg[4].isdigit():
+            continue
         original_url = "/".join(seg[5:])
         if len(seg[4]) == 12 or len(seg[4]) == 4:
             short_urls.append(u)
