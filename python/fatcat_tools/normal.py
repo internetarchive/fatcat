@@ -47,7 +47,7 @@ def clean_doi(raw: Optional[str]) -> Optional[str]:
         raw = raw[8:]
     if raw.startswith("dx.doi.org/"):
         raw = raw[11:]
-    if raw[7:9] == "//":
+    if raw[7:9] == "//" and "10.1037//" in raw:
         raw = raw[:8] + raw[9:]
 
     # fatcatd uses same REGEX, but Rust regex rejects these characters, while
@@ -74,6 +74,7 @@ def test_clean_doi() -> None:
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
+    assert clean_doi("10.1026//1616-1041.3.2.86") == "10.1026//1616-1041.3.2.86"
     assert clean_doi("10.23750/abm.v88i2 -s.6506") is None
     assert clean_doi("10.17167/mksz.2017.2.129–155") is None
     assert clean_doi("http://doi.org/10.1234/asdf ") == "10.1234/asdf"
