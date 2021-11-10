@@ -8,9 +8,9 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import LANG_MAP_MARC, clean_doi, clean_str
 
-from .common import LANG_MAP_MARC, EntityImporter, clean
+from .common import EntityImporter
 from .crossref import CONTAINER_TYPE_MAP
 
 # TODO: more entries?
@@ -140,7 +140,7 @@ class JstorImporter(EntityImporter):
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
-                name=clean(journal_title, force_xml=True),
+                name=clean_str(journal_title, force_xml=True),
             )
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
@@ -166,13 +166,13 @@ class JstorImporter(EntityImporter):
             for c in cgroup.find_all("contrib"):
                 given = c.find("given-names")
                 if given:
-                    given = clean(given.get_text().replace("\n", " "))
+                    given = clean_str(given.get_text().replace("\n", " "))
                 surname = c.find("surname")
                 if surname:
-                    surname = clean(surname.get_text().replace("\n", " "))
+                    surname = clean_str(surname.get_text().replace("\n", " "))
                 raw_name = c.find("string-name")
                 if raw_name:
-                    raw_name = clean(raw_name.get_text().replace("\n", " "))
+                    raw_name = clean_str(raw_name.get_text().replace("\n", " "))
 
                 if not raw_name:
                     if given and surname:
@@ -234,7 +234,7 @@ class JstorImporter(EntityImporter):
 
         # JSTOR issue-id
         if article_meta.find("issue-id"):
-            issue_id = clean(article_meta.find("issue-id").string)
+            issue_id = clean_str(article_meta.find("issue-id").string)
             if issue_id:
                 extra_jstor["issue_id"] = issue_id
 

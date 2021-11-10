@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, FileEntity, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_str
 
-from .common import EntityImporter, clean, make_rel_url
+from .common import EntityImporter, make_rel_url
 
 MAX_ABSTRACT_BYTES = 4096
 
@@ -86,7 +86,7 @@ class GrobidMetadataImporter(EntityImporter):
         abstract = obj.get("abstract")
         if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
             abobj = fatcat_openapi_client.ReleaseAbstract(
-                mimetype="text/plain", content=clean(obj.get("abstract"))
+                mimetype="text/plain", content=clean_str(obj.get("abstract"))
             )
             abstracts = [abobj]
         else:
@@ -97,9 +97,9 @@ class GrobidMetadataImporter(EntityImporter):
             contribs.append(
                 fatcat_openapi_client.ReleaseContrib(
                     index=i,
-                    raw_name=clean(a["name"]),
-                    given_name=clean(a.get("given_name")),
-                    surname=clean(a.get("surname")),
+                    raw_name=clean_str(a["name"]),
+                    given_name=clean_str(a.get("given_name")),
+                    surname=clean_str(a.get("surname")),
                     role="author",
                     extra=None,
                 )
@@ -116,15 +116,15 @@ class GrobidMetadataImporter(EntityImporter):
                     pass
             for key in ("volume", "url", "issue", "publisher"):
                 if raw.get(key):
-                    cite_extra[key] = clean(raw[key])
+                    cite_extra[key] = clean_str(raw[key])
             if raw.get("authors"):
-                cite_extra["authors"] = [clean(a["name"]) for a in raw["authors"]]
+                cite_extra["authors"] = [clean_str(a["name"]) for a in raw["authors"]]
 
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
-                    key=clean(raw.get("id")),
+                    key=clean_str(raw.get("id")),
                     year=year,
-                    title=clean(raw["title"]),
+                    title=clean_str(raw["title"]),
                     extra=cite_extra or None,
                 )
             )
@@ -140,7 +140,7 @@ class GrobidMetadataImporter(EntityImporter):
         if doi:
             extra["doi"] = doi
         if obj["journal"] and obj["journal"].get("name"):
-            extra["container_name"] = clean(obj["journal"]["name"])
+            extra["container_name"] = clean_str(obj["journal"]["name"])
 
         # TODO: ISSN/eISSN handling? or just journal name lookup?
 
@@ -149,7 +149,7 @@ class GrobidMetadataImporter(EntityImporter):
         if self.longtail_oa:
             extra["longtail_oa"] = True
 
-        clean_title = clean(obj["title"], force_xml=True)
+        clean_title = clean_str(obj["title"], force_xml=True)
         if not clean_title or len(clean_title) < 2:
             return None
         title = clean_title
@@ -161,9 +161,9 @@ class GrobidMetadataImporter(EntityImporter):
             release_year=release_year,
             contribs=contribs,
             refs=refs,
-            publisher=clean(obj["journal"].get("publisher")),
-            volume=clean(obj["journal"].get("volume")),
-            issue=clean(obj["journal"].get("issue")),
+            publisher=clean_str(obj["journal"].get("publisher")),
+            volume=clean_str(obj["journal"].get("volume")),
+            issue=clean_str(obj["journal"].get("issue")),
             abstracts=abstracts or None,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(),
             extra=extra or None,

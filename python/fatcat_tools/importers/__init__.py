@@ -15,7 +15,6 @@ from .arabesque import ARABESQUE_MATCH_WHERE_CLAUSE, ArabesqueMatchImporter
 from .arxiv import ArxivRawImporter
 from .chocula import ChoculaImporter
 from .common import (
-    LANG_MAP_MARC,
     Bs4XmlFileListPusher,
     Bs4XmlFilePusher,
     Bs4XmlLargeFilePusher,
@@ -27,8 +26,6 @@ from .common import (
     KafkaJsonPusher,
     LinePusher,
     SqlitePusher,
-    clean,
-    is_cjk,
     make_kafka_consumer,
 )
 from .crossref import CROSSREF_TYPE_MAP, CrossrefImporter, lookup_license_slug

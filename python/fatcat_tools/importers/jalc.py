@@ -6,9 +6,9 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_str, is_cjk
 
-from .common import DATE_FMT, EntityImporter, clean, is_cjk
+from .common import DATE_FMT, EntityImporter
 
 
 # TODO: should be List[Tag] not List[Any] for full type annotations
@@ -36,13 +36,13 @@ def parse_jalc_persons(raw_persons: List[Any]) -> List[ReleaseContrib]:
     for raw in raw_persons:
         name = raw.find("name") or None
         if name:
-            name = clean(name.get_text().replace("\n", " "))
+            name = clean_str(name.get_text().replace("\n", " "))
         surname = raw.find("familyName") or None
         if surname:
-            surname = clean(surname.get_text().replace("\n", " "))
+            surname = clean_str(surname.get_text().replace("\n", " "))
         given_name = raw.find("givenName") or None
         if given_name:
-            given_name = clean(given_name.get_text().replace("\n", " "))
+            given_name = clean_str(given_name.get_text().replace("\n", " "))
         lang = "en"
         if is_cjk(name):
             lang = "ja"
@@ -230,16 +230,16 @@ class JalcImporter(EntityImporter):
                 for p in record.find_all("publicationName")
                 if p.get_text()
             ]
-            pubs = [clean(p) for p in pubs if p]
+            pubs = [clean_str(p) for p in pubs if p]
             assert pubs
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
             if len(pubs) > 1 and is_cjk(pubs[0]):
                 # eng/jpn ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
-            container_name = clean(pubs[0])
+            container_name = clean_str(pubs[0])
             if len(pubs) > 1:
-                container_extra["original_name"] = clean(pubs[1])
+                container_extra["original_name"] = clean_str(pubs[1])
 
         if record.publisher:
             pubs = [
@@ -254,7 +254,7 @@ class JalcImporter(EntityImporter):
                 # ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
             if pubs:
-                publisher = clean(pubs[0])
+                publisher = clean_str(pubs[0])
                 if len(pubs) > 1:
                     container_extra["publisher_aliases"] = pubs[1:]
 
@@ -296,14 +296,14 @@ class JalcImporter(EntityImporter):
         # (informally)
         extra["jalc"] = extra_jalc
 
-        title = clean(title)
+        title = clean_str(title)
         if not title:
             return None
 
         re = ReleaseEntity(
             work_id=None,
             title=title,
-            original_title=clean(original_title),
+            original_title=clean_str(original_title),
             release_type=release_type,
             release_stage="published",
             release_date=release_date,

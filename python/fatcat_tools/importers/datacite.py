@@ -21,10 +21,10 @@ import langdetect
 import pycountry
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_str
 from fatcat_tools.transforms import entity_to_dict
 
-from .common import EntityImporter, clean
+from .common import EntityImporter
 
 # Cutoff length for abstracts.
 MAX_ABSTRACT_LENGTH = 2048
@@ -322,7 +322,7 @@ class DataciteImporter(EntityImporter):
             print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
 
-        title = clean(title)
+        title = clean_str(title)
         if not title:
             print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
@@ -341,7 +341,7 @@ class DataciteImporter(EntityImporter):
         if not subtitle:
             subtitle = None
         else:
-            subtitle = clean(subtitle)
+            subtitle = clean_str(subtitle)
 
         # Dates. A few internal dates (registered, created, updated) and
         # published (0..2554). We try to work with typed date list, in
@@ -399,7 +399,7 @@ class DataciteImporter(EntityImporter):
             publisher = None
 
         if publisher:
-            publisher = clean(publisher)
+            publisher = clean_str(publisher)
 
         # Container. For the moment, only ISSN as container.
         container_id = None
@@ -460,10 +460,10 @@ class DataciteImporter(EntityImporter):
         issue = container.get("issue")
 
         if volume:
-            volume = clean(volume)
+            volume = clean_str(volume)
 
         if issue:
-            issue = clean(issue)
+            issue = clean_str(issue)
 
         # Pages.
         pages = None
@@ -548,7 +548,7 @@ class DataciteImporter(EntityImporter):
                     "[{}] language detection failed with {} on {}".format(doi, err, text),
                     file=sys.stderr,
                 )
-            abstract_text = clean(text)
+            abstract_text = clean_str(text)
             if not abstract_text:
                 continue
             abstracts.append(
@@ -874,14 +874,14 @@ class DataciteImporter(EntityImporter):
                 if len(affiliations) == 0:
                     raw_affiliation = None
                 else:
-                    raw_affiliation = clean(affiliations[0])
+                    raw_affiliation = clean_str(affiliations[0])
 
                 name = c.get("name")
                 given_name = c.get("givenName")
                 surname = c.get("familyName")
 
                 if name:
-                    name = clean(name)
+                    name = clean_str(name)
                 if not any((name, given_name, surname)):
                     continue
                 if not name:
@@ -895,8 +895,8 @@ class DataciteImporter(EntityImporter):
                     name = index_form_to_display_name(name)
 
                 if given_name:
-                    given_name = clean(given_name)
-                surname = clean(surname)
+                    given_name = clean_str(given_name)
+                surname = clean_str(surname)
 
                 # Perform a final assertion that name does not reduce to zero
                 # (e.g. whitespace only name).

@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional, Sequence
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_str
 
-from .common import EntityImporter, clean
+from .common import EntityImporter
 
 # The docs/guide should be the canonical home for these mappings; update there
 # first
@@ -232,21 +232,21 @@ class CrossrefImporter(EntityImporter):
                     if len(affiliation_list) > 1:
                         # note: affiliation => more_affiliations
                         extra["more_affiliations"] = [
-                            clean(a["name"]) for a in affiliation_list[1:]
+                            clean_str(a["name"]) for a in affiliation_list[1:]
                         ]
                 if am.get("sequence") and am.get("sequence") != "additional":
-                    extra["seq"] = clean(am.get("sequence"))
+                    extra["seq"] = clean_str(am.get("sequence"))
                 assert ctype in ("author", "editor", "translator")
-                raw_name = clean(raw_name)
+                raw_name = clean_str(raw_name)
                 # TODO: what if 'raw_name' is None?
                 contribs.append(
                     ReleaseContrib(
                         creator_id=creator_id,
                         index=index,
                         raw_name=raw_name,
-                        given_name=clean(am.get("given")),
-                        surname=clean(am.get("family")),
-                        raw_affiliation=clean(raw_affiliation),
+                        given_name=clean_str(am.get("given")),
+                        surname=clean_str(am.get("family")),
+                        raw_affiliation=clean_str(raw_affiliation),
                         role=ctype,
                         extra=extra or None,
                     )
@@ -263,11 +263,11 @@ class CrossrefImporter(EntityImporter):
         container_id = None
         if issnl:
             container_id = self.lookup_issnl(issnl)
-        publisher = clean(obj.get("publisher"))
+        publisher = clean_str(obj.get("publisher"))
 
         container_name = obj.get("container-title")
         if container_name:
-            container_name = clean(container_name[0], force_xml=True)
+            container_name = clean_str(container_name[0], force_xml=True)
         if not container_name:
             container_name = None
         if (
@@ -323,7 +323,7 @@ class CrossrefImporter(EntityImporter):
                 ref_extra["journal-title"] = rm["journal-title"]
             if rm.get("DOI"):
                 ref_extra["doi"] = rm.get("DOI").lower()
-            author = clean(rm.get("author"))
+            author = clean_str(rm.get("author"))
             if author:
                 ref_extra["authors"] = [author]
             for k in (
@@ -347,8 +347,8 @@ class CrossrefImporter(EntityImporter):
                 "series-title",
                 "volume-title",
             ):
-                if clean(rm.get(k)):
-                    ref_extra[k] = clean(rm[k])
+                if clean_str(rm.get(k)):
+                    ref_extra[k] = clean_str(rm[k])
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     index=i,
@@ -356,9 +356,9 @@ class CrossrefImporter(EntityImporter):
                     target_release_id=None,
                     key=key,
                     year=year,
-                    container_name=clean(ref_container_name),
-                    title=clean(rm.get("article-title")),
-                    locator=clean(rm.get("first-page")),
+                    container_name=clean_str(ref_container_name),
+                    title=clean_str(rm.get("article-title")),
+                    locator=clean_str(rm.get("first-page")),
                     # TODO: just dump JSON somewhere here?
                     extra=ref_extra or None,
                 )
@@ -366,7 +366,7 @@ class CrossrefImporter(EntityImporter):
 
         # abstracts
         abstracts = []
-        abstract = clean(obj.get("abstract"))
+        abstract = clean_str(obj.get("abstract"))
         if abstract and len(abstract) > 10:
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
@@ -387,9 +387,9 @@ class CrossrefImporter(EntityImporter):
                 if type(val) == list:
                     val = val[0]
                 if type(val) == str:
-                    val = clean(val)
+                    val = clean_str(val)
                     if val:
-                        extra[key] = clean(val)
+                        extra[key] = clean_str(val)
                 else:
                     extra[key] = val
         # crossref-nested extra keys
@@ -397,14 +397,14 @@ class CrossrefImporter(EntityImporter):
             val = obj.get(key)
             if val:
                 if type(val) == str:
-                    extra_crossref[key] = clean(val)
+                    extra_crossref[key] = clean_str(val)
                 else:
                     extra_crossref[key] = val
         if license_extra:
             extra_crossref["license"] = license_extra
 
         if len(obj["title"]) > 1:
-            aliases = [clean(t) for t in obj["title"][1:]]
+            aliases = [clean_str(t) for t in obj["title"][1:]]
             aliases = [t for t in aliases if t]
             if aliases:
                 extra["aliases"] = aliases
@@ -459,11 +459,11 @@ class CrossrefImporter(EntityImporter):
         if obj.get("original-title"):
             ot = obj.get("original-title")
             if ot is not None:
-                original_title = clean(ot[0], force_xml=True)
+                original_title = clean_str(ot[0], force_xml=True)
 
         title: Optional[str] = None
         if obj.get("title"):
-            title = clean(obj["title"][0], force_xml=True)
+            title = clean_str(obj["title"][0], force_xml=True)
             if not title or len(title) <= 1:
                 # title can't be just a single character
                 self.counts["skip-blank-title"] += 1
@@ -476,7 +476,7 @@ class CrossrefImporter(EntityImporter):
 
         subtitle = None
         if obj.get("subtitle"):
-            subtitle = clean(obj["subtitle"][0], force_xml=True)
+            subtitle = clean_str(obj["subtitle"][0], force_xml=True)
             if not subtitle or len(subtitle) <= 1:
                 # subtitle can't be just a single character
                 subtitle = None
@@ -499,10 +499,10 @@ class CrossrefImporter(EntityImporter):
                 doi=doi,
                 isbn13=isbn13,
             ),
-            volume=clean(obj.get("volume")),
-            issue=clean(obj.get("issue")),
-            pages=clean(obj.get("page")),
-            language=clean(obj.get("language")),
+            volume=clean_str(obj.get("volume")),
+            issue=clean_str(obj.get("issue")),
+            pages=clean_str(obj.get("page")),
+            language=clean_str(obj.get("language")),
             license_slug=license_slug,
             extra=extra or None,
             abstracts=abstracts or None,

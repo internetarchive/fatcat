@@ -3,7 +3,9 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ContainerEntity
 
-from .common import EntityImporter, clean
+from fatcat_tools.normal import clean_str
+
+from .common import EntityImporter
 
 
 class ChoculaImporter(EntityImporter):
@@ -40,7 +42,7 @@ class ChoculaImporter(EntityImporter):
         returns a ContainerEntity (or None if invalid or couldn't parse)
         """
 
-        name = clean(row.get("name"))
+        name = clean_str(row.get("name"))
         if not name:
             # Name is required (by schema)
             return None
@@ -85,7 +87,7 @@ class ChoculaImporter(EntityImporter):
             ident=row["ident"],
             name=name,
             container_type=container_type,
-            publisher=clean(row.get("publisher")),
+            publisher=clean_str(row.get("publisher")),
             wikidata_qid=row.get("wikidata_qid"),
             extra=extra,
         )

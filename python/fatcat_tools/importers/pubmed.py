@@ -8,9 +8,16 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi, clean_issn, clean_pmcid, clean_pmid
+from fatcat_tools.normal import (
+    LANG_MAP_MARC,
+    clean_doi,
+    clean_issn,
+    clean_pmcid,
+    clean_pmid,
+    clean_str,
+)
 
-from .common import LANG_MAP_MARC, EntityImporter, clean
+from .common import EntityImporter
 
 # from: https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly
 PUBMED_RELEASE_TYPE_MAP = {
@@ -704,14 +711,14 @@ class PubmedImporter(EntityImporter):
         if extra_pubmed:
             extra["pubmed"] = extra_pubmed
 
-        title = clean(title)
+        title = clean_str(title)
         if not title:
             return None
 
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
             title=title,
-            original_title=clean(original_title),
+            original_title=clean_str(original_title),
             release_type=release_type,
             release_stage=release_stage,
             release_date=release_date,
