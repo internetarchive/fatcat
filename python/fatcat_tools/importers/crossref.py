@@ -1,5 +1,4 @@
 import datetime
-import sqlite3
 from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
@@ -128,8 +127,6 @@ class CrossrefImporter(EntityImporter):
     """
     Importer for Crossref metadata.
 
-    Can use a local sqlite3 file for faster "external identifier" lookups
-
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
 
@@ -150,49 +147,7 @@ class CrossrefImporter(EntityImporter):
         )
 
         self.create_containers: bool = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db: Optional[Any] = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri))
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map")
-
         self.read_issn_map_file(issn_map_file)
-
-    def lookup_ext_ids(self, doi: str) -> Optional[Any]:
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def map_release_type(self, crossref_type: str) -> Optional[str]:
         return CROSSREF_TYPE_MAP.get(crossref_type)
@@ -473,9 +428,6 @@ class CrossrefImporter(EntityImporter):
             # unknown
             release_stage = None
 
-        # external identifiers
-        extids: Dict[str, Any] = self.lookup_ext_ids(doi=obj["DOI"].lower()) or {}
-
         # filter out unreasonably huge releases
         if len(abstracts) > 100:
             self.counts["skip-huge-abstracts"] += 1
@@ -538,13 +490,7 @@ class CrossrefImporter(EntityImporter):
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=obj["DOI"].lower(),
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
                 isbn13=isbn13,
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
             volume=clean(obj.get("volume")),
             issue=clean(obj.get("issue")),

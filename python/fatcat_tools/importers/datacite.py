@@ -12,7 +12,6 @@ import collections
 import datetime
 import json
 import re
-import sqlite3
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
@@ -248,57 +247,12 @@ class DataciteImporter(EntityImporter):
         )
 
         self.create_containers = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri), file=sys.stderr)
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map", file=sys.stderr)
-
         self.read_issn_map_file(issn_map_file)
         self.debug = debug
         self.insert_log_file = insert_log_file
         self.this_year = datetime.datetime.now().year
 
         print("datacite with debug={}".format(self.debug), file=sys.stderr)
-
-    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
-        """
-        Return dictionary of identifiers referring to the same things as the given DOI.
-        """
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
@@ -706,8 +660,6 @@ class DataciteImporter(EntityImporter):
         if release_month:
             extra["release_month"] = release_month
 
-        extids = self.lookup_ext_ids(doi=doi)
-
         # Assemble release.
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
@@ -722,12 +674,6 @@ class DataciteImporter(EntityImporter):
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
             contribs=contribs,
             volume=volume,

@@ -1,5 +1,4 @@
 import datetime
-import sqlite3
 import sys
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -117,49 +116,7 @@ class JalcImporter(EntityImporter):
         )
 
         self.create_containers = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri))
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map")
-
         self.read_issn_map_file(issn_map_file)
-
-    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def want(self, raw_record: Any) -> bool:
         return True
@@ -330,9 +287,6 @@ class JalcImporter(EntityImporter):
         # reasonable default for this collection
         release_type = "article-journal"
 
-        # external identifiers
-        extids = self.lookup_ext_ids(doi=doi)
-
         # extra:
         #   translation_of
         #   aliases
@@ -356,12 +310,6 @@ class JalcImporter(EntityImporter):
             release_year=release_year,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
             volume=volume,
             issue=issue,

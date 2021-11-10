@@ -54,7 +54,6 @@ def run_crossref(args: argparse.Namespace) -> None:
     fci = CrossrefImporter(
         args.api,
         args.issn_map_file,
-        extid_map_file=args.extid_map_file,
         edit_batch_size=args.batch_size,
         bezerk_mode=args.bezerk_mode,
     )
@@ -72,7 +71,7 @@ def run_crossref(args: argparse.Namespace) -> None:
 
 
 def run_jalc(args: argparse.Namespace) -> None:
-    ji = JalcImporter(args.api, args.issn_map_file, extid_map_file=args.extid_map_file)
+    ji = JalcImporter(args.api, args.issn_map_file)
     Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
 
 
@@ -370,7 +369,6 @@ def run_datacite(args: argparse.Namespace) -> None:
         edit_batch_size=args.batch_size,
         bezerk_mode=args.bezerk_mode,
         debug=args.debug,
-        extid_map_file=args.extid_map_file,
         insert_log_file=args.insert_log_file,
     )
     if args.kafka_mode:
@@ -495,12 +493,6 @@ def main() -> None:
         type=argparse.FileType("r"),
     )
     sub_crossref.add_argument(
-        "--extid-map-file",
-        help="DOI-to-other-identifiers sqlite3 database",
-        default=None,
-        type=str,
-    )
-    sub_crossref.add_argument(
         "--no-lookup-refs", action="store_true", help="skip lookup of references (PMID or DOI)"
     )
     sub_crossref.add_argument(
@@ -528,12 +520,6 @@ def main() -> None:
         help="ISSN to ISSN-L mapping file",
         default=None,
         type=argparse.FileType("r"),
-    )
-    sub_jalc.add_argument(
-        "--extid-map-file",
-        help="DOI-to-other-identifiers sqlite3 database",
-        default=None,
-        type=str,
     )
 
     sub_arxiv = subparsers.add_parser("arxiv", help="import arxiv.org metadata from XML files")
@@ -962,12 +948,6 @@ def main() -> None:
         help="ISSN to ISSN-L mapping file",
         default=None,
         type=argparse.FileType("r"),
-    )
-    sub_datacite.add_argument(
-        "--extid-map-file",
-        help="DOI-to-other-identifiers sqlite3 database",
-        default=None,
-        type=str,
     )
     sub_datacite.add_argument(
         "--kafka-mode", action="store_true", help="consume from kafka topic (not stdin)"

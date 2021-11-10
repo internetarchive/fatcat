@@ -52,6 +52,7 @@ Usually tens of minutes on fast production machine.
 
 Usually 24 hours or so on fast production machine.
 
+    # NOTE: `--extid-map-file` was used during initial import, but is now deprecated
     time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
 
 ## JALC
@@ -59,6 +60,7 @@ Usually 24 hours or so on fast production machine.
 First import a random subset single threaded to create (most) containers. On a
 fast machine, this takes a couple minutes.
 
+    # NOTE: `--extid-map-file` was used during initial import, but is now deprecated
     time ./fatcat_import.py jalc /srv/fatcat/datasets/JALC-LOD-20180907.sample10k.rdf /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
 
 Then, in parallel:
@@ -116,6 +118,7 @@ Prep JSON files from sqlite (for parallel import):
 
 Run import in parallel:
 
+    # NOTE: `--extid-map-file` was used during initial import, but is now deprecated
     export FATCAT_AUTH_WORKER_CRAWL=...
     zcat /srv/fatcat/datasets/s2_doi.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id DIRECT-OA-CRAWL-2019 --no-require-grobid
 

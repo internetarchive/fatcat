@@ -30,7 +30,6 @@ def datacite_importer(api):
         yield DataciteImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=True,
         )
 
@@ -41,7 +40,6 @@ def datacite_importer_existing(api):
         yield DataciteImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=False,
         )
 
