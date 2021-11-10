@@ -27,71 +27,14 @@ from fatcat_openapi_client import (
 from fatcat_openapi_client.rest import ApiException
 from fuzzycat.matching import match_release_fuzzy
 
+from fatcat_tools.biblio_lookup_tables import DOMAIN_REL_MAP
 from fatcat_tools.normal import clean_doi
 from fatcat_tools.transforms import entity_to_dict
 
 DATE_FMT: str = "%Y-%m-%d"
 SANE_MAX_RELEASES: int = 200
 SANE_MAX_URLS: int = 100
-
-DOMAIN_REL_MAP: Dict[str, str] = {
-    "archive.org": "archive",
-    # LOCKSS, Portico, DuraSpace, etc would also be "archive"
-    "arxiv.org": "repository",
-    "babel.hathitrust.org": "repository",
-    "cds.cern.ch": "repository",
-    "deepblue.lib.umich.edu": "repository",
-    "europepmc.org": "repository",
-    "hal.inria.fr": "repository",
-    "scielo.isciii.es": "repository",
-    "www.dtic.mil": "repository",
-    "www.jstage.jst.go.jp": "repository",
-    "www.jstor.org": "repository",
-    "www.ncbi.nlm.nih.gov": "repository",
-    "ftp.ncbi.nlm.nih.gov": "repository",
-    "www.scielo.br": "repository",
-    "www.scielo.cl": "repository",
-    "www.scielo.org.mx": "repository",
-    "zenodo.org": "repository",
-    "www.biorxiv.org": "repository",
-    "www.medrxiv.org": "repository",
-    "citeseerx.ist.psu.edu": "aggregator",
-    "publisher-connector.core.ac.uk": "aggregator",
-    "core.ac.uk": "aggregator",
-    "static.aminer.org": "aggregator",
-    "aminer.org": "aggregator",
-    "pdfs.semanticscholar.org": "aggregator",
-    "semanticscholar.org": "aggregator",
-    "www.semanticscholar.org": "aggregator",
-    "academic.oup.com": "publisher",
-    "cdn.elifesciences.org": "publisher",
-    "cell.com": "publisher",
-    "dl.acm.org": "publisher",
-    "downloads.hindawi.com": "publisher",
-    "elifesciences.org": "publisher",
-    "iopscience.iop.org": "publisher",
-    "journals.plos.org": "publisher",
-    "link.springer.com": "publisher",
-    "onlinelibrary.wiley.com": "publisher",
-    "works.bepress.com": "publisher",
-    "www.biomedcentral.com": "publisher",
-    "www.cell.com": "publisher",
-    "www.nature.com": "publisher",
-    "www.pnas.org": "publisher",
-    "www.tandfonline.com": "publisher",
-    "www.frontiersin.org": "publisher",
-    "www.degruyter.com": "publisher",
-    "www.mdpi.com": "publisher",
-    "www.ahajournals.org": "publisher",
-    "ehp.niehs.nih.gov": "publisher",
-    "journals.tsu.ru": "publisher",
-    "www.cogentoa.com": "publisher",
-    "www.researchgate.net": "academicsocial",
-    "academia.edu": "academicsocial",
-    "wayback.archive-it.org": "webarchive",
-    "web.archive.org": "webarchive",
-    "archive.is": "webarchive",
-}
+MAX_ABSTRACT_LENGTH: int = 2048
 
 
 def make_rel_url(raw_url: str, default_link_rel: str = "web") -> Tuple[str, str]:

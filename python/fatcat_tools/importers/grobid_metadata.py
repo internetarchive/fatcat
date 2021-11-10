@@ -9,9 +9,7 @@ from fatcat_openapi_client import ApiClient, FileEntity, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi, clean_str
 
-from .common import EntityImporter, make_rel_url
-
-MAX_ABSTRACT_BYTES = 4096
+from .common import MAX_ABSTRACT_LENGTH, EntityImporter, make_rel_url
 
 
 class GrobidMetadataImporter(EntityImporter):
@@ -84,7 +82,7 @@ class GrobidMetadataImporter(EntityImporter):
         extra_grobid: Dict[str, Any] = dict()
 
         abstract = obj.get("abstract")
-        if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
+        if abstract and len(abstract) < MAX_ABSTRACT_LENGTH and len(abstract) > 10:
             abobj = fatcat_openapi_client.ReleaseAbstract(
                 mimetype="text/plain", content=clean_str(obj.get("abstract"))
             )

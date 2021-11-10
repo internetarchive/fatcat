@@ -12,6 +12,8 @@ import ftfy
 import langdetect
 import pycountry
 
+from .biblio_lookup_tables import LICENSE_SLUG_MAP
+
 DOI_REGEX = re.compile(r"^10.\d{3,6}/\S+$")
 
 
@@ -606,84 +608,35 @@ def test_parse_country_name() -> None:
     assert parse_country_name("Japan") == "jp"
 
 
-# These are very close, but maybe not exactly 1-to-1 with 639-2? Some mix of
-# 2/T and 2/B?
-# PubMed/MEDLINE and JSTOR use these MARC codes
-# https://www.loc.gov/marc/languages/language_name.html
-LANG_MAP_MARC = {
-    "afr": "af",
-    "alb": "sq",
-    "amh": "am",
-    "ara": "ar",
-    "arm": "hy",
-    "aze": "az",
-    "ben": "bn",
-    "bos": "bs",
-    "bul": "bg",
-    "cat": "ca",
-    "chi": "zh",
-    "cze": "cs",
-    "dan": "da",
-    "dut": "nl",
-    "eng": "en",
-    "epo": "eo",
-    "est": "et",
-    "fin": "fi",
-    "fre": "fr",
-    "geo": "ka",
-    "ger": "de",
-    "gla": "gd",
-    "gre": "el",
-    "heb": "he",
-    "hin": "hi",
-    "hrv": "hr",
-    "hun": "hu",
-    "ice": "is",
-    "ind": "id",
-    "ita": "it",
-    "jpn": "ja",
-    "kin": "rw",
-    "kor": "ko",
-    "lat": "la",
-    "lav": "lv",
-    "lit": "lt",
-    "mac": "mk",
-    "mal": "ml",
-    "mao": "mi",
-    "may": "ms",
-    "nor": "no",
-    "per": "fa",
-    "per": "fa",
-    "pol": "pl",
-    "por": "pt",
-    "pus": "ps",
-    "rum": "ro",
-    "rus": "ru",
-    "san": "sa",
-    "slo": "sk",
-    "slv": "sl",
-    "spa": "es",
-    "srp": "sr",
-    "swe": "sv",
-    "tha": "th",
-    "tur": "tr",
-    "ukr": "uk",
-    "urd": "ur",
-    "vie": "vi",
-    "wel": "cy",
-    # additions
-    "gle": "ga",  # "Irish" (Gaelic)
-    "jav": "jv",  # Javanese
-    "welsh": "cy",  # Welsh
-    "oci": "oc",  # Occitan
-    # Don't have ISO 639-1 codes
-    "grc": "el",  # Ancient Greek; map to modern greek
-    "map": None,  # Austronesian (collection)
-    "syr": None,  # Syriac, Modern
-    "gem": None,  # Old Saxon
-    "non": None,  # Old Norse
-    "emg": None,  # Eastern Meohang
-    "neg": None,  # Negidal
-    "mul": None,  # Multiple languages
-    "und": None,  # Undetermined
-}
+def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
+    if not raw:
+        return None
+    raw = raw.strip().replace("http://", "//").replace("https://", "//")
+    if "creativecommons.org" in raw.lower():
+        raw = raw.lower()
+        raw = raw.replace("/legalcode", "/").replace("/uk", "")
+        if not raw.endswith("/"):
+            raw = raw + "/"
+    return LICENSE_SLUG_MAP.get(raw)
+
+
+def test_lookup_license_slug() -> None:
+
+    assert lookup_license_slug("https://creativecommons.org/licenses/by-nc/3.0/") == "CC-BY-NC"
+    assert (
+        lookup_license_slug("http://creativecommons.org/licenses/by/2.0/uk/legalcode")
+        == "CC-BY"
+    )
+    assert (
+        lookup_license_slug("https://creativecommons.org/publicdomain/zero/1.0/legalcode")
+        == "CC-0"
+    )
+    assert lookup_license_slug("http://creativecommons.org/licenses/by/4.0") == "CC-BY"
+    assert (
+        lookup_license_slug("https://creativecommons.org/licenses/by-nc-sa/4.0/")
+        == "CC-BY-NC-SA"
+    )
+    assert lookup_license_slug("https://www.ametsoc.org/PUBSReuseLicenses") == "AMETSOC"
+    assert lookup_license_slug("https://www.amec.org/PUBSReuseLicenses") is None
+    assert lookup_license_slug("") is None
+    assert lookup_license_slug(None) is None

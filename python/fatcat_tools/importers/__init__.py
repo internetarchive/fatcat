@@ -26,9 +26,8 @@ from .common import (
     KafkaJsonPusher,
     LinePusher,
     SqlitePusher,
-    make_kafka_consumer,
 )
-from .crossref import CROSSREF_TYPE_MAP, CrossrefImporter, lookup_license_slug
+from .crossref import CrossrefImporter
 from .datacite import DataciteImporter
 from .dblp_container import DblpContainerImporter
 from .dblp_release import DblpReleaseImporter

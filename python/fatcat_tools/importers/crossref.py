@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Sequence
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi, clean_str
+from fatcat_tools.biblio_lookup_tables import CONTAINER_TYPE_MAP
+from fatcat_tools.normal import clean_doi, clean_str, lookup_license_slug
 
 from .common import EntityImporter
 
@@ -32,97 +33,6 @@ CROSSREF_TYPE_MAP: Dict[str, Optional[str]] = {
     "report": "report",
     "standard": "standard",
 }
-
-CONTAINER_TYPE_MAP: Dict[str, str] = {
-    "article-journal": "journal",
-    "paper-conference": "conference",
-    "book": "book-series",
-}
-
-# These are based, informally, on sorting the most popular licenses found in
-# Crossref metadata. There were over 500 unique strings and only a few most
-# popular are here; many were variants of the CC URLs. Would be useful to
-# normalize CC licenses better.
-# The current norm is to only add license slugs that are at least partially OA.
-LICENSE_SLUG_MAP: Dict[str, str] = {
-    "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/legalcode": "CC-0",
-    "//creativecommons.org/share-your-work/public-domain/cc0/": "CC-0",
-    "//creativecommons.org/licenses/by/2.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/3.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/": "CC-BY",
-    "//creativecommons.org/licenses/by-sa/3.0/": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/4.0/": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-nd/3.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nd/4.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nc/3.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc-sa/3.0/": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-NC-ND",
-    "//spdx.org/licenses/CC0-1.0.json": "CC-0",
-    "//spdx.org/licenses/CC-BY-1.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-4.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-NC-4.0.json": "CC-BY-NC",
-    "//spdx.org/licenses/CC-BY-SA-3.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/CC-BY-SA-4.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/MIT.json": "MIT",
-    "//spdx.org/licenses/OGL-Canada-2.0.json": "OGL-Canada",
-    "//www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
-    "//www.karger.com/Services/SiteLicenses": "KARGER",
-    "//pubs.acs.org/page/policy/authorchoice_termsofuse.html": "ACS-CHOICE",
-    "//pubs.acs.org/page/policy/authorchoice_ccby_termsofuse.html": "CC-BY",
-    "//www.biologists.com/user-licence-1-1/": "BIOLOGISTS-USER",
-    "//www.biologists.com/user-licence-1-1": "BIOLOGISTS-USER",
-    "//www.apa.org/pubs/journals/resources/open-access.aspx": "APA",
-    "//www.ametsoc.org/PUBSReuseLicenses": "AMETSOC",
-    # //onlinelibrary.wiley.com/termsAndConditions doesn't seem like a license
-    # //www.springer.com/tdm doesn't seem like a license
-    # //iopscience.iop.org/page/copyright is closed
-    # //www.acm.org/publications/policies/copyright_policy#Background is closed
-    # //rsc.li/journals-terms-of-use is closed for vor (am open)
-    # //www.ieee.org/publications_standards/publications/rights/ieeecopyrightform.pdf is 404 (!)
-    "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
-}
-
-
-def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
-    if not raw:
-        return None
-    raw = raw.strip().replace("http://", "//").replace("https://", "//")
-    if "creativecommons.org" in raw.lower():
-        raw = raw.lower()
-        raw = raw.replace("/legalcode", "/").replace("/uk", "")
-        if not raw.endswith("/"):
-            raw = raw + "/"
-    return LICENSE_SLUG_MAP.get(raw)
-
-
-def test_lookup_license_slug() -> None:
-
-    assert lookup_license_slug("https://creativecommons.org/licenses/by-nc/3.0/") == "CC-BY-NC"
-    assert (
-        lookup_license_slug("http://creativecommons.org/licenses/by/2.0/uk/legalcode")
-        == "CC-BY"
-    )
-    assert (
-        lookup_license_slug("https://creativecommons.org/publicdomain/zero/1.0/legalcode")
-        == "CC-0"
-    )
-    assert lookup_license_slug("http://creativecommons.org/licenses/by/4.0") == "CC-BY"
-    assert (
-        lookup_license_slug("https://creativecommons.org/licenses/by-nc-sa/4.0/")
-        == "CC-BY-NC-SA"
-    )
-    assert lookup_license_slug("https://www.ametsoc.org/PUBSReuseLicenses") == "AMETSOC"
-    assert lookup_license_slug("https://www.amec.org/PUBSReuseLicenses") is None
-    assert lookup_license_slug("") is None
-    assert lookup_license_slug(None) is None
 
 
 class CrossrefImporter(EntityImporter):

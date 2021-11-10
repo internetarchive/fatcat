@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Sequence
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 
-from fatcat_tools.importers.common import EntityImporter
+from fatcat_tools.importers.common import MAX_ABSTRACT_LENGTH, EntityImporter
 from fatcat_tools.normal import (
     clean_doi,
     clean_orcid,
@@ -23,9 +23,6 @@ from fatcat_tools.normal import (
     parse_lang_name,
     parse_month,
 )
-
-# Cutoff length for abstracts.
-MAX_ABSTRACT_LENGTH = 2048
 
 
 class DoajArticleImporter(EntityImporter):

@@ -8,7 +8,8 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 
-from fatcat_tools.normal import LANG_MAP_MARC, clean_doi, clean_str
+from fatcat_tools.biblio_lookup_tables import LANG_MAP_MARC
+from fatcat_tools.normal import clean_doi, clean_str
 
 from .common import EntityImporter
 from .crossref import CONTAINER_TYPE_MAP
