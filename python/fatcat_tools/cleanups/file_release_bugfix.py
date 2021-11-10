@@ -49,8 +49,14 @@ class FileReleaseBugfix(EntityImporter):
         ):
             self.counts["skip-partial"] += 1
             return False
-        if row["edit_extra"]["link_source"] not in ["unpaywall", "fatcat-changelog"]:
+        if row["edit_extra"]["link_source"] not in ["unpaywall", "doi"]:
             self.counts["skip-link-source"] += 1
+            return False
+        if row["edit_extra"].get("ingest_request_source") not in [
+            "unpaywall",
+            "fatcat-changelog",
+        ]:
+            self.counts["skip-ingest-request-source"] += 1
             return False
         if not row["edit_extra"]["link_source_id"].startswith("10."):
             self.counts["skip-source-id-not-doi"] += 1
@@ -65,7 +71,7 @@ class FileReleaseBugfix(EntityImporter):
         file_ident = uuid2fcid(row["file_ident"])
         wrong_release_ident = uuid2fcid(row["wrong_release_ident"])
         edit_extra = row["edit_extra"]
-        assert edit_extra["link_source"] in ["unpaywall", "fatcat-changelog"]
+        assert edit_extra["link_source"] in ["unpaywall", "doi"]
         file_edit_doi = clean_doi(edit_extra["link_source_id"])
 
         if not file_edit_doi:
