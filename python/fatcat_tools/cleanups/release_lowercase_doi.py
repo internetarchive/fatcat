@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from fatcat_openapi_client import ApiClient, ReleaseEntity, ReleaseExtIds
+from fatcat_openapi_client import ApiClient, ApiException, ReleaseEntity, ReleaseExtIds
 
 from fatcat_tools import authenticated_api, public_api
 from fatcat_tools.importers.common import EntityImporter, LinePusher
@@ -45,7 +45,10 @@ class ReleaseLowercaseDoiCleanup(EntityImporter):
         self.testing_mode = False
 
     def want(self, row: str) -> bool:
-        row = row.strip().split()[0]
+        row = row.strip()
+        if not row:
+            return False
+        row = row.split()[0]
         if len(row) == 26:
             return True
         else:
@@ -66,15 +69,20 @@ class ReleaseLowercaseDoiCleanup(EntityImporter):
 
     def try_update(self, re: ReleaseEntity) -> bool:
 
-        # should always be existing
-        existing = self.api.get_release(re.ident)
+        # should always be existing, but sometimes not because of prod/QA flip
+        existing = None
+        try:
+            existing = self.api.get_release(re.ident)
+        except ApiException as err:
+            if err.status != 404:
+                raise err
 
         if not existing:
             self.counts["skip-existing-not-found"] += 1
             return False
 
-        if existing.status != "active":
-            self.counts["skip-existing-entity-status"] += 1
+        if existing.state != "active":
+            self.counts["skip-existing-entity-state"] += 1
             return False
 
         if not existing.ext_ids.doi:
@@ -91,7 +99,7 @@ class ReleaseLowercaseDoiCleanup(EntityImporter):
         # these corrections (entity dump) contains no dupes
 
         if not self.testing_mode:
-            self.api.update_release(self.get_editgroup_id(), re.ident, re)
+            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
         self.counts["update"] += 1
         return False
 
