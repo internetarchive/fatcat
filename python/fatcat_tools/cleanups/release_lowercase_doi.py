@@ -1,13 +1,10 @@
 import argparse
-import copy
 import os
 import sys
-from typing import Any, Dict
 
-import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseEntity, ReleaseExtIds
 
-from fatcat_tools import authenticated_api, entity_from_dict, public_api
+from fatcat_tools import authenticated_api, public_api
 from fatcat_tools.importers.common import EntityImporter, LinePusher
 
 
@@ -74,6 +71,10 @@ class ReleaseLowercaseDoiCleanup(EntityImporter):
 
         if not existing:
             self.counts["skip-existing-not-found"] += 1
+            return False
+
+        if existing.status != "active":
+            self.counts["skip-existing-entity-status"] += 1
             return False
 
         if not existing.ext_ids.doi:
