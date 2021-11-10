@@ -13,7 +13,6 @@ To run an import you combine two classes; one each of:
 
 from .arabesque import ARABESQUE_MATCH_WHERE_CLAUSE, ArabesqueMatchImporter
 from .arxiv import ArxivRawImporter
-from .cdl_dash_dat import auto_cdl_dash_dat
 from .chocula import ChoculaImporter
 from .common import (
     LANG_MAP_MARC,
@@ -55,4 +54,3 @@ from .matched import MatchedImporter
 from .orcid import OrcidImporter
 from .pubmed import PubmedImporter
 from .shadow import ShadowLibraryImporter
-from .wayback_static import auto_wayback_static

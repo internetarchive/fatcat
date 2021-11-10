@@ -42,8 +42,6 @@ from fatcat_tools.importers import (
     SavePaperNowWebImporter,
     ShadowLibraryImporter,
     SqlitePusher,
-    auto_cdl_dash_dat,
-    auto_wayback_static,
 )
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
@@ -313,53 +311,6 @@ def run_grobid_metadata(args: argparse.Namespace) -> None:
 def run_shadow_lib(args: argparse.Namespace) -> None:
     fmi = ShadowLibraryImporter(args.api, edit_batch_size=100)
     JsonLinePusher(fmi, args.json_file).run()
-
-
-def run_wayback_static(args: argparse.Namespace) -> None:
-    api = args.api
-
-    # find the release
-    if args.release_id:
-        release_id = args.release_id
-    elif args.extid:
-        idtype = args.extid.split(":")[0]
-        extid = ":".join(args.extid.split(":")[1:])
-        if idtype == "doi":
-            release_id = api.lookup_release(doi=extid).ident
-        elif idtype == "pmid":
-            release_id = api.lookup_release(pmid=extid).ident
-        elif idtype == "wikidata":
-            release_id = api.lookup_release(wikidata_qid=extid).ident
-        else:
-            raise NotImplementedError("extid type: {}".format(idtype))
-    else:
-        raise Exception("need either release_id or extid argument")
-
-    # create it
-    (editgroup_id, wc) = auto_wayback_static(
-        api, release_id, args.wayback_url, editgroup_id=args.editgroup_id
-    )
-    if not wc:
-        return
-    print("release_id: {}".format(release_id))
-    print("editgroup_id: {}".format(editgroup_id))
-    print("webcapture id: {}".format(wc.ident))
-    print("link: https://fatcat.wiki/webcapture/{}".format(wc.ident))
-
-
-def run_cdl_dash_dat(args: argparse.Namespace) -> None:
-    api = args.api
-
-    # create it
-    (editgroup_id, release, fs) = auto_cdl_dash_dat(
-        api, args.dat_path, release_id=args.release_id, editgroup_id=args.editgroup_id
-    )
-    if not (fs and release):
-        return
-    print("release_id: {}".format(release.ident))
-    print("editgroup_id: {}".format(editgroup_id))
-    print("fileset id: {}".format(fs.ident))
-    print("link: https://fatcat.wiki/fileset/{}".format(fs.ident))
 
 
 def run_datacite(args: argparse.Namespace) -> None:
@@ -897,43 +848,6 @@ def main() -> None:
         help="JSON file to import from (or stdin)",
         default=sys.stdin,
         type=argparse.FileType("r"),
-    )
-
-    sub_wayback_static = subparsers.add_parser(
-        "wayback-static", help="crude crawl+ingest tool for single-page HTML docs from wayback"
-    )
-    sub_wayback_static.set_defaults(
-        func=run_wayback_static,
-        auth_var="FATCAT_API_AUTH_TOKEN",
-    )
-    sub_wayback_static.add_argument(
-        "wayback_url", type=str, help="URL of wayback capture to extract from"
-    )
-    sub_wayback_static.add_argument(
-        "--extid", type=str, help="external identifier for release lookup"
-    )
-    sub_wayback_static.add_argument("--release-id", type=str, help="release entity identifier")
-    sub_wayback_static.add_argument(
-        "--editgroup-id",
-        type=str,
-        help="use existing editgroup (instead of creating a new one)",
-    )
-
-    sub_cdl_dash_dat = subparsers.add_parser(
-        "cdl-dash-dat", help="crude helper to import datasets from Dat/CDL mirror pilot project"
-    )
-    sub_cdl_dash_dat.set_defaults(
-        func=run_cdl_dash_dat,
-        auth_var="FATCAT_API_AUTH_TOKEN",
-    )
-    sub_cdl_dash_dat.add_argument(
-        "dat_path", type=str, help="local path dat to import (must be the dat discovery key)"
-    )
-    sub_cdl_dash_dat.add_argument("--release-id", type=str, help="release entity identifier")
-    sub_cdl_dash_dat.add_argument(
-        "--editgroup-id",
-        type=str,
-        help="use existing editgroup (instead of creating a new one)",
     )
 
     sub_datacite = subparsers.add_parser("datacite", help="import datacite.org metadata")
