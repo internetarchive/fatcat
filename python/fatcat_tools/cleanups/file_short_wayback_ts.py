@@ -119,6 +119,10 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
             self.counts["skip-existing-not-found"] += 1
             return False
 
+        if existing.state != "active":
+            self.counts["skip-existing-entity-state"] += 1
+            return False
+
         if existing.sha1 != fe.sha1:
             self.counts["skip-existing-mismatch"] += 1
             return False

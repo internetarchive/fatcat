@@ -131,6 +131,10 @@ class FileReleaseBugfix(EntityImporter):
             self.counts["skip-existing-not-found"] += 1
             return False
 
+        if existing.state != "active":
+            self.counts["skip-existing-entity-state"] += 1
+            return False
+
         if wrong_release_ident not in existing.release_ids:
             self.counts["skip-existing-fixed"] += 1
             return False
