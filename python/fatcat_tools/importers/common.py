@@ -436,6 +436,15 @@ class EntityImporter:
             if u.rel == "social":
                 u.rel = "academicsocial"
 
+        # remove exact URL duplicates, while preserving order, and removing
+        # "later" copies, not "first" copies
+        # this is sensitive to both url.url and url.rel combined!
+        dedupe_urls = []
+        for url_pair in existing.urls:
+            if url_pair not in dedupe_urls:
+                dedupe_urls.append(url_pair)
+        existing.urls = dedupe_urls
+
         # remove URLs which are near-duplicates
         redundant_urls = []
         all_urls = [u.url for u in existing.urls]
