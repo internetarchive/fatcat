@@ -1,11 +1,13 @@
 import datetime
-import sqlite3
 from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from .common import EntityImporter, clean
+from fatcat_tools.biblio_lookup_tables import CONTAINER_TYPE_MAP
+from fatcat_tools.normal import clean_doi, clean_str, lookup_license_slug
+
+from .common import EntityImporter
 
 # The docs/guide should be the canonical home for these mappings; update there
 # first
@@ -32,103 +34,10 @@ CROSSREF_TYPE_MAP: Dict[str, Optional[str]] = {
     "standard": "standard",
 }
 
-CONTAINER_TYPE_MAP: Dict[str, str] = {
-    "article-journal": "journal",
-    "paper-conference": "conference",
-    "book": "book-series",
-}
-
-# These are based, informally, on sorting the most popular licenses found in
-# Crossref metadata. There were over 500 unique strings and only a few most
-# popular are here; many were variants of the CC URLs. Would be useful to
-# normalize CC licenses better.
-# The current norm is to only add license slugs that are at least partially OA.
-LICENSE_SLUG_MAP: Dict[str, str] = {
-    "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/legalcode": "CC-0",
-    "//creativecommons.org/share-your-work/public-domain/cc0/": "CC-0",
-    "//creativecommons.org/licenses/by/2.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/3.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/": "CC-BY",
-    "//creativecommons.org/licenses/by-sa/3.0/": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/4.0/": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-nd/3.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nd/4.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nc/3.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc-sa/3.0/": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-NC-ND",
-    "//spdx.org/licenses/CC0-1.0.json": "CC-0",
-    "//spdx.org/licenses/CC-BY-1.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-4.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-NC-4.0.json": "CC-BY-NC",
-    "//spdx.org/licenses/CC-BY-SA-3.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/CC-BY-SA-4.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/MIT.json": "MIT",
-    "//spdx.org/licenses/OGL-Canada-2.0.json": "OGL-Canada",
-    "//www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
-    "//www.karger.com/Services/SiteLicenses": "KARGER",
-    "//pubs.acs.org/page/policy/authorchoice_termsofuse.html": "ACS-CHOICE",
-    "//pubs.acs.org/page/policy/authorchoice_ccby_termsofuse.html": "CC-BY",
-    "//www.biologists.com/user-licence-1-1/": "BIOLOGISTS-USER",
-    "//www.biologists.com/user-licence-1-1": "BIOLOGISTS-USER",
-    "//www.apa.org/pubs/journals/resources/open-access.aspx": "APA",
-    "//www.ametsoc.org/PUBSReuseLicenses": "AMETSOC",
-    # //onlinelibrary.wiley.com/termsAndConditions doesn't seem like a license
-    # //www.springer.com/tdm doesn't seem like a license
-    # //iopscience.iop.org/page/copyright is closed
-    # //www.acm.org/publications/policies/copyright_policy#Background is closed
-    # //rsc.li/journals-terms-of-use is closed for vor (am open)
-    # //www.ieee.org/publications_standards/publications/rights/ieeecopyrightform.pdf is 404 (!)
-    "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
-}
-
-
-def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
-    if not raw:
-        return None
-    raw = raw.strip().replace("http://", "//").replace("https://", "//")
-    if "creativecommons.org" in raw.lower():
-        raw = raw.lower()
-        raw = raw.replace("/legalcode", "/").replace("/uk", "")
-        if not raw.endswith("/"):
-            raw = raw + "/"
-    return LICENSE_SLUG_MAP.get(raw)
-
-
-def test_lookup_license_slug() -> None:
-
-    assert lookup_license_slug("https://creativecommons.org/licenses/by-nc/3.0/") == "CC-BY-NC"
-    assert (
-        lookup_license_slug("http://creativecommons.org/licenses/by/2.0/uk/legalcode")
-        == "CC-BY"
-    )
-    assert (
-        lookup_license_slug("https://creativecommons.org/publicdomain/zero/1.0/legalcode")
-        == "CC-0"
-    )
-    assert lookup_license_slug("http://creativecommons.org/licenses/by/4.0") == "CC-BY"
-    assert (
-        lookup_license_slug("https://creativecommons.org/licenses/by-nc-sa/4.0/")
-        == "CC-BY-NC-SA"
-    )
-    assert lookup_license_slug("https://www.ametsoc.org/PUBSReuseLicenses") == "AMETSOC"
-    assert lookup_license_slug("https://www.amec.org/PUBSReuseLicenses") is None
-    assert lookup_license_slug("") is None
-    assert lookup_license_slug(None) is None
-
 
 class CrossrefImporter(EntityImporter):
     """
     Importer for Crossref metadata.
-
-    Can use a local sqlite3 file for faster "external identifier" lookups
 
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
@@ -150,49 +59,7 @@ class CrossrefImporter(EntityImporter):
         )
 
         self.create_containers: bool = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db: Optional[Any] = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri))
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map")
-
         self.read_issn_map_file(issn_map_file)
-
-    def lookup_ext_ids(self, doi: str) -> Optional[Any]:
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def map_release_type(self, crossref_type: str) -> Optional[str]:
         return CROSSREF_TYPE_MAP.get(crossref_type)
@@ -275,21 +142,21 @@ class CrossrefImporter(EntityImporter):
                     if len(affiliation_list) > 1:
                         # note: affiliation => more_affiliations
                         extra["more_affiliations"] = [
-                            clean(a["name"]) for a in affiliation_list[1:]
+                            clean_str(a["name"]) for a in affiliation_list[1:]
                         ]
                 if am.get("sequence") and am.get("sequence") != "additional":
-                    extra["seq"] = clean(am.get("sequence"))
+                    extra["seq"] = clean_str(am.get("sequence"))
                 assert ctype in ("author", "editor", "translator")
-                raw_name = clean(raw_name)
+                raw_name = clean_str(raw_name)
                 # TODO: what if 'raw_name' is None?
                 contribs.append(
                     ReleaseContrib(
                         creator_id=creator_id,
                         index=index,
                         raw_name=raw_name,
-                        given_name=clean(am.get("given")),
-                        surname=clean(am.get("family")),
-                        raw_affiliation=clean(raw_affiliation),
+                        given_name=clean_str(am.get("given")),
+                        surname=clean_str(am.get("family")),
+                        raw_affiliation=clean_str(raw_affiliation),
                         role=ctype,
                         extra=extra or None,
                     )
@@ -306,11 +173,11 @@ class CrossrefImporter(EntityImporter):
         container_id = None
         if issnl:
             container_id = self.lookup_issnl(issnl)
-        publisher = clean(obj.get("publisher"))
+        publisher = clean_str(obj.get("publisher"))
 
         container_name = obj.get("container-title")
         if container_name:
-            container_name = clean(container_name[0], force_xml=True)
+            container_name = clean_str(container_name[0], force_xml=True)
         if not container_name:
             container_name = None
         if (
@@ -366,7 +233,7 @@ class CrossrefImporter(EntityImporter):
                 ref_extra["journal-title"] = rm["journal-title"]
             if rm.get("DOI"):
                 ref_extra["doi"] = rm.get("DOI").lower()
-            author = clean(rm.get("author"))
+            author = clean_str(rm.get("author"))
             if author:
                 ref_extra["authors"] = [author]
             for k in (
@@ -390,8 +257,8 @@ class CrossrefImporter(EntityImporter):
                 "series-title",
                 "volume-title",
             ):
-                if clean(rm.get(k)):
-                    ref_extra[k] = clean(rm[k])
+                if clean_str(rm.get(k)):
+                    ref_extra[k] = clean_str(rm[k])
             refs.append(
                 fatcat_openapi_client.ReleaseRef(
                     index=i,
@@ -399,9 +266,9 @@ class CrossrefImporter(EntityImporter):
                     target_release_id=None,
                     key=key,
                     year=year,
-                    container_name=clean(ref_container_name),
-                    title=clean(rm.get("article-title")),
-                    locator=clean(rm.get("first-page")),
+                    container_name=clean_str(ref_container_name),
+                    title=clean_str(rm.get("article-title")),
+                    locator=clean_str(rm.get("first-page")),
                     # TODO: just dump JSON somewhere here?
                     extra=ref_extra or None,
                 )
@@ -409,7 +276,7 @@ class CrossrefImporter(EntityImporter):
 
         # abstracts
         abstracts = []
-        abstract = clean(obj.get("abstract"))
+        abstract = clean_str(obj.get("abstract"))
         if abstract and len(abstract) > 10:
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
@@ -430,9 +297,9 @@ class CrossrefImporter(EntityImporter):
                 if type(val) == list:
                     val = val[0]
                 if type(val) == str:
-                    val = clean(val)
+                    val = clean_str(val)
                     if val:
-                        extra[key] = clean(val)
+                        extra[key] = clean_str(val)
                 else:
                     extra[key] = val
         # crossref-nested extra keys
@@ -440,14 +307,14 @@ class CrossrefImporter(EntityImporter):
             val = obj.get(key)
             if val:
                 if type(val) == str:
-                    extra_crossref[key] = clean(val)
+                    extra_crossref[key] = clean_str(val)
                 else:
                     extra_crossref[key] = val
         if license_extra:
             extra_crossref["license"] = license_extra
 
         if len(obj["title"]) > 1:
-            aliases = [clean(t) for t in obj["title"][1:]]
+            aliases = [clean_str(t) for t in obj["title"][1:]]
             aliases = [t for t in aliases if t]
             if aliases:
                 extra["aliases"] = aliases
@@ -472,9 +339,6 @@ class CrossrefImporter(EntityImporter):
         else:
             # unknown
             release_stage = None
-
-        # external identifiers
-        extids: Dict[str, Any] = self.lookup_ext_ids(doi=obj["DOI"].lower()) or {}
 
         # filter out unreasonably huge releases
         if len(abstracts) > 100:
@@ -505,19 +369,24 @@ class CrossrefImporter(EntityImporter):
         if obj.get("original-title"):
             ot = obj.get("original-title")
             if ot is not None:
-                original_title = clean(ot[0], force_xml=True)
+                original_title = clean_str(ot[0], force_xml=True)
 
         title: Optional[str] = None
         if obj.get("title"):
-            title = clean(obj["title"][0], force_xml=True)
+            title = clean_str(obj["title"][0], force_xml=True)
             if not title or len(title) <= 1:
                 # title can't be just a single character
                 self.counts["skip-blank-title"] += 1
                 return None
 
+        doi = clean_doi(obj["DOI"].lower())
+        if not doi:
+            self.counts["skip-bad-doi"] += 1
+            return None
+
         subtitle = None
         if obj.get("subtitle"):
-            subtitle = clean(obj["subtitle"][0], force_xml=True)
+            subtitle = clean_str(obj["subtitle"][0], force_xml=True)
             if not subtitle or len(subtitle) <= 1:
                 # subtitle can't be just a single character
                 subtitle = None
@@ -537,19 +406,13 @@ class CrossrefImporter(EntityImporter):
             release_year=release_year,
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
-                doi=obj["DOI"].lower(),
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
+                doi=doi,
                 isbn13=isbn13,
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
-            volume=clean(obj.get("volume")),
-            issue=clean(obj.get("issue")),
-            pages=clean(obj.get("page")),
-            language=clean(obj.get("language")),
+            volume=clean_str(obj.get("volume")),
+            issue=clean_str(obj.get("issue")),
+            pages=clean_str(obj.get("page")),
+            language=clean_str(obj.get("language")),
             license_slug=license_slug,
             extra=extra or None,
             abstracts=abstracts or None,

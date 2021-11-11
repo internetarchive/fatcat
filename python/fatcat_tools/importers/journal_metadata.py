@@ -3,7 +3,9 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, ContainerEntity
 
-from .common import EntityImporter, clean
+from fatcat_tools.normal import clean_str
+
+from .common import EntityImporter
 
 
 def or_none(s: Optional[str]) -> Optional[str]:
@@ -105,7 +107,7 @@ class JournalMetadataImporter(EntityImporter):
         if extra_ia:
             extra["ia"] = extra_ia
 
-        name = clean(row.get("name"))
+        name = clean_str(row.get("name"))
         if not name:
             return None
 
@@ -115,7 +117,7 @@ class JournalMetadataImporter(EntityImporter):
             issnp=row.get("issnp"),
             container_type=None,  # TODO
             name=name,
-            publisher=clean(row.get("publisher")),
+            publisher=clean_str(row.get("publisher")),
             wikidata_qid=None,  # TODO
             extra=extra,
         )

@@ -4,7 +4,9 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, CreatorEntity
 
-from .common import EntityImporter, clean
+from fatcat_tools.normal import clean_str
+
+from .common import EntityImporter
 
 
 def value_or_none(e: Any) -> Any:
@@ -65,14 +67,14 @@ class OrcidImporter(EntityImporter):
         if not self.is_orcid(orcid):
             sys.stderr.write("Bad ORCID: {}\n".format(orcid))
             return None
-        display = clean(display)
+        display = clean_str(display)
         if not display:
             # must have *some* name
             return None
         ce = CreatorEntity(
             orcid=orcid,
-            given_name=clean(given),
-            surname=clean(sur),
+            given_name=clean_str(given),
+            surname=clean_str(sur),
             display_name=display,
             extra=extra,
         )

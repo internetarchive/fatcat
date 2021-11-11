@@ -12,6 +12,8 @@ import ftfy
 import langdetect
 import pycountry
 
+from .biblio_lookup_tables import LICENSE_SLUG_MAP
+
 DOI_REGEX = re.compile(r"^10.\d{3,6}/\S+$")
 
 
@@ -47,7 +49,7 @@ def clean_doi(raw: Optional[str]) -> Optional[str]:
         raw = raw[8:]
     if raw.startswith("dx.doi.org/"):
         raw = raw[11:]
-    if raw[7:9] == "//":
+    if raw[7:9] == "//" and "10.1037//" in raw:
         raw = raw[:8] + raw[9:]
 
     # fatcatd uses same REGEX, but Rust regex rejects these characters, while
@@ -74,6 +76,7 @@ def test_clean_doi() -> None:
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
+    assert clean_doi("10.1026//1616-1041.3.2.86") == "10.1026//1616-1041.3.2.86"
     assert clean_doi("10.23750/abm.v88i2 -s.6506") is None
     assert clean_doi("10.17167/mksz.2017.2.129–155") is None
     assert clean_doi("http://doi.org/10.1234/asdf ") == "10.1234/asdf"
@@ -605,84 +608,38 @@ def test_parse_country_name() -> None:
     assert parse_country_name("Japan") == "jp"
 
 
-# These are very close, but maybe not exactly 1-to-1 with 639-2? Some mix of
-# 2/T and 2/B?
-# PubMed/MEDLINE and JSTOR use these MARC codes
-# https://www.loc.gov/marc/languages/language_name.html
-LANG_MAP_MARC = {
-    "afr": "af",
-    "alb": "sq",
-    "amh": "am",
-    "ara": "ar",
-    "arm": "hy",
-    "aze": "az",
-    "ben": "bn",
-    "bos": "bs",
-    "bul": "bg",
-    "cat": "ca",
-    "chi": "zh",
-    "cze": "cs",
-    "dan": "da",
-    "dut": "nl",
-    "eng": "en",
-    "epo": "eo",
-    "est": "et",
-    "fin": "fi",
-    "fre": "fr",
-    "geo": "ka",
-    "ger": "de",
-    "gla": "gd",
-    "gre": "el",
-    "heb": "he",
-    "hin": "hi",
-    "hrv": "hr",
-    "hun": "hu",
-    "ice": "is",
-    "ind": "id",
-    "ita": "it",
-    "jpn": "ja",
-    "kin": "rw",
-    "kor": "ko",
-    "lat": "la",
-    "lav": "lv",
-    "lit": "lt",
-    "mac": "mk",
-    "mal": "ml",
-    "mao": "mi",
-    "may": "ms",
-    "nor": "no",
-    "per": "fa",
-    "per": "fa",
-    "pol": "pl",
-    "por": "pt",
-    "pus": "ps",
-    "rum": "ro",
-    "rus": "ru",
-    "san": "sa",
-    "slo": "sk",
-    "slv": "sl",
-    "spa": "es",
-    "srp": "sr",
-    "swe": "sv",
-    "tha": "th",
-    "tur": "tr",
-    "ukr": "uk",
-    "urd": "ur",
-    "vie": "vi",
-    "wel": "cy",
-    # additions
-    "gle": "ga",  # "Irish" (Gaelic)
-    "jav": "jv",  # Javanese
-    "welsh": "cy",  # Welsh
-    "oci": "oc",  # Occitan
-    # Don't have ISO 639-1 codes
-    "grc": "el",  # Ancient Greek; map to modern greek
-    "map": None,  # Austronesian (collection)
-    "syr": None,  # Syriac, Modern
-    "gem": None,  # Old Saxon
-    "non": None,  # Old Norse
-    "emg": None,  # Eastern Meohang
-    "neg": None,  # Negidal
-    "mul": None,  # Multiple languages
-    "und": None,  # Undetermined
-}
+def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
+    if not raw:
+        return None
+    # normalize to lower-case and not ending with a slash
+    raw = raw.strip().lower()
+    if raw.endswith("/"):
+        raw = raw[:-1]
+    # remove http/https prefix
+    raw = raw.replace("http://", "//").replace("https://", "//")
+    # special-case normalization of CC licenses
+    if "creativecommons.org" in raw:
+        raw = raw.replace("/legalcode", "").replace("/uk", "")
+    return LICENSE_SLUG_MAP.get(raw)
+
+
+def test_lookup_license_slug() -> None:
+
+    assert lookup_license_slug("https://creativecommons.org/licenses/by-nc/3.0/") == "CC-BY-NC"
+    assert (
+        lookup_license_slug("http://creativecommons.org/licenses/by/2.0/uk/legalcode")
+        == "CC-BY"
+    )
+    assert (
+        lookup_license_slug("https://creativecommons.org/publicdomain/zero/1.0/legalcode")
+        == "CC-0"
+    )
+    assert lookup_license_slug("http://creativecommons.org/licenses/by/4.0") == "CC-BY"
+    assert (
+        lookup_license_slug("https://creativecommons.org/licenses/by-nc-sa/4.0/")
+        == "CC-BY-NC-SA"
+    )
+    assert lookup_license_slug("https://www.ametsoc.org/PUBSReuseLicenses") == "AMETSOC"
+    assert lookup_license_slug("https://www.amec.org/PUBSReuseLicenses") is None
+    assert lookup_license_slug("") is None
+    assert lookup_license_slug(None) is None

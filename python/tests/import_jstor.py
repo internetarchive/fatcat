@@ -8,17 +8,13 @@ from fatcat_tools.importers import Bs4XmlFilePusher, JstorImporter
 @pytest.fixture(scope="function")
 def jstor_importer(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield JstorImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=True
-        )
+        yield JstorImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def jstor_importer_existing(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield JstorImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=False
-        )
+        yield JstorImporter(api, issn_file, bezerk_mode=False)
 
 
 def test_jstor_importer(jstor_importer):

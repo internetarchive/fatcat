@@ -10,17 +10,13 @@ from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
 @pytest.fixture(scope="function")
 def crossref_importer(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield CrossrefImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=True
-        )
+        yield CrossrefImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def crossref_importer_existing(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield CrossrefImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=False
-        )
+        yield CrossrefImporter(api, issn_file, bezerk_mode=False)
 
 
 @pytest.mark.skip(

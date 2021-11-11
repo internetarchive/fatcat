@@ -1,5 +1,4 @@
 import datetime
-import sqlite3
 import sys
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -7,9 +6,9 @@ import fatcat_openapi_client
 from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_str, is_cjk
 
-from .common import DATE_FMT, EntityImporter, clean, is_cjk
+from .common import DATE_FMT, EntityImporter
 
 
 # TODO: should be List[Tag] not List[Any] for full type annotations
@@ -37,13 +36,13 @@ def parse_jalc_persons(raw_persons: List[Any]) -> List[ReleaseContrib]:
     for raw in raw_persons:
         name = raw.find("name") or None
         if name:
-            name = clean(name.get_text().replace("\n", " "))
+            name = clean_str(name.get_text().replace("\n", " "))
         surname = raw.find("familyName") or None
         if surname:
-            surname = clean(surname.get_text().replace("\n", " "))
+            surname = clean_str(surname.get_text().replace("\n", " "))
         given_name = raw.find("givenName") or None
         if given_name:
-            given_name = clean(given_name.get_text().replace("\n", " "))
+            given_name = clean_str(given_name.get_text().replace("\n", " "))
         lang = "en"
         if is_cjk(name):
             lang = "ja"
@@ -117,49 +116,7 @@ class JalcImporter(EntityImporter):
         )
 
         self.create_containers = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri))
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map")
-
         self.read_issn_map_file(issn_map_file)
-
-    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def want(self, raw_record: Any) -> bool:
         return True
@@ -273,16 +230,16 @@ class JalcImporter(EntityImporter):
                 for p in record.find_all("publicationName")
                 if p.get_text()
             ]
-            pubs = [clean(p) for p in pubs if p]
+            pubs = [clean_str(p) for p in pubs if p]
             assert pubs
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
             if len(pubs) > 1 and is_cjk(pubs[0]):
                 # eng/jpn ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
-            container_name = clean(pubs[0])
+            container_name = clean_str(pubs[0])
             if len(pubs) > 1:
-                container_extra["original_name"] = clean(pubs[1])
+                container_extra["original_name"] = clean_str(pubs[1])
 
         if record.publisher:
             pubs = [
@@ -297,7 +254,7 @@ class JalcImporter(EntityImporter):
                 # ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
             if pubs:
-                publisher = clean(pubs[0])
+                publisher = clean_str(pubs[0])
                 if len(pubs) > 1:
                     container_extra["publisher_aliases"] = pubs[1:]
 
@@ -330,9 +287,6 @@ class JalcImporter(EntityImporter):
         # reasonable default for this collection
         release_type = "article-journal"
 
-        # external identifiers
-        extids = self.lookup_ext_ids(doi=doi)
-
         # extra:
         #   translation_of
         #   aliases
@@ -342,26 +296,20 @@ class JalcImporter(EntityImporter):
         # (informally)
         extra["jalc"] = extra_jalc
 
-        title = clean(title)
+        title = clean_str(title)
         if not title:
             return None
 
         re = ReleaseEntity(
             work_id=None,
             title=title,
-            original_title=clean(original_title),
+            original_title=clean_str(original_title),
             release_type=release_type,
             release_stage="published",
             release_date=release_date,
             release_year=release_year,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
             volume=volume,
             issue=issue,

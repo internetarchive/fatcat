@@ -11,7 +11,6 @@ def pubmed_importer(api):
         yield PubmedImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=True,
             lookup_refs=True,
         )
@@ -23,7 +22,6 @@ def pubmed_importer_existing(api):
         yield PubmedImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=False,
             lookup_refs=True,
         )

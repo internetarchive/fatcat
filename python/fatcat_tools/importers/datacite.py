@@ -12,7 +12,6 @@ import collections
 import datetime
 import json
 import re
-import sqlite3
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
@@ -22,111 +21,17 @@ import langdetect
 import pycountry
 from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
 
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.biblio_lookup_tables import DATACITE_TYPE_MAP
+from fatcat_tools.normal import clean_doi, clean_str, lookup_license_slug
 from fatcat_tools.transforms import entity_to_dict
 
-from .common import EntityImporter, clean
-
-# Cutoff length for abstracts.
-MAX_ABSTRACT_LENGTH = 2048
+from .common import MAX_ABSTRACT_LENGTH, EntityImporter
 
 # https://guide.fatcat.wiki/entity_container.html#container_type-vocabulary
-CONTAINER_TYPE_MAP: Dict[str, str] = {
+DATACITE_CONTAINER_TYPE_MAP: Dict[str, str] = {
     "Journal": "journal",
     "Series": "journal",
     "Book Series": "book-series",
-}
-
-# The docs/guide should be the canonical home for these mappings; update there
-# first.  Map various datacite type types to CSL-ish types. None means TODO or
-# remove.
-DATACITE_TYPE_MAP: Dict[str, Dict[str, Optional[str]]] = {
-    "ris": {
-        "THES": "thesis",
-        "SOUND": "song",  # 99.9% maps to citeproc song, so use that (exception: report)
-        "CHAP": "chapter",
-        "FIGURE": "figure",
-        "RPRT": "report",
-        "JOUR": "article-journal",
-        "MPCT": "motion_picture",
-        "GEN": "article-journal",  # GEN consist of 99% article and report, post-weblog, misc - and one dataset
-        "BOOK": "book",
-        "DATA": "dataset",
-        "COMP": "software",
-    },
-    "schemaOrg": {
-        "Dataset": "dataset",
-        "Book": "book",
-        "ScholarlyArticle": "article-journal",
-        "ImageObject": "graphic",
-        "Collection": None,
-        "MediaObject": None,
-        "Event": None,
-        "SoftwareSourceCode": "software",
-        "Chapter": "chapter",
-        "CreativeWork": None,  # Seems to be a catch-all resourceType, from PGRFA Material, Pamphlet, to music score.
-        "PublicationIssue": "article",
-        "AudioObject": None,
-        "Thesis": "thesis",
-    },
-    "citeproc": {
-        "article": "article",
-        "article-journal": "article-journal",
-        "article-magazine": "article-magazine",
-        "article-newspaper": "article-newspaper",
-        "bill": "bill",
-        "book": "book",
-        "broadcast": "broadcast",
-        "chapter": "chapter",
-        "dataset": "dataset",
-        "entry-dictionary": "entry-dictionary",
-        "entry-encyclopedia": "entry-encyclopedia",
-        "entry": "entry",
-        "figure": "figure",
-        "graphic": "graphic",
-        "interview": "interview",
-        "legal_case": "legal_case",
-        "legislation": "legislation",
-        "manuscript": "manuscript",
-        "map": "map",
-        "motion_picture": "motion_picture",
-        "musical_score": "musical_score",
-        "pamphlet": "pamphlet",
-        "paper-conference": "paper-conference",
-        "patent": "patent",
-        "personal_communication": "personal_communication",
-        "post": "post",
-        "post-weblog": "post-weblog",
-        "report": "report",
-        "review-book": "review-book",
-        "review": "review",
-        "song": "song",
-        "speech": "speech",
-        "thesis": "thesis",
-        "treaty": "treaty",
-        "webpage": "webpage",
-    },  # https://docs.citationstyles.org/en/master/specification.html#appendix-iii-types
-    "bibtex": {
-        "phdthesis": "thesis",
-        "inbook": "chapter",
-        "misc": None,
-        "article": "article-journal",
-        "book": "book",
-    },
-    "resourceTypeGeneral": {
-        "Image": "graphic",
-        "Dataset": "dataset",
-        "PhysicalObject": None,
-        "Collection": None,
-        "Text": None,  # "Greyliterature, labnotes, accompanyingmaterials"
-        "Sound": None,
-        "InteractiveResource": None,
-        "Event": None,
-        "Software": "software",
-        "Other": None,
-        "Workflow": None,
-        "Audiovisual": None,
-    },  # https://schema.datacite.org/meta/kernel-4.0/doc/DataCite-MetadataKernel_v4.0.pdf#page=32
 }
 
 # DATACITE_UNKNOWN_MARKERS via https://support.datacite.org/docs/schema-values-unknown-information-v43.
@@ -181,43 +86,6 @@ DATACITE_TITLE_SPAM_WORDGROUPS: List[Dict[str, Any]] = [
     }
 ]
 
-# TODO(martin): merge this with other maps and lookup functions, eventually.
-LICENSE_SLUG_MAP: Dict[str, str] = {
-    "//archaeologydataservice.ac.uk/advice/termsofuseandaccess.xhtml/": "ADS-UK",
-    "//archaeologydataservice.ac.uk/advice/termsofuseandaccess/": "ADS-UK",
-    "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
-    "//doi.wiley.com/10.1002/tdm_license_1.1/": "WILEY-TDM-1.1",
-    "//homepage.data-planet.com/terms-use/": "SAGE-DATA-PLANET",
-    "//onlinelibrary.wiley.com/termsandconditions/": "WILEY",
-    "//publikationen.bibliothek.kit.edu/kitopen-lizenz/": "KIT-OPEN",
-    "//pubs.acs.org/page/policy/authorchoice_ccby_termsofuse.html/": "CC-BY",
-    "//pubs.acs.org/page/policy/authorchoice_termsofuse.html/": "ACS-CHOICE",
-    "//www.ametsoc.org/PUBSReuseLicenses/": "AMETSOC",
-    "//www.apa.org/pubs/journals/resources/open-access.aspx/": "APA",
-    "//www.biologists.com/user-licence-1-1/": "BIOLOGISTS-USER",
-    "//www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
-    "//www.elsevier.com/tdm/userlicense/1.0/": "ELSEVIER-USER-1.0",
-    "//www.gnu.org/licenses/gpl-3.0.en.html/": "GPLv3",
-    "//www.gnu.org/licenses/old-licenses/gpl-2.0.en.html/": "GPLv2",
-    "//www.karger.com/Services/SiteLicenses/": "KARGER",
-    "//www.springer.com/tdm/": "SPRINGER-TDM",
-    "//journals.sagepub.com/page/policies/text-and-data-mining-license/": "SAGE-TDM",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
-    "//creativecommons.org/share-your-work/public-domain/cc0/": "CC-0",
-    "//spdx.org/licenses/CC0-1.0.json": "CC-0",
-    "//spdx.org/licenses/CC-BY-1.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-4.0.json": "CC-BY",
-    "//spdx.org/licenses/CC-BY-NC-4.0.json": "CC-BY-NC",
-    "//spdx.org/licenses/CC-BY-SA-3.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/CC-BY-SA-4.0.json": "CC-BY-SA",
-    "//spdx.org/licenses/MIT.json": "MIT",
-    "//spdx.org/licenses/OGL-Canada-2.0.json": "OGL-Canada",
-}
-
 
 class DataciteImporter(EntityImporter):
     """
@@ -248,57 +116,12 @@ class DataciteImporter(EntityImporter):
         )
 
         self.create_containers = kwargs.get("create_containers", True)
-        extid_map_file = kwargs.get("extid_map_file")
-        self.extid_map_db = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri), file=sys.stderr)
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map", file=sys.stderr)
-
         self.read_issn_map_file(issn_map_file)
         self.debug = debug
         self.insert_log_file = insert_log_file
         self.this_year = datetime.datetime.now().year
 
         print("datacite with debug={}".format(self.debug), file=sys.stderr)
-
-    def lookup_ext_ids(self, doi: str) -> Dict[str, Any]:
-        """
-        Return dictionary of identifiers referring to the same things as the given DOI.
-        """
-        if self.extid_map_db is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = self.extid_map_db.execute(
-            "SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1", [doi.lower()]
-        ).fetchone()
-        if row is None:
-            return dict(
-                core_id=None,
-                pmid=None,
-                pmcid=None,
-                wikidata_qid=None,
-                arxiv_id=None,
-                jstor_id=None,
-            )
-        row = [str(cell or "") or None for cell in row]
-        return dict(
-            core_id=row[0],
-            pmid=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
@@ -368,7 +191,7 @@ class DataciteImporter(EntityImporter):
             print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
 
-        title = clean(title)
+        title = clean_str(title)
         if not title:
             print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
             return False
@@ -387,7 +210,7 @@ class DataciteImporter(EntityImporter):
         if not subtitle:
             subtitle = None
         else:
-            subtitle = clean(subtitle)
+            subtitle = clean_str(subtitle)
 
         # Dates. A few internal dates (registered, created, updated) and
         # published (0..2554). We try to work with typed date list, in
@@ -445,15 +268,15 @@ class DataciteImporter(EntityImporter):
             publisher = None
 
         if publisher:
-            publisher = clean(publisher)
+            publisher = clean_str(publisher)
 
         # Container. For the moment, only ISSN as container.
         container_id = None
         container_name = None
 
         container = attributes.get("container", {}) or {}
-        if container.get("type") in CONTAINER_TYPE_MAP.keys():
-            container_type = CONTAINER_TYPE_MAP.get(container["type"])
+        if container.get("type") in DATACITE_CONTAINER_TYPE_MAP.keys():
+            container_type = DATACITE_CONTAINER_TYPE_MAP.get(container["type"])
             if container.get("identifier") and container.get("identifierType") == "ISSN":
                 issn = container.get("identifier")
                 if issn and len(issn) == 8:
@@ -506,10 +329,10 @@ class DataciteImporter(EntityImporter):
         issue = container.get("issue")
 
         if volume:
-            volume = clean(volume)
+            volume = clean_str(volume)
 
         if issue:
-            issue = clean(issue)
+            issue = clean_str(issue)
 
         # Pages.
         pages = None
@@ -534,7 +357,7 @@ class DataciteImporter(EntityImporter):
         license_extra = []
 
         for lic in attributes.get("rightsList", []):
-            slug = lookup_license_slug(lic.get("rightsUri"))
+            slug = datacite_lookup_license_slug(lic.get("rightsUri"))
             if slug:
                 license_slug = slug
             license_extra.append(lic)
@@ -594,7 +417,7 @@ class DataciteImporter(EntityImporter):
                     "[{}] language detection failed with {} on {}".format(doi, err, text),
                     file=sys.stderr,
                 )
-            abstract_text = clean(text)
+            abstract_text = clean_str(text)
             if not abstract_text:
                 continue
             abstracts.append(
@@ -643,7 +466,13 @@ class DataciteImporter(EntityImporter):
         if license_extra:
             extra_datacite["license"] = license_extra
         if attributes.get("subjects"):
-            extra_datacite["subjects"] = attributes["subjects"]
+            # these subjects with schemeUri are too much metadata, which
+            # doesn't compress. filter them out.
+            extra_subjects = [
+                subj for subj in attributes["subjects"] if not subj.get("schemeUri")
+            ]
+            if extra_subjects:
+                extra_datacite["subjects"] = extra_subjects
 
         # Include version information.
         metadata_version = attributes.get("metadataVersion") or ""
@@ -706,8 +535,6 @@ class DataciteImporter(EntityImporter):
         if release_month:
             extra["release_month"] = release_month
 
-        extids = self.lookup_ext_ids(doi=doi)
-
         # Assemble release.
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
@@ -722,12 +549,6 @@ class DataciteImporter(EntityImporter):
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
-                pmid=extids["pmid"],
-                pmcid=extids["pmcid"],
-                wikidata_qid=extids["wikidata_qid"],
-                core=extids["core_id"],
-                arxiv=extids["arxiv_id"],
-                jstor=extids["jstor_id"],
             ),
             contribs=contribs,
             volume=volume,
@@ -922,14 +743,14 @@ class DataciteImporter(EntityImporter):
                 if len(affiliations) == 0:
                     raw_affiliation = None
                 else:
-                    raw_affiliation = clean(affiliations[0])
+                    raw_affiliation = clean_str(affiliations[0])
 
                 name = c.get("name")
                 given_name = c.get("givenName")
                 surname = c.get("familyName")
 
                 if name:
-                    name = clean(name)
+                    name = clean_str(name)
                 if not any((name, given_name, surname)):
                     continue
                 if not name:
@@ -943,8 +764,8 @@ class DataciteImporter(EntityImporter):
                     name = index_form_to_display_name(name)
 
                 if given_name:
-                    given_name = clean(given_name)
-                surname = clean(surname)
+                    given_name = clean_str(given_name)
+                surname = clean_str(surname)
 
                 # Perform a final assertion that name does not reduce to zero
                 # (e.g. whitespace only name).
@@ -1016,7 +837,7 @@ def contributor_list_contains_contributor(
     return False
 
 
-def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
+def datacite_lookup_license_slug(raw: Optional[str]) -> Optional[str]:
     """
     Resolve a variety of strings into a some pseudo-canonical form, e.g.
     CC-BY-ND, CC-0, MIT and so on.
@@ -1111,12 +932,8 @@ def lookup_license_slug(raw: Optional[str]) -> Optional[str]:
             return None
         return "RS-{}".format(name.upper())
 
-    # Fallback to mapped values.
-    raw = raw.lower()
-    raw = raw.strip().replace("http://", "//").replace("https://", "//")
-    if not raw.endswith("/"):
-        raw = raw + "/"
-    return LICENSE_SLUG_MAP.get(raw)
+    # Fallback to generic license lookup
+    return lookup_license_slug(raw)
 
 
 def find_original_language_title(

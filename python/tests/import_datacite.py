@@ -15,9 +15,9 @@ from fatcat_tools.importers import DataciteImporter, JsonLinePusher
 from fatcat_tools.importers.datacite import (
     clean_doi,
     contributor_list_contains_contributor,
+    datacite_lookup_license_slug,
     find_original_language_title,
     index_form_to_display_name,
-    lookup_license_slug,
     parse_datacite_dates,
     parse_datacite_titles,
 )
@@ -30,7 +30,6 @@ def datacite_importer(api):
         yield DataciteImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=True,
         )
 
@@ -41,7 +40,6 @@ def datacite_importer_existing(api):
         yield DataciteImporter(
             api,
             issn_file,
-            extid_map_file="tests/files/example_map.sqlite3",
             bezerk_mode=False,
         )
 
@@ -465,9 +463,9 @@ def test_lookup_license_slug():
         Case("http://creativecommons.org/licenses/by-nd/4.0/legalcode", "CC-BY-ND"),
         Case("http://creativecommons.org/licenses/by/2.0/uk/legalcode", "CC-BY"),
         Case("http://creativecommons.org/publicdomain/zero/1.0/legalcode", "CC-0"),
-        Case("http://doi.wiley.com/10.1002/tdm_license_1.1", "WILEY-TDM-1.1"),
+        Case("http://doi.wiley.com/10.1002/tdm_license_1.1", None),
         Case("http://homepage.data-planet.com/terms-use", "SAGE-DATA-PLANET"),
-        Case("http://www.springer.com/tdm", "SPRINGER-TDM"),
+        Case("http://www.springer.com/tdm", None),
         Case(
             "https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess.xhtml",
             "ADS-UK",
@@ -479,11 +477,11 @@ def test_lookup_license_slug():
         Case("https://www.elsevier.com/tdm/userlicense/1.0", "ELSEVIER-USER-1.0"),
         Case("https://www.gnu.org/licenses/gpl-3.0.html", "GPL-3.0"),
         Case("http://rightsstatements.org/page/InC/1.0?language=en", "RS-INC"),
-        Case("http://onlinelibrary.wiley.com/termsAndConditions", "WILEY"),
+        Case("http://onlinelibrary.wiley.com/termsAndConditions", None),
         Case("https://publikationen.bibliothek.kit.edu/kitopen-lizenz", "KIT-OPEN"),
         Case(
             "http://journals.sagepub.com/page/policies/text-and-data-mining-license",
-            "SAGE-TDM",
+            None,
         ),
         Case(
             "https://creativecommons.org/publicdomain/mark/1.0/deed.de",
@@ -508,7 +506,7 @@ def test_lookup_license_slug():
     ]
 
     for c in cases:
-        got = lookup_license_slug(c.input)
+        got = datacite_lookup_license_slug(c.input)
         assert c.output == got, "{}: got {}, want {}".format(c.input, got, c.output)
 
 

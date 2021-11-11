@@ -8,17 +8,13 @@ from fatcat_tools.importers import Bs4XmlFilePusher, Bs4XmlLinesPusher, JalcImpo
 @pytest.fixture(scope="function")
 def jalc_importer(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield JalcImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=True
-        )
+        yield JalcImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def jalc_importer_existing(api):
     with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
-        yield JalcImporter(
-            api, issn_file, extid_map_file="tests/files/example_map.sqlite3", bezerk_mode=False
-        )
+        yield JalcImporter(api, issn_file, bezerk_mode=False)
 
 
 def test_jalc_importer(jalc_importer):

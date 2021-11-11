@@ -13,10 +13,8 @@ To run an import you combine two classes; one each of:
 
 from .arabesque import ARABESQUE_MATCH_WHERE_CLAUSE, ArabesqueMatchImporter
 from .arxiv import ArxivRawImporter
-from .cdl_dash_dat import auto_cdl_dash_dat
 from .chocula import ChoculaImporter
 from .common import (
-    LANG_MAP_MARC,
     Bs4XmlFileListPusher,
     Bs4XmlFilePusher,
     Bs4XmlLargeFilePusher,
@@ -28,11 +26,8 @@ from .common import (
     KafkaJsonPusher,
     LinePusher,
     SqlitePusher,
-    clean,
-    is_cjk,
-    make_kafka_consumer,
 )
-from .crossref import CROSSREF_TYPE_MAP, CrossrefImporter, lookup_license_slug
+from .crossref import CrossrefImporter
 from .datacite import DataciteImporter
 from .dblp_container import DblpContainerImporter
 from .dblp_release import DblpReleaseImporter
@@ -55,4 +50,3 @@ from .matched import MatchedImporter
 from .orcid import OrcidImporter
 from .pubmed import PubmedImporter
 from .shadow import ShadowLibraryImporter
-from .wayback_static import auto_wayback_static

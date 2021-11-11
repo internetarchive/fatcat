@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 from fatcat_openapi_client import ApiClient, ReleaseEntity
 from pylatexenc.latex2text import LatexNodes2Text
 
+from fatcat_tools.normal import clean_doi
+
 from .common import EntityImporter
 from .crossref import lookup_license_slug
 
@@ -127,8 +129,8 @@ class ArxivRawImporter(EntityImporter):
         base_id = metadata.id.string
         doi = None
         if metadata.doi and metadata.doi.string:
-            doi = metadata.doi.string.lower().split()[0].strip()
-            if not (doi.startswith("10.") and "/" in doi and doi.split("/")[1]):
+            doi = clean_doi(metadata.doi.string.lower().split()[0].strip())
+            if doi and not (doi.startswith("10.") and "/" in doi and doi.split("/")[1]):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
         title = latex_to_text(metadata.title.get_text().replace("\n", " "))
