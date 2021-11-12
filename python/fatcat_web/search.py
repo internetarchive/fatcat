@@ -6,7 +6,7 @@ the formal API)
 import datetime
 import sys
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import elasticsearch
 import elasticsearch_dsl.response
@@ -16,9 +16,14 @@ from fatcat_web import app
 
 
 class FatcatSearchError(Exception):
-    def __init__(self, status_code: int, name: str, description: str = None):
-        if status_code == "N/A":
-            status_code = 503
+    def __init__(self, status_code: Union[int, str], name: str, description: str = None):
+        if status_code == "TIMEOUT":
+            status_code = 504
+        elif isinstance(status_code, str):
+            try:
+                status_code = int(status_code)
+            except ValueError:
+                status_code = 503
         self.status_code = status_code
         self.name = name
         self.description = description
@@ -138,11 +143,9 @@ def wrap_es_execution(search: Search) -> Any:
         assert isinstance(e.info, dict)
         if e.info.get("error", {}).get("root_cause", {}):
             description = str(e.info["error"]["root_cause"][0].get("reason"))
-        raise FatcatSearchError(int(e.status_code), str(e.error), description)
+        raise FatcatSearchError(e.status_code, str(e.error), description)
     except elasticsearch.exceptions.ConnectionError as e:
-        raise FatcatSearchError(
-            int(e.status_code), "ConnectionError: search engine not available"
-        )
+        raise FatcatSearchError(e.status_code, "ConnectionError: search engine not available")
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
         print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
@@ -150,7 +153,7 @@ def wrap_es_execution(search: Search) -> Any:
         assert isinstance(e.info, dict)
         if e.info and e.info.get("error", {}).get("root_cause", {}):
             description = str(e.info["error"]["root_cause"][0].get("reason"))
-        raise FatcatSearchError(int(e.status_code), str(e.error), description)
+        raise FatcatSearchError(e.status_code, str(e.error), description)
     return resp
 
 
