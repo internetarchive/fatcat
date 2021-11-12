@@ -9,6 +9,24 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+
+## 2021-11
+
+Ran a series of cleanups. See background and prep notes in `notes/cleanups/`
+and specific final commands in this directory. Quick summary:
+
+- more than 9.5 million file entities had truncated timestamps wayback URLs,
+  and were fixed with the full timestamps. there are still a small fraction
+  (0.5%) which were identified but not corrected in this first pass
+- over 140k release entities with non-lowercase DOIs were updated with
+  lowercase DOI. all DOIs in current release entities now lowercase (at least,
+  no ASCII uppercase characters found)
+- over 220k file entities with incorrect release relation, due to an
+  import-time code bug, were fixed. a couple hundred questionable cases remain,
+  but are all mismatched due to DOI slash/double-slash issues and will not be
+  fixed in an automated way.
+
+
 ## 2021-06
 
 Created new containers via chocula pipeline. Did not update any existing

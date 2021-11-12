@@ -289,3 +289,16 @@ Ugh.
         | pv -l \
         | gzip \
         > files_20211105_moreshortts.fetched.json.gz
+    # 9.96M 6:38:43 [ 416 /s]
+
+Looks like the last small tweak was successful! This was with git commit
+`cd09c6d6bd4deef0627de4f8a8a301725db01e14`.
+
+
+    zcat files_20211105_moreshortts.fetched.json.gz | jq .status | sort | uniq -c | sort -nr
+      6228307 "success-db"
+      2876033 "success-self"
+       846844 "success-api"
+         7583 "fail-not-found"
+           87 "fail-cdx-403"
+
