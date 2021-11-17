@@ -1,3 +1,3 @@
-
 from .common import EntityMerger
-from .releases import ReleaseMerger, ReleaseGrouper
+from .files import FileMerger
+from .releases import ReleaseMerger
