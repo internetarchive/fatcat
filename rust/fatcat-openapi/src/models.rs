@@ -628,6 +628,10 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
 
+    #[serde(rename = "content_scope")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_scope: Option<String>,
+
     #[serde(rename = "mimetype")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mimetype: Option<String>,
@@ -692,6 +696,7 @@ impl FileEntity {
         FileEntity {
             releases: None,
             release_ids: None,
+            content_scope: None,
             mimetype: None,
             urls: None,
             sha256: None,
@@ -763,6 +768,10 @@ pub struct FilesetEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub manifest: Option<Vec<models::FilesetFile>>,
 
+    #[serde(rename = "content_scope")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_scope: Option<String>,
+
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -801,6 +810,7 @@ impl FilesetEntity {
             release_ids: None,
             urls: None,
             manifest: None,
+            content_scope: None,
             state: None,
             ident: None,
             revision: None,
@@ -1453,6 +1463,10 @@ pub struct WebcaptureEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
 
+    #[serde(rename = "content_scope")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_scope: Option<String>,
+
     /// Same format as CDX line timestamp (UTC, etc). Corresponds to the overall capture timestamp. Should generally be the timestamp of capture of the primary resource URL.
     #[serde(rename = "timestamp")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1507,6 +1521,7 @@ impl WebcaptureEntity {
         WebcaptureEntity {
             releases: None,
             release_ids: None,
+            content_scope: None,
             timestamp: None,
             original_url: None,
             archive_urls: None,
