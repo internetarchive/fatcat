@@ -163,6 +163,7 @@ table! {
         sha256 -> Nullable<Text>,
         md5 -> Nullable<Text>,
         mimetype -> Nullable<Text>,
+        content_scope -> Nullable<Text>,
     }
 }
 
@@ -208,6 +209,7 @@ table! {
     fileset_rev (id) {
         id -> Uuid,
         extra_json -> Nullable<Jsonb>,
+        content_scope -> Nullable<Text>,
     }
 }
 
@@ -372,6 +374,7 @@ table! {
         extra_json -> Nullable<Jsonb>,
         original_url -> Text,
         timestamp -> Timestamptz,
+        content_scope -> Nullable<Text>,
     }
 }
 

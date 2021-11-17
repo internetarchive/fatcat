@@ -636,6 +636,7 @@ fn test_post_file() {
                     {"url": "http://web.archive.org/2/http://archive.org/asdf.txt", "rel": "webarchive" }
                 ],
                 "mimetype": "application/pdf",
+                "content_scope": "article",
                 "release_ids": [
                     "aaaaaaaaaaaaarceaaaaaaaaae",
                     "aaaaaaaaaaaaarceaaaaaaaaai"
@@ -711,6 +712,7 @@ fn test_post_fileset() {
                     "aaaaaaaaaaaaarceaaaaaaaaae",
                     "aaaaaaaaaaaaarceaaaaaaaaai"
                 ],
+                "content_scope": "dataset",
                 "extra": { "source": "speculation" }
                 }"#,
             &router,
@@ -764,6 +766,7 @@ fn test_post_webcapture() {
             headers.clone(),
             r#"{"original_url": "https://bnewbold.net/",
                 "timestamp": "2018-12-28T05:06:07Z",
+                "content_scope": "landing-page",
                 "cdx": [
                     {"surt": "org,asheesh,)/robots.txt",
                      "timestamp": "2018-12-28T05:06:07Z",

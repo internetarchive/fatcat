@@ -1042,6 +1042,7 @@ impl EntityCrud for FileEntity {
             size: None,
             urls: None,
             mimetype: None,
+            content_scope: None,
             release_ids: None,
             releases: None,
             state: Some(ident_row.state().unwrap().shortname()),
@@ -1125,6 +1126,7 @@ impl EntityCrud for FileEntity {
             size: rev_row.size_bytes,
             urls: Some(urls),
             mimetype: rev_row.mimetype,
+            content_scope: rev_row.content_scope,
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
             releases: None,
             state,
@@ -1160,6 +1162,7 @@ impl EntityCrud for FileEntity {
                         sha256: model.sha256.clone(),
                         md5: model.md5.clone(),
                         mimetype: model.mimetype.clone(),
+                        content_scope: model.content_scope.clone(),
                         extra_json: model.extra.clone(),
                     })
                     .collect::<Vec<FileRevNewRow>>(),
@@ -1245,6 +1248,7 @@ impl EntityCrud for FilesetEntity {
         }
 
         Ok(FilesetEntity {
+            content_scope: None,
             manifest: None,
             urls: None,
             release_ids: None,
@@ -1340,6 +1344,7 @@ impl EntityCrud for FilesetEntity {
             .collect();
 
         Ok(FilesetEntity {
+            content_scope: rev_row.content_scope.clone(),
             manifest: Some(manifest),
             urls: Some(urls),
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
@@ -1376,6 +1381,7 @@ impl EntityCrud for FilesetEntity {
                 models
                     .iter()
                     .map(|model| FilesetRevNewRow {
+                        content_scope: model.content_scope.clone(),
                         extra_json: model.extra.clone(),
                     })
                     .collect::<Vec<FilesetRevNewRow>>(),
@@ -1492,6 +1498,7 @@ impl EntityCrud for WebcaptureEntity {
             archive_urls: None,
             original_url: None,
             timestamp: None,
+            content_scope: None,
             release_ids: None,
             releases: None,
             state: Some(ident_row.state().unwrap().shortname()),
@@ -1590,6 +1597,7 @@ impl EntityCrud for WebcaptureEntity {
             archive_urls: Some(archive_urls),
             original_url: Some(rev_row.original_url),
             timestamp: Some(chrono::DateTime::from_utc(rev_row.timestamp, chrono::Utc)),
+            content_scope: rev_row.content_scope,
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
             releases: None,
             state,
@@ -1628,6 +1636,7 @@ impl EntityCrud for WebcaptureEntity {
                         // these unwraps safe because of check above
                         original_url: model.original_url.clone().unwrap(),
                         timestamp: model.timestamp.unwrap().naive_utc(),
+                        content_scope: model.content_scope.clone(),
                         extra_json: model.extra.clone(),
                     })
                     .collect::<Vec<WebcaptureRevNewRow>>(),
