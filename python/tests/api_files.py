@@ -13,6 +13,7 @@ def test_file(api):
         sha1="027e7ed3ea1a40e92dd2657a1e3c992b5dc45dd2",
         sha256="f1f4f18a904e76818863ccbc6141fce92b0dcb47b0d6041aec98bc6806e393c3",
         mimetype="application/pdf",
+        content_scope="article",
         urls=[
             FileUrl(
                 url="https://web.archive.org/web/12345542/something.com/blah.pdf",
@@ -39,6 +40,7 @@ def test_file(api):
     assert f1.sha1 == f2.sha1
     assert f1.sha256 == f2.sha256
     assert f1.mimetype == f2.mimetype
+    assert f1.content_scope == f2.content_scope
     assert f1.extra == f2.extra
     assert f1.urls == f2.urls
     assert f1.release_ids == f2.release_ids
