@@ -279,7 +279,7 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     Container metadata sub-section of release_to_elasticsearch()
     """
     this_year = datetime.date.today().year
-    t = dict()
+    t: Dict[str, Any] = dict()
     t["publisher"] = container.publisher
     t["container_name"] = container.name
     # this is container.ident, not release.container_id, because there may
@@ -325,7 +325,8 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
         if c_extra.get("sherpa_romeo"):
             if c_extra["sherpa_romeo"].get("color") == "white":
                 t["is_oa"] = False
-        if c_extra.get("default_license") and c_extra.get("default_license").startswith("CC-"):
+        c_default_license = c_extra.get("default_license")
+        if c_default_license and c_default_license.startswith("CC-"):
             t["is_oa"] = True
         if c_extra.get("doaj"):
             if c_extra["doaj"].get("as_of"):

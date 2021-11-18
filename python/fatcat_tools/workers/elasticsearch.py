@@ -1,6 +1,6 @@
 import json
 import sys
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Union
 
 import elasticsearch
 import requests

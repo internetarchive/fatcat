@@ -54,7 +54,7 @@ class EntityCleaner:
     def reset(self) -> None:
         self.counts = Counter({"lines": 0, "cleaned": 0, "updated": 0})
         self._edit_count = 0
-        self._editgroup_id = None
+        self._editgroup_id: Optional[str] = None
         self._entity_queue: List[Any] = []
         self._idents_inflight: List[str] = []
 
@@ -72,7 +72,7 @@ class EntityCleaner:
             self.counts["skip-null"] += 1
             return
 
-        entity = entity_from_dict(record, self.entity_type, api_client=self.ac)
+        entity = entity_from_dict(record, self.entity_type, api_client=self.ac.api_client)
 
         if entity.state != "active":
             self.counts["skip-inactive"] += 1
@@ -86,7 +86,7 @@ class EntityCleaner:
             self.counts["cleaned"] += 1
 
         if self.dry_run_mode:
-            entity_dict = entity_to_dict(entity, api_client=self.ac)
+            entity_dict = entity_to_dict(entity, api_client=self.ac.api_client)
             print(json.dumps(entity_dict))
             return
 

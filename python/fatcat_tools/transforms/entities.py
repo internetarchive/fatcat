@@ -58,7 +58,7 @@ def entity_to_toml(
 
 
 def entity_from_toml(
-    toml_str: str, entity_type: Any, api_client: Optional[List[str]] = None
+    toml_str: str, entity_type: Any, api_client: Optional[ApiClient] = None
 ) -> Any:
     obj = toml.loads(toml_str)
     return entity_from_dict(obj, entity_type, api_client=api_client)
