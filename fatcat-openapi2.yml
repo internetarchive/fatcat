@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   title: fatcat
-  version: 0.4.1
+  version: 0.5.0
   description: |
     Fatcat is a scalable, versioned, API-oriented catalog of bibliographic
     entities and file metadata.
