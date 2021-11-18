@@ -37,8 +37,8 @@
   {% endif %}
   <br>API URL: <a href="
   {{ config.FATCAT_PUBLIC_API_HOST -}}
-  {%- if editgroup and entity.ident -%}
-    /editgroup/{{ editgroup.editgroup_id }}{# /{{ entity_type }}/{{ entity.ident }} #}
+  {%- if editgroup and entity.ident and entity.revision -%}
+    /{{ entity_type }}/rev/{{ entity.revision }}
   {%- elif entity.ident -%}
     /{{ entity_type }}/{{ entity.ident }}
   {%- elif entity.revision -%}
