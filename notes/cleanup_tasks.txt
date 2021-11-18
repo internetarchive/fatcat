@@ -1,25 +1,48 @@
 
-Cambridge Chemical Database (NCI)
+This is a list of relatively simple bibliographic metadata bugs, which have not
+been fixed yet. Some of these need fixes in importers, others might be one-time
+runs with a simple tool (even `fatcat-cli`).
+
+## Cambridge Chemical Database (NCI)
 
     doi_prefix:10.3406 release_type:article
     doi_prefix:10.14469 release_type:article
 
     193,346+ entities
 
-    should be 'dataset' not 'article'
+    should be 'dataset' or 'entry' or something, not 'article'
 
     datacite importer
 
-Frontiers
+## Frontiers
 
     Frontiers non-PDF abstracts, which have DOIs like `10.3389/conf.*`. Should
     crawl these, but `release_type` should be... `abstract`? There are at least
     18,743 of these. Should be fixed in both crossref-bot, then a retro-active
     cleanup.
 
-Applied Physics Letters
+## Applied Physics Letters
 
     doi_prefix:10.2172 title:10.2172
 
     For 700+ entities, the title is the DOI number. They all seem to be
     "deleted" DOIs, and should be marked as stubs.
+
+## Far-Future Release Years
+
+If year is more than 20 years in the future (arbitrary cut-off), both the year
+and date should probably be cleared.
+
+
+
+
+--------
+
+The following may be more difficult
+
+## Antarctica: A Keystone in a Changing World
+
+container_adgy773dtra3xmrsynghcednqm
+homepage URL is wrong
+
+36k releases of unknown type and unknown publication stage.
