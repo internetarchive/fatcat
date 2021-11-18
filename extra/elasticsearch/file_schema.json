@@ -37,6 +37,7 @@
             "release_ids":      { "type": "keyword", "normalizer": "default", "doc_values": false },
             "release_count":    { "type": "integer" },
             "mimetype":         { "type": "keyword", "normalizer": "default" },
+            "content_scope":    { "type": "keyword", "normalizer": "default" },
             "size_bytes":       { "type": "integer" },
             "sha1":             { "type": "keyword", "normalizer": "default", "doc_values": false },
             "sha256":           { "type": "keyword", "normalizer": "default", "doc_values": false },

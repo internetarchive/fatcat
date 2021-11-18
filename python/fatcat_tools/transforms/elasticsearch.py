@@ -650,6 +650,7 @@ def file_to_elasticsearch(entity: FileEntity) -> Dict[str, Any]:
         release_ids=entity.release_ids,
         release_count=len(entity.release_ids),
         mimetype=entity.mimetype,
+        content_scope=entity.content_scope,
         size_bytes=entity.size,
         sha1=entity.sha1,
         sha256=entity.sha256,
