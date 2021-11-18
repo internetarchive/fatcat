@@ -29,4 +29,10 @@ Warning: This schema is not yet stable.
 - `timestamp` (string, datetime): same format as CDX line timestamp (UTC, etc).
   Corresponds to the overall capture timestamp. Can be the earliest of CDX
   timestamps if that makes sense
+- `content_scope` (string): for situations where the webcapture does not simply
+  contain the full representation of a work (eg, HTML fulltext, for an
+  `article-journal` release), describes what that scope of coverage is. Eg,
+  `landing-page` it doesn't contain the full content. Landing pages are
+  out-of-scope for fatcat, but if they were accidentally imported, should mark
+  them as such so they aren't re-imported. Uses same vocabulary as File entity.
 - `release_ids` (array of string identifiers): references to `release` entities

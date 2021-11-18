@@ -13,9 +13,13 @@
 - `urls`: An array of "typed" URLs. Order is not meaningful, and may not be
   preserved.
     - `url` (string, required): Eg: "https://example.edu/~frau/prcding.pdf".
-    - `rel` (string, required): Eg: "webarchive".
+    - `rel` (string, required): Eg: "webarchive", see vocabulary below.
 - `mimetype` (string): Format of the file. If XML, specific schema can be
   included after a `+`. Example: "application/pdf"
+- `content_scope` (string): for situations where the file does not simply
+  contain the full representation of a work (eg, fulltext of an article, for an
+  `article-journal` release), describes what that scope of coverage is. Eg,
+  entire `issue`, `corrupt` file. See vocabulary below.
 - `release_ids` (array of string identifiers): references to `release` entities
   that this file represents a manifestation of. Note that a single file can
   contain multiple release references (eg, a PDF containing a full issue with
@@ -35,3 +39,37 @@
   Scholar
 - `dweb`: content hosted on distributed/decentralized web protocols, such as
   `dat://` or `ipfs://` URLs
+
+#### `content_scope` Vocabulary
+
+This same vocabulary is shared between file, fileset, and webcapture entities;
+not all the fields make sense for each entity type.
+
+- if not set, assume that the artifact entity is valid and represents a
+  complete copy of the release
+- `issue`: artifact contains an entire issue of a serial publication (eg, issue
+  of a journal), representing several releases in full
+- `abstract`: contains only an abstract (short description) of the release, not
+  the release itself (unless the `release_type` itself is `abstract`, in which
+  case it is the entire release)
+- `index`: index of a journal, or series of abstracts from a conference
+- `slides`: slide deck (usually in "landscape" orientation)
+- `front-matter`: non-article content from a journal, such as editorial policies
+- `supplement`: usually a file entity which is a supplement or appendix, not
+  the entire work
+- `component`: a sub-component of a release, which may or may not be associated
+  with a `component` release entity. For example, a single figure or table as
+  part of an article
+- `poster`: digital copy of a poster, eg as displayed at conference poster sessions
+- `sample`: a partial sample of the entire work. eg, just the first page of an
+  article. distinct from `truncated`
+- `truncated`: the file has been truncated at a binary level, and may also be
+  corrupt or invalid. distinct from `sample`
+- `corrupt`: broken, mangled, or corrupt file (at the binary level)
+- `stub`: any other out-of-scope artifact situations, where the artifact
+  represents something which would not link to any possible in-scope release in
+  the catalog (except a `stub` release)
+- `landing-page`: for webcapture, the landing page of a work, as opposed to the
+  work itself
+- `spam`: content is spam. articles, webpages, or issues which include
+  incidental advertisements within them are not counted as `spam`
