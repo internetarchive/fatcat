@@ -115,6 +115,7 @@ setup(
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
+    package_data={"fatcat_openapi_client": ["py.typed", "*.pyi", "**/*.pyi"]},
     license=LICENSE,
     classifiers=[
         # Trove classifiers
