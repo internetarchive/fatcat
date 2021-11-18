@@ -19,7 +19,7 @@ import dateparser
 import fatcat_openapi_client
 import langdetect
 import pycountry
-from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseContrib, ReleaseEntity
 
 from fatcat_tools.biblio_lookup_tables import DATACITE_TYPE_MAP
 from fatcat_tools.normal import clean_doi, clean_str, lookup_license_slug
@@ -94,7 +94,7 @@ class DataciteImporter(EntityImporter):
 
     def __init__(
         self,
-        api: ApiClient,
+        api: DefaultApi,
         issn_map_file: Sequence,
         debug: bool = False,
         insert_log_file: bool = None,

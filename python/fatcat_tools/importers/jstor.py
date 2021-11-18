@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 
 from fatcat_tools.biblio_lookup_tables import LANG_MAP_MARC
 from fatcat_tools.normal import clean_doi, clean_str
@@ -37,7 +37,7 @@ class JstorImporter(EntityImporter):
     Collection)
     """
 
-    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get("editgroup_description", "Automated import of JSTOR XML metadata")
         eg_extra = kwargs.get("editgroup_extra", dict())

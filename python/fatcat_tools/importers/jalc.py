@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
-from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseContrib, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi, clean_str, is_cjk
 
@@ -102,7 +102,7 @@ class JalcImporter(EntityImporter):
     NOTE: some JALC DOIs seem to get cross-registered with Crossref
     """
 
-    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get("editgroup_description", "Automated import of JALC DOI metadata")
         eg_extra = kwargs.get("editgroup_extra", dict())

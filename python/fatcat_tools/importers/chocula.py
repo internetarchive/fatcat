@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, ContainerEntity
+from fatcat_openapi_client import DefaultApi, ContainerEntity
 
 from fatcat_tools.normal import clean_str
 
@@ -17,7 +17,7 @@ class ChoculaImporter(EntityImporter):
     See guide for details on the many 'extra' fields used here.
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",

@@ -17,7 +17,7 @@ import lxml
 from bs4 import BeautifulSoup
 from confluent_kafka import Consumer, KafkaException
 from fatcat_openapi_client import (
-    ApiClient,
+    DefaultApi,
     ContainerEntity,
     EntityEdit,
     FileEntity,
@@ -92,7 +92,7 @@ class EntityImporter:
             implementors must write insert_batch appropriately
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_extra = kwargs.get("editgroup_extra", dict())
         eg_extra["git_rev"] = eg_extra.get(

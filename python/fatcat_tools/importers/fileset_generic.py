@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FilesetEntity
+from fatcat_openapi_client import DefaultApi, FilesetEntity
 
 from fatcat_tools import entity_from_dict
 
@@ -20,7 +20,7 @@ class FilesetImporter(EntityImporter):
     Currently only creates (insert), no updates.
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = kwargs.pop("editgroup_description", None) or "Generic Fileset entity import"
         eg_extra = kwargs.pop("editgroup_extra", dict())

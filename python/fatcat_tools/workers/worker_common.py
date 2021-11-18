@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 from confluent_kafka import Consumer, KafkaException, Message, TopicPartition
-from fatcat_openapi_client import ApiClient
+from fatcat_openapi_client import DefaultApi
 
 
 def most_recent_message(topic: str, kafka_config: Dict[str, Any]) -> Message:
@@ -58,7 +58,7 @@ class FatcatWorker:
         kafka_hosts: str,
         produce_topic: Optional[str] = None,
         consume_topic: Optional[str] = None,
-        api: Optional[ApiClient] = None,
+        api: Optional[DefaultApi] = None,
     ) -> None:
         if api:
             self.api = api

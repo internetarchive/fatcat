@@ -2,7 +2,7 @@ import datetime
 from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, ReleaseContrib, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseContrib, ReleaseEntity
 
 from fatcat_tools.biblio_lookup_tables import CONTAINER_TYPE_MAP
 from fatcat_tools.normal import clean_doi, clean_str, lookup_license_slug
@@ -42,7 +42,7 @@ class CrossrefImporter(EntityImporter):
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
 
-    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc: Optional[str] = kwargs.get(
             "editgroup_description",

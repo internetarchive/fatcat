@@ -9,7 +9,7 @@ import warnings
 from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 
 from fatcat_tools.importers.common import MAX_ABSTRACT_LENGTH, EntityImporter
 from fatcat_tools.normal import (
@@ -26,7 +26,7 @@ from fatcat_tools.normal import (
 
 
 class DoajArticleImporter(EntityImporter):
-    def __init__(self, api: ApiClient, issn_map_file: Sequence, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, issn_map_file: Sequence, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",

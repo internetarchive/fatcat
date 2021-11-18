@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 from pylatexenc.latex2text import LatexNodes2Text
 
 from fatcat_tools.normal import clean_doi
@@ -92,7 +92,7 @@ class ArxivRawImporter(EntityImporter):
           the "most recent" version; can be a simple sort?
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",

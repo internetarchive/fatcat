@@ -5,7 +5,7 @@ import sys
 from typing import Any, Dict
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity
+from fatcat_openapi_client import DefaultApi, FileEntity
 
 from fatcat_tools import authenticated_api, entity_from_dict, public_api
 from fatcat_tools.importers.common import EntityImporter, JsonLinePusher
@@ -25,7 +25,7 @@ class FileShortWaybackTimestampCleanup(EntityImporter):
         python -m fatcat_tools.cleans.file_short_wayback_ts - < blah.json
     """
 
-    def __init__(self, api: ApiClient, **kwargs):
+    def __init__(self, api: DefaultApi, **kwargs):
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)

@@ -3,7 +3,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from confluent_kafka import Consumer, KafkaException, Producer
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 
 from fatcat_tools.transforms import release_ingest_request, release_to_elasticsearch
 
@@ -18,7 +18,7 @@ class ChangelogWorker(FatcatWorker):
 
     def __init__(
         self,
-        api: ApiClient,
+        api: DefaultApi,
         kafka_hosts: str,
         produce_topic: str,
         poll_interval: float = 10.0,
@@ -89,7 +89,7 @@ class EntityUpdatesWorker(FatcatWorker):
 
     def __init__(
         self,
-        api: ApiClient,
+        api: DefaultApi,
         kafka_hosts: str,
         consume_topic: str,
         release_topic: str,

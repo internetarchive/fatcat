@@ -7,7 +7,7 @@ import sys  # noqa: F401
 from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, ContainerEntity
+from fatcat_openapi_client import DefaultApi, ContainerEntity
 
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.normal import clean_str
@@ -16,7 +16,7 @@ from fatcat_tools.normal import clean_str
 class DblpContainerImporter(EntityImporter):
     def __init__(
         self,
-        api: ApiClient,
+        api: DefaultApi,
         issn_map_file: Sequence,
         dblp_container_map_file: Sequence,
         dblp_container_map_output: Any,

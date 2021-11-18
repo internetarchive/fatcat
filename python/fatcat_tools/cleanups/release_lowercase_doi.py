@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from fatcat_openapi_client import ApiClient, ApiException, ReleaseEntity, ReleaseExtIds
+from fatcat_openapi_client import DefaultApi, ApiException, ReleaseEntity, ReleaseExtIds
 
 from fatcat_tools import authenticated_api, public_api
 from fatcat_tools.importers.common import EntityImporter, LinePusher
@@ -27,7 +27,7 @@ class ReleaseLowercaseDoiCleanup(EntityImporter):
     update.
     """
 
-    def __init__(self, api: ApiClient, **kwargs):
+    def __init__(self, api: DefaultApi, **kwargs):
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)

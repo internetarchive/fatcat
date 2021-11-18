@@ -4,7 +4,7 @@ import sys
 from typing import Any, Dict
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity
+from fatcat_openapi_client import DefaultApi, FileEntity
 
 from fatcat_tools import authenticated_api, public_api, uuid2fcid
 from fatcat_tools.importers.common import EntityImporter, JsonLinePusher
@@ -24,7 +24,7 @@ class FileReleaseBugfix(EntityImporter):
         python -m fatcat_tools.cleans.file_release_bugfix - < blah.json
     """
 
-    def __init__(self, api: ApiClient, **kwargs):
+    def __init__(self, api: DefaultApi, **kwargs):
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)

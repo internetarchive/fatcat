@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
 from fatcat_openapi_client import (
-    ApiClient,
+    DefaultApi,
     FileEntity,
     FilesetEntity,
     FilesetUrl,
@@ -16,7 +16,7 @@ from .common import EntityImporter, make_rel_url
 
 class IngestFileResultImporter(EntityImporter):
     def __init__(
-        self, api: fatcat_openapi_client.ApiClient, require_grobid: bool = True, **kwargs
+        self, api: fatcat_openapi_client.DefaultApi, require_grobid: bool = True, **kwargs
     ) -> None:
 
         eg_desc = (
@@ -369,7 +369,7 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
     them for further human review (as opposed to accepting by default).
     """
 
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -408,7 +408,7 @@ class IngestWebResultImporter(IngestFileResultImporter):
     into webcapture objects.
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -576,7 +576,7 @@ class SavePaperNowWebImporter(IngestWebResultImporter):
     Like SavePaperNowFileImporter, but for webcapture (HTML) ingest.
     """
 
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -628,7 +628,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
     results into fileset objects.
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)
@@ -854,7 +854,7 @@ class SavePaperNowFilesetImporter(IngestFilesetResultImporter):
     Like SavePaperNowFileImporter, but for fileset/dataset ingest.
     """
 
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, submit_mode: bool = True, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)

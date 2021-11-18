@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import fatcat_openapi_client
 from bs4 import BeautifulSoup
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 
 from fatcat_tools.biblio_lookup_tables import (
     COUNTRY_NAME_MAP,
@@ -29,7 +29,7 @@ class PubmedImporter(EntityImporter):
     """
 
     def __init__(
-        self, api: ApiClient, issn_map_file: Sequence, lookup_refs: bool = True, **kwargs
+        self, api: DefaultApi, issn_map_file: Sequence, lookup_refs: bool = True, **kwargs
     ):
 
         eg_desc = kwargs.get(

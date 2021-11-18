@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity
+from fatcat_openapi_client import DefaultApi, FileEntity
 
 from fatcat_tools.normal import clean_doi
 
@@ -32,7 +32,7 @@ class MatchedImporter(EntityImporter):
     - core_id, wikidata_id, pmcid, pmid: not as lists
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = (
             kwargs.pop("editgroup_description", None)

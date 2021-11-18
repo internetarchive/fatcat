@@ -28,7 +28,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import bs4
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, ReleaseEntity
 
 from fatcat_tools.importers.common import EntityImporter
 from fatcat_tools.normal import (
@@ -46,7 +46,7 @@ from fatcat_tools.transforms import entity_to_dict
 
 class DblpReleaseImporter(EntityImporter):
     def __init__(
-        self, api: ApiClient, dblp_container_map_file: Optional[Sequence] = None, **kwargs
+        self, api: DefaultApi, dblp_container_map_file: Optional[Sequence] = None, **kwargs
     ) -> None:
 
         eg_desc = kwargs.get(

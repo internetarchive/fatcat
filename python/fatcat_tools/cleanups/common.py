@@ -5,7 +5,7 @@ import sys
 from collections import Counter
 from typing import Any, Dict, List, Sequence
 
-from fatcat_openapi_client import ApiClient, Editgroup
+from fatcat_openapi_client import DefaultApi, Editgroup
 
 from fatcat_tools.transforms import entity_from_dict, entity_to_dict
 
@@ -29,7 +29,7 @@ class EntityCleaner:
     This class is pretty similar to EntityImporter, but isn't subclassed.
     """
 
-    def __init__(self, api: ApiClient, entity_type: Any, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, entity_type: Any, **kwargs) -> None:
 
         eg_extra = kwargs.get("editgroup_extra", dict())
         eg_extra["git_rev"] = eg_extra.get(
@@ -46,7 +46,7 @@ class EntityCleaner:
         )
         self.editgroup_extra = eg_extra
         self.reset()
-        self.ac = ApiClient()
+        self.ac = DefaultApi()
 
         if self.dry_run_mode:
             print("Running in dry-run mode!")

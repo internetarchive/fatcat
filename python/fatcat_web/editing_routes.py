@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from fatcat_openapi_client import (
-    ApiClient,
+    DefaultApi,
     ContainerEntity,
     CreatorEntity,
     Editgroup,
@@ -31,7 +31,7 @@ from fatcat_web.forms import (
 
 
 def generic_entity_create_from_toml(
-    user_api: ApiClient, entity_type: str, editgroup_id: str, toml_str: str
+    user_api: DefaultApi, entity_type: str, editgroup_id: str, toml_str: str
 ) -> EntityEdit:
     if entity_type == "container":
         entity = entity_from_toml(toml_str, ContainerEntity)
@@ -60,7 +60,7 @@ def generic_entity_create_from_toml(
 
 
 def generic_entity_delete_edit(
-    user_api: ApiClient, entity_type: str, editgroup_id: str, edit_id: str
+    user_api: DefaultApi, entity_type: str, editgroup_id: str, edit_id: str
 ) -> None:
     try:
         if entity_type == "container":
@@ -87,7 +87,7 @@ def generic_entity_delete_edit(
 
 
 def generic_entity_delete_entity(
-    user_api: ApiClient, entity_type: str, editgroup_id: str, entity_ident: str
+    user_api: DefaultApi, entity_type: str, editgroup_id: str, entity_ident: str
 ) -> EntityEdit:
     try:
         if entity_type == "container":
@@ -112,7 +112,7 @@ def generic_entity_delete_entity(
 
 
 def generic_entity_update_from_toml(
-    user_api: ApiClient, entity_type: str, editgroup_id: str, existing_ident: str, toml_str: str
+    user_api: DefaultApi, entity_type: str, editgroup_id: str, existing_ident: str, toml_str: str
 ) -> EntityEdit:
     if entity_type == "container":
         entity = entity_from_toml(toml_str, ContainerEntity)
@@ -140,7 +140,7 @@ def generic_entity_update_from_toml(
     return edit
 
 
-def form_editgroup_get_or_create(api: ApiClient, edit_form: Any) -> Optional[Editgroup]:
+def form_editgroup_get_or_create(api: DefaultApi, edit_form: Any) -> Optional[Editgroup]:
     """
     This function expects a submitted, validated edit form
     """

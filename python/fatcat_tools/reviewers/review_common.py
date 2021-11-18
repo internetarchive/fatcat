@@ -5,7 +5,7 @@ from collections import Counter
 from typing import Any, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, Editgroup, EditgroupAnnotation, EntityEdit
+from fatcat_openapi_client import DefaultApi, Editgroup, EditgroupAnnotation, EntityEdit
 
 """
 checks should return:
@@ -106,7 +106,7 @@ class EditCheck:
 
 
 class ReviewBot:
-    def __init__(self, api: fatcat_openapi_client.ApiClient, verbose: bool = False, **kwargs):
+    def __init__(self, api: fatcat_openapi_client.DefaultApi, verbose: bool = False, **kwargs):
 
         self.api = api
         self.checks: List[EditCheck] = []
@@ -281,7 +281,7 @@ class DummyReviewBot(ReviewBot):
     This bot reviews everything and always passes.
     """
 
-    def __init__(self, api: ApiClient, **kwargs):
+    def __init__(self, api: DefaultApi, **kwargs):
         super().__init__(api, **kwargs)
         self.checks = [DummyCheck()]
 

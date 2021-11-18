@@ -2,7 +2,7 @@ import sys
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, CreatorEntity
+from fatcat_openapi_client import DefaultApi, CreatorEntity
 
 from fatcat_tools.normal import clean_str
 
@@ -26,7 +26,7 @@ def value_or_none(e: Any) -> Any:
 
 
 class OrcidImporter(EntityImporter):
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",

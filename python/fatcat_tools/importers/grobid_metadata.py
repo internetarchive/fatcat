@@ -5,7 +5,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity, ReleaseEntity
+from fatcat_openapi_client import DefaultApi, FileEntity, ReleaseEntity
 
 from fatcat_tools.normal import clean_doi, clean_str
 
@@ -24,7 +24,7 @@ class GrobidMetadataImporter(EntityImporter):
     TODO: relaxing 'None' constraint on parse_record() might make this refactor-able.
     """
 
-    def __init__(self, api: ApiClient, **kwargs) -> None:
+    def __init__(self, api: DefaultApi, **kwargs) -> None:
 
         eg_desc = kwargs.get(
             "editgroup_description",

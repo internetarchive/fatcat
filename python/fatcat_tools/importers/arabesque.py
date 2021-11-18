@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity
+from fatcat_openapi_client import DefaultApi, FileEntity
 
 from fatcat_tools.normal import b32_hex
 
@@ -42,7 +42,7 @@ class ArabesqueMatchImporter(EntityImporter):
     """
 
     def __init__(
-        self, api: ApiClient, extid_type: str, require_grobid: bool = True, **kwargs
+        self, api: DefaultApi, extid_type: str, require_grobid: bool = True, **kwargs
     ) -> None:
 
         eg_desc = (

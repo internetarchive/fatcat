@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 import fatcat_openapi_client
-from fatcat_openapi_client import ApiClient, FileEntity
+from fatcat_openapi_client import DefaultApi, FileEntity
 
 from .common import EntityImporter
 
@@ -17,7 +17,7 @@ class FileMetaImporter(EntityImporter):
     imported which were missing file size, mimetype, md5, and/or sha256.
     """
 
-    def __init__(self, api: ApiClient, require_grobid: bool = True, **kwargs):
+    def __init__(self, api: DefaultApi, require_grobid: bool = True, **kwargs):
 
         eg_desc = kwargs.pop("editgroup_description", None) or "File metadata updates"
         eg_extra = kwargs.pop("editgroup_extra", dict())

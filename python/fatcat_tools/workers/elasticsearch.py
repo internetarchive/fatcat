@@ -46,7 +46,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
         self.elasticsearch_backend = elasticsearch_backend
         self.elasticsearch_index = elasticsearch_index
         self.elasticsearch_release_index = elasticsearch_release_index
-        self.entity_type = ReleaseEntity
+        self.entity_type: Union[ReleaseEntity,ChangelogEntry,ContainerEntity] = ReleaseEntity
         self.transform_func: Callable = release_to_elasticsearch
         self.api_host = api_host
         self.query_stats = query_stats
