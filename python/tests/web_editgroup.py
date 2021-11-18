@@ -5,7 +5,15 @@ def test_editgroup_basics(app):
 
     rv = app.get("/editgroup/aaaaaaaaaaaabo53aaaaaaaaae")
     assert rv.status_code == 200
+    rv = app.get("/editgroup/aaaaaaaaaaaabo53aaaaaaaaae/diff")
+    assert rv.status_code == 200
+    rv = app.get("/editgroup/aaaaaaaaaaaabo53aaaaaaaaa4/diff")
+    assert rv.status_code == 200
+    rv = app.get("/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/diff")
+    assert rv.status_code == 200
     rv = app.get("/editgroup/ccccccccccccccccccccccccca")
+    assert rv.status_code == 404
+    rv = app.get("/editgroup/ccccccccccccccccccccccccca/diff")
     assert rv.status_code == 404
 
     rv = app.get("/editor/aaaaaaaaaaaabkvkaaaaaaaaae")

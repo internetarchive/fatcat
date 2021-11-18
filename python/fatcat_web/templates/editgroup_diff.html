@@ -2,56 +2,31 @@
 
 {% macro edit_diff_list(auth_to, editgroup, edits, diffs, entity_type, entity_name) -%}
 {% if edits %}
-  <h3>{{ entity_name }} Edits ({{ edits|count }})</h3>
+  <h3>{{ entity_name }} Edit Diffs ({{ edits|count }})</h3>
   <hr>
   <div class="ui divided list">
     {% for edit in edits %}
-    <div class="item">
+    <div class="item" id="{{ entity_type }}_{{ edit.ident }}">
       <div class="content" style="padding-bottom: 0.5em;">
-        <div style="float: right; font-weight: bold;">
-          <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view]</a>
-          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
-            <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
-            <br>
-            <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="submit" value="[delete]" style="background:none; color: red; border: none; font-weight:bold; cursor:pointer; padding: 0;"></input>
-            </form>
-          {% endif %}
-        </div>
-        <div class="header">
-          <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}_{{ edit.ident }}</a>
-          {% if edit.redirect_ident %}
-            =&gt; redirect to <a href="/{{ entity_type }}/{{ edit.redirect_ident }}">{{ entity_type }}/{{ edit.redirect_ident }}</a>
-          {% elif not edit.revision %}
-            deleted
-          {% elif not edit.prev_revision %}
-            created
-          {% else %}
-            updated
-          {% endif %}
-        </div>
-        {% if edit.revision %}
-          Revision: <small><code><a href="/{{ entity_type }}/rev/{{ edit.revision }}">{{ edit.revision }}</a></code></small>
-        {% endif %}
+        {{ entity_edit_header(auth_to, editgroup, edit, entity_type, entity_name) }}
         {% if edit.extra %}
           {{ entity_macros.extra_metadata(edit.extra) }}
         {% endif %}
-        {% if edit.revision and not edit.redirect_ident and edit.ident in diffs %}
-          <div style="border: 2px solid black; overflow-x:scroll; margin: 0.5em;">
-          {% for line in diffs[edit.ident]['diff_lines'] %}
+        {% if edit.revision and not edit.redirect_ident and edit.ident in diffs and diffs[edit.ident] != None %}
+          <div style="border: 1px solid black; font-size: smaller; font-color: #222; word-break: break-all; margin-top: 0.5em; margin-bottom: 0.5em;">
+          {% for line in diffs[edit.ident] %}
             {% set line_space = false %}
             {% if line.startswith('@@') or line.startswith('---') or line.startswith('+++') %}
-              {% set line_color = "lightblue" %}
+              {% set line_color = "lightblue" %}{# a light blue #}
             {% elif line.startswith('+') %}
-              {% set line_color = "lightgreen" %}
+              {% set line_color = "#a4efa4" %}{# a light green #}
             {% elif line.startswith('-') %}
-              {% set line_color = "#ffa3a3" %}
+              {% set line_color = "#ffa3a3" %}{# a light red #}
             {% else %}
-              {% set line_color = "#ddd" %}
+              {% set line_color = "#eee" %}{# almost white #}
               {% set line_space = true %}
             {% endif %}
-            <pre style="background-color: {{ line_color }}; margin: 0px;">{% if line_space %} {% endif %}{{ line.strip() }}</pre>
+            <pre style="background-color: {{ line_color }}; white-space: pre-wrap; margin: 0px;">{% if line_space %}&nbsp;{% endif %}{{ line.strip() }}</pre>
           {% endfor %}
           </div>
         {% endif %}
@@ -62,10 +37,11 @@
 {% endif %}
 {%- endmacro %}
 
-{% block title %}Editgroup diff{% endblock %}
+{% block title %}Editgroup Diff{% endblock %}
+
+{% block pagetitle %}Editgroup Diff{% endblock %}
 
 {% block editgroupedits %}
-<h3 class="ui header">All Entity Change Diffs</h3>
 {{ edit_diff_list(auth_to, editgroup, editgroup.edits.releases, editgroup_diffs.release, "release", "Release") }}
 {{ edit_diff_list(auth_to, editgroup, editgroup.edits.works, editgroup_diffs.work, "work", "Work") }}
 {{ edit_diff_list(auth_to, editgroup, editgroup.edits.containers, editgroup_diffs.container, "container", "Container") }}

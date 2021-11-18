@@ -1,40 +1,45 @@
 {% extends "base.html" %}
 {% import "entity_macros.html" as entity_macros %}
 
+{% macro entity_edit_header(auth_to, editgroup, edit, entity_type, entity_name) -%}
+  <div style="float: right; font-weight: bold;">
+    <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view]</a>
+    <a href="/editgroup/{{ editgroup.editgroup_id }}/diff#{{ entity_type }}_{{ edit.ident }}">[diff]</a>
+    {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
+      <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
+      <br>
+      <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input type="submit" value="[delete]" style="background:none; color: red; border: none; font-weight:bold; cursor:pointer; padding: 0;"></input>
+      </form>
+    {% endif %}
+  </div>
+  <div class="header">
+    <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}_{{ edit.ident }}</a>
+    {% if edit.redirect_ident %}
+      =&gt; redirect to <a href="/{{ entity_type }}/{{ edit.redirect_ident }}">{{ entity_type }}/{{ edit.redirect_ident }}</a>
+    {% elif not edit.revision %}
+      deleted
+    {% elif not edit.prev_revision %}
+      created
+    {% else %}
+      updated
+    {% endif %}
+  </div>
+  {% if edit.revision %}
+    Revision: <small><code><a href="/{{ entity_type }}/rev/{{ edit.revision }}">{{ edit.revision }}</a></code></small>
+  {% endif %}
+{%- endmacro %}
+
 {% macro edit_list(auth_to, editgroup, edits, entity_type, entity_name) -%}
 <div class="{% if edits %}active{% endif %} title">
   <h3><i class="dropdown icon"></i>{{ entity_name }} Edits ({{ edits|count }})</h3>
 </div><div class="{% if edits %}active{% endif %} content" style="padding-bottom: 0.5em;">
   <div class="ui divided list">
     {% for edit in edits %}
-    <div class="item">
+    <div class="item" id="{{ entity_type }}_{{ edit.ident }}">
       <div class="content" style="padding-bottom: 0.5em;">
-        <div style="float: right; font-weight: bold;">
-          <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view]</a>
-          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
-            <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
-            <br>
-            <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="submit" value="[delete]" style="background:none; color: red; border: none; font-weight:bold; cursor:pointer; padding: 0;"></input>
-            </form>
-          {% endif %}
-        </div>
-        <div class="header">
-          <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}_{{ edit.ident }}</a>
-          {% if edit.redirect_ident %}
-            =&gt; redirect to <a href="/{{ entity_type }}/{{ edit.redirect_ident }}">{{ entity_type }}/{{ edit.redirect_ident }}</a>
-          {% elif not edit.revision %}
-            deleted
-          {% elif not edit.prev_revision %}
-            created
-          {% else %}
-            updated
-          {% endif %}
-        </div>
-        {% if edit.revision %}
-          Revision: <small><code><a href="/{{ entity_type }}/rev/{{ edit.revision }}">{{ edit.revision }}</a></code></small>
-        {% endif %}
+        {{ entity_edit_header(auth_to, editgroup, edit, entity_type, entity_name) }}
         {% if edit.extra %}
           {{ entity_macros.extra_metadata(edit.extra) }}
         {% endif %}
@@ -51,11 +56,10 @@
 {# extended by changelog_entry #}
 {% block editgroupheader %}
 
-<h1 class="ui header">Editgroup
+<h1 class="ui header">{% block pagetitle %}Editgroup{% endblock %}
 <span class="sub header"><code>editgroup_{{ editgroup.editgroup_id }}</code></span></h1>
 
 {% if not auth_to.submit %}
-<br clear="all">
 <div class="ui info small message">
   <div class="header">
     What is an editgroup?
