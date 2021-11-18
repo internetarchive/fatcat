@@ -8,7 +8,7 @@ class TypeWithDefault(type):
 class Configuration:
     host: str | None
     temp_folder_path: Any
-    api_key: str | None
+    api_key: Any | None
     api_key_prefix: Any
     refresh_api_key_hook: Any
     username: Any
