@@ -1,3 +1,4 @@
+-- This is the v0.5.0 schema
 -- Add `content_scope` field to file, fileset, webcapture
 
 ALTER TABLE file_rev
