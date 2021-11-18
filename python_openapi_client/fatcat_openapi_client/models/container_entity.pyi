@@ -1,10 +1,10 @@
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 
 class ContainerEntity:
     openapi_types: Any
     attribute_map: Any
     discriminator: Any
-    def __init__(self, state: Any | None = ..., ident: Any | None = ..., revision: Any | None = ..., redirect: Any | None = ..., extra: Any | None = ..., edit_extra: Any | None = ..., name: Any | None = ..., container_type: Any | None = ..., publication_status: Any | None = ..., publisher: Any | None = ..., issnl: Any | None = ..., issne: Any | None = ..., issnp: Any | None = ..., wikidata_qid: Any | None = ...) -> None: ...
+    def __init__(self, state: Optional[str] = ..., ident: Optional[str] = ..., revision: Optional[str] = ..., redirect: Optional[str] = ..., extra: Any | None = ..., edit_extra: Any | None = ..., name: Optional[str] = ..., container_type: Optional[str] = ..., publication_status: Optional[str] = ..., publisher: Optional[str] = ..., issnl: Optional[str] = ..., issne: Optional[str] = ..., issnp: Optional[str] = ..., wikidata_qid: Optional[str] = ...) -> None: ...
     @property
     def state(self) -> Optional[str]: ...
     @state.setter
