@@ -1,4 +1,5 @@
-from typing import Any, Tuple
+import difflib
+from typing import Any, Dict, Tuple
 
 from fatcat_openapi_client import (
     ContainerEntity,
@@ -17,6 +18,7 @@ from flask import abort
 
 from fatcat_tools.transforms import (
     container_to_elasticsearch,
+    entity_to_toml,
     file_to_elasticsearch,
     release_to_elasticsearch,
 )
@@ -188,7 +190,7 @@ def generic_get_entity_revision(entity_type: str, revision_id: str) -> Any:
         elif entity_type == "work":
             return enrich_work_entity(api.get_work_revision(revision_id))
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"entity_type: {entity_type}")
     except ApiException as ae:
         abort(ae.status)
     except ApiValueError:
@@ -258,3 +260,68 @@ def generic_get_editgroup_entity(
 
     entity.ident = ident
     return entity, edit
+
+
+def _entity_edit_diff(entity_type: str, entity_edit: EntityEdit) -> Dict[str, Any]:
+    """
+    entity_edit
+        ident
+        revision
+        prev_revision
+        redirect_ident
+    """
+    pop_fields = ["revision", "state"]
+    new_rev = generic_get_entity_revision(entity_type, entity_edit.revision)
+    new_toml = entity_to_toml(new_rev, pop_fields=pop_fields)
+    if entity_edit.prev_revision:
+        old_rev = generic_get_entity_revision(entity_type, entity_edit.prev_revision)
+        old_toml = entity_to_toml(old_rev, pop_fields=pop_fields)
+        fromdesc = f"/{entity_type}/rev/{entity_edit.prev_revision}.toml"
+    else:
+        old_toml = ""
+        fromdesc = "(created)"
+
+    # differ = difflib.HtmlDiff(tabsize=4)
+    # html_table = differ.make_table(
+    #    old_toml.split('\n'),
+    #    new_toml.split('\n'),
+    #    fromdesc=fromdesc,
+    #    todesc=entity_edit.revision,
+    #    context=True,
+    #    numlines=3,
+    # )
+    # return dict(html_table=html_table)
+    diff_lines = list(
+        difflib.unified_diff(
+            old_toml.split("\n"),
+            new_toml.split("\n"),
+            fromfile=fromdesc,
+            tofile=f"/{entity_type}/rev/{entity_edit.revision}.toml",
+        )
+    )
+    return dict(diff_lines=diff_lines)
+
+
+def editgroup_get_diffs(editgroup: Editgroup) -> Dict[str, Any]:
+    diffs: Dict[str, Any] = {}
+
+    for entity_type in [
+        "container",
+        "creator",
+        "release",
+        "work",
+        "file",
+        "fileset",
+        "webcapture",
+    ]:
+        edits = getattr(editgroup.edits, entity_type + "s") or []
+        diffs[entity_type] = {}
+        for ed in edits:
+            # only for creation and update
+            if ed.revision and not ed.redirect_ident:
+                diffs[entity_type][ed.ident] = _entity_edit_diff(entity_type, ed)
+            else:
+                diffs[entity_type][ed.ident] = None
+        # XXX:
+        print(diffs.keys())
+    return diffs

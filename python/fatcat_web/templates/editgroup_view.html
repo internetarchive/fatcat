@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% import "entity_macros.html" as entity_macros %}
 
-{% block title %}Editgroup{% endblock %}
-
-{% block body %}
-
 {% macro edit_list(auth_to, editgroup, edits, entity_type, entity_name) -%}
 <div class="{% if edits %}active{% endif %} title">
   <h3><i class="dropdown icon"></i>{{ entity_name }} Edits ({{ edits|count }})</h3>
@@ -49,6 +45,9 @@
 </div>
 {%- endmacro %}
 
+{% block title %}Editgroup{% endblock %}
+
+{% block body %}
 {# extended by changelog_entry #}
 {% block editgroupheader %}
 
@@ -170,6 +169,7 @@
   {{ entity_macros.extra_metadata(editgroup.extra) }}
 {% endif %}
 
+{% block editgroupedits %}
 <h3 class="ui header">All Entity Changes</h3>
 <div class="ui styled fluid accordion">
   {{ edit_list(auth_to, editgroup, editgroup.edits.releases, "release", "Release") }}
@@ -183,8 +183,10 @@
 <div style="float: right; font-size: smaller;">
   <a href="{{ config.FATCAT_PUBLIC_API_HOST }}/editgroup/{{ editgroup.editgroup_id }}">As JSON via API</a>
 </div>
+{% endblock %}
 
 <br>
+{% block editgroupannotations %}
 <h3 class="ui header">Comments and Annotations</h3>
 {% for annotation in editgroup.annotations|reverse %}
   <div class="ui segments">
@@ -241,6 +243,7 @@
     </form><br>
   </div>
 {% endif %}
+{% endblock %}
 
 {% endblock %}
 

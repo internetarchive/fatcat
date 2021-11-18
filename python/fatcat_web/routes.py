@@ -41,6 +41,7 @@ from fatcat_web.auth import (
 )
 from fatcat_web.cors import crossdomain
 from fatcat_web.entity_helpers import (
+    editgroup_get_diffs,
     generic_get_editgroup_entity,
     generic_get_entity,
     generic_get_entity_revision,
@@ -687,6 +688,35 @@ def editgroup_view(ident: str) -> AnyResponse:
         if user.is_admin:
             auth_to["accept"] = True
     return render_template("editgroup_view.html", editgroup=eg, auth_to=auth_to)
+
+
+@app.route("/editgroup/<string(length=26):ident>/diff", methods=["GET"])
+def editgroup_diff_view(ident: str) -> AnyResponse:
+    try:
+        eg = api.get_editgroup(str(ident))
+        eg.editor = api.get_editor(eg.editor_id)
+        eg.annotations = api.get_editgroup_annotations(eg.editgroup_id, expand="editors")
+    except ApiException as ae:
+        abort(ae.status)
+    # TODO: idomatic check for login?
+    auth_to = dict(
+        submit=False,
+        accept=False,
+        edit=False,
+        annotate=False,
+    )
+    if session.get("editor"):
+        user = load_user(session["editor"]["editor_id"])
+        auth_to["annotate"] = True
+        if user.is_admin or user.editor_id == eg.editor_id:
+            auth_to["submit"] = True
+            auth_to["edit"] = True
+        if user.is_admin:
+            auth_to["accept"] = True
+    diffs = editgroup_get_diffs(eg)
+    return render_template(
+        "editgroup_diff.html", editgroup=eg, auth_to=auth_to, editgroup_diffs=diffs
+    )
 
 
 @app.route("/editgroup/<string(length=26):ident>/annotation", methods=["POST"])
