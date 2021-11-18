@@ -262,7 +262,7 @@
         },
         "fatcat-openapi-client": {
             "path": "./../python_openapi_client",
-            "version": "==0.4.1"
+            "version": "==0.5.0"
         },
         "filelock": {
             "hashes": [
