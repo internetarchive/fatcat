@@ -305,14 +305,16 @@ def _entity_edit_diff(entity_type: str, entity_edit: EntityEdit) -> List[str]:
             prev_revision
             redirect_ident
     """
-    pop_fields = ["revision", "state"]
-    new_rev = generic_get_entity_revision(entity_type, entity_edit.revision)
-    new_toml = entity_to_toml(new_rev, pop_fields=pop_fields).split("\n")
+    pop_fields = ["ident", "revision", "state"]
+    new_rev = generic_get_entity_revision(entity_type, entity_edit.revision, enrich=False)
+    new_toml = entity_to_toml(new_rev, pop_fields=pop_fields).strip().split("\n")
     if len(new_toml) == 1 and not new_toml[0].strip():
         new_toml = []
     if entity_edit.prev_revision:
-        old_rev = generic_get_entity_revision(entity_type, entity_edit.prev_revision)
-        old_toml = entity_to_toml(old_rev, pop_fields=pop_fields).split("\n")
+        old_rev = generic_get_entity_revision(
+            entity_type, entity_edit.prev_revision, enrich=False
+        )
+        old_toml = entity_to_toml(old_rev, pop_fields=pop_fields).strip().split("\n")
         fromdesc = f"/{entity_type}/rev/{entity_edit.prev_revision}.toml"
     else:
         old_toml = []

@@ -13,6 +13,7 @@
           {{ entity_macros.extra_metadata(edit.extra) }}
         {% endif %}
         {% if edit.revision and not edit.redirect_ident and edit.ident in diffs and diffs[edit.ident] != None %}
+          <br clear="all">
           <div style="border: 1px solid black; font-size: smaller; font-color: #222; word-break: break-all; margin-top: 0.5em; margin-bottom: 0.5em;">
           {% for line in diffs[edit.ident] %}
             {% set line_space = false %}
