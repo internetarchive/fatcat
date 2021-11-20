@@ -141,24 +141,38 @@ def enrich_work_entity(entity: WorkEntity) -> WorkEntity:
     return entity
 
 
-def generic_get_entity(entity_type: str, ident: str) -> Any:
+def generic_get_entity(entity_type: str, ident: str, enrich: bool = True) -> Any:
     try:
-        if entity_type == "container":
+        if entity_type == "container" and enrich:
             return enrich_container_entity(api.get_container(ident))
-        elif entity_type == "creator":
+        elif entity_type == "container":
+            return api.get_container(ident)
+        elif entity_type == "creator" and enrich:
             return enrich_creator_entity(api.get_creator(ident))
-        elif entity_type == "file":
+        elif entity_type == "creator":
+            return api.get_creator(ident)
+        elif entity_type == "file" and enrich:
             return enrich_file_entity(api.get_file(ident, expand="releases"))
-        elif entity_type == "fileset":
+        elif entity_type == "file":
+            return api.get_file(ident, expand="releases")
+        elif entity_type == "fileset" and enrich:
             return enrich_fileset_entity(api.get_fileset(ident, expand="releases"))
-        elif entity_type == "webcapture":
+        elif entity_type == "fileset":
+            return api.get_fileset(ident)
+        elif entity_type == "webcapture" and enrich:
             return enrich_webcapture_entity(api.get_webcapture(ident, expand="releases"))
-        elif entity_type == "release":
+        elif entity_type == "webcapture":
+            return api.get_webcapture(ident)
+        elif entity_type == "release" and enrich:
             return enrich_release_entity(
                 api.get_release(ident, expand="container,creators,files,filesets,webcaptures")
             )
-        elif entity_type == "work":
+        elif entity_type == "release":
+            return api.get_release(ident)
+        elif entity_type == "work" and enrich:
             return enrich_work_entity(api.get_work(ident))
+        elif entity_type == "work":
+            return api.get_work(ident)
         else:
             raise NotImplementedError
     except ApiException as ae:
@@ -167,28 +181,42 @@ def generic_get_entity(entity_type: str, ident: str) -> Any:
         abort(400)
 
 
-def generic_get_entity_revision(entity_type: str, revision_id: str) -> Any:
+def generic_get_entity_revision(entity_type: str, revision_id: str, enrich: bool = True) -> Any:
     try:
-        if entity_type == "container":
+        if entity_type == "container" and enrich:
             return enrich_container_entity(api.get_container_revision(revision_id))
-        elif entity_type == "creator":
+        elif entity_type == "container":
+            return api.get_container_revision(revision_id)
+        elif entity_type == "creator" and enrich:
             return enrich_creator_entity(api.get_creator_revision(revision_id))
-        elif entity_type == "file":
+        elif entity_type == "creator":
+            return api.get_creator_revision(revision_id)
+        elif entity_type == "file" and enrich:
             return enrich_file_entity(api.get_file_revision(revision_id, expand="releases"))
-        elif entity_type == "fileset":
+        elif entity_type == "file":
+            return api.get_file_revision(revision_id)
+        elif entity_type == "fileset" and enrich:
             return enrich_fileset_entity(
                 api.get_fileset_revision(revision_id, expand="releases")
             )
-        elif entity_type == "webcapture":
+        elif entity_type == "fileset":
+            return api.get_fileset_revision(revision_id)
+        elif entity_type == "webcapture" and enrich:
             return enrich_webcapture_entity(
                 api.get_webcapture_revision(revision_id, expand="releases")
             )
-        elif entity_type == "release":
+        elif entity_type == "webcapture":
+            return api.get_webcapture_revision(revision_id)
+        elif entity_type == "release" and enrich:
             return enrich_release_entity(
                 api.get_release_revision(revision_id, expand="container")
             )
-        elif entity_type == "work":
+        elif entity_type == "release":
+            return api.get_release_revision(revision_id, expand="container")
+        elif entity_type == "work" and enrich:
             return enrich_work_entity(api.get_work_revision(revision_id))
+        elif entity_type == "work":
+            return api.get_work_revision(revision_id)
         else:
             raise NotImplementedError(f"entity_type: {entity_type}")
     except ApiException as ae:
@@ -219,7 +247,10 @@ def generic_deleted_entity(entity_type: str, ident: str) -> Any:
 
 
 def generic_get_editgroup_entity(
-    editgroup: Editgroup, entity_type: str, ident: str
+    editgroup: Editgroup,
+    entity_type: str,
+    ident: str,
+    enrich: bool = True,
 ) -> Tuple[Any, EntityEdit]:
     if entity_type == "container":
         edits = editgroup.edits.containers
@@ -252,7 +283,7 @@ def generic_get_editgroup_entity(
         return generic_deleted_entity(entity_type, ident), edit
 
     try:
-        entity = generic_get_entity_revision(entity_type, revision_id)
+        entity = generic_get_entity_revision(entity_type, revision_id, enrich=enrich)
     except ApiException as ae:
         abort(ae.status)
     except ApiValueError:
