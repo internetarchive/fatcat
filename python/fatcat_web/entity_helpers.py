@@ -212,7 +212,7 @@ def generic_get_entity_revision(entity_type: str, revision_id: str, enrich: bool
                 api.get_release_revision(revision_id, expand="container")
             )
         elif entity_type == "release":
-            return api.get_release_revision(revision_id, expand="container")
+            return api.get_release_revision(revision_id)
         elif entity_type == "work" and enrich:
             return enrich_work_entity(api.get_work_revision(revision_id))
         elif entity_type == "work":
