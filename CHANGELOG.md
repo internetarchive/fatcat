@@ -15,7 +15,7 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
-## [0.5.0] - UNRELEASED
+## [0.5.0] - 2021-11-22
 
 Small change to the API schema (and SQL schema), adding the `content_scope`
 field to file, fileset, and webcapture entities. Because there is a SQL schema
@@ -53,6 +53,7 @@ catalog (fatcat.wik), see the separate content CHANGELOG for details.
 - `content_scope` field on file, fileset, and webcapture entities
 - initial fileset importers
 - JSON pseudo-API for reference string match/get interface
+- editgroup "diff" view in web interface
 
 ### Removed
 
