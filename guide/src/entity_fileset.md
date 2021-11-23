@@ -21,6 +21,10 @@
     - `rel` (string, required):
             Eg: "webarchive".
 - `release_ids` (array of string identifiers): references to `release` entities
+- `content_scope` (string): for situations where the fileset does not simply
+  contain the full representation of a work (eg, all files in dataset, for a
+  `dataset` release), describes what that scope of coverage is. Uses same
+  vocabulary as File entity.
 - `extra` (object with string keys): additional metadata about this group of
   files, including upstream platform-specific metadata and identifiers
 

@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   title: fatcat
-  version: 0.4.0
+  version: 0.5.0
   description: |
     Fatcat is a scalable, versioned, API-oriented catalog of bibliographic
     entities and file metadata.
@@ -460,6 +460,9 @@ definitions:
       mimetype:
         type: string
         example: "application/pdf"
+      content_scope:
+        type: string
+        example: "issue"
       release_ids:
         type: array
         items:
@@ -500,6 +503,9 @@ definitions:
     type: object
     properties:
       <<: *ENTITYPROPS
+      content_scope:
+        type: string
+        example: "issue"
       manifest:
         # limit of 200 files, at least to start
         type: array
@@ -601,6 +607,9 @@ definitions:
             Same format as CDX line timestamp (UTC, etc). Corresponds to the
             overall capture timestamp. Should generally be the timestamp of
             capture of the primary resource URL.
+      content_scope:
+        type: string
+        example: "landing-page"
       release_ids:
         type: array
         items:

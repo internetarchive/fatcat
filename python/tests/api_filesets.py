@@ -34,6 +34,7 @@ def test_fileset(api):
             FilesetUrl(url="https://humble-host.com/~user123/dataset/", rel="web"),
         ],
         release_ids=[r1edit.ident],
+        content_scope="dataset",
         extra=dict(t=4, u=9),
         edit_extra=dict(test_key="filesets rule"),
     )
@@ -52,6 +53,7 @@ def test_fileset(api):
     assert fs1.urls == fs2.urls
     assert fs1.manifest == fs2.manifest
     assert fs1.release_ids == fs2.release_ids
+    assert fs1.content_scope == fs2.content_scope
     assert fs1.extra == fs2.extra
 
     # expansion

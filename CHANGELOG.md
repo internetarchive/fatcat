@@ -15,7 +15,11 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
-## [UNRELEASED]
+## [0.5.0] - UNRELEASED
+
+Small change to the API schema (and SQL schema), adding the `content_scope`
+field to file, fileset, and webcapture entities. Because there is a SQL schema
+change, bumping to version v0.5.0.
 
 An outward-facing change is that the fatcat API server now attempts to
 "stabilize" array order within JSON responses by sorting elements by
@@ -28,6 +32,9 @@ was created.
 In particular, this may cause broad discrepencies compared to historical bulk
 metadata exports. New bulk exports will be generated with the new ordering.
 
+A number of content cleanups and changes are also taking place to the primary
+catalog (fatcat.wik), see the separate content CHANGELOG for details.
+
 ### Fixed
 
 - API array order stablization, using `ORDER BY` in `fatcatd`. See note above.
@@ -35,11 +42,21 @@ metadata exports. New bulk exports will be generated with the new ordering.
 ### Changed
 
 - broad python code style updates: formatting, lint rules, and type annotations
+- a number of internal refactors of metadata importers
+- stopped created a small number of Datacite-specific license slugs
+- stopped trying to "fix" double slashes in DOIs, in most cases
+- reduced amount of metadata stored in release `extra` field in Datacite
+  importer
 
 ### Added
 
+- `content_scope` field on file, fileset, and webcapture entities
 - initial fileset importers
 - JSON pseudo-API for reference string match/get interface
+
+### Removed
+
+- deleted deprecated `cdl_dash_dat` and `wayback_static` one-time importers
 
 ## [0.4.0] - 2021-10-14
 

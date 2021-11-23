@@ -220,6 +220,7 @@ pub struct FileRevRow {
     pub sha256: Option<String>,
     pub md5: Option<String>,
     pub mimetype: Option<String>,
+    pub content_scope: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -231,6 +232,7 @@ pub struct FileRevNewRow {
     pub sha256: Option<String>,
     pub md5: Option<String>,
     pub mimetype: Option<String>,
+    pub content_scope: Option<String>,
 }
 
 entity_structs!(
@@ -291,12 +293,14 @@ pub struct FilesetRevUrlNewRow {
 pub struct FilesetRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
+    pub content_scope: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
 #[table_name = "fileset_rev"]
 pub struct FilesetRevNewRow {
     pub extra_json: Option<serde_json::Value>,
+    pub content_scope: Option<String>,
 }
 
 entity_structs!(
@@ -360,6 +364,7 @@ pub struct WebcaptureRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub original_url: String,
     pub timestamp: chrono::NaiveDateTime,
+    pub content_scope: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -368,6 +373,7 @@ pub struct WebcaptureRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub original_url: String,
     pub timestamp: chrono::NaiveDateTime,
+    pub content_scope: Option<String>,
 }
 
 entity_structs!(
