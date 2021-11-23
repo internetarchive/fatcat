@@ -1,0 +1,85 @@
+
+First ran in QA, then prod run below.
+
+Note that no SQL snapshot was taken just before this upgrade.
+
+
+## QA
+
+Date: 2021-11-22 (Pacific)
+
+Testing database migration to v0.5.0 in QA.
+
+Commands and timing:
+
+    git checkout bnewbold-content-scope
+
+    git log | head -n1
+    # commit dd00cec4164c1a1c31c8d9cffb92deb2e30b2211
+
+    # as fatcat, in rust directory
+    time diesel migration run
+
+    # Running migration 2021-11-17-222046_content_scope
+    # real    1m45.095s
+    # user    0m0.023s
+    # sys     0m0.008s
+
+Hrm, seems like the `ALTER TABLE` resulted in full table scans, which is
+unexpected but not too bad.
+
+    time cargo build --release
+
+    # Finished release [optimized] target(s) in 4m 44s
+    # real    4m45.105s
+    # user    35m35.911s
+    # sys     0m57.502s
+
+    time pipenv install --dev --deploy
+
+    # real    0m31.618s
+    # user    0m26.830s
+    # sys     0m3.873s
+
+Did a test edit to add `content_scope` on a file entity, using web TOML form,
+and it worked. Ready for prod!
+
+
+## Prod
+
+Prep steps:
+- merge branch to master
+- tag (signed)
+
+Primary Deployment Steps:
+- halt all workers on prod1
+- git pull
+- run diesel SQL migration: time diesel migration run
+- cargo build: time cargo build --release
+- restart fatcat-api
+- pipenv update: time pipenv install --dev --deploy
+- restart fatcat-web
+- restart all workers on prod1
+- deploy to misc-vm, fatcat-prod2-vm, scholar2-vm
+
+Commands:
+
+    git log | head -n1
+    # commit a1f8783c7774be7523f7a0207050e09bf5cdb12b
+
+    time diesel migration run
+    # real    1m52.029s
+    # user    0m0.041s
+    # sys     0m0.020s
+
+    time cargo build --release
+    # real    3m19.235s
+    # user    8m49.656s
+    # sys     0m10.654s
+
+    time pipenv install --dev --deploy
+    # real    0m13.378s
+    # user    1m44.558s
+    # sys     0m16.582s
+
+Done, re-deployed elsewhere, and checked status.
