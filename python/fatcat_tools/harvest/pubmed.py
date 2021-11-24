@@ -279,7 +279,7 @@ def ftpretr(
     "ftp://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/pubmed20n1016.xml.gz") to a
     local temporary file. Returns the name of the local, closed temporary file.
 
-    It is the reponsibility of the caller to cleanup the temporary file.
+    It is the responsibility of the caller to cleanup the temporary file.
 
     Implements a basic retry mechanism, e.g. that became an issue in 08/2021,
     when we encountered EOFError while talking to the FTP server. Retry delay in seconds.

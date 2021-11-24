@@ -161,8 +161,8 @@ def agg_to_dict(agg: Any) -> Dict[str, Any]:
     """
     Takes a simple term aggregation result (with buckets) and returns a simple
     dict with keys as terms and counts as values. Includes an extra value
-    '_other', and by convention aggregations should be writen to have "missing"
-    vaules as '_unknown'.
+    '_other', and by convention aggregations should be written to have "missing"
+    values as '_unknown'.
     """
     result = dict()
     for bucket in agg.buckets:

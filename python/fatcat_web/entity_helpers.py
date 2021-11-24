@@ -92,7 +92,7 @@ def enrich_release_entity(entity: ReleaseEntity) -> ReleaseEntity:
         # November 1.
         if ref.extra and ref.extra.get("unstructured"):
             ref.extra["unstructured"] = strip_extlink_xml(ref.extra["unstructured"])
-    # for backwards compatability, copy extra['subtitle'] to subtitle
+    # for backwards compatibility, copy extra['subtitle'] to subtitle
     if not entity.subtitle and entity.extra and entity.extra.get("subtitle"):
         if isinstance(entity.extra["subtitle"], str):
             entity.subtitle = entity.extra["subtitle"]
