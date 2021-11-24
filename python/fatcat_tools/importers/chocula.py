@@ -31,9 +31,12 @@ class ChoculaImporter(EntityImporter):
         if not raw_record.get("ident") and not raw_record.get("_known_issnl"):
             self.counts["skip-unknown-new-issnl"] += 1
             return False
+
         if raw_record.get("issnl") and raw_record.get("name"):
             return True
-        return False
+        else:
+            self.counts["skip-partial-metadata"] += 1
+            return False
 
     def parse_record(self, row: Dict[str, Any]) -> Optional[ContainerEntity]:
         """
@@ -125,23 +128,14 @@ class ChoculaImporter(EntityImporter):
             return False
         if not existing.extra:
             existing.extra = dict()
-        if ce.extra.get("urls") and set(ce.extra.get("urls", [])) != set(
-            existing.extra.get("urls", [])
-        ):
+        if ce.extra.get("urls") and not ce.extra.get("urls", []):
             do_update = True
-        if ce.extra.get("webarchive_urls") and set(ce.extra.get("webarchive_urls", [])) != set(
-            existing.extra.get("webarchive_urls", [])
-        ):
+        if ce.extra.get("webarchive_urls") and not ce.extra.get("webarchive_urls", []):
             do_update = True
-        for k in ("ezb", "szczepanski", "publisher_type", "platform"):
-            if ce.extra.get(k) and not existing.extra.get(k):
-                do_update = True
         for k in ("kbart", "ia", "doaj"):
             # always update these fields if not equal (chocula override)
             if ce.extra.get(k) and ce.extra[k] != existing.extra.get(k):
                 do_update = True
-        if ce.publisher and not existing.publisher:
-            do_update = True
         if ce.wikidata_qid and not existing.wikidata_qid:
             do_update = True
 
@@ -171,13 +165,11 @@ class ChoculaImporter(EntityImporter):
                 "ia",
                 "scielo",
                 "kbart",
-                "publisher_type",
-                "platform",
             ):
                 # always update (chocula over-rides)
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
-            for k in ("country",):
+            for k in ("country", "publisher_type", "platform"):
                 # only include if not set (don't clobber human edits)
                 if ce.extra.get(k) and not existing.extra.get(k):
                     existing.extra[k] = ce.extra[k]
