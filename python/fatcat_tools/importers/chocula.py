@@ -43,17 +43,11 @@ class ChoculaImporter(EntityImporter):
         """
 
         name = clean_str(row.get("name"))
+        if name and name.endswith("."):
+            name = name[:-1]
         if not name:
             # Name is required (by schema)
             return None
-
-        name = name.strip()
-
-        if name.endswith(",  Proceedings of the"):
-            name = "Proceedings of the " + name.split(",")[0]
-
-        if name.endswith("."):
-            name = name[:-1]
 
         extra = dict()
         for k in (
