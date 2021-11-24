@@ -147,7 +147,7 @@ complete or correct in more obscure cases.
 - `arxiv` (string): external identifier to a (version-specific) [arxiv.org][]
   work. For releases, must always include the `vN` suffix (eg, `v3`).
 - `jstor` (string): external identifier for works in JSTOR.
-- `ark` (string): ARK identifer
+- `ark` (string): ARK identifier
 - `mag` (deprecated; string): Microsoft Academic Graph identifier. Never used,
   may be deleted in the future
 - `doaj` (string): [DOAJ](https://doaj.org) article-level identifier
@@ -323,7 +323,7 @@ print journal publication.
 Any value at all indicates that the release should be considered "no longer
 published by the publisher or primary host", which could mean different things
 in different contexts. As some concrete examples, works are often accidentally
-generated a duplicate DOI; physics papers have been taken down in reponse to
+generated a duplicate DOI; physics papers have been taken down in response to
 government order under national security justifications; papers have been
 withdrawn for public health reasons (above and beyond any academic-style
 retraction); entire journals may be found to be predatory and pulled from

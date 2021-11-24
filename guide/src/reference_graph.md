@@ -85,7 +85,7 @@ Specific sources:
 * `fatcat-datacite`: same as `crossref`, but for the Datacite DOI registrar.
 * `fatcat-pubmed`: references, linked or not linked, from Pubmed/MEDLINE
   metadata
-* `fatcat`: references in fatcat where the original provenance can't be infered
+* `fatcat`: references in fatcat where the original provenance can't be inferred
   (but could be manually found by inspecting the release edit history)
 * `grobid`: references parsed out of full-text PDFs using
   [GROBID](https://github.com/kermitt2/grobid)

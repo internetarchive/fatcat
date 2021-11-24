@@ -108,7 +108,7 @@ preserved).
 - `suspended`: publication has stopped, but may continue in the future
 - `discontinued`: publication has permanently ceased
 - `vanished`: publication has stopped, and public traces have vanished (eg,
-  publisher website has disapeared with no notice)
+  publisher website has disappeared with no notice)
 - `never`: no works were ever published under this container
 - `one-time`: releases were all published as a one-time even. for example, a
   single instance of a conference, or a fixed-size book series

@@ -33,7 +33,7 @@ unacceptable behavior, you can email <ethics@archive.org>.
   comment threads), as well as any physical spaces such as conference
   gatherings or meetups.
 
-- All participants are expected to respect this code, irregardless of their
+- All participants are expected to respect this code, regardless of their
   position or record of contributions to the project.
 
 ## Unacceptable behavior

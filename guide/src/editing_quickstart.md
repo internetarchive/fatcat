@@ -20,7 +20,7 @@ confirm your email, and then log-in to Fatcat using that. You should see your
 username in the upper right-hand corner of every page when you are successfully
 logged in.
 
-Next find the release's fatcat identifer for the paper we want to add a file
+Next find the release's fatcat identifier for the paper we want to add a file
 to. You can [search](https://fatcat.wiki/release/search) by title, or
 [lookup](https://fatcat.wiki/release/lookup) a paper by an identifier (such
 as a DOI or arXiv ID). If the release you are looking for doesn't exist yet,
@@ -70,7 +70,7 @@ view should have a link to the release entity; follow that link, then click the
 This time, the most recent editgroup should already be selected, so you don't
 need to enter a description at the top. If there are any problems with basic
 metadata, go ahead and fix them, but otherwise skip down to the "Container"
-section and update the fatcat identifer ("FCID") to point to the correct
+section and update the fatcat identifier ("FCID") to point to the correct
 journal. You can [lookup journals](https://fatcat.wiki/container/lookup) by
 ISSN-L, or [search](https://fatcat.wiki/container/search) by title. Add a short
 description of your change ("Updated journal to XYZ") and then submit.
@@ -81,7 +81,7 @@ editgroups from the drop-down link in the upper right-hand corner of every
 page (your username, then "Edit History"). The editgroup page shows all the
 entities created, updated, or deleted, and allows you to make tweaks (re-edit)
 or remove changes. If the release/container update you made was bogus (just as
-a learning exersize), you could remove it here. It's a good practice to group
+a learning exercize), you could remove it here. It's a good practice to group
 related edits into the same editgroup, but only up to 50 or so edits at a time
 (more than that becomes difficult hard to review).
 
