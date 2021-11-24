@@ -15,6 +15,12 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
+## UNRELEASED
+
+### Fixed
+
+- various typos and spelling errors corrected (using `codespell`)
+
 ## [0.5.0] - 2021-11-22
 
 Small change to the API schema (and SQL schema), adding the `content_scope`
