@@ -37,8 +37,8 @@ In tree form:
 
 Workflow:
 
-- run bash script over container dump, outputing compressed, sharded container sitemaps
-- run bash script over release work-grouped, outputing compressed, sharded release sitemaps
+- run bash script over container dump, outputting compressed, sharded container sitemaps
+- run bash script over release work-grouped, outputting compressed, sharded release sitemaps
 - run python script to output top-level `sitemap.xml`
 - `scp` all of this into place
 

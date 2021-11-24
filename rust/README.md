@@ -71,7 +71,7 @@ All configuration goes through environment variables, the notable ones being:
 - `TEST_DATABASE_URL`: used when running `cargo test`
 - `AUTH_LOCATION`: the domain authentication tokens should be valid over
 - `AUTH_KEY_IDENT`: a unique name for the primary auth signing key (used to
-  find the correct key after key rotation has occured)
+  find the correct key after key rotation has occurred)
 - `AUTH_SECRET_KEY`: base64-encoded secret key used to both sign and verify
   authentication tokens (symmetric encryption)
 - `AUTH_ALT_KEYS`: additional ident/key pairs that can be used to verify tokens

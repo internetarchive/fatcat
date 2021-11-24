@@ -29,7 +29,7 @@ file, may be reversed in API responses compared to what was returned
 previously. They should not match what was original supplied when the entity
 was created.
 
-In particular, this may cause broad discrepencies compared to historical bulk
+In particular, this may cause broad discrepancies compared to historical bulk
 metadata exports. New bulk exports will be generated with the new ordering.
 
 A number of content cleanups and changes are also taking place to the primary

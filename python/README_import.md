@@ -140,7 +140,7 @@ Takes a few hours.
 ## dblp
 
 See `extra/dblp/README.md` for notes about first importing container metadata
-and getting a TSV mapping flie to help with import. This is needed because
+and getting a TSV mapping file to help with import. This is needed because
 there is not (yet) a lookup mechanism for `dblp_prefix` as an identifier of
 container entities.
 

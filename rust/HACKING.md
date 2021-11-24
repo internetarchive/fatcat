@@ -26,7 +26,7 @@ are verbose and implemented in a very mechanical fashion. The return type
 mapping in `api_wrappers` might be necessary, but `database_models.rs` in
 particular feels unnecessary; other projects have attempted to completely
 automate generation of this file, but it doesn't sound reliable. In particular,
-both regular "Row" (queriable) and "NewRow" (insertable) structs need to be
+both regular "Row" (queryable) and "NewRow" (insertable) structs need to be
 defined.
 
 ## Test Structure

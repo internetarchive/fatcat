@@ -92,7 +92,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - maybe better 'success' return message? eg, "success: true" flag
 - idea: allow users to generate their own editgroup UUIDs, to reduce a round
   trips and "hanging" editgroups (created but never edited)
-- refactor API schema for some entity-generic methos (eg, history, edit
+- refactor API schema for some entity-generic methods (eg, history, edit
   operations) to take entity type as a URL path param. greatly reduce macro
   foolery and method count/complexity, and ease creation of new entities
     => /{entity}/edit/{edit_id}
@@ -161,7 +161,7 @@ new importers:
   convert JATS if necessary
 - switch from slog to simple pretty_env_log
 - format returned datetimes with only second precision, not millisecond (RFC mode)
-    => burried in model serialization internals
+    => buried in model serialization internals
 - refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher

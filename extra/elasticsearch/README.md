@@ -83,7 +83,7 @@ a new index and then cut over with no downtime.
 
     http put :9200/fatcat_release_v03 < release_schema.json
 
-To replace a "real" index with an alias pointer, do two actions (not truely
+To replace a "real" index with an alias pointer, do two actions (not truly
 zero-downtime, but pretty fast):
 
     http delete :9200/fatcat_release

@@ -2,7 +2,7 @@
 This folder contains scripts to merge journal metadat from multiple sources and
 provide a snapshot for bulk importing into fatcat.
 
-Specific bots will probably be needed to do continous updates; that's out of
+Specific bots will probably be needed to do continuous updates; that's out of
 scope for this first import.
 
 
