@@ -119,8 +119,8 @@ setup(
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        #'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
+        'License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
+        'Development Status :: 3 - Beta',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
