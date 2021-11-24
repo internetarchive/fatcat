@@ -70,7 +70,7 @@ class FileMerger(EntityMerger):
         """
         updated = False
         # NOTE: intentionally not including sha1 here
-        for k in ["size", "mimetype", "sha256", "md5"]:
+        for k in ["size", "mimetype", "sha256", "md5", "content_scope"]:
             if not getattr(primary, k) and getattr(other, k):
                 setattr(primary, k, getattr(other, k))
                 updated = True
