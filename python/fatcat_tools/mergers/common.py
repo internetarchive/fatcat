@@ -76,8 +76,8 @@ class EntityMerger(EntityImporter):
             evidence: Optional[dict]
                 # can be anything, entity- or merger-specific
                 # some variables might be...
-                dupe_extid: str
-                dupe_extid_type: str
+                extid: str
+                extid_type: str
 
         Returns nothing.
         """

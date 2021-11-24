@@ -106,7 +106,7 @@ class FileMerger(EntityMerger):
         evidence: Optional[Dict[str, Any]] = None,
     ) -> int:
 
-        # currently requires for extid validation
+        # currently required for extid validation
         if not evidence or not (evidence.get("extid_type") and evidence.get("extid")):
             self.counts["skip-missing-evidence"] += 1
             return 0
