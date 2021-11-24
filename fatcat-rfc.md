@@ -63,7 +63,7 @@ to a rigid third-party ontology or schema.
 
 Microservice daemons should be able to proxy between the primary API and
 standard protocols like ResourceSync and OAI-PMH, and third party bots could
-ingest or synchronize the databse in those formats.
+ingest or synchronize the database in those formats.
 
 ## Licensing
 
@@ -109,7 +109,7 @@ push through edits more rapidly (eg, importing new works from a publisher API).
 
 Bots need to be tuned to have appropriate edit group sizes (eg, daily batches,
 instead of millions of works in a single edit) to make human QA review and
-reverts managable.
+reverts manageable.
 
 Data provenance and source references are captured in the edit metadata, instead
 of being encoded in the entity data model itself. In the case of importing
@@ -153,7 +153,7 @@ In comparison, 96-bit identifiers would have 20 characters and look like:
     work_rzga5b9cd7efgh04iljk
     https://fatcat.wiki/work/rzga5b9cd7efgh04iljk
 
-A 64-bit namespace would probably be large enought, and would work with
+A 64-bit namespace would probably be large enough, and would work with
 database Integer columns:
 
     work_rzga5b9cd7efg
@@ -170,7 +170,7 @@ entity. Revisions are stored in their complete form, not as a patch or
 difference; if comparing to distributed version control systems, this is the
 git model, not the mercurial model.
 
-The entity revisions are immutable once accepted; the editting process involves
+The entity revisions are immutable once accepted; the editing process involves
 the creation of new entity revisions and, if the edit is approved, pointing the
 identifier to the new revision. Entities cross-reference between themselves by
 *identifier* not *revision number*. Identifier pointers also support
@@ -327,7 +327,7 @@ Some special namespace tables and enums would probably be helpful; these could
 live in the database (not requiring a database migration to update), but should
 have more controlled editing workflow... perhaps versioned in the codebase:
 
-- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifers
+- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifiers
   themselves)
 - subject categorization
 - license and open access status
