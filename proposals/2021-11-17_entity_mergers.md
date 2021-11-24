@@ -6,7 +6,7 @@ Entity Mergers
 
 One category of type of catalog metadata cleanup is merging multiple duplicate
 entries into a single record. The fatcat catalog allows this via during the
-duplicate entities into "redirect reccords" which point at the single merged
+duplicate entities into "redirect records" which point at the single merged
 record.
 
 This proposal briefly describes the process for doing bulk merges.
@@ -78,7 +78,7 @@ be merged (redirected) to the primary release's work entity.
 "Grouping" releases is the same as merging their works. In this situation, the
 number of distinct release entities stays the same, but the duplicates are
 updated to be under the same work as the primary. This is initially implemented
-by merging the work entites, and then updating *all* the releases under each
+by merging the work entities, and then updating *all* the releases under each
 merged work towards the primary work identifier. No artifact entities need to
 be updated in this scenario.
 
