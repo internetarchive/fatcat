@@ -149,6 +149,12 @@ class ChoculaImporter(EntityImporter):
             existing.wikidata_qid = existing.wikidata_qid or ce.wikidata_qid
             existing.publisher = existing.publisher or ce.publisher
             existing.container_type = existing.container_type or ce.container_type
+            existing.publication_status = existing.publication_status or ce.publication_status
+            # move issne/issnp from "extra" to top-level fields (new schema)
+            if not existing.issne:
+                existing.issne = existing.extra.pop("issne", None)
+            if not existing.issnp:
+                existing.issnp = existing.extra.pop("issnp", None)
             existing.issne = existing.issne or ce.issne
             existing.issnp = existing.issnp or ce.issnp
             for k in ("urls", "webarchive_urls"):
