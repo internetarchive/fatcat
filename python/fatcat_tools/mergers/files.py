@@ -24,9 +24,12 @@ class FileMerger(EntityMerger):
 
     def __init__(self, api: fatcat_openapi_client.ApiClient, **kwargs) -> None:
 
-        eg_desc = kwargs.get("editgroup_description", "Automated merge of file entities")
-        eg_extra = kwargs.get("editgroup_extra", dict())
+        eg_desc = (
+            kwargs.pop("editgroup_description", None) or "Automated merge of file entities"
+        )
+        eg_extra = kwargs.pop("editgroup_extra", dict())
         eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.FileMerger")
+        self.dry_run_mode: bool = eg_extra.get("dry_run_mode", False)
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
         self.entity_type_name = "file"
 
@@ -130,7 +133,7 @@ class FileMerger(EntityMerger):
             if entities[ident].state != "active":
                 self.counts["skip-not-active-entity"] += 1
                 return 0
-            if getattr(entities[ident].ext_ids, evidence["extid_type"]) != evidence["extid"]:
+            if getattr(entities[ident], evidence["extid_type"]) != evidence["extid"]:
                 self.counts["skip-extid-mismatch"] += 1
                 return 0
 
@@ -138,7 +141,6 @@ class FileMerger(EntityMerger):
             primary_id = self.choose_primary_file(list(entities.values()))
             dupe_ids = [d for d in dupe_ids if d != primary_id]
 
-        # ensure primary is not in dupes
         assert primary_id not in dupe_ids
 
         primary = entities[primary_id]
@@ -146,25 +148,32 @@ class FileMerger(EntityMerger):
         for other_id in dupe_ids:
             other = entities[other_id]
             primary_updated = self.merge_file_metadata_from(primary, other) or primary_updated
-            self.api.update_file(
-                eg_id,
-                other.ident,
-                FileEntity(
-                    redirect=primary.ident,
-                    edit_extra=evidence,
-                ),
-            )
+            if not self.dry_run_mode:
+                self.api.update_file(
+                    eg_id,
+                    other.ident,
+                    FileEntity(
+                        redirect=primary.ident,
+                        edit_extra=evidence,
+                    ),
+                )
             updated_entities += 1
 
         if primary_updated:
-            self.api.update_file(eg_id, primary.ident, primary)
+            if not self.dry_run_mode:
+                self.api.update_file(eg_id, primary.ident, primary)
             updated_entities += 1
 
         return updated_entities
 
 
 def run_merge_files(args: argparse.Namespace) -> None:
-    em = FileMerger(args.api, edit_batch_size=args.batch_size, dry_run_mode=args.dry_run)
+    em = FileMerger(
+        args.api,
+        edit_batch_size=args.batch_size,
+        dry_run_mode=args.dry_run,
+        editgroup_description=args.editgroup_description_override,
+    )
     JsonLinePusher(em, args.json_file).run()
 
 
