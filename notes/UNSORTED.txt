@@ -3,7 +3,7 @@ Not allowed to PUT edits to the same entity in the same editgroup. If you want
 to update an edit, need to delete the old one first.
 
 The state depends only on the current entity state, not any redirect. This
-means that if the target of a redirect is delted, the redirecting entity is
+means that if the target of a redirect is deleted, the redirecting entity is
 still "redirect", not "deleted".
 
 Redirects-to-redirects are not allowed; this is enforced when the editgroup is
@@ -31,7 +31,7 @@ redirects after some delay period.
 => it would not be too hard to update get_release_files to check for such
    redirects; could be handled by request flag?
 
-`prev_rev` is naively set to the most-recent previous state. If the curent
+`prev_rev` is naively set to the most-recent previous state. If the current
 state was deleted or a redirect, it is set to null.
 
 This parameter is not checked/enforced at edit accept time (but could be, and

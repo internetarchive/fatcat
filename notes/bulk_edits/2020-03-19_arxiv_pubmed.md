@@ -1,7 +1,7 @@
 
 On 2020-03-20, automated daily harvesting and importing of arxiv and pubmed
 metadata started. In the case of pubmed, updates are enabled, so that recently
-created DOI releases get updated with PMID and extra metdata.
+created DOI releases get updated with PMID and extra metadata.
 
 We also want to do last backfills of metadata since the last import up through
 the first day updated by the continuous harvester.

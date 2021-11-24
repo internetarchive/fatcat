@@ -189,7 +189,7 @@ max_wal_size wasn't getting set correctly.
 
 The statements taking the most time are the complex inserts (multi-table
 inserts); they take a fraction of a second though (mean less than a
-milisecond).
+millisecond).
 
 Manifest import runs really slow if release import is concurrent; much faster
 to wait until release import is done first (like a factor of 10x or more).

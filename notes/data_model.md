@@ -87,12 +87,12 @@ Each entity type has tables:
       core representation of a version of the entity
 
     _ident
-      persistant, external identifier
+      persistent, external identifier
       allows merging, unmerging, stable cross-entity references
 
     _edit
       represents change metadata for a single change to one ident
-      needed because an edit alwasy changes ident, but might not change rev
+      needed because an edit always changes ident, but might not change rev
 
 Could someday also have:
 

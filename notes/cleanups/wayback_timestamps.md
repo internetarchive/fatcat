@@ -1,6 +1,6 @@
 
-At some point, using the arabesque importer (from targetted crawling), we
-accidentially imported a bunch of files with wayback URLs that have 12-digit
+At some point, using the arabesque importer (from targeted crawling), we
+accidentally imported a bunch of files with wayback URLs that have 12-digit
 timestamps, instead of the full canonical 14-digit timestamps.
 
 

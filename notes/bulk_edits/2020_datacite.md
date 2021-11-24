@@ -54,7 +54,7 @@ Compare with `--lang-detect`:
     user    3m5.620s
     sys     0m13.344s
 
-Not noticable?
+Not noticeable?
 
 Whole run:
 

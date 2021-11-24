@@ -5,7 +5,7 @@ web.archive.org). These URLs were created accidentally during fatcat
 boostrapping; there are about 300k such file enties to fix.
 
 Will also update archive.org link reltype to 'archive' (instead of
-'repository'), which is the new prefered style.
+'repository'), which is the new preferred style.
 
 Generated the set of files to update like:
 
