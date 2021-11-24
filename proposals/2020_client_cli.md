@@ -69,7 +69,7 @@ Argument conventions:
     ':'     Lookup specifier for entity (eg, external identifier like `doi:10.123/abc`)
 
     '='     Assign field to value in create or update contexts. Non-string
-            values often can be infered by field type
+            values often can be inferred by field type
 
     ':='    Assign field to non-string value in create or update contexts
 
@@ -92,7 +92,7 @@ Small details (mostly TODO):
     '@'     Form field
 
 Output goes to stdout (pretty-printed), unless specified to `--download / -d`),
-in which case output file is infered, or `--output` sets it explicitly.
+in which case output file is inferred, or `--output` sets it explicitly.
 
 ### Internet Archive `ia` Tool
 

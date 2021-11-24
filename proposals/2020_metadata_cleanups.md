@@ -88,7 +88,7 @@ At some point, had many "NULL" publishers.
 
 "Type" coverage should be improved.
 
-"Publisher type" (infered in various ways in chocula tool) could be included in
+"Publisher type" (inferred in various ways in chocula tool) could be included in
 `extra` and end up in search faceting.
 
 Overall OA status should probably be more sophisticated: gold, green, etc.

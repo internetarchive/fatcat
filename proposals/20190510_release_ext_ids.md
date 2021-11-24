@@ -23,7 +23,7 @@ sure this is worth it though.
 
 ## New API
 
-All identifers as text
+All identifiers as text
 
     release_entity
         ext_ids (required)

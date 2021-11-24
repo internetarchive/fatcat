@@ -212,7 +212,7 @@ would make "outbound" queries a trivial key lookup, instead of a query by
 rows would be returned, with unwanted metadata.
 
 Another alternative design would be storing more metadata about source and
-target in each row. This would remove the ned to do separate
+target in each row. This would remove the need to do separate
 "hydration"/"enrich" fetches. This would probably blow up in the index size
 though, and would require more aggressive re-indexing (in a live-updated
 scenario). Eg, when a new fulltext file is updated (access option), would need

@@ -43,7 +43,7 @@ The high-level prosposal is:
   types
 - sort the "source" references into an index and run a merge-sort on bucket
   keys against the "target" index to generate candidate match buckets
-- run python fuzzy match code against the candidate buckets, outputing a status
+- run python fuzzy match code against the candidate buckets, outputting a status
   for each reference input and a list of all strong matches
 - resort successful matches and index by both source and target identifiers as
   output citation graph

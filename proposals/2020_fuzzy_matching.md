@@ -244,7 +244,7 @@ use-cases:
 Optionally, we could also architect/design this tool to replace biblio-glutton
 for ingest-time "reference consolidation", by exposing a biblio-glutton
 compatible API. If this isn't possible or hard it could become a later tool
-instead. Eg, shouldn't sacrafice batch performance for this. In particular, for
+instead. Eg, shouldn't sacrifice batch performance for this. In particular, for
 ingest-time reference matching we'd want the backing corpus to be updated
 continuously, which might be tricky or in conflict with batch-mode design.
 
@@ -289,7 +289,7 @@ reading the Scala and Python source
 
 ## Longtail OA Import Filtering
 
-Not direcly related to matching, but filtering mixed-quality metadata.
+Not directly related to matching, but filtering mixed-quality metadata.
 
 As part of Longtail OA preservation work, we ran a crawl of small OA journal
 websites, and then ran GROBID over the resulting PDFs to extract metadata. We
@@ -383,7 +383,7 @@ indices. It is also possible to iterate over both indices by bucket and doing
 further processing between all the papers, then combined the matches/groups
 from both iterations. The reason for using two indices is to be robust against
 mangled metadata where there is added junk or missing words at either the
-begining or end of the title.
+beginning or end of the title.
 
 To verify candidate pairs, the Jaccard similarity is calculated between the
 full original title strings. This flexibly allows for character typos (human or
