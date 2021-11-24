@@ -25,7 +25,7 @@
 <p>As little &quot;application logic&quot; as possible should be embedded in this back-end; as much as possible would be pushed to bots which could be authored and operated by anybody. A separate web interface project talks to the API backend and can be developed more rapidly with less concern about data loss or corruption.</p>
 <p>A cronjob will creae periodic database dumps, both in &quot;full&quot; form (all tables and all edit history, removing only authentication credentials) and &quot;flattened&quot; form (with only the most recent version of each entity).</p>
 <p>A goal is to be linked-data/RDF/JSON-LD/semantic-web &quot;compatible&quot;, but not necessarily &quot;first&quot;. It should be possible to export the database in a relatively clean RDF form, and to fetch data in a variety of formats, but internally fatcat will not be backed by a triple-store, and will not be bound to a rigid third-party ontology or schema.</p>
-<p>Microservice daemons should be able to proxy between the primary API and standard protocols like ResourceSync and OAI-PMH, and third party bots could ingest or synchronize the databse in those formats.</p>
+<p>Microservice daemons should be able to proxy between the primary API and standard protocols like ResourceSync and OAI-PMH, and third party bots could ingest or synchronize the database in those formats.</p>
 <h2 id="licensing">Licensing</h2>
 <p>The core fatcat database should only contain verifiable factual statements (which isn't to say that all statements are &quot;true&quot;), not creative or derived content.</p>
 <p>The goal is to have a very permissively licensed database: CC-0 (no rights reserved) if possible. Under US law, it should be possible to scrape and pull in factual data from other corpuses without adopting their licenses. The goal here isn't to avoid attribution (provenance information will be included, and a large sources and acknowledgments statement should be maintained and shipped with bulk exports), but trying to manage the intersection of all upstream source licenses seems untenable, and creates burdens for downstream users and developers.</p>
@@ -33,7 +33,7 @@
 <h2 id="basic-editing-workflow-and-bots">Basic Editing Workflow and Bots</h2>
 <p>Both human editors and bots should have edits go through the same API, with humans using either the default web interface, integrations, or client software.</p>
 <p>The normal workflow is to create edits (or updates, merges, deletions) on individual entities. Individual changes are bundled into an &quot;edit group&quot; of related edits (eg, correcting authorship info for multiple works related to a single author). When ready, the editor would &quot;submit&quot; the edit group for review. During the review period, human editors vote and bots can perform automated checks. During this period the editor can make tweaks if necessary. After some fixed time period (72 hours?) with no changes and no blocking issues, the edit group would be auto-accepted if no merge conflicts have be created by other edits to the same entities. This process balances editing labor (reviews are easy, but optional) against quality (cool-down period makes it easier to detect and prevent spam or out-of-control bots). More sophisticated roles and permissions could allow some certain humans and bots to push through edits more rapidly (eg, importing new works from a publisher API).</p>
-<p>Bots need to be tuned to have appropriate edit group sizes (eg, daily batches, instead of millions of works in a single edit) to make human QA review and reverts managable.</p>
+<p>Bots need to be tuned to have appropriate edit group sizes (eg, daily batches, instead of millions of works in a single edit) to make human QA review and reverts manageable.</p>
 <p>Data provenance and source references are captured in the edit metadata, instead of being encoded in the entity data model itself. In the case of importing external databases, the expectation is that special-purpose bot accounts are be used, and tag timestamps and external identifiers in the edit metadata. Human editors would leave edit messages to clarify their sources.</p>
 <p>A style guide (wiki) and discussion forum would be hosted as separate stand-alone services for editors to propose projects and debate process or scope changes. These services should have unified accounts and logins (oauth?) to have consistent account IDs across all mediums.</p>
 <h2 id="global-edit-changelog">Global Edit Changelog</h2>
@@ -47,13 +47,13 @@ https://fatcat.wiki/work/rzga5b9cd7efgh04iljk8f3jvz</code></pre>
 <p>In comparison, 96-bit identifiers would have 20 characters and look like:</p>
 <pre><code>work_rzga5b9cd7efgh04iljk
 https://fatcat.wiki/work/rzga5b9cd7efgh04iljk</code></pre>
-<p>A 64-bit namespace would probably be large enought, and would work with database Integer columns:</p>
+<p>A 64-bit namespace would probably be large enough, and would work with database Integer columns:</p>
 <pre><code>work_rzga5b9cd7efg
 https://fatcat.wiki/work/rzga5b9cd7efg</code></pre>
 <p>The idea would be to only have fatcat identifiers be used to interlink between databases, <em>not</em> to supplant DOIs, ISBNs, handle, ARKs, and other &quot;registered&quot; persistent identifiers.</p>
 <h2 id="entities-and-internal-schema">Entities and Internal Schema</h2>
 <p>Internally, identifiers would be lightweight pointers to &quot;revisions&quot; of an entity. Revisions are stored in their complete form, not as a patch or difference; if comparing to distributed version control systems, this is the git model, not the mercurial model.</p>
-<p>The entity revisions are immutable once accepted; the editting process involves the creation of new entity revisions and, if the edit is approved, pointing the identifier to the new revision. Entities cross-reference between themselves by <em>identifier</em> not <em>revision number</em>. Identifier pointers also support (versioned) deletion and redirects (for merging entities).</p>
+<p>The entity revisions are immutable once accepted; the editing process involves the creation of new entity revisions and, if the edit is approved, pointing the identifier to the new revision. Entities cross-reference between themselves by <em>identifier</em> not <em>revision number</em>. Identifier pointers also support (versioned) deletion and redirects (for merging entities).</p>
 <p>Edit objects represent a change to a single entity; edits get batched together into edit groups (like &quot;commits&quot; and &quot;pull requests&quot; in git parlance).</p>
 <p>SQL tables would probably look something like the (but specific to each entity type, with tables like <code>work_revision</code> not <code>entity_revision</code>):</p>
 <pre><code>entity_ident
@@ -158,7 +158,7 @@ container (aka &quot;venue&quot;, &quot;serial&quot;, &quot;title&quot;)
 <h2 id="controlled-vocabularies">Controlled Vocabularies</h2>
 <p>Some special namespace tables and enums would probably be helpful; these could live in the database (not requiring a database migration to update), but should have more controlled editing workflow... perhaps versioned in the codebase:</p>
 <ul>
-<li>identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifers themselves)</li>
+<li>identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifiers themselves)</li>
 <li>subject categorization</li>
 <li>license and open access status</li>
 <li>work &quot;types&quot; (article vs. book chapter vs. proceeding, etc)</li>
