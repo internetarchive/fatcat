@@ -34,8 +34,6 @@ class EntityMerger(EntityImporter):
 
         # implemented per-task
         try_merge(dupe_ids: List[str], primary_id: Optional[str] = None, evidence: Optional[Dict[str, Any]] = None) -> None
-
-    This class is pretty similar to EntityImporter, but isn't subclassed.
     """
 
     def __init__(self, api: fatcat_openapi_client.ApiClient, **kwargs) -> None:
