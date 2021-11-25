@@ -111,7 +111,8 @@ class EntityMerger(EntityImporter):
         else:
             self.counts["skip"] += 1
         if self._edit_count >= self.edit_batch_size:
-            self.api.accept_editgroup(self._editgroup_id)
+            if not self.dry_run_mode:
+                self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
             self._idents_inflight = []
@@ -128,7 +129,8 @@ class EntityMerger(EntityImporter):
 
     def finish(self) -> Counter:
         if self._edit_count > 0:
-            self.api.accept_editgroup(self._editgroup_id)
+            if not self.dry_run_mode:
+                self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
             self._idents_inflight = []
