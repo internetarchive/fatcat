@@ -284,7 +284,7 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     t["container_name"] = container.name
     # this is container.ident, not release.container_id, because there may
     # be a redirect involved
-    t["container_id"] = container.ident
+    t["container_id"] = container.redirect or container.ident
     t["container_issnl"] = container.issnl
     issns = [container.issnl, container.issne, container.issnp]
     issns = list(set([i for i in issns if i]))
