@@ -39,13 +39,13 @@ class ContainerMerger(EntityMerger):
         eg_extra = kwargs.pop("editgroup_extra", dict())
         eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.ContainerMerger")
         self.dry_run_mode: bool = eg_extra.get("dry_run_mode", False)
-        self.clobber_human_edited: bool = eg_extra.get("clobber_human_edited", False)
-        self.max_container_releases: Optional[int] = eg_extra.get("max_container_releases", 0)
-        if self.max_container_releases and self.max_container_releases < 0:
+        self.clobber_human_edited: bool = kwargs.get("clobber_human_edited", False)
+        self.max_container_releases: Optional[int] = kwargs.get("max_container_releases", 0)
+        if self.max_container_releases is not None and self.max_container_releases < 0:
             self.max_container_releases = None
         super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
         self.entity_type_name = "container"
-        self.http_session = requests_retry_session()
+        self.http_session = requests_retry_session(status_forcelist=[429, 500, 502, 504, 504])
 
     def choose_primary_container(
         self,
@@ -116,16 +116,21 @@ class ContainerMerger(EntityMerger):
             if not self.clobber_human_edited:
                 edit_history = self.api.get_container_history(ident)
                 for edit in edit_history:
-                    if edit.editor.is_bot is not True:
+                    if edit.editgroup.editor.is_bot is not True:
+                        print(f"skipping container_{ident}: human edited", file=sys.stderr)
                         self.counts["skip-human-edited"] += 1
                         return 0
-            resp = self.http_session.get("https://fatcat.wiki/container/{ident}/stats.json")
+            resp = self.http_session.get(f"https://fatcat.wiki/container/{ident}/stats.json")
             resp.raise_for_status()
             stats = resp.json()
             release_counts[ident] = stats["total"]
             if self.max_container_releases is not None:
                 if release_counts[ident] > self.max_container_releases:
                     self.counts["skip-container-release-count"] += 1
+                    print(
+                        f"skipping container_{ident}: release count {release_counts[ident]}",
+                        file=sys.stderr,
+                    )
                     continue
 
         if not primary_id:
@@ -205,12 +210,12 @@ def main() -> None:
         default=sys.stdin,
         type=argparse.FileType("r"),
     )
-    parser.add_argument(
+    sub_merge_containers.add_argument(
         "--clobber-human-edited",
         action="store_true",
         help="if set, entities which have non-bot (human) edits can be updated/redirected",
     )
-    parser.add_argument(
+    sub_merge_containers.add_argument(
         "--max-container-releases",
         default=0,
         type=int,
