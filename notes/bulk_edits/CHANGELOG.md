@@ -25,6 +25,7 @@ and specific final commands in this directory. Quick summary:
   import-time code bug, were fixed. a couple hundred questionable cases remain,
   but are all mismatched due to DOI slash/double-slash issues and will not be
   fixed in an automated way.
+- de-uplicated a few thousand file entities, on the basis of SHA-1 hash
 
 
 ## 2021-06
