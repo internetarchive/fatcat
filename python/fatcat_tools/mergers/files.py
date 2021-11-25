@@ -116,7 +116,6 @@ class FileMerger(EntityMerger):
 
         updated_entities = 0
         entities: Dict[str, FileEntity] = dict()
-        eg_id = self.get_editgroup_id()
 
         all_ids = dupe_ids.copy()
         if primary_id:
@@ -142,6 +141,11 @@ class FileMerger(EntityMerger):
             dupe_ids = [d for d in dupe_ids if d != primary_id]
 
         assert primary_id not in dupe_ids
+
+        if self.dry_run_mode:
+            eg_id = "dummy-editgroup-id"
+        else:
+            eg_id = self.get_editgroup_id()
 
         primary = entities[primary_id]
         primary_updated = False
