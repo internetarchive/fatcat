@@ -92,7 +92,6 @@ class ReleaseMerger(EntityMerger):
         updated_entities = 0
         releases = dict()
         existing_redirects: Dict[str, List[str]] = dict()
-        eg_id = self.get_editgroup_id()
 
         all_ids = dupe_ids.copy()
         if primary_id:
@@ -112,6 +111,11 @@ class ReleaseMerger(EntityMerger):
         primary_work_id = releases[primary_id].work_id
         updated_work_ids = []
         redirected_release_ids = []
+
+        if self.dry_run_mode:
+            eg_id = "dummy-editgroup-id"
+        else:
+            eg_id = self.get_editgroup_id()
 
         # execute all the release redirects
         for release in releases.values():
