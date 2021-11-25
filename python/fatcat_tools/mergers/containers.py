@@ -93,7 +93,6 @@ class ContainerMerger(EntityMerger):
         entities: Dict[str, ContainerEntity] = dict()
         redirects: Dict[str, List[str]] = dict()
         release_counts: Dict[str, int] = dict()
-        eg_id = self.get_editgroup_id()
 
         all_ids = dupe_ids.copy()
         if primary_id:
@@ -136,6 +135,11 @@ class ContainerMerger(EntityMerger):
             dupe_ids = [d for d in dupe_ids if d != primary_id]
 
         assert primary_id not in dupe_ids
+
+        if self.dry_run_mode:
+            eg_id = "dummy-editgroup-id"
+        else:
+            eg_id = self.get_editgroup_id()
 
         primary = entities[primary_id]
         for other_id in dupe_ids:
