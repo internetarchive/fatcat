@@ -171,7 +171,7 @@ def process_file(fe, session) -> dict:
                 assert len(cdx_record['datetime']) == 14 and cdx_record['datetime'].isdigit()
                 full_urls[short] = f"https://web.archive.org/web/{cdx_record['datetime']}/{original_url}"
                 status = "success-api"
-                break
+                continue
             else:
                 print(f"cdx API found, but no match", file=sys.stderr)
         else:

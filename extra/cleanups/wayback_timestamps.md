@@ -302,3 +302,32 @@ Looks like the last small tweak was successful! This was with git commit
          7583 "fail-not-found"
            87 "fail-cdx-403"
 
+## Follow-up (2021-11-16)
+
+Both re-fetching with updated file export, and also fixed a small one-line bug
+in `fetch_full_cdx_ts.py` which was missing most multi-URL file cleanups.
+
+    zcat file_export.json.gz \
+        | pv -l \
+        | rg 'web.archive.org/web/\d{4,12}/' \
+        | gzip \
+        > files_20211127_moreshortts.json.gz
+    # 112M 0:09:38 [ 193k/s]
+
+    zcat files_20211127_moreshortts.json.gz | wc -l
+    # 29,494
+
+    zcat files_20211127_moreshortts.json.gz \
+        | parallel -j6 --linebuffer --round-robin --pipe ./fetch_full_cdx_ts.py \
+        | pv -l \
+        | gzip \
+        > files_20211127_moreshortts.fetched.json.gz
+    # 29.5k 0:14:33 [33.8 /s]
+
+    zcat files_20211127_moreshortts.fetched.json.gz | jq .status | sort | uniq -c | sort -nr
+      21376 "success-api"
+       7576 "fail-not-found"
+        439 "success-self"
+         87 "fail-cdx-403"
+         16 "success-db"
+
