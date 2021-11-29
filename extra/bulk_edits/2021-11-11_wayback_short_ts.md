@@ -50,3 +50,27 @@ Looks good! Run the full batch.
     Counter({'total': 1203309, 'update': 1199782, 'skip-bad-wayback-timestamp': 2556, 'skip': 971, 'skip-status': 923, 'skip-bad-replacement': 48, 'insert': 0, 'exists': 0})
 
 On the order of 99.7% were updated/fixed, over 9.5 million file entities, taking almost 13 hours.
+
+## Production Follow-up (2021-11-29)
+
+Fixed a small bug in `fetch_full_cdx_ts.py` helper script, and running import
+again:
+
+    git log | head -n1
+    # commit ec2809ef2ac51c992463839c1e3451927f5e1661
+
+    export FATCAT_AUTH_WORKER_CLEANUP=[...]
+
+    zcat /srv/fatcat/datasets/files_20211127_moreshortts.fetched.json.gz | wc -l
+    # 29494
+
+    zcat /srv/fatcat/datasets/files_20211127_moreshortts.fetched.json.gz \
+        | pv -l \
+        | python -m fatcat_tools.cleanups.file_short_wayback_ts -
+    # Counter({'total': 29494, 'update': 21358, 'skip': 8126, 'skip-status': 7677, 'skip-bad-replacement': 449, 'skip-bad-wayback': 9, 'skip-bad-wayback-timestamp': 1, 'insert': 0, 'exists': 0})
+
+That caught 72% of the outstanding files. At this point would almost be willing
+to just remove the outstanding bad URLs (possibly leaving the files with no
+access options), but might also be worth revisiting in the future to trace down
+exactly what is going on.
+
