@@ -146,9 +146,14 @@ class ChoculaImporter(EntityImporter):
             existing.publication_status = existing.publication_status or ce.publication_status
             # move issne/issnp from "extra" to top-level fields (new schema)
             if not existing.issne:
-                existing.issne = existing.extra.pop("issne", None)
+                tmp_issn = existing.extra.pop("issne", None)
+                # clean up bad ISSNs in extra metadata
+                if tmp_issn and len(tmp_issn) == 9:
+                    existing.issne = tmp_issn
             if not existing.issnp:
-                existing.issnp = existing.extra.pop("issnp", None)
+                tmp_issn = existing.extra.pop("issnp", None)
+                if tmp_issn and len(tmp_issn) == 9:
+                    existing.issnp = tmp_issn
             existing.issne = existing.issne or ce.issne
             existing.issnp = existing.issnp or ce.issnp
             for k in ("urls", "webarchive_urls"):
