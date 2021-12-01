@@ -77,6 +77,10 @@ class ChoculaImporter(EntityImporter):
         elif "journal " in name.lower():
             container_type = "journal"
 
+        if row["extra"].get("issnp"):
+            row["extra"]["issnp"] = row["extra"]["issnp"].upper()
+        if row["extra"].get("issne"):
+            row["extra"]["issne"] = row["extra"]["issne"].upper()
         ce = ContainerEntity(
             issnl=row["issnl"],
             issnp=row["extra"].get("issnp"),
@@ -149,11 +153,11 @@ class ChoculaImporter(EntityImporter):
                 tmp_issn = existing.extra.pop("issne", None)
                 # clean up bad ISSNs in extra metadata
                 if tmp_issn and len(tmp_issn) == 9:
-                    existing.issne = tmp_issn
+                    existing.issne = tmp_issn.upper()
             if not existing.issnp:
                 tmp_issn = existing.extra.pop("issnp", None)
                 if tmp_issn and len(tmp_issn) == 9:
-                    existing.issnp = tmp_issn
+                    existing.issnp = tmp_issn.upper()
             existing.issne = existing.issne or ce.issne
             existing.issnp = existing.issnp or ce.issnp
             for k in ("urls", "webarchive_urls"):
