@@ -113,25 +113,10 @@ class ContainerMerger(EntityMerger):
             if getattr(entities[ident], evidence["extid_type"]) != evidence["extid"]:
                 self.counts["skip-extid-mismatch"] += 1
                 return 0
-            if not self.clobber_human_edited:
-                edit_history = self.api.get_container_history(ident)
-                for edit in edit_history:
-                    if edit.editgroup.editor.is_bot is not True:
-                        print(f"skipping container_{ident}: human edited", file=sys.stderr)
-                        self.counts["skip-human-edited"] += 1
-                        return 0
             resp = self.http_session.get(f"https://fatcat.wiki/container/{ident}/stats.json")
             resp.raise_for_status()
             stats = resp.json()
             release_counts[ident] = stats["total"]
-            if self.max_container_releases is not None:
-                if release_counts[ident] > self.max_container_releases:
-                    self.counts["skip-container-release-count"] += 1
-                    print(
-                        f"skipping container_{ident}: release count {release_counts[ident]}",
-                        file=sys.stderr,
-                    )
-                    continue
 
         if not primary_id:
             primary_id = self.choose_primary_container(
@@ -140,6 +125,23 @@ class ContainerMerger(EntityMerger):
             dupe_ids = [d for d in dupe_ids if d != primary_id]
 
         assert primary_id not in dupe_ids
+
+        for ident in dupe_ids:
+            if not self.clobber_human_edited:
+                edit_history = self.api.get_container_history(ident)
+                for edit in edit_history:
+                    if edit.editgroup.editor.is_bot is not True:
+                        print(f"skipping container_{ident}: human edited", file=sys.stderr)
+                        self.counts["skip-human-edited"] += 1
+                        return 0
+            if self.max_container_releases is not None:
+                if release_counts[ident] > self.max_container_releases:
+                    self.counts["skip-container-release-count"] += 1
+                    print(
+                        f"skipping container_{ident}: release count {release_counts[ident]}",
+                        file=sys.stderr,
+                    )
+                    return 0
 
         if self.dry_run_mode:
             eg_id = "dummy-editgroup-id"
