@@ -150,3 +150,78 @@ TODO: add manual `finish()` calls on sinks in tool `run` function
         | parallel -j8 --round-robin --pipe -q ./fatcat_import.py --editgroup-description-override 'backfill of full file-level metadata for early-imported papers' file-meta -
     # Counter({'total': 1000, 'update': 481, 'skip-existing-complete': 415, 'skip-no-match': 104, 'skip': 0, 'insert': 0, 'exists': 0})
 
+## 2021-11-29 Update
+
+    zcat ../2021-11-25/file_export.json.gz \
+        | rg -v '"sha256":' \
+        | pv -l \
+        | gzip \
+        > files_missing_sha256.json.gz
+    # 356k 0:11:13 [ 529 /s]
+
+As a side note, almost all the missing entities are at the "start" of the
+export file, not the "end". Presumably because they were imported early on?
+
+    head result_cdx.json | ./pdfextract_tool.py -j1 extract-json -
+
+The `pdfextract_tool.py` already does Kafka publishing, which is great. Should
+be much faster than GROBID worker; we can do the GROBID re-processing later.
+
+Use new sandcrawler CDX lookup/fetch script to find exact CDX rows:
+
+    # in sandcrawler/python folder
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.json.gz \
+        | parallel -j6 --round-robin --pipe --linebuffer pipenv run python -m scripts.fetch_cdx_sha1hex - \
+        | pv -l \
+        | gzip \
+        > /schnell/fatcat_cleanups/file_meta/files_missing_sha256.fetched.json.gz
+    # 356k 2:17:27 [43.2 /s]
+
+    # stats
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.fetched.json.gz \
+        | jq .status -r \
+        | sort \
+        | uniq -c
+
+      15477 fail-not-found
+          5 skip-no-urls
+     314291 success-api
+      26723 success-db
+
+    # extract all CDX rows for processing
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.fetched.json.gz \
+        | rg '"success' \
+        | jq .cdx_rows[] -c \
+        | pv -l \
+        | shuf \
+        | gzip \
+        > /schnell/fatcat_cleanups/file_meta/files_missing_sha256.cdx_rows.json.gz
+    # 354k 0:00:17 [19.7k/s]
+
+    export TMPDIR=/fast/tmp/
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.cdx_rows.json.gz \
+        | parallel -j16 --round-robin --pipe --linebuffer pipenv run ./pdfextract_tool.py -j1 extract-json - \
+        | pv -l \
+        | gzip \
+        > /schnell/fatcat_cleanups/file_meta/files_missing_sha256.pdf_extract.json.gz
+    # 354k 2:45:35 [35.7 /s]
+
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.pdf_extract.json.gz | jq .status -r | sort | uniq -c | sort -nr
+
+     299226 success
+      44297 parse-error
+       8986 error-wayback
+       1819 not-pdf
+        518 text-too-large
+          1 empty-blob
+
+    zcat /schnell/fatcat_cleanups/file_meta/files_missing_sha256.pdf_extract.json.gz \
+        | jq .file_meta -c \
+        | rg -v ^null \
+        | pv -l \
+        | pigz \
+        > /schnell/fatcat_cleanups/file_meta/files_missing_sha256.file_meta.json.gz
+    # 345k 0:08:21 [ 689 /s]
+
+Holding off on actually importing, because metadata dumps are happening on
+fatcat prod database server.
