@@ -203,26 +203,6 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
             t["first_page"] = first
         # TODO: non-numerical first pages
 
-    t["ia_microfilm_url"] = None
-    if t["in_ia_sim"]:
-        # TODO: determine URL somehow? I think this is in flux. Will probably
-        # need extra metadata in the container extra field.
-        # special case as a demo for now.
-        if (
-            release.container_id == "hl5g6d5msjcl7hlbyyvcsbhc2u"
-            and release.release_year in (2011, 2013)
-            and release.issue
-            and release.issue.isdigit()
-            and t["first_page"]
-        ):
-            t[
-                "ia_microfilm_url"
-            ] = "https://archive.org/details/sim_bjog_{}-{:02d}/page/n{}".format(
-                release.release_year,
-                int(release.issue) - 1,
-                t["first_page"],
-            )
-
     t["doi_registrar"] = None
     if extra and t["doi"]:
         for k in ("crossref", "datacite", "jalc"):
