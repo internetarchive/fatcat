@@ -57,6 +57,8 @@
             "issns":          { "type": "keyword", "normalizer": "default" },
             "wikidata_qid":   { "type": "keyword", "normalizer": "default" },
             "dblp_prefix":    { "type": "keyword", "normalizer": "default" },
+            "sim_pubid":      { "type": "keyword", "normalizer": "default" },
+            "ia_sim_collection": { "type": "keyword", "normalizer": "default" },
             "country_code":   { "type": "keyword", "normalizer": "default" },
             "region":         { "type": "keyword", "normalizer": "default" },
             "discipline":     { "type": "keyword", "normalizer": "default" },

@@ -509,6 +509,8 @@ def container_to_elasticsearch(
     if extra.get("ia"):
         if extra["ia"].get("sim"):
             any_ia_sim = True
+            t["sim_pubid"] = extra["ia"]["sim"].get("sim_pubid")
+            t["ia_sim_collection"] = extra["ia"]["sim"].get("collection_item")
         if extra["ia"].get("longtail_oa"):
             is_longtail_oa = True
     t["is_superceded"] = bool(extra.get("superceded"))
