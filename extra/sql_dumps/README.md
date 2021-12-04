@@ -12,7 +12,7 @@ to be a custom client.
 Or, in production:
 
     sudo su postgres
-    DATABASE_URL=fatcat_prod ./ident_table_snapshot.sh /tmp
+    DATABASE_URL=fatcat_prod ./ident_table_snapshot.sh /srv/fatcat/snapshots/
 
 ## HOWTO: Entity Dumps
 
@@ -30,14 +30,12 @@ Dump locally to stdout, eg:
 Or, in production:
 
     # production, as 'fatcat' user, in /srv/fatcat/src/rust:
-    cat /tmp/fatcat_ident_releases_by_work.tsv | ./target/release/fatcat-export releasebywork --expand files,filesets,webcaptures,container -j8 | pigz > /srv/fatcat/snapshots/release_export_expanded.json.gz
-    cat /tmp/fatcat_ident_creators.tsv | ./target/release/fatcat-export creator -j8 | pigz > /srv/fatcat/snapshots/creator_export.json.gz
-    cat /tmp/fatcat_ident_containers.tsv | ./target/release/fatcat-export container -j8 | pigz > /srv/fatcat/snapshots/container_export.json.gz
-    cat /tmp/fatcat_ident_files.tsv | ./target/release/fatcat-export file -j8 | pigz > /srv/fatcat/snapshots/file_export.json.gz
-    cat /tmp/fatcat_ident_filesets.tsv | ./target/release/fatcat-export fileset -j8 | pigz > /srv/fatcat/snapshots/fileset_export.json.gz
-    cat /tmp/fatcat_ident_webcaptures.tsv | ./target/release/fatcat-export webcapture -j8 | pigz > /srv/fatcat/snapshots/webcapture_export.json.gz
-
-Then usually move all these files to `/srv/fatcat/snapshots/`.
+    cat /srv/fatcat/snapshots/fatcat_ident_releases_by_work.tsv | ./target/release/fatcat-export releasebywork --expand files,filesets,webcaptures,container -j8 | pigz > /srv/fatcat/snapshots/release_export_expanded.json.gz
+    cat /srv/fatcat/snapshots/fatcat_ident_creators.tsv | ./target/release/fatcat-export creator -j8 | pigz > /srv/fatcat/snapshots/creator_export.json.gz
+    cat /srv/fatcat/snapshots/fatcat_ident_containers.tsv | ./target/release/fatcat-export container -j8 | pigz > /srv/fatcat/snapshots/container_export.json.gz
+    cat /srv/fatcat/snapshots/fatcat_ident_files.tsv | ./target/release/fatcat-export file -j8 | pigz > /srv/fatcat/snapshots/file_export.json.gz
+    cat /srv/fatcat/snapshots/fatcat_ident_filesets.tsv | ./target/release/fatcat-export fileset -j8 | pigz > /srv/fatcat/snapshots/fileset_export.json.gz
+    cat /srv/fatcat/snapshots/fatcat_ident_webcaptures.tsv | ./target/release/fatcat-export webcapture -j8 | pigz > /srv/fatcat/snapshots/webcapture_export.json.gz
 
 As of March 2021, all these entity dumps serially take almost 40 hours, which
 is pretty slow.
@@ -79,7 +77,7 @@ issues with users/permissions.
 
 To restore, CAREFULLY, run:
 
-    sudo -u postgres pg_restore --clean --if-exists --create --exit-on-error --jobs=16 DUMP_FILE.tar
+    sudo -u postgres pg_restore --clean --if-exists --create --exit-on-error --jobs=16 -f DUMP_FILE.tar
 
 Or, in production:
 
@@ -109,8 +107,12 @@ Can also run using the remote/SSH options above.
 The `./ia_item_exports_readme.md` and `sqldump` files should be included as a
 `README.md` when appropriate:
 
-    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports
-    ia upload fatcat_sqldump_public_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports
+    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports -m mediatype:data -m creator:"Internet Archive Web Group" -m date:YYYY-MM-DD -m title:"Fatcat Bulk Metadata Exports (YYYY-MM-DD)"
+    ia upload fatcat_sqldump_public_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports -m mediatype:data -m creator:"Internet Archive Web Group" -m date:YYYY-MM-DD -m title:"Fatcat Public Database Snapshot (YYYY-MM-DD)"
+
+Then upload the content:
+
+    ia upload fatcat_bulk_exports_YYYY-MM-DD --no-derive *.gz
 
 Uploads should can be `--no-derive` to save cluster time.
 
@@ -124,4 +126,4 @@ Metadata should be set as:
 
 ## HOWTO: Upload refcat to archive.org
 
-    ia upload refcat_YYYY-MM-DD -m collection:fatcat_snapshots_and_exports refcat-brefcombined-YYYY-MM-DD.json.zst
+    ia upload refcat_YYYY-MM-DD -m date:YYYY-MM-DD -m collection:fatcat_snapshots_and_exports -m mediatype:data -m title:"refcat Citation Graph Dataset" daterefcat-brefcombined-YYYY-MM-DD.json.zst
