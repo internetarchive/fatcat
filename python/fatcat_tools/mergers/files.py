@@ -204,7 +204,7 @@ def main() -> None:
         help="don't actually commit merges, just count what would have been",
     )
     parser.set_defaults(
-        auth_var="FATCAT_AUTH_API_TOKEN",
+        auth_var="FATCAT_API_AUTH_TOKEN",
     )
     subparsers = parser.add_subparsers()
 
