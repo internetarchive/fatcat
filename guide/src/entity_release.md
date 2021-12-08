@@ -148,8 +148,8 @@ complete or correct in more obscure cases.
   work. For releases, must always include the `vN` suffix (eg, `v3`).
 - `jstor` (string): external identifier for works in JSTOR.
 - `ark` (string): ARK identifier
-- `mag` (deprecated; string): Microsoft Academic Graph identifier. Never used,
-  may be deleted in the future
+- `mag` (DEPRECATED; string): Microsoft Academic Graph (MAG) identifier. As of
+  December 2021, no entities in the catalog have a value for this field.
 - `doaj` (string): [DOAJ](https://doaj.org) article-level identifier
 - `dblp` (string): [dblp](https://dblp.org) article-level identifier
 - `oai` (string): OAI-PMH record id. Only use if no other identifier is available

@@ -54,12 +54,12 @@ the same regardless of type.
 
 A specific version of any entity in the catalog is called a "revision".
 Revisions are generally immutable (do not change and are not editable), and are
-not normally referred to directly. Instead, persistent "fatcat identifiers" can
-be created, which "point to" a single revision at a time. This distinction
-means that entities referred to by an identifier can change over time (as
-metadata is corrected and expanded). Revision objects do not "point" back to
-specific identifiers, so they are not the same as a simple "version number" for
-an identifier.
+not normally referred to directly. Instead, persistent "fatcat identifiers"
+(`ident`) can be created, which "point to" a single revision at a time. This
+distinction means that entities referred to by an identifier can change over
+time (as metadata is corrected and expanded). Revision objects do not "point"
+back to specific identifiers, so they are not the same as a simple "version
+number" for an identifier.
 
 Identifiers also have the ability to be merged (by redirecting one identifier
 to another) and "deleted" (by pointing the identifier to no revision at all).
