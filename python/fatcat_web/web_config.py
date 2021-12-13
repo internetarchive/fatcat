@@ -12,8 +12,6 @@ import os
 import subprocess
 from typing import Union
 
-import raven
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -44,6 +42,14 @@ def test_bool_str() -> None:
     assert bool_str("True") is True
     assert bool_str("FALSE") is False
 
+def fetch_git_sha():
+    """
+    Get short commit id, runnable anywhere within a git repository.
+    """
+    return subprocess.check_output(['git',
+                                    'rev-parse',
+                                    '--short',
+                                    'HEAD']).decode('ascii').strip()
 
 class Config(object):
     GIT_REVISION = (
@@ -137,7 +143,7 @@ class Config(object):
         PERMANENT_SESSION_LIFETIME = 2678400  # 31 days, in seconds
 
     try:
-        GIT_RELEASE = raven.fetch_git_sha("..")
+        GIT_RELEASE = fetch_git_sha()
     except Exception as e:
         print("WARNING: couldn't set sentry git release automatically: " + str(e))
         GIT_RELEASE = None

@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-import raven
+import sentry_sdk
 
 from fatcat_tools import public_api
 from fatcat_tools.workers import (
@@ -15,7 +15,7 @@ from fatcat_tools.workers import (
 )
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = raven.Client()
+sentry_client = sentry_sdk.init()
 
 
 def run_changelog(args: argparse.Namespace) -> None:

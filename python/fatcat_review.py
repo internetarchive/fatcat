@@ -3,13 +3,13 @@
 import argparse
 import sys
 
-import raven
+import sentry_sdk
 
 from fatcat_tools import authenticated_api
 from fatcat_tools.reviewers import DummyReviewBot
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = raven.Client()
+sentry_client = sentry_sdk.init()
 
 
 def run_dummy(args: argparse.Namespace) -> None:

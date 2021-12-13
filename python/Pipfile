@@ -44,7 +44,6 @@ loginpass = "==0.4"
 # loginpass 0.4 is not actually compatible with newer authlib
 authlib = "<0.13"
 requests = "==2.*"
-raven = {extras = ['flask'],version = "*"}
 confluent-kafka = "==1.*"
 python-dateutil = "==2.*"
 sickle = "==0.7.*"
@@ -71,7 +70,7 @@ fuzzycat = "==0.1.21"
 dynaconf = ">=3"
 pydantic = "==1.*"
 surt = "==0.3.*"
-sentry-sdk = { version = ">=0.14.0", extras = [] }
+sentry-sdk = {extras = ["flask"], version = "*"}
 
 [requires]
 # As of Fall 2020, Internet Archive cluster VMs are split between Ubuntu Xenial

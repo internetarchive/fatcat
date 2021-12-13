@@ -4,7 +4,7 @@ import argparse
 import datetime
 import sys
 
-import raven
+import sentry_sdk
 
 from fatcat_tools.harvest import (
     HarvestArxivWorker,
@@ -16,7 +16,7 @@ from fatcat_tools.harvest import (
 )
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = raven.Client()
+sentry_client = sentry_sdk.init()
 
 
 def run_crossref(args: argparse.Namespace) -> None:
