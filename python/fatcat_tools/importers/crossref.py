@@ -137,6 +137,9 @@ class CrossrefImporter(EntityImporter):
                     index = None
                 raw_affiliation = None
                 affiliation_list = am.get("affiliation") or []
+                # TODO: currently requiring a "name" in all affiliations. Could
+                # add ROR support (via identifier) in the near future
+                affiliation_list = [a for a in affiliation_list if "name" in a]
                 if affiliation_list and len(affiliation_list) > 0:
                     raw_affiliation = affiliation_list[0]["name"]
                     if len(affiliation_list) > 1:
