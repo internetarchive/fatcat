@@ -5,12 +5,19 @@ from typing import Any, Callable, List, Optional
 import elasticsearch
 import requests
 from confluent_kafka import Consumer, KafkaException
-from fatcat_openapi_client import ApiClient, ChangelogEntry, ContainerEntity, ReleaseEntity
+from fatcat_openapi_client import (
+    ApiClient,
+    ChangelogEntry,
+    ContainerEntity,
+    FileEntity,
+    ReleaseEntity,
+)
 
 from fatcat_tools import entity_from_json, public_api
 from fatcat_tools.transforms import (
     changelog_to_elasticsearch,
     container_to_elasticsearch,
+    file_to_elasticsearch,
     release_to_elasticsearch,
 )
 from fatcat_web.search import get_elastic_container_stats
@@ -231,6 +238,32 @@ class ElasticsearchContainerWorker(ElasticsearchReleaseWorker):
         self.consumer_group = "elasticsearch-updates3"
         self.entity_type = ContainerEntity
         self.transform_func = container_to_elasticsearch
+
+
+class ElasticsearchFileWorker(ElasticsearchReleaseWorker):
+    def __init__(
+        self,
+        kafka_hosts: str,
+        consume_topic: str,
+        poll_interval: float = 10.0,
+        offset: Optional[int] = None,
+        elasticsearch_backend: str = "http://localhost:9200",
+        elasticsearch_index: str = "fatcat_file",
+        batch_size: int = 200,
+    ):
+        super().__init__(
+            kafka_hosts=kafka_hosts,
+            consume_topic=consume_topic,
+            poll_interval=poll_interval,
+            offset=offset,
+            elasticsearch_backend=elasticsearch_backend,
+            elasticsearch_index=elasticsearch_index,
+            batch_size=batch_size,
+        )
+        # previous group got corrupted (by pykafka library?)
+        self.consumer_group = "elasticsearch-updates3"
+        self.entity_type = FileEntity
+        self.transform_func = file_to_elasticsearch
 
 
 class ElasticsearchChangelogWorker(ElasticsearchReleaseWorker):
