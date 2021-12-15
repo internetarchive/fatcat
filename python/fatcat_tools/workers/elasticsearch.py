@@ -41,7 +41,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
         offset: Optional[int] = None,
         elasticsearch_backend: str = "http://localhost:9200",
         elasticsearch_index: str = "fatcat",
-        elasticsearch_release_index: str = "fatcat_releases",
+        elasticsearch_release_index: str = "fatcat_release",
         batch_size: int = 200,
         api_host: str = "https://api.fatcat.wiki/v0",
         query_stats: bool = False,
@@ -220,7 +220,7 @@ class ElasticsearchContainerWorker(ElasticsearchReleaseWorker):
         query_stats: bool = False,
         elasticsearch_release_index: str = "fatcat_release",
         elasticsearch_backend: str = "http://localhost:9200",
-        elasticsearch_index: str = "fatcat",
+        elasticsearch_index: str = "fatcat_container",
         batch_size: int = 200,
     ):
         super().__init__(
