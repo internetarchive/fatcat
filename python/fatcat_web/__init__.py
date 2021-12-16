@@ -3,6 +3,7 @@ from typing import Any
 
 import elasticsearch
 import fatcat_openapi_client
+import sentry_sdk
 from authlib.flask.client import OAuth
 from flask import Flask
 from flask.logging import create_logger
@@ -13,7 +14,6 @@ from flask_mwoauth import MWOAuth
 from flask_uuid import FlaskUUID
 from flask_wtf.csrf import CSRFProtect
 from loginpass import GitHub, Gitlab, ORCiD, create_flask_blueprint
-import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from fatcat_web.types import AnyResponse

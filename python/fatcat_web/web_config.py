@@ -42,14 +42,15 @@ def test_bool_str() -> None:
     assert bool_str("True") is True
     assert bool_str("FALSE") is False
 
+
 def fetch_git_sha():
     """
     Get short commit id, runnable anywhere within a git repository.
     """
-    return subprocess.check_output(['git',
-                                    'rev-parse',
-                                    '--short',
-                                    'HEAD']).decode('ascii').strip()
+    return (
+        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+    )
+
 
 class Config(object):
     GIT_REVISION = (
