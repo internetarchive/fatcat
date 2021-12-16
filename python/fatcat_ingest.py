@@ -11,14 +11,14 @@ import sys
 from collections import Counter
 
 import elasticsearch
-import raven
+import sentry_sdk
 from elasticsearch_dsl import Q, Search
 
 from fatcat_tools import kafka_fail_fast, public_api, simple_kafka_producer
 from fatcat_tools.transforms import release_ingest_request
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = raven.Client()
+sentry_client = sentry_sdk.init()
 
 
 def _init_search(args: argparse.Namespace) -> Search:

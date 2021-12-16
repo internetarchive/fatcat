@@ -4,13 +4,13 @@ import argparse
 import os
 import sys
 
-import raven
+import sentry_sdk
 
 from fatcat_tools import authenticated_api
 from fatcat_tools.cleanups import FileCleaner, JsonLinePusher
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = raven.Client()
+sentry_client = sentry_sdk.init()
 
 
 def run_files(args: argparse.Namespace) -> None:

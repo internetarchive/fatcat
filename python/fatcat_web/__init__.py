@@ -13,7 +13,8 @@ from flask_mwoauth import MWOAuth
 from flask_uuid import FlaskUUID
 from flask_wtf.csrf import CSRFProtect
 from loginpass import GitHub, Gitlab, ORCiD, create_flask_blueprint
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from fatcat_web.types import AnyResponse
 from fatcat_web.web_config import Config
@@ -44,7 +45,7 @@ login_manager.login_view = "/auth/login"
 oauth = OAuth(app)
 
 # Grabs sentry config from SENTRY_DSN environment variable
-sentry = Sentry(app)
+sentry_sdk.init(integrations=[FlaskIntegration()])
 
 conf = fatcat_openapi_client.Configuration()
 conf.host = Config.FATCAT_API_HOST
