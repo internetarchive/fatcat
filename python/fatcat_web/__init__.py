@@ -82,7 +82,7 @@ mwoauth = MWOAuth(
 mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
 app.register_blueprint(mwoauth.bp, url_prefix="/auth/wikipedia")
 
-app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND)
+app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND, timeout=40.0)
 
 from fatcat_web import auth, cors, editing_routes, forms, ref_routes, routes
 
