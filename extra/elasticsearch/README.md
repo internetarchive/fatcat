@@ -44,10 +44,10 @@ Drop and rebuild the schema:
     http delete :9200/fatcat_file
     http delete :9200/fatcat_changelog
     http delete :9200/fatcat_ref
-    http put :9200/fatcat_release_v03c?include_type_name=true < release_schema.json
-    http put :9200/fatcat_container_v03c?include_type_name=true < container_schema.json
-    http put :9200/fatcat_file_v03c?include_type_name=true < file_schema.json
-    http put :9200/fatcat_changelog_v03c?include_type_name=true < changelog_schema.json
+    http put :9200/fatcat_release_v05?include_type_name=true < release_schema.json
+    http put :9200/fatcat_container_v05?include_type_name=true < container_schema.json
+    http put :9200/fatcat_file_v05?include_type_name=true < file_schema.json
+    http put :9200/fatcat_changelog_v05?include_type_name=true < changelog_schema.json
     http put :9200/fatcat_ref?include_type_name=true < ref_schema.json
 
 Put a single object (good for debugging):
@@ -63,14 +63,14 @@ Or, in a bulk production bootstrap indexing (NOTE: `--tmpdir` is important for
 large indexes with small rootfs partitions):
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat/snapshots/2021-03-08/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container_v03c
-    time zcat /srv/fatcat/snapshots/2021-03-08/release_export_expanded.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release_v03c
-    time zcat /srv/fatcat/snapshots/2021-03-08/file_export.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file_v03c
+    time zcat /srv/fatcat/snapshots/2021-03-08/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container_v05
+    time zcat /srv/fatcat/snapshots/2021-03-08/release_export_expanded.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release_v05
+    time zcat /srv/fatcat/snapshots/2021-03-08/file_export.json.gz | pv -l | parallel --tmpdir /1/tmp -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file_v05
 
-    http put :9200/fatcat_release_v03c/_alias/fatcat_release
-    http put :9200/fatcat_container_v03c/_alias/fatcat_container
-    http put :9200/fatcat_file_v03c/_alias/fatcat_file
-    http put :9200/fatcat_changelog_v03c/_alias/fatcat_changelog
+    http put :9200/fatcat_release_v05/_alias/fatcat_release
+    http put :9200/fatcat_container_v05/_alias/fatcat_container
+    http put :9200/fatcat_file_v05/_alias/fatcat_file
+    http put :9200/fatcat_changelog_v05/_alias/fatcat_changelog
 
 As of April 2021, the release indexing process takes about 6 hours.
 
@@ -81,21 +81,21 @@ time-stamped) elasticsearch indexes, and then point to them using index
 aliases. The index alias updates are fast and atomic, so we can slowly build up
 a new index and then cut over with no downtime.
 
-    http put :9200/fatcat_release_v03 < release_schema.json
+    http put :9200/fatcat_release_v05 < release_schema.json
 
 To replace a "real" index with an alias pointer, do two actions (not truly
 zero-downtime, but pretty fast):
 
     http delete :9200/fatcat_release
-    http put :9200/fatcat_release_v03/_alias/fatcat_release
+    http put :9200/fatcat_release_v05/_alias/fatcat_release
 
 To do an atomic swap from one alias to a new one ("zero downtime"):
 
     http post :9200/_aliases << EOF
         {
             "actions": [
-                { "remove": { "index": "fatcat_release_v03", "alias": "fatcat_release" }},
-                { "add":    { "index": "fatcat_release_v04", "alias": "fatcat_release" }}
+                { "remove": { "index": "fatcat_release_v05", "alias": "fatcat_release" }},
+                { "add":    { "index": "fatcat_release_v06", "alias": "fatcat_release" }}
             ]
         }
     EOF
