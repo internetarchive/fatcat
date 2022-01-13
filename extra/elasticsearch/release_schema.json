@@ -133,7 +133,7 @@
             "journal":        { "type": "alias", "path": "container_name" },
             "date":           { "type": "alias", "path": "release_date" },
             "year":           { "type": "alias", "path": "release_year" },
-            "issn":           { "type": "alias", "path": "container_issn" },
+            "issn":           { "type": "alias", "path": "container_issns" },
             "oa":             { "type": "alias", "path": "is_oa" },
             "longtail":       { "type": "alias", "path": "is_longtail_oa" },
             "lang":           { "type": "alias", "path": "language" },
