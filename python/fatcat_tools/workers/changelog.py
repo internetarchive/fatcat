@@ -418,7 +418,7 @@ class EntityUpdatesWorker(FatcatWorker):
 
             for ident in set(release_ids):
                 release = self.api.get_release(
-                    ident, expand="files,filesets,webcaptures,container"
+                    ident, expand="files,filesets,webcaptures,container,creators"
                 )
                 if release.work_id:
                     work_ids.append(release.work_id)

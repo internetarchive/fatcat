@@ -10,6 +10,7 @@ from fatcat_tools.workers import (
     ChangelogWorker,
     ElasticsearchChangelogWorker,
     ElasticsearchContainerWorker,
+    ElasticsearchFileWorker,
     ElasticsearchReleaseWorker,
     EntityUpdatesWorker,
 )
@@ -64,6 +65,17 @@ def run_elasticsearch_container(args: argparse.Namespace) -> None:
         consume_topic,
         query_stats=args.query_stats,
         elasticsearch_release_index="fatcat_release",
+        elasticsearch_backend=args.elasticsearch_backend,
+        elasticsearch_index=args.elasticsearch_index,
+    )
+    worker.run()
+
+
+def run_elasticsearch_file(args: argparse.Namespace) -> None:
+    consume_topic = "fatcat-{}.file-updates".format(args.env)
+    worker = ElasticsearchFileWorker(
+        args.kafka_hosts,
+        consume_topic,
         elasticsearch_backend=args.elasticsearch_backend,
         elasticsearch_index=args.elasticsearch_index,
     )
@@ -148,6 +160,22 @@ def main() -> None:
         "--query-stats",
         action="store_true",
         help="whether to query release search index for container stats",
+    )
+
+    sub_elasticsearch_file = subparsers.add_parser(
+        "elasticsearch-file",
+        help="consume kafka feed of new/updated files, transform and push to search",
+    )
+    sub_elasticsearch_file.set_defaults(func=run_elasticsearch_file)
+    sub_elasticsearch_file.add_argument(
+        "--elasticsearch-backend",
+        help="elasticsearch backend to connect to",
+        default="http://localhost:9200",
+    )
+    sub_elasticsearch_file.add_argument(
+        "--elasticsearch-index",
+        help="elasticsearch index to push into",
+        default="fatcat_file",
     )
 
     sub_elasticsearch_changelog = subparsers.add_parser(
