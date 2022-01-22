@@ -36,7 +36,7 @@ macro_rules! generic_auth_err_responses {
         match $val {
             NotFound(_, _) | DatabaseRowNotFound => $resp_type::NotFound($val.into()),
             InvalidCredentials(_) | InsufficientPrivileges(_) => $resp_type::Forbidden($val.into()),
-            DatabaseError(_) | InternalError(_) => {
+            DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                 error!("{}", $val);
                 capture_fail(&$val);
                 $resp_type::GenericError($val.into())
@@ -51,7 +51,7 @@ macro_rules! generic_err_responses {
         //use crate::errors::FatcatError::*;
         match $val {
             NotFound(_, _) | DatabaseRowNotFound => $resp_type::NotFound($val.into()),
-            DatabaseError(_) | InternalError(_) => {
+            DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                 error!("{}", $val);
                 capture_fail(&$val);
                 $resp_type::GenericError($val.into())
@@ -1100,7 +1100,7 @@ impl Api for Server {
                 NotFound(_, _) | DatabaseRowNotFound => {
                     CreateEditgroupResponse::NotFound(fe.into())
                 }
-                DatabaseError(_) | InternalError(_) => {
+                DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                     error!("{}", fe);
                     capture_fail(&fe);
                     CreateEditgroupResponse::GenericError(fe.into())
@@ -1209,7 +1209,7 @@ impl Api for Server {
         {
             Ok(changelog) => GetChangelogResponse::Success(changelog),
             Err(fe) => match fe {
-                DatabaseError(_) | InternalError(_) => {
+                DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                     error!("{}", fe);
                     capture_fail(&fe);
                     GetChangelogResponse::GenericError(fe.into())
@@ -1274,7 +1274,7 @@ impl Api for Server {
                 InvalidCredentials(_) | InsufficientPrivileges(_) => {
                     AuthOidcResponse::Forbidden(fe.into())
                 }
-                DatabaseError(_) | InternalError(_) => {
+                DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                     error!("{}", fe);
                     capture_fail(&fe);
                     AuthOidcResponse::GenericError(fe.into())
@@ -1322,7 +1322,7 @@ impl Api for Server {
                 InvalidCredentials(_) | InsufficientPrivileges(_) => {
                     AuthCheckResponse::Forbidden(fe.into())
                 }
-                DatabaseError(_) | InternalError(_) => {
+                DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                     error!("{}", fe);
                     capture_fail(&fe);
                     AuthCheckResponse::GenericError(fe.into())
@@ -1373,7 +1373,7 @@ impl Api for Server {
                 InvalidCredentials(_) | InsufficientPrivileges(_) => {
                     CreateAuthTokenResponse::Forbidden(fe.into())
                 }
-                DatabaseError(_) | InternalError(_) => {
+                DatabaseError(_) | InternalError(_) | DatabaseReadOnly => {
                     error!("{}", fe);
                     capture_fail(&fe);
                     CreateAuthTokenResponse::GenericError(fe.into())
