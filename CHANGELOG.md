@@ -17,9 +17,19 @@ See also:
 
 ## UNRELEASED
 
+### Changes
+
+- default local development database now called `fatcat_dev`, not `fatcat`
+
 ### Fixed
 
 - various typos and spelling errors corrected (using `codespell`)
+
+### Added
+
+- "alert banner" mechanism for web interface
+- API server detects SQL transaction failure due to read-only mode, and returns
+  appropriate 5xx error
 
 ## [0.5.0] - 2021-11-22
 
