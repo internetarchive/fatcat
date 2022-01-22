@@ -79,14 +79,6 @@ def _run_search_dump(args: argparse.Namespace, search: Search) -> None:
         file=sys.stderr,
     )
 
-    # don't try to clean up scroll if we are connected to public server (behind
-    # nginx proxy that disallows DELETE)
-    if args.elasticsearch_endpoint in (
-        "https://search.fatcat.wiki",
-        "https://search.qa.fatcat.wiki",
-    ):
-        search = search.params(clear_scroll=False)
-
     results = search.scan()
     for esr in results:
         if args.limit and counts["ingest_request"] >= args.limit:
