@@ -41,7 +41,7 @@ commands from that user. To create the database account:
 Copy `./example.env` to `./.env` and update the `DATABASE_URL` and
 `TEST_DATABASE_URL` lines with the password you set above.
 
-As your regular user, use `diesel` to create and initialize the `fatcat`
+As your regular user, use `diesel` to create and initialize the `fatcat_dev`
 database (`diesel` and the fatcat tools will automatically use postgresql
 credentials from the `.env` file) as well as the `fatcat_test` database for
 automated tests:

@@ -50,7 +50,7 @@ Update Rust database schema (after changing raw SQL schema):
 
 Debug SQL schema errors (if diesel commands fail):
 
-    psql fatcat_test < migrations/2019-01-01-000000_init/up.sql
+    psql fatcat_dev < migrations/2019-01-01-000000_init/up.sql
 
 ## Direct API Interaction
 
