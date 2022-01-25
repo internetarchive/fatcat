@@ -45,7 +45,7 @@
 </head>
 <body style="margin-bottom: 130px;">
 
-<header class="ui fixed inverted menu">
+<header class="ui fixed inverted menu" style="height: 3em;">
   <div class="ui container">
     {% if config.FATCAT_DOMAIN.startswith('qa.') %}
       <div class="ui left corner orange small label">
@@ -95,6 +95,18 @@
     </div>
   </div>
 </header>
+
+{% if config.FATCAT_ALERT_MESSAGE %}
+<header class="ui fixed inverted yellow center aligned segment" style="margin-top: 3em; margin-bottom: 0px; padding: 0.5em;">
+  <div class="ui container">
+    <b style="color: black;">
+      <i class="ui exclamation triangle icon"></i>
+      {{ config.FATCAT_ALERT_MESSAGE | safe }}
+      <i class="ui exclamation triangle icon"></i>
+    </b>
+  </div>
+</header>
+{% endif %}
 
 {% block fullmain %}
 <!-- 4em top margin is "enough" -->

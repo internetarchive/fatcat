@@ -81,9 +81,12 @@ pub enum FatcatError {
     // Utf8Decode, StringDecode, Uuid
     BadRequest(String),
 
-    #[fail(display = "unexpected database error: {}", _0)]
+    #[fail(display = "database error: {}", _0)]
     // Diesel constraint that we think is a user error
     ConstraintViolation(String),
+
+    #[fail(display = "database in read-only mode (usually replica or maintenance)")]
+    DatabaseReadOnly,
 
     #[fail(display = "generic database 'not-found'")]
     // This should generally get caught and handled
@@ -117,6 +120,11 @@ impl From<diesel::result::Error> for FatcatError {
     fn from(inner: diesel::result::Error) -> FatcatError {
         match inner {
             diesel::result::Error::NotFound => FatcatError::DatabaseRowNotFound,
+            diesel::result::Error::DatabaseError(_, info)
+                if info.message().contains("in a read-only transaction") =>
+            {
+                FatcatError::DatabaseReadOnly
+            }
             diesel::result::Error::DatabaseError(_, _) => {
                 FatcatError::ConstraintViolation(inner.to_string())
             }

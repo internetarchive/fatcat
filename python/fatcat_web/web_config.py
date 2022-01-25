@@ -123,6 +123,9 @@ class Config(object):
         os.environ.get("FATCAT_MERGE_SHADOW_PRESERVATION", default=False)
     )
 
+    # creates a site-wide alert message
+    FATCAT_ALERT_MESSAGE = os.environ.get("FATCAT_ALERT_MESSAGE", default=None) or None
+
     # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
     # forms)
     WTF_CSRF_CHECK_DEFAULT = False
