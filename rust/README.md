@@ -18,12 +18,14 @@ The SQL database schema (and migrations) are under `./migrations/`.
 You need the following dependencies installed locally to build, run tests, and
 do development work:
 
-- rust stable, 2018 edition, 1.36+ (eg, via "rustup", includes cargo tool)
+- rust stable, minimum supported version 1.41, 2018 edition, (eg, via "rustup", includes cargo tool)
 - diesel (`cargo install diesel_cli`)
-- postgres (compatible with 9.6+; we run 11.x in production)
-- postgres libs (debian/ubuntu: `libsqlite3-dev libpq-dev`)
+- postgresql (we run 13.x in production; should be forwards-compatible, and likely works back to 9.6, but not tested)
+- postgresql libs (debian/ubuntu: `libsqlite3-dev libpq-dev`)
 - libsodium library and development headers (debian/ubuntu: `libsodium-dev`)
-- OpenSSL
+
+The best supported environment for development and deployment is Ubuntu Focal
+LTS (20.04) (as of January 2022).
 
 We need to create a new `fatcat` postgres user and database to run tests and
 develop with. On debian/ubuntu, a UNIX account named `postgres` is
