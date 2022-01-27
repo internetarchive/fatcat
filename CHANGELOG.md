@@ -11,14 +11,22 @@ track major version number, but TBD.
 
 See also:
 
+- release documentation in `./extra/release_process.md`
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
-## UNRELEASED
+## [0.5.1] - 2022-01-26
+
+This is a minor version bump to mark the upgrade of dependencies. There are no
+schema changes, and the schema version has not been incremented (is still
+`0.5.0`).
 
 ### Changes
 
+- expected and tested deployment environment is now Ubuntu Focal and PostgreSQL 13
+- minimum rust version is now 1.41. no new features are being used, but older
+  versions will no longer be tested or supported
 - default local development database now called `fatcat_dev`, not `fatcat`
 
 ### Fixed
