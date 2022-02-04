@@ -17,7 +17,7 @@ from loginpass import GitHub, Gitlab, ORCiD, create_flask_blueprint
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from fatcat_web.types import AnyResponse
-from fatcat_web.web_config import Config
+from fatcat_web.web_config import Config  # type: ignore
 
 toolbar = DebugToolbarExtension()
 

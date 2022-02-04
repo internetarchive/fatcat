@@ -1,3 +1,8 @@
+# type: ignore
+# TODO: we are ignoring mypy type checks on this file because of all the
+# 'os.environ' usage, which is causing trouble with newer mypy. Should resolve
+# (annotate?) and re-enable type checking here
+
 """
 Default configuration for fatcat web interface (Flask application).
 
@@ -7,6 +12,7 @@ variables, not by (eg) deploying a variant copy of this file.
 This config is *only* for the web interface, *not* for any of the workers or
 import scripts.
 """
+
 
 import os
 import subprocess
@@ -43,7 +49,7 @@ def test_bool_str() -> None:
     assert bool_str("FALSE") is False
 
 
-def fetch_git_sha():
+def fetch_git_sha() -> str:
     """
     Get short commit id, runnable anywhere within a git repository.
     """
