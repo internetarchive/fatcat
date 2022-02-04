@@ -1183,7 +1183,7 @@ def container_ident_preservation_by_year_json(ident: str) -> AnyResponse:
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
-    query = ReleaseQuery(container_id=container.ident)
+    query = ReleaseQuery(container_id=container.ident, exclude_stubs=True)
     try:
         histogram = get_elastic_preservation_by_year(query)
     except Exception as ae:
@@ -1201,7 +1201,7 @@ def container_ident_preservation_by_year_svg(ident: str) -> AnyResponse:
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
-    query = ReleaseQuery(container_id=container.ident)
+    query = ReleaseQuery(container_id=container.ident, exclude_stubs=True)
     try:
         histogram = get_elastic_preservation_by_year(query)
     except Exception as ae:
@@ -1223,8 +1223,9 @@ def container_ident_preservation_by_volume_json(ident: str) -> AnyResponse:
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+    query = ReleaseQuery(container_id=container.ident, exclude_stubs=True)
     try:
-        histogram = get_elastic_container_preservation_by_volume(container.ident)
+        histogram = get_elastic_container_preservation_by_volume(query)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
@@ -1241,8 +1242,9 @@ def container_ident_preservation_by_volume_svg(ident: str) -> AnyResponse:
         container = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+    query = ReleaseQuery(container_id=container.ident, exclude_stubs=True)
     try:
-        histogram = get_elastic_container_preservation_by_volume(container.ident)
+        histogram = get_elastic_container_preservation_by_volume(query)
     except Exception as ae:
         app.log.error(ae)
         abort(503)
@@ -1250,6 +1252,25 @@ def container_ident_preservation_by_volume_svg(ident: str) -> AnyResponse:
         histogram,
         merge_shadows=Config.FATCAT_MERGE_SHADOW_PRESERVATION,
     ).render_response()
+
+
+@app.route(
+    "/container/<string(length=26):ident>/preservation_by_type.json",
+    methods=["GET", "OPTIONS"],
+)
+@crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
+def container_ident_preservation_by_type_json(ident: str) -> AnyResponse:
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    query = ReleaseQuery(container_id=container.ident)
+    try:
+        histogram = get_elastic_preservation_by_type(query)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return jsonify({"container_id": ident, "histogram": histogram})
 
 
 @app.route("/release/<string(length=26):ident>.bib", methods=["GET"])

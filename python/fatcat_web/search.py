@@ -37,6 +37,7 @@ class ReleaseQuery:
     fulltext_only: bool = False
     container_id: Optional[str] = None
     recent: bool = False
+    exclude_stubs: bool = False
 
     @staticmethod
     def from_args(args: Dict[str, Any]) -> "ReleaseQuery":
@@ -62,6 +63,7 @@ class ReleaseQuery:
             fulltext_only=bool(args.get("fulltext_only")),
             container_id=container_id,
             recent=bool(args.get("recent")),
+            exclude_stubs=bool(args.get("exclude_stubs")),
         )
 
 
@@ -466,10 +468,14 @@ def get_elastic_container_stats(
     Returns dict:
         ident
         issnl (optional)
-        total
-        in_web
-        in_kbart
-        preserved
+        total: count
+        in_web: count
+        in_kbart: count
+        is_preserved: count
+        preservation{}
+            "histogram" by preservation status
+        release_type{}
+            "histogram" by release type
     """
 
     if not es_client:
@@ -620,6 +626,8 @@ def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]
     Returns a list of dicts, sorted by year, with keys/values like:
 
         {year (int), bright (int), dark (int), shadows_only (int), none (int)}
+
+    Stubs can be excluded by setting the appropriate query flag
     """
 
     search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
@@ -639,6 +647,18 @@ def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]
         search = search.filter(
             "term",
             container_id=query.container_id,
+        )
+    if query.exclude_stubs:
+        search = search.query(
+            "bool",
+            filter=[
+                Q(
+                    "bool",
+                    must_not=[
+                        Q("match", release_type="stub"),
+                    ],
+                ),
+            ],
         )
     search = search.filter(
         "range",
@@ -777,7 +797,7 @@ def get_elastic_preservation_by_date(query: ReleaseQuery) -> List[dict]:
     return sorted(date_dicts.values(), key=lambda x: x["date"])
 
 
-def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict]:
+def get_elastic_container_preservation_by_volume(query: ReleaseQuery) -> List[dict]:
     """
     Fetches a stacked histogram of {volume, preservation}.
 
@@ -787,8 +807,11 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
     Returns a list of dicts, sorted by volume, with keys/values like:
 
         {year (int), bright (int), dark (int), shadows_only (int), none (int)}
+
+    Stubs can be excluded by setting the appropriate query flag
     """
 
+    assert query.container_id is not None
     search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
     search = search.query(
         "bool",
@@ -796,12 +819,25 @@ def get_elastic_container_preservation_by_volume(container_id: str) -> List[dict
             Q(
                 "bool",
                 must=[
-                    Q("match", container_id=container_id),
+                    Q("match", container_id=query.container_id),
                     Q("exists", field="volume"),
                 ],
             ),
         ],
     )
+    if query.exclude_stubs:
+        search = search.query(
+            "bool",
+            filter=[
+                Q(
+                    "bool",
+                    must_not=[
+                        Q("match", release_type="stub"),
+                    ],
+                ),
+            ],
+        )
+
     search.aggs.bucket(
         "volume_preservation",
         "composite",
