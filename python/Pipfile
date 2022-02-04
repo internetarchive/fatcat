@@ -25,9 +25,7 @@ types-requests = "*"
 types-beautifulsoup4 = "*"
 types-toml = "*"
 types-dateparser = "*"
-# must lock black to an exact version because it is still "beta"
-# see: https://github.com/psf/black/issues/517
-black = "==21.9b0"
+black = "*"
 
 [packages]
 fatcat-openapi-client = {path = "./../python_openapi_client"}
