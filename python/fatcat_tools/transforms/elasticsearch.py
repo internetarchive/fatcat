@@ -456,8 +456,11 @@ def container_to_elasticsearch(
         "region",
         "discipline",
         "publisher_type",
+        # some containers still have these in "extra"
+        "issne",
+        "issnp",
     ):
-        if entity.extra.get(key):
+        if entity.extra.get(key) and not t.get(key):
             t[key] = entity.extra[key]
 
     if entity.extra.get("dblp") and entity.extra["dblp"].get("prefix"):
