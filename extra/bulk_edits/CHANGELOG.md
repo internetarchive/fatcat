@@ -9,6 +9,11 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2022-02
+
+- a few tens of thousands of Zenodo releases marked as spam (and `stub`)
+- tens of thousands of no-longer-used Crossref DOIs marked as `stub`
+- hundreds of test/dummy/null releases marked as `stub`
 
 ## 2021-11
 
