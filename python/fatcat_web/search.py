@@ -869,6 +869,8 @@ def get_elastic_container_preservation_by_volume(query: ReleaseQuery) -> List[di
         [int(h["key"]["volume"]) for h in buckets if h["key"]["volume"].isdigit()]
     )
     volume_dicts = dict()
+    if max(volume_nums) - min(volume_nums) > 500:
+        raise Exception("too many volume histogram buckets")
     if volume_nums:
         for num in range(min(volume_nums), max(volume_nums) + 1):
             volume_dicts[num] = dict(volume=num, bright=0, dark=0, shadows_only=0, none=0)
