@@ -76,7 +76,7 @@
         <tr>
           <td class="three wide">
             {% if type_row == "_unknown" %}
-              <i>Unknown</i>
+              <i>unknown-type</i>
             {% else %}
               <code>{{ type_row }}</code>
             {% endif %}
@@ -158,6 +158,8 @@
       <a href="https://catalog.hathitrust.org/Search/Home?lookfor={{ container.issnl }}&searchtype=isn&ft=&setft=false">HathiTrust</a>:
     {% elif k == "portico" and container.issnl %}
       <a href="https://www.portico.org/coverage/titles/?keyword={{ container.issnl }}">Portico</a>:
+    {% elif k == "scholarsportal" and container.issnl %}
+      <a href="https://journals.scholarsportal.info/search?q={{ container.issnl }}&search_in=ISSN">Scholars Portal</a>:
     {% else %}
       <span style="text-transform: uppercase;">{{ k }}:</span>
     {% endif %}
