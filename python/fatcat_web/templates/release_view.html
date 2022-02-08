@@ -121,7 +121,9 @@
 {% if release.abstracts != [] %}
   <h3>Abstract</h3>
   <p><span itemprop="description">{{ release.abstracts[0].content }}</span>
-  <br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
+  {%- if release.abstracts[0].mimetype != None %}
+    <br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
+  {% endif %}
 {% endif %}
 
 {% if entity.state == 'active' %}
