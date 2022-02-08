@@ -254,6 +254,9 @@
   {% if paper.hdl %}
     <a href="https://hdl.handle.net/{{ paper.hdl }}" style="color: green;">hdl:{{ paper.hdl}}</a> &nbsp;
   {% endif %}
+  {% if paper.wikidata_qid %}
+    <a href="https://wikidata.org/wiki/{{ paper.wikidata_qid }}" style="color: green;">wikidata:{{ paper.wikidata_qid }}</a> &nbsp;
+  {% endif %}
 
 {# WIP: elastic release work grouping searches
   <br>
