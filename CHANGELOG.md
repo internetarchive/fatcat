@@ -16,6 +16,13 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
+## UNRELEASED
+
+### Changes
+
+- 'stub' releases are not included in container preservation coverage "by year"
+  and "by volume" charts. they are still included in overall counts.
+
 ## [0.5.1] - 2022-01-26
 
 This is a minor version bump to mark the upgrade of dependencies. There are no
