@@ -88,10 +88,16 @@
 {% endif %}
 {% endif %}
 
+{% if container.container_type != None or container.publication_status != None %}
 <div class="ui segment attached">
-  <b>Type</b> &nbsp;<code>{{ container.container_type or 'unknown' }}</code><br>
-  <b>Status</b> &nbsp;<code>{{ container.publication_status or 'unknown' }}</code><br>
+  {% if container.container_type != None %}
+    <b>Publication Type</b> &nbsp;<code>{{ container.container_type or 'unknown' }}</code><br>
+  {% endif %}
+  {% if container.publication_status != None %}
+    <b>Publication Status</b> &nbsp;<code>{{ container.publication_status or 'unknown' }}</code><br>
+  {% endif %}
 </div>
+{% endif %}
 
 {% if container.issnl != None or container.issne != None or container.issnp != None or container.wikidata_qid != None %}
 <div class="ui segment attached">
