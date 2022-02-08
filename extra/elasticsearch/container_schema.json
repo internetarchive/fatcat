@@ -94,6 +94,12 @@
             "releases_count": { "type": "alias", "path": "releases_total" },
             "oa":             { "type": "alias", "path": "is_oa" },
             "longtail":       { "type": "alias", "path": "is_longtail_oa" },
+            "lang":           { "type": "alias", "path": "languages" },
+            "country":        { "type": "alias", "path": "country_code" },
+            "mimetype":       { "type": "alias", "path": "mimetypes" },
+            "alias":          { "type": "alias", "path": "aliases" },
+            "dblp":           { "type": "alias", "path": "dblp_prefix" },
+            "count":          { "type": "alias", "path": "releases_total" },
             "tag":            { "type": "alias", "path": "tags" }
         }
     }
