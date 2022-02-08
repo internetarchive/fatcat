@@ -34,9 +34,10 @@
   {% if found.results %}
 
     {{ search_macros.top_results(query, found) }}
+    <br clear="all">
 
     {% for entity in found.results %}
-      {{ entity_macros.container_search_result_row(entity) }}
+      {{ entity_macros.container_search_result_row(entity, show_stats=True) }}
     {% endfor %}
 
     {% if found.results|length > 8 %}

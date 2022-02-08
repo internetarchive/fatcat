@@ -178,7 +178,7 @@ def do_container_search(query: GenericQuery, deep_page_limit: int = 2000) -> Sea
 
     search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_CONTAINER_INDEX"])
 
-    search = search.query(
+    basic_query = Q(
         "query_string",
         query=query.q,
         default_operator="AND",
@@ -186,6 +186,20 @@ def do_container_search(query: GenericQuery, deep_page_limit: int = 2000) -> Sea
         allow_leading_wildcard=False,
         lenient=True,
         fields=["biblio"],
+    )
+
+    search = search.query(
+        "boosting",
+        positive=Q(
+            "bool",
+            must=basic_query,
+            should=[
+                Q("range", releases_total={"gte": 500}),
+                Q("range", releases_total={"gte": 5000}),
+            ],
+        ),
+        negative=Q("term", releases_total=0),
+        negative_boost=0.5,
     )
 
     # Sanity checks
