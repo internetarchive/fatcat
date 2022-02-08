@@ -82,7 +82,7 @@
           <div class="ui small tabular compact menu">
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "container" and entity.state == 'active' and not editgroup %}
-              {{ entity_tab("coverage", "Coverage", "/coverage") }}
+              {{ entity_tab("coverage", "Preservation", "/coverage") }}
             {% elif entity_type == "release" and entity.state != 'deleted' %}
               {{ entity_tab("contribs", "Authors", "/contribs", entity._authors|count ) }}
               {% if  entity.state == 'active' %}

@@ -6,7 +6,7 @@
 {% if query.q %}
   Search: {{ query.q }}
 {% else %}
-  Coverage Search
+  Preservation Coverage by Query
 {% endif %}
 {% endblock %}
 
@@ -14,7 +14,7 @@
 
 <div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 4.5em;">
   <div class="ui container text">
-    <h1>Preservation Coverage Visualizer</h1>
+    <h1>Preservation Coverage by Query</h1>
     <form class="" role="search" action="/coverage/search" method="get">
       <div class="ui form">
         <div class="ui action input huge fluid">
@@ -58,7 +58,7 @@
 
 {% if year_histogram_svg != None %}
   <br><br>
-  <h2>Perpetual Access Coverage by Year</h2>
+  <h2>Preservation Coverage by Year</h2>
 
   <figure style="margin: 0 0 0 0;">
     <embed type="image/svg+xml" src="{{ year_histogram_svg|safe }}" />
@@ -68,7 +68,7 @@
 
 {% if date_histogram_svg != None %}
   <br><br>
-  <h2>Perpetual Access Coverage by Date</h2>
+  <h2>Preservation Coverage by Date</h2>
 
   <figure style="margin: 0 0 0 0;">
     <embed type="image/svg+xml" src="{{ date_histogram_svg|safe }}" />
@@ -78,7 +78,7 @@
 
 {% if coverage_type_preservation != None %}
   <br><br>
-  <h2>Perpetual Access Coverage by Release Type</h2>
+  <h2>Preservation Coverage by Release Type</h2>
   <table class="ui table">
     <thead>
       <tr>
