@@ -109,7 +109,7 @@ def enrich_release_entity(entity: ReleaseEntity) -> ReleaseEntity:
     entity._authors = sorted(authors, key=lambda c: (c.index is None and 99999999) or c.index)
     # need authors, title for citeproc to work
     entity._can_citeproc = bool(entity._authors) and bool(entity.title)
-    if entity.abstracts:
+    if entity.abstracts and entity.abstracts[0].mimetype:
         # hack to show plain text instead of latex abstracts
         if "latex" in entity.abstracts[0].mimetype:
             entity.abstracts.reverse()
