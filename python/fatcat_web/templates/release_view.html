@@ -216,11 +216,11 @@ accessible version.
 {% if entity.state == 'active' and entity._es %}
   {% if entity._es.preservation == 'bright' %}
     <div class="ui top attached fluid compact green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #2ca048;">
-      <b>Archived</b>
+      <b>Preserved and Accessible</b>
     </div>
   {% elif entity._es.preservation == 'dark' %}
     <div class="ui top attached fluid large green inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #6e7b71;">
-      <b>"Dark" Archived</b>
+      <b>"Dark" Preservation Only</b>
     </div>
   {% else %}
     <div class="ui top attached fluid large red inverted center aligned segment" style="padding: 0.5em; border-color: #5550; background-color: #b71818;">
