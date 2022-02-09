@@ -44,16 +44,6 @@ class ReleaseQuery:
 
         query_str = args.get("q") or "*"
 
-        container_id = args.get("container_id")
-        # TODO: as filter, not in query string
-        if container_id:
-            query_str += ' container_id:"{}"'.format(container_id)
-
-        # TODO: where are container_issnl queries actually used?
-        issnl = args.get("container_issnl")
-        if issnl and query_str:
-            query_str += ' container_issnl:"{}"'.format(issnl)
-
         offset = args.get("offset", "0")
         offset = max(0, int(offset)) if offset.isnumeric() else 0
 
@@ -61,7 +51,7 @@ class ReleaseQuery:
             q=query_str,
             offset=offset,
             fulltext_only=bool(args.get("fulltext_only")),
-            container_id=container_id,
+            container_id=args.get("container_id"),
             recent=bool(args.get("recent")),
             exclude_stubs=bool(args.get("exclude_stubs")),
         )
@@ -262,6 +252,9 @@ def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> Searc
             Q("bool", must_not=Q("exists", field="container_id")),
         ],
     )
+
+    if query.container_id:
+        search = search.filter("term", container_id=query.container_id)
 
     search = search.query(
         "boosting",
@@ -657,11 +650,7 @@ def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]
                 "biblio",
             ],
         )
-    if query.container_id:
-        search = search.filter(
-            "term",
-            container_id=query.container_id,
-        )
+    search = search.filter("term", container_id=query.container_id)
     if query.exclude_stubs:
         search = search.query(
             "bool",
@@ -923,17 +912,7 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
             ],
         )
     if query.container_id:
-        search = search.query(
-            "bool",
-            filter=[
-                Q(
-                    "bool",
-                    must=[
-                        Q("match", container_id=query.container_id),
-                    ],
-                ),
-            ],
-        )
+        search = search.filter("term", container_id=query.container_id)
     if query.recent:
         date_today = datetime.date.today()
         start_date = str(date_today - datetime.timedelta(days=60))
