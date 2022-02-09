@@ -268,9 +268,63 @@
 
 
 {% macro container_search_result_row(entity, show_stats=False) -%}
-  <div>
+  <div class="ui stackable doubling grid">
+    <div class="twelve wide column">
+      <h4 style="margin-bottom: 0em; font-size: 1.1em;">
+        <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>
+      </h4>
+      {% if entity.original_name %}
+        <i>{{ entity.original_name }}</i></br>
+      {% endif %}
+      {% if entity.publisher %}
+        <a href="/container/search?q=publisher:%22{{ entity.publisher }}%22" style="color: black; margin-top: 0em;">{{ entity.publisher }}</a>
+        <br>
+      {% endif %}
+      {% if entity.issnl %}
+        <a href="https://portal.issn.org/resource/ISSN/{{ entity.issnl }}" style="color: green;">issnl:{{ entity.issnl }}</a> &nbsp;
+      {% endif %}
+      {% if entity.wikidata_qid %}
+        <a href="https://wikidata.org/wiki/{{ entity.wikidata_qid }}" style="color: green;">wikidata:{{ entity.wikidata_qid }}</a> &nbsp;
+      {% endif %}
+      {% if entity.dblp_prefix %}
+        <a href="https://dblp.org/db/{{ entity.dblp_prefix }}/index.html" style="color: green;">dblp:{{ entity.dblp_prefix }}</a> &nbsp;
+      {% endif %}
+      {% if entity.ia_sim_collection %}
+        <a href="https://archive.org/details/{{ entity.ia_sim_collection }}" style="color: green;">[archive.org]</a> &nbsp;
+      {% elif entity.sim_pubid %}
+        <a href="https://archive.org/search.php?query=sim_pubid%3A{{ entity.sim_pubid }}%20mediatype%3Acollection" style="color: green;">[archive.org]</a> &nbsp;
+      {% endif %}
+      {# too much clutter
+        {% if entity.country_code %}
+          <span style="color: black;">country:{{ entity.country_code }}</span> &nbsp;
+        {% endif %}
+        {% for lang in entity.languages %}
+          <span style="color: black;">lang:{{ lang }}</span> &nbsp;
+        {% endfor %}
+        {% if entity.any_kbart %}
+          <span style="color: black;">[KBART]</span> &nbsp;
+        {% endif %}
+        <br>
+      #}
+      {% if entity.in_doaj %}
+        <span style="color: #c54e00;">[DOAJ]</span> &nbsp;
+      {% endif %}
+      {% if entity.in_road %}
+        <span style="color: #c54e00;">[ROAD]</span> &nbsp;
+      {% endif %}
+      {% if entity.is_oa and not (entity.in_doaj or entity.in_road) %}
+        <span style="color: #c54e00;">[open-access]</span> &nbsp;
+      {% endif %}
+      {% if entity.container_type and entity.container_type != "journal" %}
+        <b>[{{ entity.container_type }}]</b> &nbsp;
+      {% endif %}
+      {% if entity.publication_status and entity.publication_status != "active" %}
+        <span style="color: brown;">{{ entity.publication_status }}</span> &nbsp;
+      {% endif %}
+    </div>
+
     {% if show_stats %}
-      <div style="float: right; margin-left: 0.5em; margin-top:0px; width: 150px; text-align: right;">
+      <div class="four wide right aligned column">
         {% if entity.releases_total %}
           <b>~{{ "{:,}".format(entity.releases_total) }}</b> releases
         {% elif entity.releases_total == 0 %}
@@ -280,57 +334,6 @@
           {{ preservation_bar({'bright': entity.preservation_bright, 'dark': entity.preservation_dark, 'none': entity.preservation_none, 'total': entity.releases_total}) }}
         {% endif %}
       </div>
-    {% endif %}
-    <h4 style="margin-top: 1em; margin-bottom: 0em; font-size: 1.1em;">
-      <a href="/container/{{ entity.ident }}" style="color: #2224c7;">{{ entity['name'] }}</a>
-    </h4>
-    {% if entity.original_name %}
-      <i>{{ entity.original_name }}</i></br>
-    {% endif %}
-    {% if entity.publisher %}
-      <a href="/container/search?q=publisher:%22{{ entity.publisher }}%22" style="color: black; margin-top: 0em;">{{ entity.publisher }}</a>
-      <br>
-    {% endif %}
-    {% if entity.issnl %}
-      <a href="https://portal.issn.org/resource/ISSN/{{ entity.issnl }}" style="color: green;">issnl:{{ entity.issnl }}</a> &nbsp;
-    {% endif %}
-    {% if entity.wikidata_qid %}
-      <a href="https://wikidata.org/wiki/{{ entity.wikidata_qid }}" style="color: green;">wikidata:{{ entity.wikidata_qid }}</a> &nbsp;
-    {% endif %}
-    {% if entity.dblp_prefix %}
-      <a href="https://dblp.org/db/{{ entity.dblp_prefix }}/index.html" style="color: green;">dblp:{{ entity.dblp_prefix }}</a> &nbsp;
-    {% endif %}
-    {% if entity.ia_sim_collection %}
-      <a href="https://archive.org/details/{{ entity.ia_sim_collection }}" style="color: green;">[archive.org]</a> &nbsp;
-    {% elif entity.sim_pubid %}
-      <a href="https://archive.org/search.php?query=sim_pubid%3A{{ entity.sim_pubid }}%20mediatype%3Acollection" style="color: green;">[archive.org]</a> &nbsp;
-    {% endif %}
-    {# too much clutter
-      {% if entity.country_code %}
-        <span style="color: black;">country:{{ entity.country_code }}</span> &nbsp;
-      {% endif %}
-      {% for lang in entity.languages %}
-        <span style="color: black;">lang:{{ lang }}</span> &nbsp;
-      {% endfor %}
-      {% if entity.any_kbart %}
-        <span style="color: black;">[KBART]</span> &nbsp;
-      {% endif %}
-      <br>
-    #}
-    {% if entity.in_doaj %}
-      <span style="color: #c54e00;">[DOAJ]</span> &nbsp;
-    {% endif %}
-    {% if entity.in_road %}
-      <span style="color: #c54e00;">[ROAD]</span> &nbsp;
-    {% endif %}
-    {% if entity.is_oa and not (entity.in_doaj or entity.in_road) %}
-      <span style="color: #c54e00;">[open-access]</span> &nbsp;
-    {% endif %}
-    {% if entity.container_type and entity.container_type != "journal" %}
-      <b>[{{ entity.container_type }}]</b> &nbsp;
-    {% endif %}
-    {% if entity.publication_status and entity.publication_status != "active" %}
-      <span style="color: brown;">{{ entity.publication_status }}</span> &nbsp;
     {% endif %}
   </div>
 {% endmacro %}

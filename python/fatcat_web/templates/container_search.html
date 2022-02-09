@@ -33,7 +33,12 @@
 {% if found %}
   {% if found.results %}
 
-    {{ search_macros.top_results(query, found) }}
+    <div>
+      <div class="mobile-hide" style="float: right; margin-left: 0.5em; margin-top:0px; width: 150px; text-align: right;">
+        <i>Content Status</i>
+      </div>
+      {{ search_macros.top_results(query, found) }}
+    </div>
     <br clear="all">
 
     {% for entity in found.results %}
