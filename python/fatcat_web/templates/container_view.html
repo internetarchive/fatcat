@@ -24,12 +24,11 @@
 {% endif %}
 
 {% if container.state == "active" %}
-<h3>Search Releases from this Container</h3>
-<form class="" role="search" action="/release/search" method="get">
+<h3>Search Content</h3>
+<form class="" role="search" action="/container/{{ container.ident }}/search" method="get">
   <div class="ui form">
     <div class="ui action input large fluid">
       <input type="text" placeholder="Search Articles..." name="q" aria-label="search release metadata">
-      <input type="hidden" name="container_id" value="{{ container.ident }}">
       <button class="ui button">Search</button>
     </div>
   </div>

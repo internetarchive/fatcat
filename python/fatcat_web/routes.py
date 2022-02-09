@@ -1079,6 +1079,52 @@ def coverage_search() -> AnyResponse:
     )
 
 
+@app.route("/container/<ident>/search", methods=["GET", "POST"])
+def container_view_search(ident: str) -> AnyResponse:
+    entity = generic_get_entity("container", ident)
+
+    if entity.state == "redirect":
+        return redirect(f"/container/{entity.redirect}")
+    elif entity.state == "deleted":
+        return render_template("deleted_entity.html", entity_type="container", entity=entity)
+
+    if "q" not in request.args.keys():
+        return render_template(
+            "container_view_search.html",
+            query=ReleaseQuery(),
+            found=None,
+            entity_type="container",
+            entity=entity,
+            editgroup_id=None,
+        )
+
+    query = ReleaseQuery.from_args(request.args)
+    query.container_id = ident
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return (
+            render_template(
+                "container_view_search.html",
+                query=query,
+                es_error=fse,
+                entity_type="container",
+                entity=entity,
+                editgroup_id=None,
+            ),
+            fse.status_code,
+        )
+
+    return render_template(
+        "container_view_search.html",
+        query=query,
+        found=found,
+        entity_type="container",
+        entity=entity,
+        editgroup_id=None,
+    )
+
+
 def get_changelog_stats() -> Dict[str, Any]:
     stats = {}
     latest_changelog = api.get_changelog(limit=1)[0]
