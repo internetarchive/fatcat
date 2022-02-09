@@ -690,6 +690,11 @@ def editgroup_view(ident: str) -> AnyResponse:
     return render_template("editgroup_view.html", editgroup=eg, auth_to=auth_to)
 
 
+@app.route("/editgroup_<string(length=26):ident>", methods=["GET"])
+def editgroup_underscore_view(ident: str) -> AnyResponse:
+    return redirect(f"/editgroup/{ident}")
+
+
 @app.route("/editgroup/<string(length=26):ident>/diff", methods=["GET"])
 def editgroup_diff_view(ident: str) -> AnyResponse:
     try:
@@ -806,6 +811,11 @@ def editor_view(ident: str) -> AnyResponse:
     except ApiException as ae:
         abort(ae.status)
     return render_template("editor_view.html", editor=entity)
+
+
+@app.route("/editor_<string(length=26):ident>", methods=["GET"])
+def editor(ident: str) -> AnyResponse:
+    return redirect(f"/editor/{ident}")
 
 
 @app.route("/editor/<string(length=26):ident>/editgroups", methods=["GET"])
