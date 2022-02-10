@@ -26,10 +26,13 @@ views
 - instead of grid, maybe https://semantic-ui.com/elements/rail.html
 
 backlog
+- refactor all the "fatcat_*.py" top-level files in module __main__.py files. eg: "python -m fatcat_tools.whatever"
+    => or, better, just call individual files directly instead of __main__.py?
 - make debugbar really optional (don't import unless we're in debug mode)
+- codespell: codespell --quiet-level=2
 
 Kafka
-- should refactor all the handlers into one place (DRY)
+- should refactor all the handlers into one place (DRY) (eg, kafka_fail_fast)
 - harvesters could have shared producer setup/creation
 - broker timeouts after a minute in all cases should at least log if not crash
   (eg, changelog worker)
