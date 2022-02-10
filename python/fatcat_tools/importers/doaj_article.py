@@ -187,6 +187,10 @@ class DoajArticleImporter(EntityImporter):
             license_slug=license_slug,
         )
         re = self.biblio_hacks(re)
+
+        # TODO: filter out some of these by publishers which are known to
+        # register DOIs. eg, PLOS, maybe others
+
         return re
 
     @staticmethod
