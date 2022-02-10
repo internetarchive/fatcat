@@ -60,6 +60,7 @@ from fatcat_web.search import (
     ReleaseQuery,
     do_container_search,
     do_release_search,
+    get_elastic_container_browse_year_volume,
     get_elastic_container_histogram_legacy,
     get_elastic_container_preservation_by_volume,
     get_elastic_container_random_releases,
@@ -286,6 +287,8 @@ def generic_entity_view(entity_type: str, ident: str, view_template: str) -> Any
         entity._type_preservation = get_elastic_preservation_by_type(
             ReleaseQuery(container_id=ident),
         )
+    if view_template == "container_view_browse.html":
+        entity._browse_volume_year = get_elastic_container_browse_year_volume(entity.ident)
 
     return render_template(
         view_template, entity_type=entity_type, entity=entity, editgroup_id=None
@@ -344,6 +347,12 @@ def container_underscore_view(ident: str) -> AnyResponse:
 def container_view_coverage(ident: str) -> AnyResponse:
     # note: there is a special hack to add entity._type_preservation for this endpoint
     return generic_entity_view("container", ident, "container_view_coverage.html")
+
+
+@app.route("/container/<string(length=26):ident>/browse", methods=["GET"])
+def container_view_browser(ident: str) -> AnyResponse:
+    # note: there is a special hack to add entity._type_preservation for this endpoint
+    return generic_entity_view("container", ident, "container_view_browse.html")
 
 
 @app.route("/container/<string(length=26):ident>/metadata", methods=["GET"])
@@ -1079,7 +1088,7 @@ def coverage_search() -> AnyResponse:
     )
 
 
-@app.route("/container/<ident>/search", methods=["GET", "POST"])
+@app.route("/container/<string(length=26):ident>/search", methods=["GET", "POST"])
 def container_view_search(ident: str) -> AnyResponse:
     entity = generic_get_entity("container", ident)
 

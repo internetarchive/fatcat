@@ -1,0 +1,32 @@
+{% set container = entity %}
+{% set entity_view = "browse" %}
+{% set entity_type = "container" %}
+{% import "entity_macros.html" as entity_macros %}
+{% extends "entity_base.html" %}
+
+{% block entity_main %}
+
+{% if entity._browse_volume_year %}
+<h2>Browse by Year and Volume</h2>
+<ul>
+{% for year in entity._browse_volume_year.keys()|sort|reverse %}
+  {% for volume in entity._browse_volume_year[year].keys()|sort|reverse %}
+    {% if volume == '_unknown' %}
+      <li><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume=">{{ year }}</a> ({{ entity._browse_volume_year[year][volume] }} releases)
+    {% else %}
+      <li><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}">{{ year }} | Vol. {{ volume }}</a> ({{ entity._browse_volume_year[year][volume] }} releases)
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+</ul>
+{% elif entity._browse_issues %}
+{% for issue in entity._browse_issues.keys()|sort|reverse %}
+  <h4>{{ issue }}</h4>
+  {% for paper in entity._browse_issues[issue] %}
+    {{ paper.title }}<br>
+  {% endfor %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+

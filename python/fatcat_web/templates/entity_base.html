@@ -82,6 +82,7 @@
           <div class="ui small tabular compact menu">
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "container" and entity.state == 'active' and not editgroup %}
+              {{ entity_tab("browse", "Browse", "/browse") }}
               {{ entity_tab("coverage", "Preservation", "/coverage") }}
               {{ entity_tab("search", "Search", "/search") }}
             {% elif entity_type == "release" and entity.state != 'deleted' %}

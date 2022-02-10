@@ -327,6 +327,70 @@ def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Di
     return results
 
 
+def get_elastic_container_browse_year_volume(ident: str) -> List[Dict[int, Any]]:
+    """
+    Returns a set of histogram buckets:
+
+        container_ident: str
+        years{}
+            volumes{}
+    """
+
+    search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
+    search = search.query(
+        "bool",
+        filter=[Q("bool", must_not=[Q("match", release_type="stub")])],
+    )
+    search = search.filter("term", container_id=ident)
+    search.aggs.bucket(
+        "year_volume",
+        "composite",
+        size=1500,
+        sources=[
+            {
+                "year": {
+                    "histogram": {
+                        "field": "release_year",
+                        "interval": 1,
+                        "missing_bucket": True,
+                        # TODO: es-public-proxy support?
+                        # "order": "asc",
+                        # "missing_order": "last",
+                    },
+                }
+            },
+            {
+                "volume": {
+                    "terms": {
+                        "field": "volume",
+                        "missing_bucket": True,
+                        # TODO: es-public-proxy support?
+                        # "order": "asc",
+                        # "missing_order": "last",
+                    },
+                }
+            },
+        ],
+    )
+    search = search[:0]
+    search = search.params(request_cache=True)
+    resp = wrap_es_execution(search)
+    buckets = resp.aggregations.year_volume.buckets
+    # print(buckets)
+    buckets = [h for h in buckets if h["key"]["year"]]
+    year_nums = set([int(h["key"]["year"]) for h in buckets])
+    year_dicts: Dict[int, Dict[str, Any]] = dict()
+    if year_nums:
+        for year in year_nums:
+            year_dicts[year] = {}
+        for row in buckets:
+            year_dicts[int(row["key"]["year"])][row["key"]["volume"] or "_unknown"] = int(
+                row["doc_count"]
+            )
+    # return sorted(year_dicts.values(), key=lambda x: x["year"])
+    return year_dicts
+
+
 def get_elastic_entity_stats() -> dict:
     """
     TODO: files, filesets, webcaptures (no schema yet)
