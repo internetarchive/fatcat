@@ -511,6 +511,8 @@ class DataciteImporter(EntityImporter):
             ):
                 relations.append(rel)
 
+        # TODO: could use many of these relations to do release/work grouping
+
         if relations:
             extra_datacite["relations"] = relations
 
@@ -645,6 +647,38 @@ class DataciteImporter(EntityImporter):
             and re.extra.get("container_name") is None
         ):
             re.extra["container_name"] = "figshare.com"
+
+        # Columbia Institutional Repository includes full bibliographic
+        # metadata, which results in incorrect container_id matches. But this
+        # DOI prefix also publishes actual journals!
+        if (
+            re.ext_ids.doi.startswith("10.7916/")
+            and "-" in re.ext_ids.doi
+            and re.publisher == "Columbia University"
+            and re.extra
+            and re.extra.get("datacite")
+        ):
+            for relation in re.extra["datacite"].get("relations", []):
+                if relation.get("relationType") == "IsVariantFormOf":
+                    re.container_id = None
+                    if re.release_stage in ("published", None):
+                        re.release_stage = "submitted"
+
+        # several institutional and other repositories (including "RWTH" and
+        # "DESY") also results in incorrect container_id matches.
+        # This probably doesn't filter out enough, but is a start.
+        IR_DOI_PREFIXES = [
+            "10.15495/epub_ubt_",
+            "10.18154/rwth-20",
+            "10.3204/pubdb-",
+            "10.3204/phppubdb-",
+            "10.26204/kluedo/",
+        ]
+        for prefix in IR_DOI_PREFIXES and re.extra and re.extra.get("datacite"):
+            if re.ext_ids.doi.startswith(prefix):
+                for relation in re.extra["datacite"].get("relations", []):
+                    if relation.get("relationType") == "IsVariantFormOf":
+                        re.container_id = None
 
         return re
 
