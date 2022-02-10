@@ -30,6 +30,7 @@ from fatcat_tools.normal import (
     clean_sha1,
     clean_sha256,
 )
+from fatcat_tools.search.common import FatcatSearchError
 from fatcat_tools.transforms import citeproc_csl, release_to_csl
 from fatcat_web import AnyResponse, Config, api, app, auth_api, mwoauth, priv_api
 from fatcat_web.auth import (
@@ -55,7 +56,6 @@ from fatcat_web.graphics import (
 )
 from fatcat_web.kafka import kafka_pixy_produce
 from fatcat_web.search import (
-    FatcatSearchError,
     GenericQuery,
     ReleaseQuery,
     do_container_search,

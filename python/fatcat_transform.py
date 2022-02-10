@@ -13,6 +13,7 @@ import elasticsearch
 from fatcat_openapi_client import ChangelogEntry, ContainerEntity, FileEntity, ReleaseEntity
 
 from fatcat_tools import public_api
+from fatcat_tools.search.stats import query_es_container_stats
 from fatcat_tools.transforms import (
     changelog_to_elasticsearch,
     citeproc_csl,
@@ -22,7 +23,6 @@ from fatcat_tools.transforms import (
     release_to_csl,
     release_to_elasticsearch,
 )
-from fatcat_web.search import get_elastic_container_stats
 
 
 def run_elasticsearch_releases(args: argparse.Namespace) -> None:
@@ -50,7 +50,7 @@ def run_elasticsearch_containers(args: argparse.Namespace) -> None:
         if args.query_stats:
             es_doc = container_to_elasticsearch(
                 entity,
-                stats=get_elastic_container_stats(
+                stats=query_es_container_stats(
                     entity.ident,
                     es_client=es_client,
                     es_index=es_release_index,
