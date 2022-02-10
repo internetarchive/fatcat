@@ -242,7 +242,7 @@ def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Di
     return results
 
 
-def get_elastic_container_browse_year_volume(ident: str) -> List[Dict[int, Any]]:
+def get_elastic_container_browse_year_volume(ident: str) -> Dict[int, Dict[str, Any]]:
     """
     Returns a set of histogram buckets:
 
