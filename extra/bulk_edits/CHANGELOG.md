@@ -11,6 +11,11 @@ This file should not turn in to a TODO list!
 
 ## 2022-02
 
+- removed `container_id` linkage for some Datacite DOI releases which are
+  respository deposits of published papers (eg, PLOS OA papers mirrored in
+  IRs). a few tens of thousands of releases.
+- just over 150k "Revised Cambridge NCI database" chemical database DOIs
+  updated from 'article' to 'entry'
 - a few tens of thousands of Zenodo releases marked as spam (and `stub`)
 - tens of thousands of no-longer-used Crossref DOIs marked as `stub`
 - hundreds of test/dummy/null releases marked as `stub`
