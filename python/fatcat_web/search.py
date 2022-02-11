@@ -247,13 +247,9 @@ def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Di
     return results
 
 
-def get_elastic_container_browse_year_volume(ident: str) -> Dict[int, Dict[str, Any]]:
+def get_elastic_container_browse_year_volume_issue(ident: str) -> Dict[int, Dict[str, Any]]:
     """
-    Returns a set of histogram buckets:
-
-        container_ident: str
-        years{}
-            volumes{}
+    Returns a set of histogram buckets, by year (int), volume (str), issue (str)
     """
 
     search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
@@ -284,9 +280,14 @@ def get_elastic_container_browse_year_volume(ident: str) -> Dict[int, Dict[str, 
                     "terms": {
                         "field": "volume",
                         "missing_bucket": True,
-                        # TODO: es-public-proxy support?
-                        # "order": "asc",
-                        # "missing_order": "last",
+                    },
+                }
+            },
+            {
+                "issue": {
+                    "terms": {
+                        "field": "issue",
+                        "missing_bucket": True,
                     },
                 }
             },
@@ -304,10 +305,12 @@ def get_elastic_container_browse_year_volume(ident: str) -> Dict[int, Dict[str, 
         for year in year_nums:
             year_dicts[year] = {}
         for row in buckets:
-            year_dicts[int(row["key"]["year"])][row["key"]["volume"] or "000_unknown"] = int(
-                row["doc_count"]
-            )
-    # return sorted(year_dicts.values(), key=lambda x: x["year"])
+            year = int(row["key"]["year"])
+            volume = row["key"]["volume"] or "000_unknown"
+            issue = row["key"]["issue"] or "000_unknown"
+            if not volume in year_dicts[year]:
+                year_dicts[year][volume] = {}
+            year_dicts[year][volume][issue] = int(row["doc_count"])
     return year_dicts
 
 

@@ -60,7 +60,7 @@ from fatcat_web.search import (
     ReleaseQuery,
     do_container_search,
     do_release_search,
-    get_elastic_container_browse_year_volume,
+    get_elastic_container_browse_year_volume_issue,
     get_elastic_container_histogram_legacy,
     get_elastic_container_preservation_by_volume,
     get_elastic_container_random_releases,
@@ -357,11 +357,11 @@ def container_view_browse(ident: str) -> AnyResponse:
         return render_template("deleted_entity.html", entity_type="container", entity=entity)
 
     query_sort: Optional[List[str]]
-    if request.args.get('year') and 'volume' in request.args and 'issue' in request.args:
+    if request.args.get("year") and "volume" in request.args and "issue" in request.args:
         # year, volume, issue specified; browse-by-page
-        year = int(request.args.get('year'))
-        volume = request.args.get('volume', '')
-        issue = request.args.get('issue', '')
+        year = int(request.args.get("year"))
+        volume = request.args.get("volume", "")
+        issue = request.args.get("issue", "")
         if volume:
             volume = f'volume:"{volume}"'
         else:
@@ -370,27 +370,33 @@ def container_view_browse(ident: str) -> AnyResponse:
             issue = f'issue:"{issue}"'
         else:
             issue = "!issue:*"
-        query_string = f'year:{year} {volume} {issue}'
+        query_string = f"year:{year} {volume} {issue}"
         query_sort = ["first_page", "release_date"]
-    elif request.args.get('year') and 'volume' in request.args:
+    elif request.args.get("year") and "volume" in request.args:
         # year, volume specified (no issue); browse-by-page
-        year = int(request.args.get('year'))
-        volume = request.args.get('volume', '')
+        year = int(request.args.get("year"))
+        volume = request.args.get("volume", "")
         if volume:
             volume = f'volume:"{volume}"'
         else:
             volume = "!volume:*"
-        query_string = f'year:{year} {volume}'
+        query_string = f"year:{year} {volume}"
         query_sort = ["issue", "first_page", "release_date"]
-    elif request.args.get('year'):
+    elif request.args.get("year"):
         # year specified, not anything else; browse-by-date
-        year = int(request.args.get('year'))
+        year = int(request.args.get("year"))
         query_string = f"year:{year}"
         query_sort = ["release_date"]
     else:
-        entity._browse_volume_year = get_elastic_container_browse_year_volume(entity.ident)
+        entity._browse_volume_year = get_elastic_container_browse_year_volume_issue(
+            entity.ident
+        )
+        print(entity._browse_volume_year)
         return render_template(
-            "container_view_browse.html", entity_type="container", entity=entity, editgroup_id=None
+            "container_view_browse.html",
+            entity_type="container",
+            entity=entity,
+            editgroup_id=None,
         )
 
     print(query_string)
@@ -421,11 +427,11 @@ def container_view_browse(ident: str) -> AnyResponse:
         )
 
     # HACK: re-sort by first page *numerically*
-    if found.results and query_sort and 'first_page' in query_sort:
+    if found.results and query_sort and "first_page" in query_sort:
         for doc in found.results:
-            if doc.get('first_page') and doc['first_page'].isdigit():
-                doc['first_page'] = int(doc['first_page'])
-        found.results = sorted(found.results, key=lambda d: d.get('first_page') or 99999999)
+            if doc.get("first_page") and doc["first_page"].isdigit():
+                doc["first_page"] = int(doc["first_page"])
+        found.results = sorted(found.results, key=lambda d: d.get("first_page") or 99999999)
 
     return render_template(
         "container_view_browse.html",

@@ -4,25 +4,50 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
-{% macro browse_year_volume_table(entity, data) %}
+{% macro browse_year_volume_issue_table(entity, data) %}
 <table class="ui basic compact structured table">
+  <thead>
+    <tr>
+      <th>Year
+      <th>Volume
+      <th>Issue
+      <th class="right aligned">Indexed Content
+    </tr>
+  </thead>
   <tbody>
   {% for year in data.keys()|sort|reverse %}
+    {% set year_loop = loop %}
     {% for volume in data[year].keys()|sort|reverse %}
-      <tr>
-      {% if loop.first %}
-        <td rowspan="{{ data[year]|length }}" class="top aligned">
-          <a href="/container/{{ entity.ident }}/browse?year={{ year }}">{{ year }}</a>
-        </td>
-      {% endif %}
-      {% if volume == '000_unknown' %}
-        <td>{% if data[year]|length > 1 %}<i>n/a</i>{% endif %}</td>
-        <td><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume=">{{ data[year][volume] }} releases</a>
-      {% else %}
-        <td><a href="/container/{{ entity.ident }}/browse?volume={{ volume }}">Vol. {{ volume }}</a></td>
-        <td><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}">{{ data[year][volume] }} releases</a>
-      {% endif %}
-      </tr>
+      {% set volume_loop = loop %}
+      {% for issue in data[year][volume].keys()|sort|reverse %}
+        {% set issue_loop = loop %}
+        <tr>
+          {% if volume_loop.first and issue_loop.first %}
+            {% set year_rowspan = data[year].values()|map('length')|sum %}
+            <td rowspan="{{ year_rowspan }}" class="top aligned">
+              <a href="/container/{{ entity.ident }}/browse?year={{ year }}">{{ year }}</a>
+            </td>
+          {% endif %}
+
+          {% if issue_loop.first %}
+            <td rowspan="{{ data[year][volume]|length }}" class="top aligned">
+              {% if volume != '000_unknown' %}
+                <a href="/container/{{ entity.ident }}/browse?volume={{ volume }}">Vol. {{ volume }}</a>
+              {% endif %}
+            </td>
+          {% endif %}
+
+          <td>
+            {% if issue != '000_unknown' %}
+              <a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}&issue={{ issue }}">Issue {{ issue }}</a>
+            {% endif %}
+          </td>
+
+          <td class="right aligned">
+            <a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}&issue={{ issue }}">{{ data[year][volume][issue] }} releases</a>
+          </td>
+        </tr>
+      {% endfor %}
     {% endfor %}
   {% endfor %}
   </tbody>
@@ -30,15 +55,24 @@
 {% endmacro %}
 
 {% macro browse_releases(found) %}
+  <h2>
+    Browsing: 
+    {% if request.args.volume %}Volume {{ request.args.volume }} &nbsp;{% endif %}
+    {% if request.args.issue %}Issue {{ request.args.issue }} &nbsp;{% endif %}
+    {% if request.args.year %}Year {{ request.args.year }} &nbsp;{% endif %}
+  </h2>
+  <br>
   {% for release_doc in found.results %}
     <div class="ui grid">
       <div class="two wide center aligned column">
-        {% if release_doc.pages %}
-          {{ release_doc.pages }}
-        {#
+        {% if request.args.volume %}
+          {% if release_doc.pages %}
+            {{ release_doc.pages }}
+          {% else %}
+            {# blank #}
+          {% endif %}
         {% elif release_doc.release_date %}
           {{ release_doc.release_date }}
-        #}
         {% endif %}
       </div>
       <div class="fourteen wide column">
@@ -55,7 +89,7 @@
 {% elif entity._browse_volume_year %}
   <div class="ui container text">
     <h3>Contents by Year and Volume</h3>
-    {{ browse_year_volume_table(entity, entity._browse_volume_year) }}
+    {{ browse_year_volume_issue_table(entity, entity._browse_volume_year) }}
   </div>
 {% endif %}
 
