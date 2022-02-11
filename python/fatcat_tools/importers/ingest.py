@@ -675,9 +675,9 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         return True
 
     def parse_fileset_urls(self, row: Dict[str, Any]) -> List[FilesetUrl]:
-        if not row.get("strategy"):
+        if not row.get("ingest_strategy"):
             return []
-        strategy = row["strategy"]
+        strategy = row["ingest_strategy"]
         urls = []
         if strategy == "archiveorg-fileset" and row.get("archiveorg_item_name"):
             urls.append(
@@ -686,7 +686,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                     rel="archive-base",
                 )
             )
-        if row["strategy"].startswith("web-") and row.get("platform_base_url"):
+        if strategy.startswith("web-") and row.get("platform_base_url"):
             urls.append(
                 fatcat_openapi_client.FilesetUrl(
                     url=f"https://web.archive.org/web/{row['web_base_url_dt']}/{row['web_base_url']}",
@@ -696,7 +696,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         # TODO: repository-base
         # TODO: web-base
 
-        if row["strategy"] == "archiveorg-fileset-bundle" and row.get("archiveorg_item_name"):
+        if strategy == "archiveorg-fileset-bundle" and row.get("archiveorg_item_name"):
             urls.append(
                 fatcat_openapi_client.FilesetUrl(
                     url=f"https://archive.org/download/{row['archiveorg_item_name']}/{row['archiveorg_bundle_path']}",
@@ -704,7 +704,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 )
             )
 
-        if row["strategy"] == "web-fileset-bundle" and row.get("platform_bundle_url"):
+        if strategy == "web-fileset-bundle" and row.get("platform_bundle_url"):
             urls.append(
                 fatcat_openapi_client.FilesetUrl(
                     url=f"https://web.archive.org/web/{row['web_bundle_url_dt']}/{row['web_bundle_url']}",
