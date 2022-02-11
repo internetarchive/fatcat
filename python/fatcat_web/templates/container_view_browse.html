@@ -4,28 +4,59 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
+{% macro browse_year_volume_table(entity, data) %}
+<table class="ui basic compact structured table">
+  <tbody>
+  {% for year in data.keys()|sort|reverse %}
+    {% for volume in data[year].keys()|sort|reverse %}
+      <tr>
+      {% if loop.first %}
+        <td rowspan="{{ data[year]|length }}" class="top aligned">
+          <a href="/container/{{ entity.ident }}/browse?year={{ year }}">{{ year }}</a>
+        </td>
+      {% endif %}
+      {% if volume == '000_unknown' %}
+        <td>{% if data[year]|length > 1 %}<i>n/a</i>{% endif %}</td>
+        <td><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume=">{{ data[year][volume] }} releases</a>
+      {% else %}
+        <td><a href="/container/{{ entity.ident }}/browse?volume={{ volume }}">Vol. {{ volume }}</a></td>
+        <td><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}">{{ data[year][volume] }} releases</a>
+      {% endif %}
+      </tr>
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+{% macro browse_releases(found) %}
+  {% for release_doc in found.results %}
+    <div class="ui grid">
+      <div class="two wide center aligned column">
+        {% if release_doc.pages %}
+          {{ release_doc.pages }}
+        {#
+        {% elif release_doc.release_date %}
+          {{ release_doc.release_date }}
+        #}
+        {% endif %}
+      </div>
+      <div class="fourteen wide column">
+        {{ entity_macros.release_search_result_row(release_doc, margin_top=False) }}
+      </div>
+    </div>
+  {% endfor %}
+{% endmacro %}
+
 {% block entity_main %}
 
-{% if entity._browse_volume_year %}
-<h2>Browse by Year and Volume</h2>
-<ul>
-{% for year in entity._browse_volume_year.keys()|sort|reverse %}
-  {% for volume in entity._browse_volume_year[year].keys()|sort|reverse %}
-    {% if volume == '_unknown' %}
-      <li><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume=">{{ year }}</a> ({{ entity._browse_volume_year[year][volume] }} releases)
-    {% else %}
-      <li><a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}">{{ year }} | Vol. {{ volume }}</a> ({{ entity._browse_volume_year[year][volume] }} releases)
-    {% endif %}
-  {% endfor %}
-{% endfor %}
-</ul>
-{% elif entity._browse_issues %}
-{% for issue in entity._browse_issues.keys()|sort|reverse %}
-  <h4>{{ issue }}</h4>
-  {% for paper in entity._browse_issues[issue] %}
-    {{ paper.title }}<br>
-  {% endfor %}
-{% endfor %}
+{% if releases_found %}
+  {{ browse_releases(releases_found) }}
+{% elif entity._browse_volume_year %}
+  <div class="ui container text">
+    <h3>Contents by Year and Volume</h3>
+    {{ browse_year_volume_table(entity, entity._browse_volume_year) }}
+  </div>
 {% endif %}
 
 {% endblock %}

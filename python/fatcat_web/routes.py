@@ -287,8 +287,6 @@ def generic_entity_view(entity_type: str, ident: str, view_template: str) -> Any
         entity._type_preservation = get_elastic_preservation_by_type(
             ReleaseQuery(container_id=ident),
         )
-    if view_template == "container_view_browse.html":
-        entity._browse_volume_year = get_elastic_container_browse_year_volume(entity.ident)
 
     return render_template(
         view_template, entity_type=entity_type, entity=entity, editgroup_id=None
@@ -350,9 +348,93 @@ def container_view_coverage(ident: str) -> AnyResponse:
 
 
 @app.route("/container/<string(length=26):ident>/browse", methods=["GET"])
-def container_view_browser(ident: str) -> AnyResponse:
-    # note: there is a special hack to add entity._type_preservation for this endpoint
-    return generic_entity_view("container", ident, "container_view_browse.html")
+def container_view_browse(ident: str) -> AnyResponse:
+    entity = generic_get_entity("container", ident)
+
+    if entity.state == "redirect":
+        return redirect(f"/container/{entity.redirect}")
+    elif entity.state == "deleted":
+        return render_template("deleted_entity.html", entity_type="container", entity=entity)
+
+    query_sort: Optional[List[str]]
+    if request.args.get('year') and 'volume' in request.args and 'issue' in request.args:
+        # year, volume, issue specified; browse-by-page
+        year = int(request.args.get('year'))
+        volume = request.args.get('volume', '')
+        issue = request.args.get('issue', '')
+        if volume:
+            volume = f'volume:"{volume}"'
+        else:
+            volume = "!volume:*"
+        if issue:
+            issue = f'issue:"{issue}"'
+        else:
+            issue = "!issue:*"
+        query_string = f'year:{year} {volume} {issue}'
+        query_sort = ["first_page", "release_date"]
+    elif request.args.get('year') and 'volume' in request.args:
+        # year, volume specified (no issue); browse-by-page
+        year = int(request.args.get('year'))
+        volume = request.args.get('volume', '')
+        if volume:
+            volume = f'volume:"{volume}"'
+        else:
+            volume = "!volume:*"
+        query_string = f'year:{year} {volume}'
+        query_sort = ["issue", "first_page", "release_date"]
+    elif request.args.get('year'):
+        # year specified, not anything else; browse-by-date
+        year = int(request.args.get('year'))
+        query_string = f"year:{year}"
+        query_sort = ["release_date"]
+    else:
+        entity._browse_volume_year = get_elastic_container_browse_year_volume(entity.ident)
+        return render_template(
+            "container_view_browse.html", entity_type="container", entity=entity, editgroup_id=None
+        )
+
+    print(query_string)
+    query = ReleaseQuery(
+        q=query_string,
+        limit=200,
+        offset=0,
+        container_id=ident,
+        fulltext_only=False,
+        recent=False,
+        exclude_stubs=True,
+        sort=query_sort,
+    )
+
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return (
+            render_template(
+                "container_view_search.html",
+                query=query,
+                es_error=fse,
+                entity_type="container",
+                entity=entity,
+                editgroup_id=None,
+            ),
+            fse.status_code,
+        )
+
+    # HACK: re-sort by first page *numerically*
+    if found.results and query_sort and 'first_page' in query_sort:
+        for doc in found.results:
+            if doc.get('first_page') and doc['first_page'].isdigit():
+                doc['first_page'] = int(doc['first_page'])
+        found.results = sorted(found.results, key=lambda d: d.get('first_page') or 99999999)
+
+    return render_template(
+        "container_view_browse.html",
+        query=query,
+        releases_found=found,
+        entity_type="container",
+        entity=entity,
+        editgroup_id=None,
+    )
 
 
 @app.route("/container/<string(length=26):ident>/metadata", methods=["GET"])

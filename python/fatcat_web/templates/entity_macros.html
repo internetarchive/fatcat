@@ -142,9 +142,9 @@
 </form>
 {%- endmacro %}
 
-{% macro release_search_result_row(paper) -%}
+{% macro release_search_result_row(paper, margin_top=True) -%}
 <div>
-  <h4 style="margin-top: 1em; margin-bottom: 0px; font-size: 1.1em;">
+  <h4 style="{% if margin_top %}margin-top: 1em; {% endif %}margin-bottom: 0px; font-size: 1.1em;">
     <a href="/release/{{ paper.ident }}" style="color: #2224c7;">
       {% if paper.title %}
         {{ paper.title[:512] }}

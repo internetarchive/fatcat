@@ -29,6 +29,7 @@ class ReleaseQuery:
     container_id: Optional[str] = None
     recent: bool = False
     exclude_stubs: bool = False
+    sort: Optional[List[str]] = None
 
     @staticmethod
     def from_args(args: Dict[str, Any]) -> "ReleaseQuery":
@@ -45,6 +46,7 @@ class ReleaseQuery:
             container_id=args.get("container_id"),
             recent=bool(args.get("recent")),
             exclude_stubs=bool(args.get("exclude_stubs")),
+            sort=None,
         )
 
 
@@ -182,6 +184,9 @@ def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> Searc
         negative_boost=0.5,
     )
 
+    if query.sort:
+        search = search.sort(*query.sort)
+
     # Sanity checks
     limit = min((int(query.limit or 25), 100))
     offset = max((int(query.offset or 0), 0))
@@ -299,7 +304,7 @@ def get_elastic_container_browse_year_volume(ident: str) -> Dict[int, Dict[str, 
         for year in year_nums:
             year_dicts[year] = {}
         for row in buckets:
-            year_dicts[int(row["key"]["year"])][row["key"]["volume"] or "_unknown"] = int(
+            year_dicts[int(row["key"]["year"])][row["key"]["volume"] or "000_unknown"] = int(
                 row["doc_count"]
             )
     # return sorted(year_dicts.values(), key=lambda x: x["year"])
