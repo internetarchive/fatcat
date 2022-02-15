@@ -266,6 +266,8 @@ def work_lookup() -> AnyResponse:
 
 ### More Generic Entity Views ###############################################
 
+GENERIC_ENTITY_FIELDS = ["extra", "edit_extra", "revision", "redirect", "state", "ident"]
+
 
 def generic_entity_view(entity_type: str, ident: str, view_template: str) -> AnyResponse:
     entity = generic_get_entity(entity_type, ident)
@@ -276,7 +278,8 @@ def generic_entity_view(entity_type: str, ident: str, view_template: str) -> Any
         return render_template("deleted_entity.html", entity_type=entity_type, entity=entity)
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     if view_template == "container_view.html":
@@ -299,7 +302,8 @@ def generic_entity_revision_view(
     entity = generic_get_entity_revision(entity_type, revision_id)
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     return render_template(
@@ -323,7 +327,8 @@ def generic_editgroup_entity_view(
         )
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     return render_template(
