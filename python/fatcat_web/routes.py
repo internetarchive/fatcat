@@ -393,10 +393,10 @@ def container_view_browse(ident: str) -> AnyResponse:
         query_string = f"year:{year}"
         query_sort = ["release_date"]
     else:
-        entity._browse_volume_year = get_elastic_container_browse_year_volume_issue(
+        entity._browse_year_volume_issue = get_elastic_container_browse_year_volume_issue(
             entity.ident
         )
-        print(entity._browse_volume_year)
+        # print(entity._browse_year_volume_issue)
         return render_template(
             "container_view_browse.html",
             entity_type="container",
@@ -404,7 +404,7 @@ def container_view_browse(ident: str) -> AnyResponse:
             editgroup_id=None,
         )
 
-    print(query_string)
+    # print(query_string)
     query = ReleaseQuery(
         q=query_string,
         limit=200,
@@ -1093,7 +1093,7 @@ def release_search() -> AnyResponse:
     container_found = None
     filter_only_query = True
     for p in request.args.get("q", "").split():
-        if not ":" in p:
+        if ":" not in p:
             filter_only_query = False
             break
     if request.args.get("generic") and not filter_only_query:

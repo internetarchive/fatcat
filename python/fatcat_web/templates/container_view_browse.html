@@ -17,36 +17,36 @@
   <tbody>
   {# NOTE: this section is pretty nested, with complex behavior; it could be hard to edit and understand #}
   {# TODO: these "sorts" are lexical, not numeric, which causes problems #}
-  {% for year in data.keys()|sort|reverse %}
+  {% for year in data %}
     {% set year_loop = loop %}
-    {% for volume in data[year].keys()|sort|reverse %}
+    {% for volume in year.volumes %}
       {% set volume_loop = loop %}
-      {% for issue in data[year][volume].keys()|sort|reverse %}
+      {% for issue in volume.issues %}
         {% set issue_loop = loop %}
         <tr>
           {% if volume_loop.first and issue_loop.first %}
-            {% set year_rowspan = data[year].values()|map('length')|sum %}
+            {% set year_rowspan = year.volumes|map(attribute='issues')|map('length')|sum %}
             <td rowspan="{{ year_rowspan }}" class="top aligned">
-              <a href="/container/{{ entity.ident }}/browse?year={{ year }}">{{ year }}</a>
+              <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}">{{ year.year }}</a>
             </td>
           {% endif %}
 
           {% if issue_loop.first %}
-            <td rowspan="{{ data[year][volume]|length }}" class="top aligned">
-              {% if volume != '000_unknown' %}
-                <a href="/container/{{ entity.ident }}/browse?volume={{ volume }}">Vol. {{ volume }}</a>
+            <td rowspan="{{ volume.issues|length }}" class="top aligned">
+              {% if volume.volume %}
+                <a href="/container/{{ entity.ident }}/browse?volume={{ volume.volume }}">Vol. {{ volume.volume }}</a>
               {% endif %}
             </td>
           {% endif %}
 
           <td>
-            {% if issue != '000_unknown' %}
-              <a href="/container/{{ entity.ident }}/browse?year={{ year }}{% if volume != '000_unknown' %}&volume={{ volume }}{% endif %}&issue={{ issue }}">Issue {{ issue }}</a>
+            {% if issue.issue %}
+              <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}{% if volume.volume %}&volume={{ volume.volume }}{% endif %}&issue={{ issue.issue }}">Issue {{ issue.issue }}</a>
             {% endif %}
           </td>
 
           <td class="right aligned">
-            <a href="/container/{{ entity.ident }}/browse?year={{ year }}{% if volume != '000_unknown' %}&volume={{ volume }}{% endif %}{% if issue != '000_unknown' %}&issue={{ issue }}{% endif %}">{{ "{:,}".format(data[year][volume][issue]) }} releases</a>
+            <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}{% if volume.volume %}&volume={{ volume.volume }}{% endif %}{% if issue.issue %}&issue={{ issue.issue }}{% endif %}">{{ "{:,}".format(issue.count) }} releases</a>
           </td>
         </tr>
       {% endfor %}
@@ -58,10 +58,13 @@
 
 {% macro browse_releases(found) %}
   <h2>
-    Browsing: 
-    {% if request.args.volume %}Volume {{ request.args.volume }} &nbsp;{% endif %}
-    {% if request.args.issue %}Issue {{ request.args.issue }} &nbsp;{% endif %}
-    {% if request.args.year %}Year {{ request.args.year }} &nbsp;{% endif %}
+    {% if request.args.volume %}
+      Volume {{ request.args.volume }}
+      {%- if request.args.issue %}, Issue {{ request.args.issue }}{% endif -%}
+      {%- if request.args.year %} ({{ request.args.year }}){% endif %}
+    {% else %}
+      Year {{ request.args.year }}
+    {% endif %}
   </h2>
   <br>
   {% for release_doc in found.results %}
@@ -88,13 +91,13 @@
 
 {% if releases_found %}
   {{ browse_releases(releases_found) }}
-{% elif entity._browse_volume_year %}
+{% elif entity._browse_year_volume_issue %}
   <div class="ui container text">
     <h3>Publications by Year, Volume, and Issue</h3>
     <p>This table includes content which does not have article-level metadata
     about volume or issue, but at least the year of publication must be known.
     "Stub" releases (eg, spam or duplicate DOIs) are not listed.
-    {{ browse_year_volume_issue_table(entity, entity._browse_volume_year) }}
+    {{ browse_year_volume_issue_table(entity, entity._browse_year_volume_issue) }}
   </div>
 {% endif %}
 

@@ -247,9 +247,39 @@ def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Di
     return results
 
 
-def get_elastic_container_browse_year_volume_issue(ident: str) -> Dict[int, Dict[str, Any]]:
+def _sort_vol_key(val: Optional[str]) -> Tuple[bool, bool, int, str]:
     """
-    Returns a set of histogram buckets, by year (int), volume (str), issue (str)
+    Helper for sorting volume and issue strings. Defined order is:
+
+    - None values first
+    - any non-integers next, in non-integer order
+    - any integers next, in integer sorted order (ascending)
+
+    Note that the actual sort used/displayed is reversed
+    """
+    if val is None:
+        return (False, False, 0, "")
+    if val.isdigit():
+        return (True, True, int(val), "")
+    else:
+        return (True, False, 0, val)
+
+
+def get_elastic_container_browse_year_volume_issue(ident: str) -> List[Dict[str, Any]]:
+    """
+    Returns a set of histogram buckets, as nested dicts/lists:
+
+        [
+          { year: int,
+            volumes: [
+              { volume: str|None
+                issues: [
+                  { issue: str|None
+                    count: int
+                  }
+                ] }
+            ] }
+        ]
     """
 
     search = Search(using=app.es_client, index=app.config["ELASTICSEARCH_RELEASE_INDEX"])
@@ -269,9 +299,6 @@ def get_elastic_container_browse_year_volume_issue(ident: str) -> Dict[int, Dict
                         "field": "release_year",
                         "interval": 1,
                         "missing_bucket": True,
-                        # TODO: es-public-proxy support?
-                        # "order": "asc",
-                        # "missing_order": "last",
                     },
                 }
             },
@@ -306,12 +333,31 @@ def get_elastic_container_browse_year_volume_issue(ident: str) -> Dict[int, Dict
             year_dicts[year] = {}
         for row in buckets:
             year = int(row["key"]["year"])
-            volume = row["key"]["volume"] or "000_unknown"
-            issue = row["key"]["issue"] or "000_unknown"
-            if not volume in year_dicts[year]:
+            volume = row["key"]["volume"] or ""
+            issue = row["key"]["issue"] or ""
+            if volume not in year_dicts[year]:
                 year_dicts[year][volume] = {}
             year_dicts[year][volume][issue] = int(row["doc_count"])
-    return year_dicts
+
+    # transform to lists-of-dicts
+    year_list = []
+    for year in year_dicts.keys():
+        volume_list = []
+        for volume in year_dicts[year].keys():
+            issue_list = []
+            for issue in year_dicts[year][volume].keys():
+                issue_list.append(
+                    dict(issue=issue or None, count=year_dicts[year][volume][issue])
+                )
+            issue_list = sorted(
+                issue_list, key=lambda x: _sort_vol_key(x["issue"]), reverse=True
+            )
+            volume_list.append(dict(volume=volume or None, issues=issue_list))
+        volume_list = sorted(
+            volume_list, key=lambda x: _sort_vol_key(x["volume"]), reverse=True
+        )
+        year_list.append(dict(year=year, volumes=volume_list))
+    return sorted(year_list, key=lambda x: x["year"], reverse=True)
 
 
 def get_elastic_entity_stats() -> dict:
