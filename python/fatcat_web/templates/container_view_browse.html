@@ -15,6 +15,8 @@
     </tr>
   </thead>
   <tbody>
+  {# NOTE: this section is pretty nested, with complex behavior; it could be hard to edit and understand #}
+  {# TODO: these "sorts" are lexical, not numeric, which causes problems #}
   {% for year in data.keys()|sort|reverse %}
     {% set year_loop = loop %}
     {% for volume in data[year].keys()|sort|reverse %}
@@ -39,12 +41,12 @@
 
           <td>
             {% if issue != '000_unknown' %}
-              <a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}&issue={{ issue }}">Issue {{ issue }}</a>
+              <a href="/container/{{ entity.ident }}/browse?year={{ year }}{% if volume != '000_unknown' %}&volume={{ volume }}{% endif %}&issue={{ issue }}">Issue {{ issue }}</a>
             {% endif %}
           </td>
 
           <td class="right aligned">
-            <a href="/container/{{ entity.ident }}/browse?year={{ year }}&volume={{ volume }}&issue={{ issue }}">{{ data[year][volume][issue] }} releases</a>
+            <a href="/container/{{ entity.ident }}/browse?year={{ year }}{% if volume != '000_unknown' %}&volume={{ volume }}{% endif %}{% if issue != '000_unknown' %}&issue={{ issue }}{% endif %}">{{ "{:,}".format(data[year][volume][issue]) }} releases</a>
           </td>
         </tr>
       {% endfor %}
@@ -88,7 +90,10 @@
   {{ browse_releases(releases_found) }}
 {% elif entity._browse_volume_year %}
   <div class="ui container text">
-    <h3>Contents by Year and Volume</h3>
+    <h3>Publications by Year, Volume, and Issue</h3>
+    <p>This table includes content which does not have article-level metadata
+    about volume or issue, but at least the year of publication must be known.
+    "Stub" releases (eg, spam or duplicate DOIs) are not listed.
     {{ browse_year_volume_issue_table(entity, entity._browse_volume_year) }}
   </div>
 {% endif %}
