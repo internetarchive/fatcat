@@ -1086,8 +1086,17 @@ def release_search() -> AnyResponse:
     if "q" not in request.args.keys():
         return render_template("release_search.html", query=ReleaseQuery(), found=None)
 
+    # if this is a "generic" query (eg, from front page or top-of page bar),
+    # and the query is not all filters/paramters (aka, there is an actual
+    # term/phrase in the query), then also try querying containers, and display
+    # a "were you looking for" box with a single result
     container_found = None
-    if request.args.get("generic"):
+    filter_only_query = True
+    for p in request.args.get("q", "").split():
+        if not ":" in p:
+            filter_only_query = False
+            break
+    if request.args.get("generic") and not filter_only_query:
         container_query = GenericQuery.from_args(request.args)
         container_query.limit = 1
         try:
