@@ -364,7 +364,7 @@ def container_view_browse(ident: str) -> AnyResponse:
     query_sort: Optional[List[str]]
     if request.args.get("year") and "volume" in request.args and "issue" in request.args:
         # year, volume, issue specified; browse-by-page
-        year = int(request.args.get("year"))
+        year = int(request.args["year"])
         volume = request.args.get("volume", "")
         issue = request.args.get("issue", "")
         if volume:
@@ -379,7 +379,7 @@ def container_view_browse(ident: str) -> AnyResponse:
         query_sort = ["first_page", "pages", "release_date"]
     elif request.args.get("year") and "volume" in request.args:
         # year, volume specified (no issue); browse-by-page
-        year = int(request.args.get("year"))
+        year = int(request.args["year"])
         volume = request.args.get("volume", "")
         if volume:
             volume = f'volume:"{volume}"'
@@ -389,7 +389,7 @@ def container_view_browse(ident: str) -> AnyResponse:
         query_sort = ["issue", "first_page", "pages", "release_date"]
     elif request.args.get("year"):
         # year specified, not anything else; browse-by-date
-        year = int(request.args.get("year"))
+        year = int(request.args["year"])
         query_string = f"year:{year}"
         query_sort = ["release_date"]
     elif request.args.get("volume"):

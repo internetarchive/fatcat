@@ -247,7 +247,7 @@ def get_elastic_container_random_releases(ident: str, limit: int = 5) -> List[Di
     return results
 
 
-def _sort_vol_key(val: Optional[str]) -> Tuple[bool, bool, int, str]:
+def _sort_vol_key(val: Optional[Any]) -> Tuple[bool, bool, int, str]:
     """
     Helper for sorting volume and issue strings. Defined order is:
 
@@ -255,7 +255,10 @@ def _sort_vol_key(val: Optional[str]) -> Tuple[bool, bool, int, str]:
     - any non-integers next, in non-integer order
     - any integers next, in integer sorted order (ascending)
 
-    Note that the actual sort used/displayed is reversed
+    Note that the actual sort used/displayed is reversed.
+
+    TODO: 'val' should actually be Optional[str], but getting a mypy error I
+    don't know how to hack around quickly right now.
     """
     if val is None:
         return (False, False, 0, "")
