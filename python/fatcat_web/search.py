@@ -110,7 +110,7 @@ def do_container_search(query: GenericQuery, deep_page_limit: int = 2000) -> Sea
     )
 
     # Sanity checks
-    limit = min((int(query.limit or 25), 100))
+    limit = min((int(query.limit or 25), 300))
     offset = max((int(query.offset or 0), 0))
     if offset > deep_page_limit:
         # Avoid deep paging problem.
@@ -188,7 +188,7 @@ def do_release_search(query: ReleaseQuery, deep_page_limit: int = 2000) -> Searc
         search = search.sort(*query.sort)
 
     # Sanity checks
-    limit = min((int(query.limit or 25), 100))
+    limit = min((int(query.limit or 25), 300))
     offset = max((int(query.offset or 0), 0))
     if offset > deep_page_limit:
         # Avoid deep paging problem.

@@ -376,7 +376,7 @@ def container_view_browse(ident: str) -> AnyResponse:
         else:
             issue = "!issue:*"
         query_string = f"year:{year} {volume} {issue}"
-        query_sort = ["first_page", "release_date"]
+        query_sort = ["first_page", "pages", "release_date"]
     elif request.args.get("year") and "volume" in request.args:
         # year, volume specified (no issue); browse-by-page
         year = int(request.args.get("year"))
@@ -386,12 +386,16 @@ def container_view_browse(ident: str) -> AnyResponse:
         else:
             volume = "!volume:*"
         query_string = f"year:{year} {volume}"
-        query_sort = ["issue", "first_page", "release_date"]
+        query_sort = ["issue", "first_page", "pages", "release_date"]
     elif request.args.get("year"):
         # year specified, not anything else; browse-by-date
         year = int(request.args.get("year"))
         query_string = f"year:{year}"
         query_sort = ["release_date"]
+    elif request.args.get("volume"):
+        # volume specified, not anything else; browse-by-page
+        query_string = f'volume:{request.args["volume"]}'
+        query_sort = ["issue", "first_page", "pages", "release_date"]
     else:
         entity._browse_year_volume_issue = get_elastic_container_browse_year_volume_issue(
             entity.ident
@@ -407,7 +411,7 @@ def container_view_browse(ident: str) -> AnyResponse:
     # print(query_string)
     query = ReleaseQuery(
         q=query_string,
-        limit=200,
+        limit=300,
         offset=0,
         container_id=ident,
         fulltext_only=False,

@@ -35,18 +35,22 @@
             <td rowspan="{{ volume.issues|length }}" class="top aligned">
               {% if volume.volume %}
                 <a href="/container/{{ entity.ident }}/browse?volume={{ volume.volume }}">Vol. {{ volume.volume }}</a>
+              {% else %}
+                -
               {% endif %}
             </td>
           {% endif %}
 
           <td>
             {% if issue.issue %}
-              <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}{% if volume.volume %}&volume={{ volume.volume }}{% endif %}&issue={{ issue.issue }}">Issue {{ issue.issue }}</a>
+              <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}&volume={{ volume.volume or '' }}&issue={{ issue.issue or '' }}">Issue {{ issue.issue }}</a>
+            {% else %}
+              -
             {% endif %}
           </td>
 
           <td class="right aligned">
-            <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}{% if volume.volume %}&volume={{ volume.volume }}{% endif %}{% if issue.issue %}&issue={{ issue.issue }}{% endif %}">{{ "{:,}".format(issue.count) }} releases</a>
+            <a href="/container/{{ entity.ident }}/browse?year={{ year.year }}&volume={{ volume.volume or '' }}&issue={{ issue.issue or '' }}">{{ "{:,}".format(issue.count) }} releases</a>
           </td>
         </tr>
       {% endfor %}
@@ -57,7 +61,7 @@
 {% endmacro %}
 
 {% macro browse_releases(found) %}
-  <h2>
+  <h2 style="margin-bottom: 1em;">
     {% if request.args.volume %}
       Volume {{ request.args.volume }}
       {%- if request.args.issue %}, Issue {{ request.args.issue }}{% endif -%}
@@ -66,25 +70,40 @@
       Year {{ request.args.year }}
     {% endif %}
   </h2>
-  <br>
-  {% for release_doc in found.results %}
-    <div class="ui grid">
-      <div class="two wide center aligned column">
-        {% if request.args.volume %}
-          {% if release_doc.pages %}
-            {{ release_doc.pages }}
+  {% if not found.results %}
+    <p><i>No publications found!</i>
+  {% else %}
+    <table class="ui very basic compact structured table">
+    <thead>
+      <tr><th class="one wide center aligned">{% if request.args.volume %}Page(s){% else %}Date{% endif %}</th>
+          <th class="nine wide">Publication</th>
+    </thead>
+    <tbody>
+    {% for release_doc in found.results %}
+      <tr><td class="center aligned">
+          {% if request.args.volume %}
+            {% if release_doc.pages %}
+              {{ release_doc.pages }}
+            {% else %}
+              -
+            {% endif %}
+          {% elif release_doc.release_date %}
+            {{ release_doc.release_date }}
           {% else %}
-            {# blank #}
+            -
           {% endif %}
-        {% elif release_doc.release_date %}
-          {{ release_doc.release_date }}
-        {% endif %}
-      </div>
-      <div class="fourteen wide column">
-        {{ entity_macros.release_search_result_row(release_doc, margin_top=False) }}
-      </div>
-    </div>
-  {% endfor %}
+        </td>
+        <td>
+          {{ entity_macros.release_search_result_row(release_doc, margin_top=False) }}
+        </td>
+    {% endfor %}
+    </tbody>
+    </table>
+    {% if found.count_found > found.count_returned %}
+      <p><i>Showing only the first {{ found.count_returned }} out of {{ found.count_found }} releases</i>
+    {% endif %}
+    <p><i><a href="/container/{{ entity.ident }}/browse">Back to full listing</a></i>
+  {% endif %}
 {% endmacro %}
 
 {% block entity_main %}
