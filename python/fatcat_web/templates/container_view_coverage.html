@@ -6,35 +6,79 @@
 
 {% block entity_main %}
 
-<div class="ui centered grid">
-  <div class="row">
-    <div class="twelve wide column">
-      <div class="ui large horizontal statistic">
-        <div class="value">{{ "{:,}".format(container._stats.total) }}</div>
-        <div class="label" style="text-transform: none;">Known Releases</div>
-      </div>
-      {% if container._stats.total >= 1 %}
-        {{ entity_macros.preservation_bar(container._stats.preservation, extra_class="large") }}
-        {{ entity_macros.preservation_table(container._stats.preservation) }}
-      {% endif %}
-      <p>
-      {% if container.extra and container.extra.kbart %}
-        There seem to be at least some "dark" preservation holdings in:
-        {% for k, v in container.extra.kbart.items() %}
-          <code>{{ k }}</code>{{ ", " if not loop.last }}
-        {% endfor %}
-        .
-      {% endif %}
-      {% if container.issnl %}
-        Our metadata may not be up to date, but you can verify preservation holdings in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a> (click "Archival Status").
-      {% endif %}
-    </div>
+<div class="ui container text" style="margin-bottom: 2em;">
+  <div class="ui message">
+    <p>This page summarizes and visualizes the article-level (or output-level) preservation status for a single publication venue (<i>{{ container.name }}</i>). Fatcat is a preservation-oriented catalog, and metadata is aggregated from many <a href="https://guide.fatcat.wiki/sources.html">sources</a>.
+    <p>However, metadata quality and consistency is difficult at scale and there may be preservation coverage not recorded here, or in some rare cases we may have content incorrectly matched and marked as preserved. Please <a href="/about">contact us</a> or <a href="https://guide.fatcat.wiki/editing_quickstart.html">submit corrections directly</a> if you find any mistakes or inaccuracies.
   </div>
 </div>
 
 {% if container._stats.total >= 1 %}
-  <br><br>
-  <h2>Preservation Coverage by Year</h2>
+  <div class="ui container text" style="margin-bottom: 3em;">
+    <h2 class="ui header">Overall Preservation Coverage</h2>
+    {{ entity_macros.preservation_bar(container._stats.preservation, extra_class="large") }}
+    <br>
+    <center>
+      {{ entity_macros.preservation_table(container._stats.preservation) }}
+    </center>
+  </div>
+{% endif %}
+
+<div class="ui container text" style="margin-bottom: 3em;">
+  <h2 class="ui header">Known Holdings Elsewhere</h2>
+  <p>This table is based on KBART reports from large, independent, long-term digital preservation projects. We use the start and stop years of fulltext coverage, then count individuals works as included or not on the basis of year alone (not considering volume or issue metadata). These are mostly "dark" archives, with no direct public access to holdings.
+  <p>The Keeper's Registry project, currently run by <a href="https://issn.org">issn.org</a>, is a more authoritative source for aggregated KBART reports, and includes more archives.
+  {% if container.issnl %}
+    You can double check the <a href="https://portal.issn.org/?q=api/search&search[]=MUST=allissnbis=%22{{ container.issnl }}%22">Keeper's entry for this ISSN on portal.issn.org</a>; click through to the "Archival Status" link to see holdings information.
+  {% endif %}
+
+  {% if container.extra and container.extra.kbart %}
+    <table class="ui very compact table">
+    <thead>
+      <tr>
+        <th>Archive</th>
+        <th>Year Span(s)</th>
+    </thead>
+    <tbody>
+    {% for k, v in container.extra.kbart.items() %}
+      <tr>
+        <td>
+        {% if k == "lockss" %}
+          <a href="https://www.lockss.org/">LOCKSS</a>
+        {% elif k == "clockss" %}
+          <a href="https://clockss.org/">CLOCKSS</a>
+        {% elif k == "hathitrust" and container.issnl %}
+          <a href="https://catalog.hathitrust.org/Search/Home?lookfor={{ container.issnl }}&searchtype=isn&ft=&setft=false">HathiTrust</a>
+        {% elif k == "portico" and container.issnl %}
+          <a href="https://www.portico.org/coverage/titles/?keyword={{ container.issnl }}">Portico</a>
+        {% elif k == "scholarsportal" and container.issnl %}
+          <a href="https://journals.scholarsportal.info/search?q={{ container.issnl }}&search_in=ISSN">Scholars Portal</a>
+        {% else %}
+          <span style="text-transform: uppercase;">{{ k }}</span>
+        {% endif %}
+        </td>
+        <td>
+          {% for span in v.year_spans %}
+            {% if span|length >= 2 -%}
+              {{ span[0] }} to {{ span[1] -}}
+            {% elif span|length == 1 -%}
+              {{ span[0] -}}
+            {% endif -%}
+            <br>
+          {% endfor %}
+          {% if not v.year_spans %}-{% endif %}
+    {% endfor %}
+    </tbody>
+    </table>
+  {% else %}
+    <p>No holdings at any other locations recorded.
+  {% endif %}
+</div>
+
+{% if container._stats.total >= 1 %}
+  <div class="ui container text">
+    <h2 class="ui header">Preservation Coverage by Year</h2>
+  </div>
 
   <figure style="margin: 0 0 0 0;">
     <embed type="image/svg+xml" src="/container/{{ container.ident }}/preservation_by_year.svg" />
@@ -45,7 +89,9 @@
   </div>
 
   <br><br>
-  <h2>Preservation Coverage by Volume</h2>
+  <div class="ui container text">
+    <h2 class="ui header">Preservation Coverage by Volume Number</h2>
+  </div>
 
   <figure style="margin: 0 0 0 0;">
     <embed type="image/svg+xml" src="/container/{{ container.ident }}/preservation_by_volume.svg" />
@@ -56,23 +102,25 @@
   </div>
 
   <br><br>
-  <h2>Preservation Coverage by Release Type</h2>
-  <table class="ui table">
-    <thead>
-      <tr>
-        <th>Release Type
-        <th class="right aligned">Total Count
-        <th>Coverage
-    </thead>
-    <tbody>
-      {% for type_row in container._type_preservation %}
-      <tr>
-        <td class="two wide">{{ type_row.release_type }}
-        <td class="two wide right aligned">{{ "{:,}".format(type_row.total) }}
-        <td class="twelve wide">{{ entity_macros.preservation_bar(type_row) }}
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="ui container text">
+    <h2 class="ui header">Preservation Coverage by Release Type</h2>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Release Type
+          <th class="right aligned">Total Count
+          <th>Coverage
+      </thead>
+      <tbody>
+        {% for type_row in container._type_preservation %}
+        <tr>
+          <td class="three wide">{{ type_row.release_type }}
+          <td class="three wide right aligned">{{ "{:,}".format(type_row.total) }}
+          <td class="ten wide">{{ entity_macros.preservation_bar(type_row) }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endif %}
 
 {% endblock %}

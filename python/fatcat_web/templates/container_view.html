@@ -158,39 +158,6 @@
 </div>
 {% endif %}
 
-{#
-{%- if container.extra and container.extra.kbart %}
-<div class="ui segment attached">
-<b>Preservation Holdings</b><br>
-  {% for k, v in container.extra.kbart.items() %}
-    {% if k == "lockss" %}
-      <a href="https://www.lockss.org/">LOCKSS</a>:
-    {% elif k == "clockss" %}
-      <a href="https://clockss.org/">CLOCKSS</a>:
-    {% elif k == "hathitrust" and container.issnl %}
-      <a href="https://catalog.hathitrust.org/Search/Home?lookfor={{ container.issnl }}&searchtype=isn&ft=&setft=false">HathiTrust</a>:
-    {% elif k == "portico" and container.issnl %}
-      <a href="https://www.portico.org/coverage/titles/?keyword={{ container.issnl }}">Portico</a>:
-    {% elif k == "scholarsportal" and container.issnl %}
-      <a href="https://journals.scholarsportal.info/search?q={{ container.issnl }}&search_in=ISSN">Scholars Portal</a>:
-    {% else %}
-      <span style="text-transform: uppercase;">{{ k }}:</span>
-    {% endif %}
-    years
-    {% for span in v.year_spans %}
-      {% if span|length >= 2 -%}
-        {{ span[0] }}-{{ span[1] -}}
-      {% elif span|length == 1 -%}
-        {{ span[0] -}}
-      {% endif -%}
-      {{- ", " if not loop.last }}
-    {% endfor %}
-    <br>
-  {% endfor %}
-</div>
-{% endif %}
-#}
-
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
   <div class="content">
