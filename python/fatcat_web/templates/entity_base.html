@@ -75,6 +75,10 @@
             {% endif %}
             <br>
           {% endif %}
+        {% elif entity_type == "container" %}
+          {% if entity.publisher %}
+            <p style="font-size: larger;">{{ entity.publisher }}
+          {% endif %}
         {% endif %}
         <!-- these nested div make tabs scrollable on mobile -->
         <div class="ui container" style="min-width: 100%; overflow-x: auto;">

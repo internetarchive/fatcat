@@ -8,23 +8,13 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
 
-{% if (container.extra != None) and (container.extra['urls'] != None) and (container.extra['urls']|length > 0) %}
-  <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
-    <a href="{{ container.extra['urls'][0] }}"><code>{{ container.extra['urls'][0] }}</code></a>
-  </div>
-{% elif (container.extra != None) and (container.extra['webarchive_urls'] != None) and (container.extra['webarchive_urls']|length > 0) %}
-{# fallback to a webarchive URL if no valid/live homepage URL #}
-  <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
-    <a href="{{ container.extra['webarchive_urls'][0] }}"><code>{{ container.extra['webarchive_urls'][0] }}</code></a>
-  </div>
-{% endif %}
-<p>
-{% if container.publisher != None %}
-  Published by {{ container.publisher }}
+{% if container.container_type %}
+  {% set pub_type_phrase = container.container_type %}
+{% else %}
+  {% set pub_type_phrase = '"container" (a publication venue)' %}
 {% endif %}
 
-{% if container.state == "active" %}
-<h3>Search Content</h3>
+{% if container.state == 'active' %}
 <form class="" role="search" action="/container/{{ container.ident }}/search" method="get">
   <div class="ui form">
     <div class="ui action input large fluid">
@@ -35,14 +25,30 @@
 </form>
 {% endif %}
 
+{% if (container.extra != None) and (container.extra['urls'] or container.extra['webarchive_urls']) %}
+  <h3 class="ui dividing header">Homepage URLs</h3>
+  <table class="ui very basic compact small single line fixed table">
+    <tbody>
+      {% for url in container.extra['urls'] or [] %}
+        <tr><td><a href="{{ url }}" rel="nofollow"><code>{{ url }}</code></a></td>
+      {% endfor %}
+      {% for url in container.extra['webarchive_urls'] or [] %}
+        <tr><td><a href="{{ url }}" rel="nofollow"><code>{{ url }}</code></a></td>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
 {% if container._random_releases %}
-<h3>Example Publications</h3>
+<h3 class="ui dividing header">Example Publications</h3>
 {% for random_release in container._random_releases %}
   {{ entity_macros.release_search_result_row(random_release) }}
 {% endfor %}
 {% endif %}
 
 </div>
+
+{# start right-hand entity column #}
 <div class="column" style="flex: 0 0 24em;">
 
 {% if container._stats %}
@@ -54,37 +60,45 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% if container._es and container._es.is_oa == True %}
 <div class="ui segment center aligned attached">
   <i class="icon unlock large orange"></i><b>Open Access Publication</b>
 </div>
-
 {% endif %}
-{% if container._stats.total >= 1 %}
-  <div class="ui segment attached">
-    <b>Preservation Status</b><br>
-      {{ entity_macros.preservation_bar(container._stats.preservation) }}
-      {{ entity_macros.preservation_small_table(container._stats.preservation) }}
-  </div>
-  <div class="ui segment attached">
-    <b>Work Types</b><br>
-    <table class="ui very basic very compact collapsing table">
+
+{% if container._stats and container._stats.total >= 1 %}
+<div class="ui segment attached">
+  <b>Preservation Summary <a href="/container/{{ container.ident }}/coverage">[more]</a></b><br>
+  {{ entity_macros.preservation_bar(container._stats.preservation) }}
+  {{ entity_macros.preservation_small_table(container._stats.preservation) }}
+</div>
+{% endif %}
+
+{% if container._stats and container._stats.total >= 1 %}
+<div class="ui segment attached">
+  <b>Release Types</b><br>
+  {% if container._stats.total >= 1 %}
+    <table class="ui very basic very compact collapsing table" style="margin-top: 0px;">
       <tbody>
         {% for type_row in container._stats.release_type %}
         <tr>
           <td class="three wide">
+            {% if type_row == "_unknown" %}<i>unknown-type</i>{% else %}<code>{{ type_row }}</code>{% endif %}
+          <td class="three wide right aligned">
             {% if type_row == "_unknown" %}
-              <i>unknown-type</i>
+              <a href="/container/{{ container.ident }}/search?q=!release_type:*">
             {% else %}
-              <code>{{ type_row }}</code>
+              <a href="/container/{{ container.ident }}/search?q=release_type:{{ type_row }}">
             {% endif %}
-          <td class="three wide right aligned">{{ "{:,}".format(container._stats.release_type[type_row]) }}
+            {{ "{:,}".format(container._stats.release_type[type_row]) }}
+            </a>
         {% endfor %}
       </tbody>
     </table>
-  </div>
-{% endif %}
+  {% endif %}
+</div>
 {% endif %}
 
 {% if container.container_type != None or container.publication_status != None %}
@@ -95,6 +109,9 @@
   {% if container.publication_status != None %}
     <b>Publication Status</b> &nbsp;<code>{{ container.publication_status or 'unknown' }}</code><br>
   {% endif %}
+  {% if container.extra and container.extra.country %}
+    <b>Country Code</b> &nbsp;<code>{{ container.extra.country }}</code><br>
+  {% endif %}
 </div>
 {% endif %}
 
@@ -102,17 +119,22 @@
 <div class="ui segment attached">
   {% if container.issnl != None %}
     <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b>
-    &nbsp;<code>{{ container.issnl }}</code>
+    &nbsp;<code><a href="https://portal.issn.org/resource/issn/{{ container.issnl }}">{{ container.issnl }}</a></code><br>
   {% endif %}
   {% if container.issnp or (container.extra != None and container.extra.issnp != None and (container.extra.issnp|length > 0)) %}
-    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.issnp or container.extra.issnp }}</code>
+    &nbsp; &nbsp; <b>Print:</b> &nbsp;<code>{{ container.issnp or container.extra.issnp }}</code><br>
   {% endif %}
   {% if container.issne or (container.extra != None and container.extra.issne != None and (container.extra.issne|length > 0)) %}
-    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.issne or container.extra.issne }}</code>
+    &nbsp; &nbsp; <b>Electronic:</b> &nbsp;<code>{{ container.issne or container.extra.issne }}</code><br>
   {% endif %}
-  <br>
   {% if container.wikidata_qid != None %}
-    <b>Wikidata</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
+    <b>Wikidata</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a><br>
+  {% endif %}
+  {% if container.extra and container.extra.dblp %}
+    <b>dblp</b> &nbsp;<a href="https://dblp.org/{{ container.extra.dblp.prefix }}"><code>{{ container.extra.dblp.prefix }}</code></a><br>
+  {% endif %}
+  {% if container.extra and container.extra.ia and container.extra.ia.sim %}
+    <b>archive.org</b> &nbsp;<a href="https://archive.org/search.php?query=sim_pubid%3A{{ container.extra.ia.sim.sim_pubid }}%20mediatype%3Acollection"><code>sim_pubid:{{ container.extra.ia.sim.sim_pubid }}</code></a><br>
   {% endif %}
 </div>
 {% endif %}
@@ -128,23 +150,15 @@
 
   {% if container._es.in_road == True %}
     <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
-  {% elif container._es.in_road == False %}
-    <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
 
-  {% if container._es.any_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a>
-    <br>
-  {% elif container._es.any_kbart == False %}
-    <i class="icon times grey"></i> Not in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
-  {% endif %}
-
-  {% if container.extra and container.extra.sherpa_romeo and container.extra.sherpa_romeo.color %}
-    SHERPA/RoMEO color: <code>{{ container.extra.sherpa_romeo.color }}</code>
+  {% if container.extra and container.extra.szczepanski %}
+    <i class="icon check green"></i> In <a href="https://www.ebsco.com/open-access/szczepanski-list">Szczepanski List</a><br>
   {% endif %}
 </div>
 {% endif %}
 
+{#
 {%- if container.extra and container.extra.kbart %}
 <div class="ui segment attached">
 <b>Preservation Holdings</b><br>
@@ -175,6 +189,7 @@
   {% endfor %}
 </div>
 {% endif %}
+#}
 
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
