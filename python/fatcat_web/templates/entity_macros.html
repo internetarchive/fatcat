@@ -224,7 +224,7 @@
   {% endif %}
 
   {% if paper.withdrawn_status %}
-    <b style="color: red; text-transform: uppercase;">{{ paper.withdrawn_status }}</b>
+    <b style="color: red; text-transform: uppercase;">&nbsp; [{{ paper.withdrawn_status }}]</b>
   {% endif %}
 
   {# ### IDENTIFIERS #}
@@ -256,6 +256,9 @@
   {% endif %}
   {% if paper.wikidata_qid %}
     <a href="https://wikidata.org/wiki/{{ paper.wikidata_qid }}" style="color: green;">wikidata:{{ paper.wikidata_qid }}</a> &nbsp;
+  {% endif %}
+  {% if paper.version %}
+    <span style="color: green;">version:{{ paper.version }}</span> &nbsp;
   {% endif %}
 
 {# WIP: elastic release work grouping searches
