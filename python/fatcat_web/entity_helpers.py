@@ -243,6 +243,7 @@ def generic_deleted_entity(entity_type: str, ident: str) -> Any:
     else:
         raise NotImplementedError
     entity.ident = ident
+    entity.state = "deleted"
     return entity
 
 
@@ -290,6 +291,16 @@ def generic_get_editgroup_entity(
         abort(400)
 
     entity.ident = ident
+    if edit.redirect_ident:
+        entity.state = "redirect"
+        entity.redirect = edit.redirect_ident
+    elif edit.prev_revision:
+        # TODO: this doesn't catch the case of "deleted but then undeleted" or
+        # similar situations where edit.prev_revision is not set. Really we
+        # should re-fetch from the API or something.
+        entity.state = "active"
+    else:
+        entity.state = "wip"
     return entity, edit
 
 

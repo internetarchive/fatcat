@@ -522,7 +522,7 @@ class EntityTomlForm(EntityEditForm):
         Initializes form with TOML version of existing entity
         """
         etf = EntityTomlForm()
-        if entity.state == "active":
+        if entity.state in ["active", "wip"]:
             pop_fields = ["ident", "state", "revision", "redirect"]
         else:
             pop_fields = ["ident", "state"]
