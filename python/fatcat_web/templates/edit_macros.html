@@ -1,13 +1,13 @@
 
-{% macro edit_link_bar(entity_type, existing_ident, view) -%}
+{% macro edit_link_bar(entity_type, existing_ident, editgroup, view) -%}
   {% set has_form = entity_type in ['release', 'file', 'container'] %}
   <div class="ui {% if has_form %}four{% else %}three{% endif %} item menu">
-    <a class="item" href="/{{ entity_type }}/{{ existing_ident }}">View</a>
+    <a class="item" href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}">View</a>
     {% if has_form %}
-      <a class="item {% if view == 'form' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/edit">Edit Form</a>
+      <a class="item {% if view == 'form' %}active{% endif %}" href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}/edit">Edit Form</a>
     {% endif %}
-    <a class="item {% if view == 'toml' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/edit/toml">Edit TOML</a>
-    <a class="red item {% if view == 'delete' %}active{% endif %}" href="/{{ entity_type }}/{{ existing_ident }}/delete">Delete</a>
+    <a class="item {% if view == 'toml' %}active{% endif %}" href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}/edit/toml">Edit TOML</a>
+    <a class="red item {% if view == 'delete' %}active{% endif %}" href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ existing_ident }}/delete">Delete</a>
   </div>
 {% endmacro %}
 
