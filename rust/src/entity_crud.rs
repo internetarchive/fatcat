@@ -410,10 +410,11 @@ macro_rules! generic_db_update {
         fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatcatId) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             let no_redirect: Option<Uuid> = None;
-            // Don't set prev_rev if current status is redirect
-            let prev_rev = match current.redirect_id {
-                Some(_) => None,
-                None => current.rev_id,
+
+            // Don't set prev_rev if current state is 'redirect' or 'wip'
+            let prev_rev = match (current.redirect_id, current.is_live) {
+                (Some(_), _) | (_, false) => None,
+                (None, true) => current.rev_id,
             };
 
             if self.state.is_none() {
