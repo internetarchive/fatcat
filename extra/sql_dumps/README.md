@@ -96,9 +96,13 @@ This dump will contain all tables in the backend schema, except for "private"
 authentication tables. For local or non-production machines, might need to
 replace the `fatcat_prod` database name.
 
+Note that prior to 2022, public dumps were in `--format=tar`, but this results
+in many temporary files being written to disk, which causes unnecessarly load
+on the server.
+
     # TODO: for production, probably want consistent serialization mode
     export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
-    sudo -u postgres pg_dump --verbose --format=tar --exclude-table-data=auth_oidc fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_public_dbdump_${DATESLUG}.tar.gz
+    sudo -u postgres pg_dump --verbose --format=custom --exclude-table-data=auth_oidc fatcat_prod > /srv/fatcat/snapshots/fatcat_public_dbdump_${DATESLUG}.pgdump
 
 Can also run using the remote/SSH options above.
 
