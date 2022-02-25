@@ -23,7 +23,7 @@ def _init_search(args: argparse.Namespace) -> Search:
     # ensure API connection works
     args.api.get_changelog()
 
-    client = elasticsearch.Elasticsearch(args.elasticsearch_endpoint)
+    client = elasticsearch.Elasticsearch(args.elasticsearch_endpoint, timeout=120.0)
     search = Search(using=client, index=args.elasticsearch_index)
     return search
 
