@@ -1019,7 +1019,7 @@ def main() -> None:
         # token is an optional kwarg (can be empty string, None, etc)
         token=os.environ.get(args.auth_var),
     )
-    sentry_sdk.init(environment=args.env)
+    sentry_sdk.init()
     args.func(args)
 
 
