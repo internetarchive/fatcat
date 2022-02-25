@@ -8,9 +8,6 @@ import sentry_sdk
 from fatcat_tools import authenticated_api
 from fatcat_tools.reviewers import DummyReviewBot
 
-# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = sentry_sdk.init()
-
 
 def run_dummy(args: argparse.Namespace) -> None:
     reviewer = DummyReviewBot(args.api, poll_interval=args.poll_interval, verbose=args.verbose)
@@ -60,6 +57,7 @@ def main() -> None:
         sys.exit(-1)
 
     args.api = authenticated_api(args.fatcat_api_url)
+    sentry_sdk.init(environment=args.env)
     args.func(args)
 
 

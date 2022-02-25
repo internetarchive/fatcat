@@ -157,12 +157,3 @@ class Config(object):
     except Exception as e:
         print("WARNING: couldn't set sentry git release automatically: " + str(e))
         GIT_RELEASE = None
-
-    SENTRY_CONFIG = {
-        #'include_paths': ['fatcat_web', 'fatcat_openapi_client', 'fatcat_tools'],
-        "enable-threads": True,  # for uWSGI
-        "release": GIT_RELEASE,
-        "tags": {
-            "fatcat_domain": FATCAT_DOMAIN,
-        },
-    }

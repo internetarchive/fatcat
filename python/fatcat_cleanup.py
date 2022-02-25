@@ -9,9 +9,6 @@ import sentry_sdk
 from fatcat_tools import authenticated_api
 from fatcat_tools.cleanups import FileCleaner, JsonLinePusher
 
-# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = sentry_sdk.init()
-
 
 def run_files(args: argparse.Namespace) -> None:
     fmi = FileCleaner(
@@ -71,6 +68,7 @@ def main() -> None:
         # token is an optional kwarg (can be empty string, None, etc)
         token=os.environ.get(args.auth_var),
     )
+    sentry_sdk.init(environment=args.env)
     args.func(args)
 
 

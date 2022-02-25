@@ -15,9 +15,6 @@ from fatcat_tools.workers import (
     EntityUpdatesWorker,
 )
 
-# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = sentry_sdk.init()
-
 
 def run_changelog(args: argparse.Namespace) -> None:
     topic = "fatcat-{}.changelog".format(args.env)
@@ -200,6 +197,7 @@ def main() -> None:
         sys.exit(-1)
 
     args.api = public_api(args.api_host_url)
+    sentry_sdk.init(environment=args.env)
     args.func(args)
 
 

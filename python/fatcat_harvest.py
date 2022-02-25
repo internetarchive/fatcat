@@ -15,9 +15,6 @@ from fatcat_tools.harvest import (
     PubmedFTPWorker,
 )
 
-# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
-sentry_client = sentry_sdk.init()
-
 
 def run_crossref(args: argparse.Namespace) -> None:
     worker = HarvestCrossrefWorker(
@@ -145,6 +142,8 @@ def main() -> None:
     if not args.__dict__.get("func"):
         print("tell me what to do!")
         sys.exit(-1)
+
+    sentry_sdk.init(environment=args.env)
     args.func(args)
 
 

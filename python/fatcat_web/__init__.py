@@ -45,7 +45,11 @@ login_manager.login_view = "/auth/login"
 oauth = OAuth(app)
 
 # Grabs sentry config from SENTRY_DSN environment variable
-sentry_sdk.init(integrations=[FlaskIntegration()])
+sentry_sdk.init(
+    integrations=[FlaskIntegration()],
+    release=Config.GIT_RELEASE,
+    environment=Config.FATCAT_DOMAIN,
+)
 
 conf = fatcat_openapi_client.Configuration()
 conf.host = Config.FATCAT_API_HOST
