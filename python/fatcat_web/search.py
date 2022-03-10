@@ -636,7 +636,8 @@ def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]
                 "biblio",
             ],
         )
-    search = search.filter("term", container_id=query.container_id)
+    if query.container_id:
+        search = search.filter("term", container_id=query.container_id)
     if query.exclude_stubs:
         search = search.query(
             "bool",
