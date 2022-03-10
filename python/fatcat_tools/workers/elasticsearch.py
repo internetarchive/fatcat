@@ -14,13 +14,13 @@ from fatcat_openapi_client import (
 )
 
 from fatcat_tools import entity_from_json, public_api
+from fatcat_tools.search.stats import query_es_container_stats
 from fatcat_tools.transforms import (
     changelog_to_elasticsearch,
     container_to_elasticsearch,
     file_to_elasticsearch,
     release_to_elasticsearch,
 )
-from fatcat_web.search import get_elastic_container_stats
 
 from .worker_common import FatcatWorker
 
@@ -156,7 +156,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     continue
 
                 if self.entity_type == ContainerEntity and self.query_stats:
-                    stats = get_elastic_container_stats(
+                    stats = query_es_container_stats(
                         entity.ident,
                         es_client=es_client,
                         es_index=self.elasticsearch_release_index,
