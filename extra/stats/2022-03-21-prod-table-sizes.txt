@@ -1,0 +1,47 @@
+PostgreSQL 13.5 - wbgrp-svc502.us.archive.org
+Size: 707.94G
+
+              table_name               | table_size | indexes_size | total_size 
+---------------------------------------+------------+--------------+------------
+ "public"."release_contrib"            | 86 GB      | 31 GB        | 117 GB
+ "public"."refs_blob"                  | 114 GB     | 2185 MB      | 116 GB
+ "public"."release_rev"                | 82 GB      | 25 GB        | 107 GB
+ "public"."file_rev"                   | 35 GB      | 29 GB        | 64 GB
+ "public"."release_edit"               | 18 GB      | 20 GB        | 38 GB
+ "public"."file_rev_url"               | 30 GB      | 7856 MB      | 37 GB
+ "public"."work_edit"                  | 17 GB      | 19 GB        | 36 GB
+ "public"."abstracts"                  | 33 GB      | 2829 MB      | 36 GB
+ "public"."file_edit"                  | 17 GB      | 15 GB        | 33 GB
+ "public"."release_ident"              | 12 GB      | 12 GB        | 23 GB
+ "public"."work_ident"                 | 11 GB      | 11 GB        | 23 GB
+ "public"."file_rev_release"           | 8709 MB    | 10 GB        | 19 GB
+ "public"."file_ident"                 | 7478 MB    | 7579 MB      | 15 GB
+ "public"."work_rev"                   | 7552 MB    | 5238 MB      | 12 GB
+ "public"."release_ref"                | 6486 MB    | 5199 MB      | 11 GB
+ "public"."release_rev_abstract"       | 4718 MB    | 5174 MB      | 9892 MB
+ "public"."webcapture_rev_cdx"         | 3491 MB    | 338 MB       | 3829 MB
+ "public"."creator_edit"               | 934 MB     | 1042 MB      | 1976 MB
+ "public"."creator_rev"                | 928 MB     | 730 MB       | 1658 MB
+ "public"."editgroup"                  | 1224 MB    | 252 MB       | 1476 MB
+ "public"."creator_ident"              | 631 MB     | 647 MB       | 1277 MB
+ "public"."release_rev_extid"          | 515 MB     | 641 MB       | 1157 MB
+ "public"."changelog"                  | 351 MB     | 297 MB       | 648 MB
+ "public"."container_rev"              | 228 MB     | 45 MB        | 273 MB
+ "public"."webcapture_edit"            | 66 MB      | 47 MB        | 113 MB
+ "public"."container_edit"             | 59 MB      | 54 MB        | 113 MB
+ "public"."webcapture_rev_url"         | 54 MB      | 20 MB        | 74 MB
+ "public"."webcapture_rev_release"     | 20 MB      | 35 MB        | 54 MB
+ "public"."webcapture_rev"             | 38 MB      | 14 MB        | 51 MB
+ "public"."webcapture_ident"           | 22 MB      | 27 MB        | 49 MB
+ "public"."container_ident"            | 13 MB      | 20 MB        | 33 MB
+ "public"."editor"                     | 88 kB      | 128 kB       | 216 kB
+ "public"."auth_oidc"                  | 88 kB      | 120 kB       | 208 kB
+ "public"."editgroup_annotation"       | 72 kB      | 48 kB        | 120 kB
+ "public"."fileset_rev_file"           | 48 kB      | 32 kB        | 80 kB
+ "public"."fileset_edit"               | 16 kB      | 48 kB        | 64 kB
+ "public"."fileset_rev_url"            | 16 kB      | 32 kB        | 48 kB
+ "public"."fileset_rev_release"        | 8192 bytes | 32 kB        | 40 kB
+ "public"."fileset_ident"              | 8192 bytes | 32 kB        | 40 kB
+ "public"."fileset_rev"                | 16 kB      | 16 kB        | 32 kB
+ "public"."__diesel_schema_migrations" | 8192 bytes | 16 kB        | 24 kB
+(41 rows)
