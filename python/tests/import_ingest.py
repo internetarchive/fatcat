@@ -5,6 +5,7 @@ from fixtures import *
 
 from fatcat_tools.importers import (
     IngestFileResultImporter,
+    IngestFilesetFileResultImporter,
     IngestFilesetResultImporter,
     IngestWebResultImporter,
     JsonLinePusher,
@@ -24,6 +25,11 @@ def ingest_web_importer(api):
 @pytest.fixture(scope="function")
 def ingest_fileset_importer(api):
     yield IngestFilesetResultImporter(api)
+
+
+@pytest.fixture(scope="function")
+def ingest_fileset_file_importer(api):
+    yield IngestFilesetFileResultImporter(api)
 
 
 # TODO: use API to check that entities actually created...
@@ -238,3 +244,57 @@ def test_ingest_fileset_importer(ingest_fileset_importer):
     assert counts["exists"] == 7
     assert counts["skip"] == 13
     assert counts["skip-release-not-found"] == 13
+
+
+def test_ingest_fileset_file_dict_parse(ingest_fileset_file_importer):
+    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+        raw = json.loads(f.readline())
+        fe = ingest_fileset_file_importer.parse_record(raw)
+        assert fe.sha1 == "6fb020064da66bb7a666c17555611cf6820fc9ae"
+        assert fe.md5 == "dfc41b617564f99a12e6077a6208876f"
+        assert fe.sha256 == "2febad53ff0f163a18d7cbb913275bf99ed2544730cda191458837e2b0da9d18"
+        assert fe.mimetype == "image/tiff"
+        assert fe.size == 410631015
+        assert fe.extra["path"] == "NDVI_Diff_1990_2018_T06.tif"
+        assert len(fe.urls) == 2
+        for u in fe.urls:
+            if u.rel == "repository":
+                assert u.url == "https://ndownloader.figshare.com/files/14460875"
+            if u.rel == "archive":
+                assert (
+                    u.url
+                    == "https://archive.org/download/springernature.figshare.com-7767695-v1/NDVI_Diff_1990_2018_T06.tif"
+                )
+        assert len(fe.release_ids) == 1
+
+
+def test_ingest_fileset_file_importer(ingest_fileset_file_importer):
+    """
+    Similar to the above, but specifically tests 'file'/'success-file' import pathway
+    """
+    last_index = ingest_fileset_file_importer.api.get_changelog(limit=1)[0].index
+    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+        ingest_fileset_file_importer.bezerk_mode = True
+        counts = JsonLinePusher(ingest_fileset_file_importer, f).run()
+    assert counts["insert"] == 16
+    assert counts["exists"] == 0
+    assert counts["skip"] == 4
+    assert counts["skip-bad-hashes"] == 4
+
+    # fetch most recent editgroup
+    change = ingest_fileset_file_importer.api.get_changelog_entry(index=last_index + 1)
+    eg = change.editgroup
+    assert eg.description
+    assert "crawled from web" in eg.description.lower()
+    assert eg.extra["git_rev"]
+    assert "fatcat_tools.IngestFilesetFileResultImporter" in eg.extra["agent"]
+
+    # re-insert; should skip
+    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+        ingest_fileset_file_importer.reset()
+        ingest_fileset_file_importer.bezerk_mode = False
+        counts = JsonLinePusher(ingest_fileset_file_importer, f).run()
+    assert counts["insert"] == 0
+    assert counts["exists"] == 16
+    assert counts["skip"] == 4
+    assert counts["skip-bad-hashes"] == 4

@@ -37,6 +37,7 @@ from .fileset_generic import FilesetImporter
 from .grobid_metadata import GrobidMetadataImporter
 from .ingest import (
     IngestFileResultImporter,
+    IngestFilesetFileResultImporter,
     IngestFilesetResultImporter,
     IngestWebResultImporter,
     SavePaperNowFileImporter,
