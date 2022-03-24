@@ -822,15 +822,18 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
         # NOTE: in lieu of existing checks (by lookup), only allow one fileset per release
         if not self.bezerk_mode:
             release = self.api.get_release(fse.release_ids[0], expand="filesets")
+
             # check if this is an existing match, or just a similar hit
             for other in release.filesets or []:
                 if filesets_very_similar(other, fse):
                     self.counts["exists"] += 1
                     return False
+
             # for now, being conservative and just skipping if release has any other fileset
-            self.counts["skip-release-has-fileset"] += 1
-            self.counts["skip"] += 1
-            return False
+            if release.filesets:
+                self.counts["skip-release-has-fileset"] += 1
+                self.counts["skip"] += 1
+                return False
 
         return True
 
