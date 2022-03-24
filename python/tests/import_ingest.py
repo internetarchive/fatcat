@@ -235,7 +235,6 @@ def test_ingest_fileset_importer(ingest_fileset_importer):
         counts = JsonLinePusher(ingest_fileset_importer, f).run()
 
     assert counts["insert"] == 0
-    assert counts["exists"] == 0
-    assert counts["skip"] == 20
+    assert counts["exists"] == 7
+    assert counts["skip"] == 13
     assert counts["skip-release-not-found"] == 13
-    assert counts["skip-release-has-fileset"] == 7

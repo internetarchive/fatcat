@@ -926,4 +926,4 @@ def filesets_very_similar(a: FilesetEntity, b: FilesetEntity) -> bool:
     """
     a_hashes = set([f.sha1 for f in a.manifest])
     b_hashes = set([f.sha1 for f in b.manifest])
-    return a == b
+    return a_hashes == b_hashes
