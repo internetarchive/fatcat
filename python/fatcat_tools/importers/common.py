@@ -916,3 +916,14 @@ def make_kafka_consumer(
     )
     print("Consuming from kafka topic {}, group {}".format(topic_name, group))
     return consumer
+
+
+def filesets_very_similar(a: FilesetEntity, b: FilesetEntity) -> bool:
+    """
+    This helper method checks if two Fileset entities are effectively equivalent: same set of files with comparable hashes.
+
+    Uses a set() of SHA1 hashes to test for equivalence.
+    """
+    a_hashes = set([f.sha1 for f in a.manifest])
+    b_hashes = set([f.sha1 for f in b.manifest])
+    return a == b

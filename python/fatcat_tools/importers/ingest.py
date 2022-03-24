@@ -11,7 +11,7 @@ from fatcat_openapi_client import (
     WebcaptureEntity,
 )
 
-from .common import EntityImporter, make_rel_url
+from .common import EntityImporter, filesets_very_similar, make_rel_url
 
 
 class IngestFileResultImporter(EntityImporter):
@@ -693,9 +693,6 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                     rel="webarchive-base",
                 )
             )
-        # TODO: repository-base
-        # TODO: web-base
-
         if strategy == "archiveorg-fileset-bundle" and row.get("archiveorg_item_name"):
             urls.append(
                 fatcat_openapi_client.FilesetUrl(
@@ -727,6 +724,15 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                     rel="repository-base",
                 )
             )
+        elif row.get("terminal"):
+            # fallback generic web URL
+            urls.append(
+                fatcat_openapi_client.FilesetUrl(
+                    url=row["terminal"]["terminal_url"],
+                    rel="web",
+                )
+            )
+
         return urls
 
     def parse_record(self, row: Dict[str, Any]) -> FilesetEntity:
@@ -781,7 +787,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 self.counts["skip-partial-file-info"] += 1
                 return None
             if ingest_file.get("platform_url"):
-                # XXX: should we include this?
+                # TODO: should we include this?
                 fsf.extra["original_url"] = ingest_file["platform_url"]
             if ingest_file.get("terminal_url") and ingest_file.get("terminal_dt"):
                 fsf.extra[
@@ -805,25 +811,25 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
 
         # check for existing edits-in-progress with same URL
         for other in self._entity_queue:
-            # XXX: how to duplicate check?
-            if other.original_url == fse.original_url:
+            if filesets_very_similar(other, fse):
                 self.counts["skip-in-queue"] += 1
+                self.counts["skip"] += 1
                 return False
 
         # lookup sha1, or create new entity (TODO: API doesn't support this yet)
         # existing = None
 
         # NOTE: in lieu of existing checks (by lookup), only allow one fileset per release
-        release = self.api.get_release(fse.release_ids[0], expand="filesets")
-        if release.filesets:
-            # XXX: how to duplicate check filesets?
+        if not self.bezerk_mode:
+            release = self.api.get_release(fse.release_ids[0], expand="filesets")
             # check if this is an existing match, or just a similar hit
-            for other in release.filesets:
-                if fse.original_url == other.original_url:
-                    # TODO: compare very similar timestamps of same time (different formats)
+            for other in release.filesets or []:
+                if filesets_very_similar(other, fse):
                     self.counts["exists"] += 1
                     return False
+            # for now, being conservative and just skipping if release has any other fileset
             self.counts["skip-release-has-fileset"] += 1
+            self.counts["skip"] += 1
             return False
 
         return True
