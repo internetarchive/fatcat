@@ -134,7 +134,7 @@
   {% endif %}
 
   {% if container._es.any_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a>
+    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a>
     <br>
   {% elif container._es.any_kbart == False %}
     <i class="icon times grey"></i> Not in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
