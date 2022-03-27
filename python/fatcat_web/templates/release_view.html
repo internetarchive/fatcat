@@ -354,7 +354,7 @@ accessible version.
     #}
   {% endif %}
   {% if release.container._es.any_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ release.container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registery</a><br>
+    <i class="icon check green"></i> In <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ release.container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
   {% elif release.container._es.any_kbart == False %} <i class="icon times grey"></i> Not in <a href="https://keepers.issn.org/?q=api/search&search[]=MUST=allissn={{ release.container.issnl }}&search[]=MUST_EXIST=keepers">Keepers Registry</a><br>
   {% endif %}
 {% endif %}
