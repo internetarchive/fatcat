@@ -26,6 +26,10 @@
   many articles), and that a release will often have multiple files (differing
   only by watermarks, or different digitizations of the same printed work, or
   variant MIME/media types of the same published work).
+- `extra` (object with string keys): additional metadata about this file
+    - `path`: filename, with optional path prefix. path must be "relative", not
+      "absolute", and should use UNIX-style forward slashes, not Windows-style
+      backward slashes
 
 #### URL `rel` Vocabulary
 
