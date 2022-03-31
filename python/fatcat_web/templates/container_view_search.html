@@ -1,0 +1,70 @@
+{% set container = entity %}
+{% set entity_view = "search" %}
+{% set entity_type = "container" %}
+{% import "entity_macros.html" as entity_macros %}
+{% import "search_macros.html" as search_macros %}
+{% extends "entity_base.html" %}
+
+{% block entity_main %}
+<div class="ui container text">
+
+<div class="ui message">
+<h3>Search inside Container</h3>
+<form class="" role="search" action="/container/{{ entity.ident }}/search" method="get">
+  <div class="ui form">
+    <div class="ui action input huge fluid">
+      <input type="text" placeholder="Query..." name="q" value="{% if query.q %}{{ query.q }}{% endif %}" aria-label="search release metadata">
+      <button class="ui primary button">Search</button>
+    </div>
+    <br>Can also search <b><a href="/release/search?q={{ query.q or "" }}">all releases</a></b>.
+  </div>
+</form>
+</div>
+
+<br>
+{% if found %}
+  {% if found.results %}
+
+    {{ search_macros.top_results(query, found) }}
+
+    {% for paper in found.results %}
+      {{ entity_macros.release_search_result_row(paper) }}
+    {% endfor %}
+
+    {% if found.results|length > 8 %}
+      <div class="ui divider"></div>
+      <div style="text-align: center">
+      {{ search_macros.bottom_results(query, found, endpoint='release_search') }}
+      </div>
+    {% endif %}
+
+  {% else %}
+
+    Raw query was: <i>{{ query.q }}</i>
+
+    <div class="ui centered stackable grid" style="padding-top: 15%;">
+      <div class="row">
+        <div class="four wide column">
+          <img src="/static/paper_man_confused.gif" alt="confused paper man">
+        </div>
+        <div class="six wide column">
+          <h2>No results found!</h2>
+          <p>You could try elsewhere:</p>
+          <ul>
+            <li>Search <a href="https://dissem.in/search?q={{ query.q | urlencode }}">dissem.in</a></li>
+            <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ query.q | urlencode }}">BASE</a></li>
+            <li>Search <a href="https://scholar.google.com/scholar?q={{ query.q | urlencode }}">Google Scholar</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  {% endif %}
+
+{% elif es_error %}
+  {{ search_macros.es_error_msg(es_error) }}
+{% endif %}
+
+</div>
+{% endblock %}
+

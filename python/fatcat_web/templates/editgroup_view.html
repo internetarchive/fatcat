@@ -6,7 +6,10 @@
     <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view]</a>
     <a href="/editgroup/{{ editgroup.editgroup_id }}/diff#{{ entity_type }}_{{ edit.ident }}">[diff]</a>
     {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
-      <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
+      {% if edit.revision or edit.redirect_ident %}
+        {# show re-edit, unless this is a "deleted" edit #}
+        <br><a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
+      {% endif %}
       <br>
       <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

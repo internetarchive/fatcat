@@ -30,6 +30,7 @@ from fatcat_tools.normal import (
     clean_sha1,
     clean_sha256,
 )
+from fatcat_tools.search.common import FatcatSearchError
 from fatcat_tools.transforms import citeproc_csl, release_to_csl
 from fatcat_web import AnyResponse, Config, api, app, auth_api, mwoauth, priv_api
 from fatcat_web.auth import (
@@ -55,11 +56,11 @@ from fatcat_web.graphics import (
 )
 from fatcat_web.kafka import kafka_pixy_produce
 from fatcat_web.search import (
-    FatcatSearchError,
     GenericQuery,
     ReleaseQuery,
     do_container_search,
     do_release_search,
+    get_elastic_container_browse_year_volume_issue,
     get_elastic_container_histogram_legacy,
     get_elastic_container_preservation_by_volume,
     get_elastic_container_random_releases,
@@ -265,6 +266,8 @@ def work_lookup() -> AnyResponse:
 
 ### More Generic Entity Views ###############################################
 
+GENERIC_ENTITY_FIELDS = ["extra", "edit_extra", "revision", "redirect", "state", "ident"]
+
 
 def generic_entity_view(entity_type: str, ident: str, view_template: str) -> AnyResponse:
     entity = generic_get_entity(entity_type, ident)
@@ -275,7 +278,8 @@ def generic_entity_view(entity_type: str, ident: str, view_template: str) -> Any
         return render_template("deleted_entity.html", entity_type=entity_type, entity=entity)
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     if view_template == "container_view.html":
@@ -298,7 +302,8 @@ def generic_entity_revision_view(
     entity = generic_get_entity_revision(entity_type, revision_id)
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     return render_template(
@@ -322,7 +327,8 @@ def generic_editgroup_entity_view(
         )
 
     metadata = entity.to_dict()
-    metadata.pop("extra")
+    for k in GENERIC_ENTITY_FIELDS:
+        metadata.pop(k)
     entity._metadata = metadata
 
     return render_template(
@@ -344,6 +350,106 @@ def container_underscore_view(ident: str) -> AnyResponse:
 def container_view_coverage(ident: str) -> AnyResponse:
     # note: there is a special hack to add entity._type_preservation for this endpoint
     return generic_entity_view("container", ident, "container_view_coverage.html")
+
+
+@app.route("/container/<string(length=26):ident>/browse", methods=["GET"])
+def container_view_browse(ident: str) -> AnyResponse:
+    entity = generic_get_entity("container", ident)
+
+    if entity.state == "redirect":
+        return redirect(f"/container/{entity.redirect}")
+    elif entity.state == "deleted":
+        return render_template("deleted_entity.html", entity_type="container", entity=entity)
+
+    query_sort: Optional[List[str]]
+    if request.args.get("year") and "volume" in request.args and "issue" in request.args:
+        # year, volume, issue specified; browse-by-page
+        year = int(request.args["year"])
+        volume = request.args.get("volume", "")
+        issue = request.args.get("issue", "")
+        if volume:
+            volume = f'volume:"{volume}"'
+        else:
+            volume = "!volume:*"
+        if issue:
+            issue = f'issue:"{issue}"'
+        else:
+            issue = "!issue:*"
+        query_string = f"year:{year} {volume} {issue}"
+        query_sort = ["first_page", "pages", "release_date"]
+    elif request.args.get("year") and "volume" in request.args:
+        # year, volume specified (no issue); browse-by-page
+        year = int(request.args["year"])
+        volume = request.args.get("volume", "")
+        if volume:
+            volume = f'volume:"{volume}"'
+        else:
+            volume = "!volume:*"
+        query_string = f"year:{year} {volume}"
+        query_sort = ["issue", "first_page", "pages", "release_date"]
+    elif request.args.get("year"):
+        # year specified, not anything else; browse-by-date
+        year = int(request.args["year"])
+        query_string = f"year:{year}"
+        query_sort = ["release_date"]
+    elif request.args.get("volume"):
+        # volume specified, not anything else; browse-by-page
+        query_string = f'volume:{request.args["volume"]}'
+        query_sort = ["issue", "first_page", "pages", "release_date"]
+    else:
+        entity._browse_year_volume_issue = get_elastic_container_browse_year_volume_issue(
+            entity.ident
+        )
+        # print(entity._browse_year_volume_issue)
+        return render_template(
+            "container_view_browse.html",
+            entity_type="container",
+            entity=entity,
+            editgroup_id=None,
+        )
+
+    # print(query_string)
+    query = ReleaseQuery(
+        q=query_string,
+        limit=300,
+        offset=0,
+        container_id=ident,
+        fulltext_only=False,
+        recent=False,
+        exclude_stubs=True,
+        sort=query_sort,
+    )
+
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return (
+            render_template(
+                "container_view_search.html",
+                query=query,
+                es_error=fse,
+                entity_type="container",
+                entity=entity,
+                editgroup_id=None,
+            ),
+            fse.status_code,
+        )
+
+    # HACK: re-sort by first page *numerically*
+    if found.results and query_sort and "first_page" in query_sort:
+        for doc in found.results:
+            if doc.get("first_page") and doc["first_page"].isdigit():
+                doc["first_page"] = int(doc["first_page"])
+        found.results = sorted(found.results, key=lambda d: d.get("first_page") or 99999999)
+
+    return render_template(
+        "container_view_browse.html",
+        query=query,
+        releases_found=found,
+        entity_type="container",
+        entity=entity,
+        editgroup_id=None,
+    )
 
 
 @app.route("/container/<string(length=26):ident>/metadata", methods=["GET"])
@@ -984,8 +1090,17 @@ def release_search() -> AnyResponse:
     if "q" not in request.args.keys():
         return render_template("release_search.html", query=ReleaseQuery(), found=None)
 
+    # if this is a "generic" query (eg, from front page or top-of page bar),
+    # and the query is not all filters/paramters (aka, there is an actual
+    # term/phrase in the query), then also try querying containers, and display
+    # a "were you looking for" box with a single result
     container_found = None
-    if request.args.get("generic"):
+    filter_only_query = True
+    for p in request.args.get("q", "").split():
+        if ":" not in p:
+            filter_only_query = False
+            break
+    if request.args.get("generic") and not filter_only_query:
         container_query = GenericQuery.from_args(request.args)
         container_query.limit = 1
         try:
@@ -1076,6 +1191,52 @@ def coverage_search() -> AnyResponse:
         coverage_type_preservation=coverage_type_preservation,
         year_histogram_svg=year_histogram_svg,
         date_histogram_svg=date_histogram_svg,
+    )
+
+
+@app.route("/container/<string(length=26):ident>/search", methods=["GET", "POST"])
+def container_view_search(ident: str) -> AnyResponse:
+    entity = generic_get_entity("container", ident)
+
+    if entity.state == "redirect":
+        return redirect(f"/container/{entity.redirect}")
+    elif entity.state == "deleted":
+        return render_template("deleted_entity.html", entity_type="container", entity=entity)
+
+    if "q" not in request.args.keys():
+        return render_template(
+            "container_view_search.html",
+            query=ReleaseQuery(),
+            found=None,
+            entity_type="container",
+            entity=entity,
+            editgroup_id=None,
+        )
+
+    query = ReleaseQuery.from_args(request.args)
+    query.container_id = ident
+    try:
+        found = do_release_search(query)
+    except FatcatSearchError as fse:
+        return (
+            render_template(
+                "container_view_search.html",
+                query=query,
+                es_error=fse,
+                entity_type="container",
+                entity=entity,
+                editgroup_id=None,
+            ),
+            fse.status_code,
+        )
+
+    return render_template(
+        "container_view_search.html",
+        query=query,
+        found=found,
+        entity_type="container",
+        entity=entity,
+        editgroup_id=None,
     )
 
 

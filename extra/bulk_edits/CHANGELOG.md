@@ -9,6 +9,14 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2022-03
+
+Ran a journal-level metadata update, using chocula.
+
+Run a DOAJ article-level metadata import, yielding a couple hundred thousand
+new release entities. Crawling and bulk ingest of HTML and PDF fulltext for
+these articles also started.
+
 ## 2022-02
 
 - removed `container_id` linkage for some Datacite DOI releases which are

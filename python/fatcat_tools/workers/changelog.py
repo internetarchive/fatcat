@@ -131,6 +131,8 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.1088/",
             # JSTOR: mostly blocks crawler
             "10.2307/",
+            # arxiv: duplicates with arxiv identifiers (temporary)
+            "10.48550/",
         ]
         self.live_pdf_ingest_doi_prefix_acceptlist = [
             # biorxiv and medrxiv
