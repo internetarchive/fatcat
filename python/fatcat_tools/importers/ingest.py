@@ -779,11 +779,10 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 md5=ingest_file["md5"],
                 sha1=ingest_file["sha1"],
                 sha256=ingest_file.get("sha256"),
-                extra=dict(
-                    mimetype=ingest_file["mimetype"],
-                ),
+                mimetype=ingest_file["mimetype"],
+                extra=dict(),
             )
-            if not (fsf.md5 and fsf.sha1 and fsf.path and fsf.size):
+            if not (fsf.md5 and fsf.sha1 and fsf.path and fsf.size and fe.mimetype):
                 self.counts["skip-partial-file-info"] += 1
                 return None
             if ingest_file.get("platform_url"):
@@ -793,6 +792,8 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 fsf.extra[
                     "wayback_url"
                 ] = f"https://web.archive.org/web/{ingest_file['terminal_dt']}/{ingest_file['terminal_url']}"
+            if not fsf.extra:
+                fsf.extra = None
             manifest.append(fsf)
 
         fe = fatcat_openapi_client.FilesetEntity(
