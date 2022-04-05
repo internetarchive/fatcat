@@ -37,9 +37,9 @@ appended to the "base" URL to get a file download URL. Any "bundle" implies a
 direct link to an archive or "bundle" (like `.zip` or `.tar`) which contains
 all the files in this fileset
 
-- `repository` or `platform`: URL of a live-web landing page or other location
-  where content can be found. May or may not be machine-reachable.
-- `webarchive`: web archive version of `repository`
+- `repository` or `platform` or `web`: URL of a live-web landing page or other
+  location where content can be found. May or may not be machine-reachable.
+- `webarchive`: web archive version of `repository` landing page
 - `repository-bundle`: direct URL to a live-web "archive" file, such as `.zip`,
   which contains all of the individual files in this fileset
 - `webarchive-bundle`: web archive version of `repository-bundle`
