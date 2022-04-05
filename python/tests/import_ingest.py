@@ -200,7 +200,7 @@ def test_ingest_fileset_dict_parse(ingest_fileset_importer):
         assert len(fs.manifest) == 3
         assert fs.manifest[0].sha1 == "c0669e84e7b9052cc0f342e8ce7d31d59956326a"
         assert fs.manifest[0].md5 == "caf4d9fc2c6ebd0d9251ac84e0b6b006"
-        assert fs.manifest[0].extra["mimetype"] == "application/x-hdf"
+        assert fs.manifest[0].mimetype == "application/x-hdf"
         assert fs.manifest[0].size == 16799750
         assert fs.manifest[0].path == "N2 on food R_2010_03_25__10_53_27___4___1_features.hdf5"
         assert (

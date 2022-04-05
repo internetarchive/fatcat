@@ -782,7 +782,7 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 mimetype=ingest_file["mimetype"],
                 extra=dict(),
             )
-            if not (fsf.md5 and fsf.sha1 and fsf.path and fsf.size and fe.mimetype):
+            if not (fsf.md5 and fsf.sha1 and fsf.path and fsf.size and fsf.mimetype):
                 self.counts["skip-partial-file-info"] += 1
                 return None
             if ingest_file.get("platform_url"):
