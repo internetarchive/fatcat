@@ -786,7 +786,6 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
                 self.counts["skip-partial-file-info"] += 1
                 return None
             if ingest_file.get("platform_url"):
-                # TODO: should we include this?
                 fsf.extra["original_url"] = ingest_file["platform_url"]
             if ingest_file.get("terminal_url") and ingest_file.get("terminal_dt"):
                 fsf.extra[
