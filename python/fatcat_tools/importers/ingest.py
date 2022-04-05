@@ -260,6 +260,16 @@ class IngestFileResultImporter(EntityImporter):
                 edit_extra["grobid_status_code"] = row["grobid"]["status_code"]
                 edit_extra["grobid_version"] = row["grobid"].get("grobid_version")
 
+        # fileset/platform metadata
+        if row.get("ingest_strategy"):
+            edit_extra["ingest_strategy"] = row["ingest_strategy"]
+        if row.get("platform_domain"):
+            edit_extra["platform_domain"] = row["platform_domain"]
+        if row.get("platform_name"):
+            edit_extra["platform_name"] = row["platform_name"]
+        if row.get("platform_id"):
+            edit_extra["platform_id"] = row["platform_id"]
+
         return edit_extra
 
     def parse_record(self, row: Dict[str, Any]) -> FileEntity:
@@ -518,7 +528,6 @@ class IngestWebResultImporter(IngestFileResultImporter):
         )
 
         edit_extra = self.parse_edit_extra(row)
-
         if edit_extra:
             wc.edit_extra = edit_extra
         return wc
@@ -754,12 +763,6 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             return None
 
         entity_extra: Dict[str, Any] = dict()
-        edit_extra = self.parse_edit_extra(row)
-        edit_extra["ingest_strategy"] = row["ingest_strategy"]
-        if row.get("platform"):
-            edit_extra["platform"] = row["platform"]
-        if row.get("platform_id"):
-            edit_extra["platform_id"] = row["platform_id"]
 
         entity_urls = self.parse_fileset_urls(row)
         if not entity_urls:
@@ -799,10 +802,10 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             manifest=manifest,
             urls=entity_urls,
             release_ids=[release_ident],
+            extra=entity_extra or None,
         )
 
-        if entity_extra:
-            fe.extra = entity_extra
+        edit_extra = self.parse_edit_extra(row)
         if edit_extra:
             fe.edit_extra = edit_extra
         return fe
@@ -993,14 +996,6 @@ class IngestFilesetFileResultImporter(IngestFileResultImporter):
             self.counts["skip-release-not-found"] += 1
             return None
 
-        entity_extra: Dict[str, Any] = dict()
-        edit_extra = self.parse_edit_extra(row)
-        edit_extra["ingest_strategy"] = row["ingest_strategy"]
-        if row.get("platform"):
-            edit_extra["platform"] = row["platform"]
-        if row.get("platform_id"):
-            edit_extra["platform_id"] = row["platform_id"]
-
         assert row["file_count"] == len(row["manifest"]) == 1
         file_meta = row["manifest"][0]
         # print(file_meta)
@@ -1029,7 +1024,7 @@ class IngestFilesetFileResultImporter(IngestFileResultImporter):
             self.counts["skip-no-access-url"] += 1
             return None
 
-        entity_extra = dict()
+        entity_extra: Dict[str, Any] = dict()
         entity_extra["path"] = file_meta["path"]
 
         # this is to work around a bug in old sandcrawler ingest code
@@ -1051,8 +1046,6 @@ class IngestFilesetFileResultImporter(IngestFileResultImporter):
             self.counts["skip-partial-file-info"] += 1
             return None
 
-        if entity_extra:
-            fe.extra = entity_extra
         edit_extra = self.parse_edit_extra(row)
         if edit_extra:
             fe.edit_extra = edit_extra
