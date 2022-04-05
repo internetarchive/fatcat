@@ -779,10 +779,10 @@ class IngestFilesetResultImporter(IngestFileResultImporter):
             fsf = fatcat_openapi_client.FilesetFile(
                 path=ingest_file["path"],
                 size=ingest_file["size"],
-                md5=ingest_file["md5"],
-                sha1=ingest_file["sha1"],
+                md5=ingest_file.get("md5"),
+                sha1=ingest_file.get("sha1"),
                 sha256=ingest_file.get("sha256"),
-                mimetype=ingest_file["mimetype"],
+                mimetype=ingest_file.get("mimetype"),
                 extra=dict(),
             )
             if not (fsf.md5 and fsf.sha1 and fsf.path and fsf.size and fsf.mimetype):
