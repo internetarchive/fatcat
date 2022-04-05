@@ -208,11 +208,15 @@ def test_ingest_fileset_dict_parse(ingest_fileset_importer):
             == "https://zenodo.org/api/files/563203f6-6de5-46d9-b305-ba42604f2508/N2%20on%20food%20R_2010_03_25__10_53_27___4___1_features.hdf5"
         )
         assert len(fs.urls) == 2
+        matched = 0
         for u in fs.urls:
             if u.rel == "web":
                 assert u.url == "https://zenodo.org/record/1028059"
+                matched += 1
             if u.rel == "archive-base":
                 assert u.url == "https://archive.org/download/zenodo.org-1028059/"
+                matched += 1
+        assert matched == 2
         assert len(fs.release_ids) == 1
 
 
@@ -257,14 +261,18 @@ def test_ingest_fileset_file_dict_parse(ingest_fileset_file_importer):
         assert fe.size == 410631015
         assert fe.extra["path"] == "NDVI_Diff_1990_2018_T06.tif"
         assert len(fe.urls) == 2
+        matched = 0
         for u in fe.urls:
-            if u.rel == "repository":
+            if u.rel == "web":
                 assert u.url == "https://ndownloader.figshare.com/files/14460875"
+                matched += 1
             if u.rel == "archive":
                 assert (
                     u.url
                     == "https://archive.org/download/springernature.figshare.com-7767695-v1/NDVI_Diff_1990_2018_T06.tif"
                 )
+                matched += 1
+        assert matched == 2
         assert len(fe.release_ids) == 1
 
 
