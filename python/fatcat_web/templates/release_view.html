@@ -131,8 +131,9 @@
 {% endif %}
 
 {% if entity.state == 'active' %}
+
+{% if entity.files != [] and entity.files != None %}
 <h3>Archived Files and Locations</h3>
-{% if entity.files != [] %}
 <table class="ui compact fixed table">
   <tbody>
   {% for file in entity.files %}
@@ -151,15 +152,9 @@
   {% endfor %}
   </tbody>
 </table>
-{% else %}
-<p>There are no accessible files associated with this release. You could check
-<a href="/work/{{ release.work_id }}">other releases for this work</a> for an
-accessible version.
-{% endif %}
 {% endif %}
 
-{% if entity.state == 'active' %}
-{% if entity.filesets != [] %}
+{% if entity.filesets != [] and entity.filesets != None %}
 <h3>File Sets</h3>
 <table class="ui compact fixed table">
   <tbody>
@@ -181,10 +176,8 @@ accessible version.
   </tbody>
 </table>
 {% endif %}
-{% endif %}
 
-{% if entity.state == 'active' %}
-{% if entity.webcaptures != [] %}
+{% if entity.webcaptures != [] and entity.webcaptures != None %}
 <h3>Web Captures</h3>
 <table class="ui single line compact fixed table">
   <tbody>
@@ -203,9 +196,17 @@ accessible version.
   </tbody>
 </table>
 {% endif %}
-{% endif %}
-</div>
 
+{% if not (entity.files or entity.filesets or entity.webcaptures) %}
+<h3>Archived Content</h3>
+<p>There are no accessible files associated with this release. You could check
+<a href="/work/{{ release.work_id }}">other releases for this work</a> for an
+accessible version.
+{% endif %}
+
+{% endif %}
+
+</div>
 
 <div class="column" style="flex: 0 0 24em;">
 
