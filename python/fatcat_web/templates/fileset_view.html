@@ -49,7 +49,8 @@ No known public URL, mirror, or archive for this File Set.
 
 <h3>File Manifest ({{ fileset.manifest|count }})</h3>
 {% if fileset.manifest %}
-<table class="ui compact table" style="z-index: 10;">
+<div style="overflow-x: auto;">
+<table class="ui compact single line table">
   <thead>
     <tr>
       <th class="collapsing"></th>
@@ -92,6 +93,7 @@ No known public URL, mirror, or archive for this File Set.
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
 <p>This File Set is empty (contains no files).
 {% endif %}
