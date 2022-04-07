@@ -3,6 +3,21 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
+{% macro file_mimetype_icon(mimetype) -%}
+  {%- if not mimetype -%}file outline
+  {%- elif mimetype in ["application/pdf"] -%}file pdf outline
+  {%- elif mimetype in ["application/x-hdf"] -%}database
+  {%- elif mimetype in ["text/csv", "text/tab-separated-values"] -%}table
+  {%- elif mimetype in ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] -%}table
+  {%- elif mimetype in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"] -%}file alternate outline
+  {%- elif mimetype in ["application/zip", "application/gzip", "application/x-tar", "application/x-rar", "application/x-bzip2"] -%}file archive outline
+  {%- elif mimetype in ["application/octet-stream"] -%}save outline
+  {%- elif mimetype.startswith("text/") -%}file alternate outline
+  {%- elif mimetype.startswith("image/") -%}file image outline
+  {%- elif mimetype.startswith("video/") -%}film
+  {%- else -%}file outline{% endif %}
+{%- endmacro %}
+
 {% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -23,26 +38,64 @@
 No known public URL, mirror, or archive for this File Set.
 {% endif %}
 
+{% set fileset_vars = namespace(archiveorg_base=None, webarchiveorg_base=None) %}
+{% for u in (entity.urls or []) %}
+  {% if u.rel in ["archive-base"] %}
+    {% set fileset_vars.archiveorg_base = u.url %}
+  {% elif u.rel in ["webarchive-base"] %}
+    {% set fileset_vars.webarchiveorg_base = u.url %}
+  {% endif %}
+{% endfor %}
+
 <h3>File Manifest ({{ fileset.manifest|count }})</h3>
 {% if fileset.manifest %}
-  <div class="ui celled list">
+<div style="overflow-x: auto;">
+<table class="ui compact single line table">
+  <thead>
+    <tr>
+      <th class="collapsing"></th>
+      <th>Path</th>
+      <th>Type</th>
+      <th>Size</th>
+      <th class="collapsing"></th>
+    </tr>
+  </thead>
+  <tbody>
     {% for file in fileset.manifest %}
-    <div class="item">
-      <div class="content"><code>
-        <div class="header">
-          <i class="file outline icon"></i> {{ file.path }} ({{ file.size|filesizeformat }}{% if file.extra.mimetype %}, {{ file.extra.mimetype }}{% endif %})
-        </div>
-        <div style="color: #666; margin-left: 1em;"><small>
-          {% if file.md5 %}   md5:{{ file.md5 }}<br>{% endif %}
-          {% if file.sha1 %}  sha1:{{ file.sha1 }}<br>{% endif %}
-          {% if file.sha256 %}sha256:{{ file.sha256 }}<br>{% endif %}
+    <tr>
+      <td><i class="{{ file_mimetype_icon(file.mimetype) }} icon" style="font-size: x-large;"></i></td>
+      <td>
+        <b><code>{{ file.path }}</code></b>
+        <br><div style="color: #666; margin-left: 0em;"><small>
+        {% if file.sha1 %}  sha1:{{ file.sha1 }}<br>
+        {% elif file.sha256 %}sha256:{{ file.sha256 }}<br>
+        {% elif file.md5 %}   md5:{{ file.md5 }}<br>
+        {% endif %}
         </small></div>
-      </code></div>
-    </div>
+      </td>
+      <td>{% if file.mimetype %}<code style="font-size: smaller;">{{ file.mimetype }}</code>{% endif %}</td>
+      <td>{{ file.size|filesizeformat }}</td>
+      <td>
+        {% if fileset_vars.archiveorg_base %}
+          <a href="{{ fileset_vars.archiveorg_base }}/{{ file.path }}">[archive.org]</a><br>
+        {% endif %}
+        {% if fileset_vars.webarchiveorg_base %}
+          <a href="{{ fileset_vars.webarchiveorg_base }}/{{ file.path }}">[web.archive.org]</a><br>
+        {% endif %}
+        {% if file.extra and file.extra.original_url %}
+          <a href="{{ file.extra.original_url }}">[platform]</a><br>
+        {% endif %}
+        {% if file.extra and file.extra.webarchive_url%}
+          <a href="{{ file.extra.webarchive_url }}">[web.archive.org]</a><br>
+        {% endif %}
+      </td>
+    </tr>
     {% endfor %}
-  </div>
+  </tbody>
+</table>
+</div>
 {% else %}
-This File Set is empty (contains no files).
+<p>This File Set is empty (contains no files).
 {% endif %}
 
 

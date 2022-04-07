@@ -75,6 +75,14 @@
             <a href="{{ u }}">{{ u }}</a><br>
           {% endfor %}
           </code>
+  {% elif key in ("manifest", "abstracts", "refs", "releases", "files", "webcaptures", "filesets", "urls", "archive_urls", "cdx", "contribs") and value and value is iterable and value is not string %}
+    <tr><td class="three wide right aligned"><code>{{ key }}[]</code></td>
+        <td class="seven wide">
+          <code>
+          {% for m in value %}
+            {% if m != None %}{{ m }}{% endif %}<br>
+          {% endfor %}
+          </code>
   {% else %}
     <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
         <td class="seven wide"><code>{% if value != None %}{{ value }}{% endif %}</code>

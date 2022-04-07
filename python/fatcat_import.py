@@ -25,6 +25,7 @@ from fatcat_tools.importers import (
     FilesetImporter,
     GrobidMetadataImporter,
     IngestFileResultImporter,
+    IngestFilesetFileResultImporter,
     IngestFilesetResultImporter,
     IngestWebResultImporter,
     JalcImporter,
@@ -210,6 +211,30 @@ def run_ingest_web(args: argparse.Namespace) -> None:
 
 def run_ingest_fileset(args: argparse.Namespace) -> None:
     ifri = IngestFilesetResultImporter(
+        args.api,
+        editgroup_description=args.editgroup_description_override,
+        skip_source_allowlist=args.skip_source_allowlist,
+        do_updates=args.do_updates,
+        default_link_rel=args.default_link_rel,
+        edit_batch_size=args.batch_size,
+    )
+    if args.kafka_mode:
+        KafkaJsonPusher(
+            ifri,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ingest-fileset-results",
+            "fatcat-{}-ingest-fileset-result".format(args.kafka_env),
+            kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size,
+            force_flush=True,
+        ).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
+
+def run_ingest_fileset_file(args: argparse.Namespace) -> None:
+    ifri = IngestFilesetFileResultImporter(
         args.api,
         editgroup_description=args.editgroup_description_override,
         skip_source_allowlist=args.skip_source_allowlist,
@@ -745,6 +770,39 @@ def main() -> None:
         help="update pre-existing fileset entities if new match (instead of skipping)",
     )
     sub_ingest_fileset.add_argument(
+        "--default-link-rel",
+        default="fileset",
+        help="default URL rel for matches (eg, 'publisher', 'web')",
+    )
+
+    sub_ingest_fileset_file = subparsers.add_parser(
+        "ingest-fileset-file-results",
+        help="add/update file entities linked to releases based on sandcrawler dataset/fileset ingest results",
+    )
+    sub_ingest_fileset_file.set_defaults(
+        func=run_ingest_fileset_file,
+        auth_var="FATCAT_AUTH_WORKER_CRAWL",
+    )
+    sub_ingest_fileset_file.add_argument(
+        "json_file",
+        help="ingest_fileset JSON file to import from",
+        default=sys.stdin,
+        type=argparse.FileType("r"),
+    )
+    sub_ingest_fileset_file.add_argument(
+        "--skip-source-allowlist",
+        action="store_true",
+        help="don't filter import based on request source allowlist",
+    )
+    sub_ingest_fileset_file.add_argument(
+        "--kafka-mode", action="store_true", help="consume from kafka topic (not stdin)"
+    )
+    sub_ingest_fileset_file.add_argument(
+        "--do-updates",
+        action="store_true",
+        help="update pre-existing fileset entities if new match (instead of skipping)",
+    )
+    sub_ingest_fileset_file.add_argument(
         "--default-link-rel",
         default="fileset",
         help="default URL rel for matches (eg, 'publisher', 'web')",

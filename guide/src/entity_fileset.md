@@ -10,16 +10,17 @@
   - `sha1` (string): SHA-1 hash in lower-case hex
   - `sha256` (string): SHA-256 hash in lower-case hex
   - `mimetype` (string): Content type in MIME type schema
-  - `extra` (object): any extra metadata about this specific file
-    - `original_url`: live web canonical URL to download this file (optional)
-    - `webarchive_url`: web archive capture of this file (optional)
-    - `platform_id`: platform-specific identifier for this file
+  - `extra` (object): any extra metadata about this specific file. all are
+    optional
+    - `original_url`: live web canonical URL to download this file
+    - `webarchive_url`: web archive capture of this file
 - `urls`: An array of "typed" URLs. Order is not meaningful, and may not be
-  preserved.
+  preserved. These are URLs for the entire fileset, not individual files.
     - `url` (string, required):
             Eg: "https://example.edu/~frau/prcding.pdf".
     - `rel` (string, required):
-            Eg: "webarchive".
+            Eg: "archive-base", "webarchive".
+
 - `release_ids` (array of string identifiers): references to `release` entities
 - `content_scope` (string): for situations where the fileset does not simply
   contain the full representation of a work (eg, all files in dataset, for a
@@ -27,12 +28,18 @@
   vocabulary as File entity.
 - `extra` (object with string keys): additional metadata about this group of
   files, including upstream platform-specific metadata and identifiers
+  - `platform_id`: platform-specific identifier for this fileset
 
 #### URL `rel` types
 
-- `repository`: URL of a live-web landing page or other location where content can be
-  found. May not be machine-reachable.
-- `webarchive`: web archive version of `repository`
+Any ending in "-base" implies that a file path (from the manifest) can be
+appended to the "base" URL to get a file download URL. Any "bundle" implies a
+direct link to an archive or "bundle" (like `.zip` or `.tar`) which contains
+all the files in this fileset
+
+- `repository` or `platform` or `web`: URL of a live-web landing page or other
+  location where content can be found. May or may not be machine-reachable.
+- `webarchive`: web archive version of `repository` landing page
 - `repository-bundle`: direct URL to a live-web "archive" file, such as `.zip`,
   which contains all of the individual files in this fileset
 - `webarchive-bundle`: web archive version of `repository-bundle`
