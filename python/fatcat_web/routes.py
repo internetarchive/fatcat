@@ -3,6 +3,7 @@ import os
 from typing import Any, Callable, Dict, List, Optional
 
 import citeproc_styles
+import sentry_sdk
 from fatcat_openapi_client import EditgroupAnnotation
 from fatcat_openapi_client.rest import ApiException, ApiValueError
 from flask import (
@@ -1468,7 +1469,14 @@ def release_citeproc(ident: str) -> AnyResponse:
         entity = api.get_release(ident)
     except ApiException as ae:
         raise ae
-    csl = release_to_csl(entity)
+    try:
+        csl = release_to_csl(entity)
+    except ValueError as e:
+        # "handle" the missing author/surname path, so we don't get exception
+        # reports about it. these are not linked to, only show up from bots.
+        sentry_sdk.set_level("warning")
+        sentry_sdk.capture_exception(e)
+        abort(500, e)
     try:
         cite = citeproc_csl(csl, style, is_html)
     except citeproc_styles.StyleNotFoundError as e:
