@@ -13,3 +13,8 @@ get auto-ingested in the future.
 ## Prod Cleanup
 
 See bulk edits log.
+
+Verify cleanup:
+
+    fatcat-cli search file domain:isiarticles.com '!content_scope:*' --count
+    0

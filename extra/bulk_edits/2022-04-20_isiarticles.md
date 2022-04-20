@@ -24,3 +24,16 @@ The full batch:
         | rg 'isiarticles.com/' \
         | pv -l \
         | fatcat-cli batch update file release_ids= content_scope=sample --description 'Un-link and mark isiarticles PDFs as content_scope=sample' --auto-accept
+
+And some more with ':80' in the URL:
+
+    fatcat-cli search file domain:isiarticles.com '!content_scope:*' --entity-json -n0 \
+        | rg -v '"content_scope"' \
+        | rg 'isiarticles.com:80/' \
+        | pv -l \
+        | fatcat-cli batch update file release_ids= content_scope=sample --description 'Un-link and mark isiarticles PDFs as content_scope=sample' --auto-accept
+
+Verify:
+
+    fatcat-cli search file domain:isiarticles.com '!content_scope:*' --count
+    0
