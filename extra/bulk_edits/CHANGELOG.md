@@ -9,6 +9,14 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2022-04
+
+Imported some initial fileset entities.
+
+Updated about 25k file entities from isiarticles.com, which are samples (spam
+for translation service) to remove release linkage and set
+`content_scope=sample` (similar to the springer "page one" case).
+
 ## 2022-03
 
 Ran a journal-level metadata update, using chocula.
