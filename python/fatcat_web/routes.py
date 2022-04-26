@@ -1476,7 +1476,7 @@ def release_citeproc(ident: str) -> AnyResponse:
         # reports about it. these are not linked to, only show up from bots.
         sentry_sdk.set_level("warning")
         sentry_sdk.capture_exception(e)
-        abort(500, e)
+        abort(400, e)
     try:
         cite = citeproc_csl(csl, style, is_html)
     except citeproc_styles.StyleNotFoundError as e:
