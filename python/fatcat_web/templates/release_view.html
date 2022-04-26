@@ -214,7 +214,7 @@ accessible version.
   <a href="{{ entity._es.ia_pdf_url }}" class="ui fluid huge black button" style="text-decoration: underline;">
     <i class="file pdf outline icon"></i>Read Archived PDF
   </a>
-{% elif entity.state == 'active' and entity.webcaptures and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
+{% elif entity.state == 'active' and entity.webcaptures != None and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
   <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui fluid huge black button" style="text-decoration: underline;">
     <i class="university icon"></i>Visit Web Archive
   </a>
