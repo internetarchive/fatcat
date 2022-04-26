@@ -1451,7 +1451,14 @@ def release_bibtex(ident: str) -> AnyResponse:
         entity = api.get_release(ident)
     except ApiException as ae:
         raise ae
-    csl = release_to_csl(entity)
+    try:
+        csl = release_to_csl(entity)
+    except ValueError as e:
+        # "handle" the missing author/surname path, so we don't get exception
+        # reports about it. these are not linked to, only show up from bots.
+        sentry_sdk.set_level("warning")
+        sentry_sdk.capture_exception(e)
+        abort(400, e)
     bibtex = citeproc_csl(csl, "bibtex")
     return Response(bibtex, mimetype="text/plain")
 
