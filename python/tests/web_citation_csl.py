@@ -54,8 +54,8 @@ def test_release_bibtex(app, api):
     rv = app.get("/release/{}".format(r1edit.ident))
     assert rv.status_code == 200
     assert b"BibTeX" not in rv.data
-    with pytest.raises(ValueError):
-        rv = app.get("/release/{}.bib".format(r1edit.ident))
+    rv = app.get("/release/{}.bib".format(r1edit.ident))
+    assert rv.status_code == 400
 
     # create release can have citeproc run on it (no authors)
     eg = quick_eg(api)
