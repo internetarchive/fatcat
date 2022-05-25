@@ -8,7 +8,7 @@ from fatcat_tools.transforms import entity_from_toml, entity_to_toml
 
 
 def test_basic_toml(crossref_importer):
-    with open("tests/files/crossref-works.single.json", "r") as f:
+    with open("tests/files/crossref-works.single.json") as f:
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)

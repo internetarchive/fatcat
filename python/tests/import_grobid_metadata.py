@@ -19,7 +19,7 @@ def grobid_metadata_importer(api):
 
 
 def test_grobid_metadata_parse(grobid_metadata_importer):
-    with open("tests/files/example_grobid_metadata_lines.tsv", "r") as f:
+    with open("tests/files/example_grobid_metadata_lines.tsv") as f:
         raw = json.loads(f.readline().split("\t")[4])
         re = grobid_metadata_importer.parse_grobid_json(raw)
         assert re
@@ -39,7 +39,7 @@ def test_grobid_metadata_parse(grobid_metadata_importer):
 
 
 def test_file_metadata_parse(grobid_metadata_importer):
-    with open("tests/files/example_grobid_metadata_lines.tsv", "r") as f:
+    with open("tests/files/example_grobid_metadata_lines.tsv") as f:
         f.readline()
         raw = f.readline().split("\t")
         # randomize sha1 so tests are repeatable
@@ -61,7 +61,7 @@ def test_file_metadata_parse(grobid_metadata_importer):
 
 def test_grobid_metadata_importer(grobid_metadata_importer):
     last_index = grobid_metadata_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_grobid_metadata_lines.tsv", "r") as f:
+    with open("tests/files/example_grobid_metadata_lines.tsv") as f:
         grobid_metadata_importer.bezerk_mode = True
         counts = LinePusher(grobid_metadata_importer, f).run()
     assert counts["insert"] == 10
@@ -77,7 +77,7 @@ def test_grobid_metadata_importer(grobid_metadata_importer):
     assert eg.extra["git_rev"]
     assert "fatcat_tools.GrobidMetadataImporter" in eg.extra["agent"]
 
-    with open("tests/files/example_grobid_metadata_lines.tsv", "r") as f:
+    with open("tests/files/example_grobid_metadata_lines.tsv") as f:
         grobid_metadata_importer.reset()
         grobid_metadata_importer.bezerk_mode = False
         counts = LinePusher(grobid_metadata_importer, f).run()

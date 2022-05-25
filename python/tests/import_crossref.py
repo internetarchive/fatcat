@@ -9,13 +9,13 @@ from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
 
 @pytest.fixture(scope="function")
 def crossref_importer(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield CrossrefImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def crossref_importer_existing(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield CrossrefImporter(api, issn_file, bezerk_mode=False)
 
 
@@ -37,7 +37,7 @@ def test_crossref_importer_huge(crossref_importer):
 
 def test_crossref_importer(crossref_importer):
     last_index = crossref_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/crossref-works.2018-01-21.badsample.json", "r") as f:
+    with open("tests/files/crossref-works.2018-01-21.badsample.json") as f:
         crossref_importer.bezerk_mode = True
         counts = JsonLinePusher(crossref_importer, f).run()
     assert counts["insert"] == 14
@@ -53,7 +53,7 @@ def test_crossref_importer(crossref_importer):
     assert "fatcat_tools.CrossrefImporter" in eg.extra["agent"]
 
     last_index = crossref_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/crossref-works.2018-01-21.badsample.json", "r") as f:
+    with open("tests/files/crossref-works.2018-01-21.badsample.json") as f:
         crossref_importer.bezerk_mode = False
         crossref_importer.reset()
         counts = JsonLinePusher(crossref_importer, f).run()
@@ -72,12 +72,12 @@ def test_crossref_mappings(crossref_importer):
 
 def test_crossref_importer_create(crossref_importer):
     crossref_importer.create_containers = True
-    with open("tests/files/crossref-works.2018-01-21.badsample.json", "r") as f:
+    with open("tests/files/crossref-works.2018-01-21.badsample.json") as f:
         JsonLinePusher(crossref_importer, f).run()
 
 
 def test_crossref_dict_parse(crossref_importer):
-    with open("tests/files/crossref-works.single.json", "r") as f:
+    with open("tests/files/crossref-works.single.json") as f:
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)
@@ -146,7 +146,7 @@ def test_crossref_subtitle(crossref_importer):
     """
     Tests new subtitle field, explicitly
     """
-    with open("tests/files/crossref-works.single.json", "r") as f:
+    with open("tests/files/crossref-works.single.json") as f:
         # not a single line
         raw = json.loads(f.read())
         raw["subtitle"] = ["some bogus subtitle", "blah"]
@@ -165,7 +165,7 @@ def test_crossref_subtitle(crossref_importer):
 
 
 def test_stateful_checking(crossref_importer_existing):
-    with open("tests/files/crossref-works.single.json", "r") as f:
+    with open("tests/files/crossref-works.single.json") as f:
         # not a single line, a whole document
         raw = f.read()
         # might not exist yet...

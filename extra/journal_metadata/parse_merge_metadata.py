@@ -89,7 +89,7 @@ def gaps_to_spans(first, last, gaps):
         return [[first, last]]
     if not (last >= first and max(gaps) < last and min(gaps) > first):
         # mangled
-        print("mangled years: {}".format((first, last, gaps)))
+        print(f"mangled years: {(first, last, gaps)}")
         return []
     full = list(range(first, last+1))
     for missing in gaps:
@@ -206,7 +206,7 @@ class Munger():
 
     def __init__(self):
         self.data = dict()
-        with open(ISSNL_FILE, 'r') as f:
+        with open(ISSNL_FILE) as f:
             self.read_issn_map_file(f)
 
     def run(self, out_path):
@@ -227,13 +227,13 @@ class Munger():
         print("Done!")
 
     def dump(self, out_path):
-        print("#### Dumping to {}".format(out_path))
+        print(f"#### Dumping to {out_path}")
         with open(out_path, 'w') as out:
             for issnl in self.data:
                 out.write(json.dumps(self.data[issnl]) + "\n")
 
     def summarize(self):
-        print("##### Loaded {} unique entries".format(len(self.data)))
+        print(f"##### Loaded {len(self.data)} unique entries")
 
     def read_issn_map_file(self, issn_map_file):
         print("##### Loading ISSN map file...")
@@ -245,7 +245,7 @@ class Munger():
             self._issn_issnl_map[issn] = issnl
             # double mapping makes lookups easy
             self._issn_issnl_map[issnl] = issnl
-        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)))
+        print(f"Got {len(self._issn_issnl_map)} ISSN-L mappings.")
 
     def issn2issnl(self, issn):
         if issn is None:
@@ -524,7 +524,7 @@ class Munger():
         print(counts)
 
     def load_kbart(self, name, path):
-        print("##### Loading KBART file for {}...".format(name))
+        print(f"##### Loading KBART file for {name}...")
         #publication_title      print_identifier        online_identifier       date_first_issue_online num_first_vol_online    num_first_issue_online  date_last_issue_online  num_last_vol_online     num_last_issue_online   title_url       first_author    title_id        embargo_info    coverage_depth  coverage_notes  publisher_name
         raw_file = open(path, 'rb').read().decode(errors='replace')
         fixed_file = ftfy.fix_text(raw_file)

@@ -173,7 +173,7 @@ class ReleaseMerger(EntityMerger):
         assert primary_work_id not in updated_work_ids
         for work_id in updated_work_ids:
             work_releases = self.api.get_work_releases(work_id, hide="abstracts,refs")
-            rids = set([r.ident for r in work_releases])
+            rids = {r.ident for r in work_releases}
             if rids.issubset(redirected_release_ids):
                 # all the releases for this work were updated/merged; we should
                 # redirect to primary work_id

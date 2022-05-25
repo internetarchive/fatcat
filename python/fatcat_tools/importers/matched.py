@@ -188,7 +188,7 @@ class MatchedImporter(EntityImporter):
             existing.release_ids = fe.release_ids
 
         # merge the existing into this one and update
-        existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
+        existing.urls = list({(u.rel, u.url) for u in fe.urls + existing.urls})
         existing.urls = [
             fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls
         ]

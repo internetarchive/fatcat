@@ -35,11 +35,11 @@ def upsert_release(doi, fname):
     """
     try:
         r = api.lookup_release(doi=doi)
-        print("release already existed: {}".format(doi))
+        print(f"release already existed: {doi}")
         return r.ident
     except ApiException:
         pass
-    r = entity_from_json(open(fname, 'r').read(), ReleaseEntity)
+    r = entity_from_json(open(fname).read(), ReleaseEntity)
     r.ident = None
     r.release_rev = None
     r.container_id = None
@@ -50,7 +50,7 @@ def upsert_release(doi, fname):
     r.edit_extra = dict(source="copied from old production as a demo")
     files = [f for f in r.files]
 
-    print("bootstrapping release: {}".format(doi))
+    print(f"bootstrapping release: {doi}")
     eg = api.create_editgroup(Editgroup())
     resp = api.create_release(r, editgroup_id=eg.editgroup_id)
 
@@ -69,17 +69,17 @@ def upsert_container(issnl, fname):
     """
     try:
         c = api.lookup_container(issnl=issnl)
-        print("container already existed: {}".format(issnl))
+        print(f"container already existed: {issnl}")
         return c.ident
     except ApiException:
         pass
-    c = entity_from_json(open(fname, 'r').read(), ContainerEntity)
+    c = entity_from_json(open(fname).read(), ContainerEntity)
     c.ident = None
     c.release_rev = None
     c.container_id = None
     c.edit_extra = dict(source="copied from old production as a demo")
 
-    print("bootstrapping container: {}".format(issnl))
+    print(f"bootstrapping container: {issnl}")
     eg = api.create_editgroup(Editgroup())
     resp = api.create_container(c, editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)

@@ -88,7 +88,7 @@ class PubmedFTPWorker:
     def _kafka_producer(self) -> Producer:
         def fail_fast(err: Any, _msg: None) -> None:
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err), file=sys.stderr)
+                print(f"Kafka producer delivery error: {err}", file=sys.stderr)
                 print("Bailing out...", file=sys.stderr)
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
@@ -131,7 +131,7 @@ class PubmedFTPWorker:
         count = 0
         for path in paths:
             # Fetch and decompress file.
-            url = "ftp://{}{}".format(self.host, path)
+            url = f"ftp://{self.host}{path}"
             filename = ftpretr(
                 url, proxy_hostport="159.69.240.245:15201"
             )  # TODO: proxy obsolete, when networking issue is resolved
@@ -161,7 +161,7 @@ class PubmedFTPWorker:
                     raise ValueError("no PMID found, please adjust identifier extraction")
                 count += 1
                 if count % 50 == 0:
-                    print("... up to {}".format(count), file=sys.stderr)
+                    print(f"... up to {count}", file=sys.stderr)
                 self.producer.produce(
                     self.produce_topic, blob, key=pmid.text, on_delivery=self._kafka_fail_fast
                 )
@@ -182,7 +182,7 @@ class PubmedFTPWorker:
 
             current = self.state.next_span(continuous)
             if current:
-                print("Fetching citations updated on {} (UTC)".format(current), file=sys.stderr)
+                print(f"Fetching citations updated on {current} (UTC)", file=sys.stderr)
                 self.fetch_date(current)
                 self.state.complete(
                     current, kafka_topic=self.state_topic, kafka_config=self.kafka_config
@@ -190,11 +190,11 @@ class PubmedFTPWorker:
                 continue
 
             if continuous:
-                print("Sleeping {} seconds...".format(self.loop_sleep))
+                print(f"Sleeping {self.loop_sleep} seconds...")
                 time.sleep(self.loop_sleep)
             else:
                 break
-        print("{} FTP ingest caught up".format(self.name))
+        print(f"{self.name} FTP ingest caught up")
 
 
 def generate_date_file_map(host: str = "ftp.ncbi.nlm.nih.gov") -> Dict[str, Any]:
@@ -230,7 +230,7 @@ def generate_date_file_map(host: str = "ftp.ncbi.nlm.nih.gov") -> Dict[str, Any]
                     ftp = ftplib.FTP(host)
                     ftp.login()
                     sio.truncate(0)
-                ftp.retrlines("RETR {}".format(name), sio.write)
+                ftp.retrlines(f"RETR {name}", sio.write)
             except (EOFError, ftplib.error_temp, socket.gaierror, BrokenPipeError) as exc:
                 print(
                     "ftp retr on {} failed with {} ({}) ({} retries left)".format(
@@ -260,12 +260,12 @@ def generate_date_file_map(host: str = "ftp.ncbi.nlm.nih.gov") -> Dict[str, Any]
         ) = match.groups()  # ('pubmed20n1017.xml', 'Tue Dec 17 15:23:32 EST 2019')
         date = dateparser.parse(filedate)
         assert date is not None
-        fullpath = "/pubmed/updatefiles/{}.gz".format(filename)
+        fullpath = f"/pubmed/updatefiles/{filename}.gz"
         date_str = date.strftime("%Y-%m-%d")
         mapping[date_str].add(fullpath)
-        print("added entry for {}: {}".format(date_str, fullpath), file=sys.stderr)
+        print(f"added entry for {date_str}: {fullpath}", file=sys.stderr)
 
-    print("generated date-file mapping for {} dates".format(len(mapping)), file=sys.stderr)
+    print(f"generated date-file mapping for {len(mapping)} dates", file=sys.stderr)
     return mapping
 
 
@@ -296,7 +296,7 @@ def ftpretr(
             ftp.login()
             with tempfile.NamedTemporaryFile(prefix="fatcat-ftp-tmp-", delete=False) as f:
                 print(
-                    "retrieving {} from {} to {} ...".format(path, server, f.name),
+                    f"retrieving {path} from {server} to {f.name} ...",
                     file=sys.stderr,
                 )
                 ftp.retrbinary("RETR %s" % path, f.write)
@@ -333,8 +333,8 @@ def ftpretr_via_http_proxy(
     _, path = parsed.netloc, parsed.path
     for i in range(max_retries):
         try:
-            url = "http://{}{}".format(proxy_hostport, path)
-            print("retrieving file via proxy (ftpup) from {}".format(url), file=sys.stderr)
+            url = f"http://{proxy_hostport}{path}"
+            print(f"retrieving file via proxy (ftpup) from {url}", file=sys.stderr)
             with tempfile.NamedTemporaryFile(prefix="fatcat-ftp-tmp-", delete=False) as f:
                 cmd = ["wget", "-c", url, "-O", f.name]
                 subprocess.run(cmd)

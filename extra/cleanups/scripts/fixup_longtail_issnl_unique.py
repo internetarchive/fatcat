@@ -104,7 +104,7 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
             issnl = l[1]
             assert len(issnl) == 9 and issnl[4] == '-'
             m[domain] = issnl
-        print("Got {} matchings.".format(len(m)))
+        print(f"Got {len(m)} matchings.")
         return m
 
     def want(self, raw_record):

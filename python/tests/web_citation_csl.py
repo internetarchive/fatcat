@@ -51,10 +51,10 @@ def test_release_bibtex(app, api):
     r1edit = api.create_release(eg.editgroup_id, r1)
     api.accept_editgroup(eg.editgroup_id)
 
-    rv = app.get("/release/{}".format(r1edit.ident))
+    rv = app.get(f"/release/{r1edit.ident}")
     assert rv.status_code == 200
     assert b"BibTeX" not in rv.data
-    rv = app.get("/release/{}.bib".format(r1edit.ident))
+    rv = app.get(f"/release/{r1edit.ident}.bib")
     assert rv.status_code == 400
 
     # create release can have citeproc run on it (no authors)
@@ -69,8 +69,8 @@ def test_release_bibtex(app, api):
     r2edit = api.create_release(eg.editgroup_id, r2)
     api.accept_editgroup(eg.editgroup_id)
 
-    rv = app.get("/release/{}".format(r2edit.ident))
+    rv = app.get(f"/release/{r2edit.ident}")
     assert rv.status_code == 200
     assert b"BibTeX" in rv.data
-    rv = app.get("/release/{}.bib".format(r2edit.ident))
+    rv = app.get(f"/release/{r2edit.ident}.bib")
     assert rv.status_code == 200

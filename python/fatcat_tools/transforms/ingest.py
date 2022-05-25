@@ -70,7 +70,7 @@ def release_ingest_request(
     link_source = None
     link_source_id = None
     if release.ext_ids.arxiv and ingest_type == "pdf":
-        url = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
+        url = f"https://arxiv.org/pdf/{release.ext_ids.arxiv}.pdf"
         link_source = "arxiv"
         link_source_id = release.ext_ids.arxiv
     elif release.ext_ids.pmcid and ingest_type == "pdf":
@@ -82,7 +82,7 @@ def release_ingest_request(
         link_source = "pmc"
         link_source_id = release.ext_ids.pmcid
     elif release.ext_ids.doi:
-        url = "https://doi.org/{}".format(release.ext_ids.doi.lower())
+        url = f"https://doi.org/{release.ext_ids.doi.lower()}"
         link_source = "doi"
         link_source_id = release.ext_ids.doi.lower()
 
@@ -90,7 +90,7 @@ def release_ingest_request(
         return None
 
     ext_ids = release.ext_ids.to_dict()
-    ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
+    ext_ids = {k: v for (k, v) in ext_ids.items() if v}
 
     ingest_request = {
         "ingest_type": ingest_type,

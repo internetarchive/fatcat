@@ -72,7 +72,7 @@ def wrap_es_execution(search: Search) -> Any:
         raise FatcatSearchError(e.status_code, "ConnectionError: search engine not available")
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
-        print("elasticsearch non-200 status code: {}".format(e.info), file=sys.stderr)
+        print(f"elasticsearch non-200 status code: {e.info}", file=sys.stderr)
         description = None
         assert isinstance(e.info, dict)
         if e.info and e.info.get("error", {}).get("root_cause", {}):

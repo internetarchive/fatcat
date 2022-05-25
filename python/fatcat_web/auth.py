@@ -119,11 +119,11 @@ def handle_ia_xauth(email: str, password: str) -> AnyResponse:
                 )
             )
         except Exception:
-            app.log.warning("IA XAuth fail: {}".format(resp.text))
+            app.log.warning(f"IA XAuth fail: {resp.text}")
         return render_template("auth_ia_login.html", email=email), resp.status_code
     elif resp.status_code != 200:
         flash("Internet Archive login failed (internal error?)")
-        app.log.warning("IA XAuth fail: {}".format(resp.text))
+        app.log.warning(f"IA XAuth fail: {resp.text}")
         return render_template("auth_ia_login.html", email=email), resp.status_code
 
     # Successful login; now fetch info...
@@ -139,7 +139,7 @@ def handle_ia_xauth(email: str, password: str) -> AnyResponse:
     )
     if resp.status_code != 200:
         flash("Internet Archive login failed (internal error?)")
-        app.log.warning("IA XAuth fail: {}".format(resp.text))
+        app.log.warning(f"IA XAuth fail: {resp.text}")
         return render_template("auth_ia_login.html", email=email), resp.status_code
     ia_info = resp.json()["values"]
 

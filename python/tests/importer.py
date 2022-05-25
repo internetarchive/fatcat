@@ -4,7 +4,7 @@ from fatcat_tools.importers import CrossrefImporter, OrcidImporter
 
 
 def test_issnl_mapping_lookup(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         fi = CrossrefImporter(api, issn_map_file=issn_file)
 
     assert fi.issn2issnl("0000-0027") == "0002-0027"
@@ -16,7 +16,7 @@ def test_issnl_mapping_lookup(api):
 
 def test_identifiers(api):
 
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         ci = CrossrefImporter(api, issn_map_file=issn_file)
 
     assert ci.is_issnl("1234-5678") is True

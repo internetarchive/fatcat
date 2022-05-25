@@ -7,7 +7,7 @@ from fatcat_tools.importers import Bs4XmlLargeFilePusher, PubmedImporter
 
 @pytest.fixture(scope="function")
 def pubmed_importer(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield PubmedImporter(
             api,
             issn_file,
@@ -18,7 +18,7 @@ def pubmed_importer(api):
 
 @pytest.fixture(scope="function")
 def pubmed_importer_existing(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield PubmedImporter(
             api,
             issn_file,
@@ -29,7 +29,7 @@ def pubmed_importer_existing(api):
 
 def test_pubmed_importer(pubmed_importer):
     last_index = pubmed_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/pubmedsample_2019.xml", "r") as f:
+    with open("tests/files/pubmedsample_2019.xml") as f:
         pubmed_importer.bezerk_mode = True
         counts = Bs4XmlLargeFilePusher(pubmed_importer, f, ["PubmedArticle"]).run()
     assert counts["insert"] == 176
@@ -45,7 +45,7 @@ def test_pubmed_importer(pubmed_importer):
     assert "fatcat_tools.PubmedImporter" in eg.extra["agent"]
 
     last_index = pubmed_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/pubmedsample_2019.xml", "r") as f:
+    with open("tests/files/pubmedsample_2019.xml") as f:
         pubmed_importer.bezerk_mode = False
         pubmed_importer.reset()
         counts = Bs4XmlLargeFilePusher(pubmed_importer, f, ["PubmedArticle"]).run()
@@ -56,7 +56,7 @@ def test_pubmed_importer(pubmed_importer):
 
 
 def test_pubmed_xml_parse(pubmed_importer):
-    with open("tests/files/pubmedsample_2019.xml", "r") as f:
+    with open("tests/files/pubmedsample_2019.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
         r2 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[-1])
@@ -145,7 +145,7 @@ def test_pubmed_xml_parse(pubmed_importer):
 
 
 def test_pubmed_xml_dates(pubmed_importer):
-    with open("tests/files/pubmed_31393839.xml", "r") as f:
+    with open("tests/files/pubmed_31393839.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 
@@ -157,7 +157,7 @@ def test_pubmed_xml_parse_refs(pubmed_importer):
     Tests the case of multiple nested ReferenceList/Reference objects, instead
     of a single ReferenceList with multiple Reference
     """
-    with open("tests/files/pubmed_19129924.xml", "r") as f:
+    with open("tests/files/pubmed_19129924.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 

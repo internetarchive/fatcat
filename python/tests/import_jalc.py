@@ -7,19 +7,19 @@ from fatcat_tools.importers import Bs4XmlFilePusher, Bs4XmlLinesPusher, JalcImpo
 
 @pytest.fixture(scope="function")
 def jalc_importer(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield JalcImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def jalc_importer_existing(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield JalcImporter(api, issn_file, bezerk_mode=False)
 
 
 def test_jalc_importer(jalc_importer):
     last_index = jalc_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jalc_lod_sample.xml", "r") as f:
+    with open("tests/files/jalc_lod_sample.xml") as f:
         jalc_importer.bezerk_mode = True
         counts = Bs4XmlFilePusher(jalc_importer, f, "Description").run()
     assert counts["insert"] == 2
@@ -35,7 +35,7 @@ def test_jalc_importer(jalc_importer):
     assert "fatcat_tools.JalcImporter" in eg.extra["agent"]
 
     last_index = jalc_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jalc_lod_sample.xml", "r") as f:
+    with open("tests/files/jalc_lod_sample.xml") as f:
         jalc_importer.bezerk_mode = False
         jalc_importer.reset()
         counts = Bs4XmlFilePusher(jalc_importer, f, "Description").run()
@@ -47,7 +47,7 @@ def test_jalc_importer(jalc_importer):
 
 def test_jalc_importer_lines(jalc_importer):
     last_index = jalc_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jalc_rdf_sample_100.xml", "r") as f:
+    with open("tests/files/jalc_rdf_sample_100.xml") as f:
         jalc_importer.bezerk_mode = True
         counts = Bs4XmlLinesPusher(jalc_importer, f, "<rdf:Description").run()
     assert counts["insert"] == 93
@@ -63,7 +63,7 @@ def test_jalc_importer_lines(jalc_importer):
     assert "fatcat_tools.JalcImporter" in eg.extra["agent"]
 
     last_index = jalc_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jalc_rdf_sample_100.xml", "r") as f:
+    with open("tests/files/jalc_rdf_sample_100.xml") as f:
         jalc_importer.bezerk_mode = False
         jalc_importer.reset()
         counts = Bs4XmlLinesPusher(jalc_importer, f, "<rdf:Description").run()
@@ -74,7 +74,7 @@ def test_jalc_importer_lines(jalc_importer):
 
 
 def test_jalc_xml_parse(jalc_importer):
-    with open("tests/files/jalc_lod_sample.xml", "r") as f:
+    with open("tests/files/jalc_lod_sample.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r = jalc_importer.parse_record(soup.find_all("Description")[0])
 

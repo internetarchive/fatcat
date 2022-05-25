@@ -13,13 +13,13 @@ def fileset_importer(api):
 
 # TODO: use API to check that entities actually created...
 def test_fileset_importer_basic(fileset_importer):
-    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json", "r") as f:
+    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json") as f:
         JsonLinePusher(fileset_importer, f).run()
 
 
 def test_fileset_importer(fileset_importer):
     last_index = fileset_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json", "r") as f:
+    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json") as f:
         fileset_importer.bezerk_mode = True
         counts = JsonLinePusher(fileset_importer, f).run()
     assert counts["insert"] == 1
@@ -35,7 +35,7 @@ def test_fileset_importer(fileset_importer):
     assert "fatcat_tools.FilesetImporter" in eg.extra["agent"]
 
     # re-insert; should skip
-    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json", "r") as f:
+    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json") as f:
         fileset_importer.reset()
         fileset_importer.bezerk_mode = False
         counts = JsonLinePusher(fileset_importer, f).run()
@@ -45,7 +45,7 @@ def test_fileset_importer(fileset_importer):
 
 
 def test_fileset_dict_parse(fileset_importer):
-    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json", "r") as f:
+    with open("tests/files/fileset_ltjp7k2nrbes3or5h4na5qgxlu.json") as f:
         raw = json.loads(f.readline())
         fs = fileset_importer.parse_record(raw)
 

@@ -91,7 +91,7 @@ class HarvestCrossrefWorker:
     def _kafka_producer(self) -> Producer:
         def fail_fast(err: Any, _msg: Any) -> None:
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err), file=sys.stderr)
+                print(f"Kafka producer delivery error: {err}", file=sys.stderr)
                 print("Bailing out...", file=sys.stderr)
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
@@ -110,7 +110,7 @@ class HarvestCrossrefWorker:
         return Producer(producer_conf)
 
     def params(self, date_str: str) -> Dict[str, Any]:
-        filter_param = "from-update-date:{},until-update-date:{}".format(date_str, date_str)
+        filter_param = f"from-update-date:{date_str},until-update-date:{date_str}"
         return {
             "filter": filter_param,
             "rows": self.api_batch_size,
@@ -143,7 +143,7 @@ class HarvestCrossrefWorker:
                 # crude backoff; now redundant with session exponential
                 # backoff, but allows for longer backoff/downtime on remote end
                 print(
-                    "got HTTP {}, pausing for 30 seconds".format(http_resp.status_code),
+                    f"got HTTP {http_resp.status_code}, pausing for 30 seconds",
                     file=sys.stderr,
                 )
                 # keep kafka producer connection alive
@@ -158,7 +158,7 @@ class HarvestCrossrefWorker:
                 # Datacite API returned HTTP 200, but JSON seemed unparseable.
                 # It might be a glitch, so we retry.
                 print(
-                    "failed to decode body from {}: {}".format(http_resp.url, resp_body),
+                    f"failed to decode body from {http_resp.url}: {resp_body}",
                     file=sys.stderr,
                 )
                 raise exc
@@ -195,7 +195,7 @@ class HarvestCrossrefWorker:
         while True:
             current = self.state.next_span(continuous)
             if current:
-                print("Fetching DOIs updated on {} (UTC)".format(current), file=sys.stderr)
+                print(f"Fetching DOIs updated on {current} (UTC)", file=sys.stderr)
                 self.fetch_date(current)
                 self.state.complete(
                     current, kafka_topic=self.state_topic, kafka_config=self.kafka_config
@@ -203,11 +203,11 @@ class HarvestCrossrefWorker:
                 continue
 
             if continuous:
-                print("Sleeping {} seconds...".format(self.loop_sleep), file=sys.stderr)
+                print(f"Sleeping {self.loop_sleep} seconds...", file=sys.stderr)
                 time.sleep(self.loop_sleep)
             else:
                 break
-        print("{} DOI ingest caught up".format(self.name), file=sys.stderr)
+        print(f"{self.name} DOI ingest caught up", file=sys.stderr)
 
 
 class HarvestDataciteWorker(HarvestCrossrefWorker):

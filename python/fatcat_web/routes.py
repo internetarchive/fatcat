@@ -197,7 +197,7 @@ def generic_lookup_view(
         else:
             app.log.info(ae)
             raise ae
-    return redirect("/{}/{}".format(entity_type, resp.ident))
+    return redirect(f"/{entity_type}/{resp.ident}")
 
 
 @app.route("/container/lookup", methods=["GET"])
@@ -274,7 +274,7 @@ def generic_entity_view(entity_type: str, ident: str, view_template: str) -> Any
     entity = generic_get_entity(entity_type, ident)
 
     if entity.state == "redirect":
-        return redirect("/{}/{}".format(entity_type, entity.redirect))
+        return redirect(f"/{entity_type}/{entity.redirect}")
     elif entity.state == "deleted":
         return render_template("deleted_entity.html", entity_type=entity_type, entity=entity)
 
@@ -344,7 +344,7 @@ def container_view(ident: str) -> AnyResponse:
 
 @app.route("/container_<string(length=26):ident>", methods=["GET"])
 def container_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/container/{}".format(ident))
+    return redirect(f"/container/{ident}")
 
 
 @app.route("/container/<string(length=26):ident>/coverage", methods=["GET"])
@@ -493,7 +493,7 @@ def creator_view(ident: str) -> AnyResponse:
 
 @app.route("/creator_<string(length=26):ident>", methods=["GET"])
 def creator_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/creator/{}".format(ident))
+    return redirect(f"/creator/{ident}")
 
 
 @app.route("/creator/<string(length=26):ident>/metadata", methods=["GET"])
@@ -534,7 +534,7 @@ def file_view(ident: str) -> AnyResponse:
 
 @app.route("/file_<string(length=26):ident>", methods=["GET"])
 def file_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/file/{}".format(ident))
+    return redirect(f"/file/{ident}")
 
 
 @app.route("/file/<string(length=26):ident>/metadata", methods=["GET"])
@@ -571,7 +571,7 @@ def fileset_view(ident: str) -> AnyResponse:
 
 @app.route("/fileset_<string(length=26):ident>", methods=["GET"])
 def fileset_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/fileset/{}".format(ident))
+    return redirect(f"/fileset/{ident}")
 
 
 @app.route("/fileset/<string(length=26):ident>/metadata", methods=["GET"])
@@ -612,7 +612,7 @@ def webcapture_view(ident: str) -> AnyResponse:
 
 @app.route("/webcapture_<string(length=26):ident>", methods=["GET"])
 def webcapture_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/webcapture/{}".format(ident))
+    return redirect(f"/webcapture/{ident}")
 
 
 @app.route("/webcapture/<string(length=26):ident>/metadata", methods=["GET"])
@@ -655,7 +655,7 @@ def release_view(ident: str) -> AnyResponse:
 
 @app.route("/release_<string(length=26):ident>", methods=["GET"])
 def release_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/release/{}".format(ident))
+    return redirect(f"/release/{ident}")
 
 
 @app.route("/release/<string(length=26):ident>/contribs", methods=["GET"])
@@ -738,7 +738,7 @@ def work_view(ident: str) -> AnyResponse:
 
 @app.route("/work_<string(length=26):ident>", methods=["GET"])
 def work_underscore_view(ident: str) -> AnyResponse:
-    return redirect("/work/{}".format(ident))
+    return redirect(f"/work/{ident}")
 
 
 @app.route("/work/<string(length=26):ident>/metadata", methods=["GET"])
@@ -854,7 +854,7 @@ def editgroup_create_annotation(ident: str) -> AnyResponse:
     except ApiException as ae:
         app.log.info(ae)
         raise ae
-    return redirect("/editgroup/{}".format(ident))
+    return redirect(f"/editgroup/{ident}")
 
 
 @app.route("/editgroup/<string(length=26):ident>/accept", methods=["POST"])
@@ -872,7 +872,7 @@ def editgroup_accept(ident: str) -> AnyResponse:
     except ApiException as ae:
         app.log.info(ae)
         abort(ae.status)
-    return redirect("/editgroup/{}".format(ident))
+    return redirect(f"/editgroup/{ident}")
 
 
 @app.route("/editgroup/<string(length=26):ident>/unsubmit", methods=["POST"])
@@ -890,7 +890,7 @@ def editgroup_unsubmit(ident: str) -> AnyResponse:
     except ApiException as ae:
         app.log.info(ae)
         abort(ae.status)
-    return redirect("/editgroup/{}".format(ident))
+    return redirect(f"/editgroup/{ident}")
 
 
 @app.route("/editgroup/<string(length=26):ident>/submit", methods=["POST"])
@@ -908,7 +908,7 @@ def editgroup_submit(ident: str) -> AnyResponse:
     except ApiException as ae:
         app.log.info(ae)
         abort(ae.status)
-    return redirect("/editgroup/{}".format(ident))
+    return redirect(f"/editgroup/{ident}")
 
 
 @app.route("/editor/<string(length=26):ident>", methods=["GET"])
@@ -1038,9 +1038,9 @@ def release_save(ident: str) -> AnyResponse:
     if release.release_stage:
         form.release_stage.data = release.release_stage
     if release.ext_ids.doi:
-        form.base_url.data = "https://doi.org/{}".format(release.ext_ids.doi)
+        form.base_url.data = f"https://doi.org/{release.ext_ids.doi}"
     elif release.ext_ids.arxiv:
-        form.base_url.data = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
+        form.base_url.data = f"https://arxiv.org/pdf/{release.ext_ids.arxiv}.pdf"
     elif release.ext_ids.pmcid:
         form.base_url.data = (
             "https://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(
@@ -1048,7 +1048,7 @@ def release_save(ident: str) -> AnyResponse:
             )
         )
     elif release.ext_ids.hdl:
-        form.base_url.data = "https://hdl.handle.net/{}".format(release.ext_ids.hdl)
+        form.base_url.data = f"https://hdl.handle.net/{release.ext_ids.hdl}"
     return render_template("release_save.html", entity=release, form=form), 200
 
 
@@ -1283,14 +1283,14 @@ def stats_json() -> AnyResponse:
 @crossdomain(origin="*", headers=["access-control-allow-origin", "Content-Type"])
 def container_issnl_stats(issnl: str) -> AnyResponse:
     if not (len(issnl) == 9 and issnl[4] == "-"):
-        abort(400, "Not a valid ISSN-L: {}".format(issnl))
+        abort(400, f"Not a valid ISSN-L: {issnl}")
     try:
         container = api.lookup_container(issnl=issnl)
     except ApiException as ae:
         raise ae
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
-    except (ValueError, IOError) as ae:
+    except (ValueError, OSError) as ae:
         app.log.error(ae)
         abort(503)
     return jsonify(stats)

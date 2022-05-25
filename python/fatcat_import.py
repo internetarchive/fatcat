@@ -59,7 +59,7 @@ def run_crossref(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "api-crossref",
-            "fatcat-{}-import-crossref".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-import-crossref",
             consume_batch_size=args.batch_size,
         ).run()
     else:
@@ -79,7 +79,7 @@ def run_arxiv(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "oaipmh-arxiv",
-            "fatcat-{}-import-arxiv".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-import-arxiv",
         ).run()
     else:
         if args.xml_file == sys.stdin:
@@ -101,7 +101,7 @@ def run_pubmed(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ftp-pubmed",
-            "fatcat-{}-import-pubmed".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-import-pubmed",
         ).run()
     else:
         Bs4XmlLargeFilePusher(
@@ -177,7 +177,7 @@ def run_ingest_file(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-file-results",
-            "fatcat-{}-ingest-file-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-ingest-file-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
         ).run()
@@ -200,7 +200,7 @@ def run_ingest_web(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-file-results",
-            "fatcat-{}-ingest-web-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-ingest-web-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -224,7 +224,7 @@ def run_ingest_fileset(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-fileset-results",
-            "fatcat-{}-ingest-fileset-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-ingest-fileset-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -248,7 +248,7 @@ def run_ingest_fileset_file(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-fileset-results",
-            "fatcat-{}-ingest-fileset-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-ingest-fileset-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -269,7 +269,7 @@ def run_savepapernow_file(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-file-results",
-            "fatcat-{}-savepapernow-file-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-savepapernow-file-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -290,7 +290,7 @@ def run_savepapernow_web(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-file-results",
-            "fatcat-{}-savepapernow-web-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-savepapernow-web-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -311,7 +311,7 @@ def run_savepapernow_fileset(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "ingest-file-results",
-            "fatcat-{}-savepapernow-fileset-result".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-savepapernow-fileset-result",
             kafka_namespace="sandcrawler",
             consume_batch_size=args.batch_size,
             force_flush=True,
@@ -350,7 +350,7 @@ def run_datacite(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "api-datacite",
-            "fatcat-{}-import-datacite".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-import-datacite",
             consume_batch_size=args.batch_size,
         ).run()
     else:
@@ -370,7 +370,7 @@ def run_doaj_article(args: argparse.Namespace) -> None:
             args.kafka_hosts,
             args.kafka_env,
             "api-doaj",
-            "fatcat-{}-import-doaj".format(args.kafka_env),
+            f"fatcat-{args.kafka_env}-import-doaj",
             consume_batch_size=args.batch_size,
         ).run()
     else:

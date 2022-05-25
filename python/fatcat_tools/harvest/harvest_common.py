@@ -160,7 +160,7 @@ class HarvestState:
                 if err:
                     raise KafkaException(err)
 
-            print("Committing status to Kafka: {}".format(kafka_topic), file=sys.stderr)
+            print(f"Committing status to Kafka: {kafka_topic}", file=sys.stderr)
             producer_conf = kafka_config.copy()
             producer_conf.update(
                 {
@@ -184,7 +184,7 @@ class HarvestState:
         if not kafka_topic:
             return
 
-        print("Fetching state from kafka topic: {}".format(kafka_topic), file=sys.stderr)
+        print(f"Fetching state from kafka topic: {kafka_topic}", file=sys.stderr)
 
         def fail_fast(err: Any, _msg: Any) -> None:
             if err:
@@ -208,7 +208,7 @@ class HarvestState:
         )
         if not hwm:
             raise Exception(
-                "Kafka consumer timeout, or topic {} doesn't exist".format(kafka_topic)
+                f"Kafka consumer timeout, or topic {kafka_topic} doesn't exist"
             )
 
         consumer.assign([TopicPartition(kafka_topic, 0, 0)])
@@ -226,4 +226,4 @@ class HarvestState:
 
         # verify that we got at least to HWM
         assert c >= hwm[1]
-        print("... got {} state update messages, done".format(c), file=sys.stderr)
+        print(f"... got {c} state update messages, done", file=sys.stderr)

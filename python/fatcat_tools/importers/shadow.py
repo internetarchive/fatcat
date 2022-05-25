@@ -67,11 +67,11 @@ class ShadowLibraryImporter(EntityImporter):
         shadow_id = obj["shadow"].get("shadow_id").strip()
         assert shadow_id
 
-        extra = {"{}_id".format(shadow_corpus): shadow_id}
+        extra = {f"{shadow_corpus}_id": shadow_id}
         for (ext_type, ext_id) in [("doi", doi), ("pmid", pmid), ("isbn13", isbn13)]:
             if not ext_id:
                 continue
-            extra["{}_{}".format(shadow_corpus, ext_type)] = ext_id
+            extra[f"{shadow_corpus}_{ext_type}"] = ext_id
 
         # lookup release via several idents
         re = None

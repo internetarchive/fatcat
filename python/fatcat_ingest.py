@@ -37,10 +37,10 @@ def _run_search_dump(args: argparse.Namespace, search: Search) -> None:
     if args.kafka_request_topic:
         ingest_file_request_topic = args.kafka_request_topic
     else:
-        ingest_file_request_topic = "sandcrawler-{}.ingest-file-requests-daily".format(args.env)
+        ingest_file_request_topic = f"sandcrawler-{args.env}.ingest-file-requests-daily"
     if args.enqueue_kafka:
         print(
-            "Will send ingest requests to kafka topic: {}".format(ingest_file_request_topic),
+            f"Will send ingest requests to kafka topic: {ingest_file_request_topic}",
             file=sys.stderr,
         )
         kafka_producer = simple_kafka_producer(args.kafka_hosts)

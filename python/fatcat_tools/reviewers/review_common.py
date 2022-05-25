@@ -136,7 +136,7 @@ class ReviewBot:
                 since=since.isoformat()[:19] + "Z", limit=100
             )
             if not eg_list:
-                print("Sleeping {} seconds...".format(self.poll_interval))
+                print(f"Sleeping {self.poll_interval} seconds...")
                 time.sleep(self.poll_interval)
                 continue
             for eg in eg_list:
@@ -168,10 +168,10 @@ class ReviewBot:
 
         for (status, title) in (("fail", "Failed check"), ("warning", "Warnings")):
             if result_counts[status] > 0:
-                comment += "\n\n### {} ({}):\n".format(status, result_counts[status])
+                comment += f"\n\n### {status} ({result_counts[status]}):\n"
             for result in results:
                 if result.status == status and result.check_type == "editgroup":
-                    comment += "\n- {description}".format(description=result.description)
+                    comment += f"\n- {result.description}"
                 if result.status == status and result.check_type != "editgroup":
                     comment += "\n- {check_type} [{rev}](/{entity_type}/rev/{rev}): {description}".format(
                         check_type=result.check_type,
@@ -241,8 +241,8 @@ class ReviewBot:
                 for check in self.checks:
                     if entity_type in check.scope:
                         # hack-y python munging
-                        get_method = getattr(self.api, "get_{}_rev".format(entity_type))
-                        check_method = getattr(check, "check_{}".format(entity_type))
+                        get_method = getattr(self.api, f"get_{entity_type}_rev")
+                        check_method = getattr(check, f"check_{entity_type}")
                         entity = get_method(self.api, edit.rev)
                         result = check_method(check, edit, entity)
                         result.rev = edit.rev

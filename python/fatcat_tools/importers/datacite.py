@@ -51,19 +51,17 @@ DATACITE_UNKNOWN_MARKERS: List[str] = [
 # UNKNOWN_MARKERS joins official datacite markers with a generic tokens marking
 # unknown values.
 UNKNOWN_MARKERS: Set[str] = set(DATACITE_UNKNOWN_MARKERS).union(
-    set(
-        (
+    {
             "NA",
             "NN",
             "n.a.",
             "[s.n.]",
             "Unknown",
-        )
-    )
+    }
 )
 
 # UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blocklist.
-UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
+UNKNOWN_MARKERS_LOWER = {v.lower() for v in UNKNOWN_MARKERS}
 
 # Any "min" number of "tokens" will signal "spam", https://fatcat.wiki/release/rzcpjwukobd4pj36ipla22cnoi
 DATACITE_TITLE_SPAM_WORDGROUPS: List[Dict[str, Any]] = [
@@ -121,7 +119,7 @@ class DataciteImporter(EntityImporter):
         self.insert_log_file = insert_log_file
         self.this_year = datetime.datetime.now().year
 
-        print("datacite with debug={}".format(self.debug), file=sys.stderr)
+        print(f"datacite with debug={self.debug}", file=sys.stderr)
 
     def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
@@ -140,7 +138,7 @@ class DataciteImporter(EntityImporter):
             return None
 
         if not str.isascii(doi):
-            print("[{}] skipping non-ascii doi for now".format(doi))
+            print(f"[{doi}] skipping non-ascii doi for now")
             return None
 
         creators = attributes.get("creators", []) or []
@@ -188,12 +186,12 @@ class DataciteImporter(EntityImporter):
         title, original_language_title, subtitle = parse_datacite_titles(titles)
 
         if title is None:
-            print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
+            print(f"[{doi}] skipping record w/o title: {obj}", file=sys.stderr)
             return False
 
         title = clean_str(title)
         if not title:
-            print("[{}] skipping record w/o title: {}".format(doi, obj), file=sys.stderr)
+            print(f"[{doi}] skipping record w/o title: {obj}", file=sys.stderr)
             return False
 
         # check for blocklisted "spam", e.g. "FULL MOVIE"
@@ -204,7 +202,7 @@ class DataciteImporter(EntityImporter):
                 if token in title.lower():
                     seen.add(token)
             if len(seen) >= rule["min"]:
-                print("[{}] skipping spammy title: {}".format(doi, obj), file=sys.stderr)
+                print(f"[{doi}] skipping spammy title: {obj}", file=sys.stderr)
                 return False
 
         if not subtitle:
@@ -241,7 +239,7 @@ class DataciteImporter(EntityImporter):
                 )
 
         if not any((release_date, release_month, release_year)):
-            print("[{}] record w/o date: {}".format(doi, obj), file=sys.stderr)
+            print(f"[{doi}] record w/o date: {obj}", file=sys.stderr)
 
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
@@ -255,7 +253,7 @@ class DataciteImporter(EntityImporter):
         # Publisher. A few NA values. A few bogus values.
         publisher = attributes.get("publisher")
 
-        if publisher in UNKNOWN_MARKERS | set(("Unpublished", "Unknown")):
+        if publisher in UNKNOWN_MARKERS | {"Unpublished", "Unknown"}:
             publisher = None
             release_stage = None
         if publisher is not None and len(publisher) > 80:
@@ -343,7 +341,7 @@ class DataciteImporter(EntityImporter):
         if first_page and last_page:
             try:
                 _ = int(first_page) < int(last_page)
-                pages = "{}-{}".format(first_page, last_page)
+                pages = f"{first_page}-{last_page}"
             except ValueError as err:  # noqa: F841
                 # TODO(martin): This is more debug than info.
                 # print('[{}] {}'.format(doi, err), file=sys.stderr)
@@ -395,7 +393,7 @@ class DataciteImporter(EntityImporter):
             if not text:
                 continue
             if isinstance(text, int):
-                text = "{}".format(text)
+                text = f"{text}"
             if isinstance(text, list):
                 try:
                     text = "\n".join(text)
@@ -414,7 +412,7 @@ class DataciteImporter(EntityImporter):
                 lang = langdetect.detect(text)
             except (langdetect.lang_detect_exception.LangDetectException, TypeError) as err:
                 print(
-                    "[{}] language detection failed with {} on {}".format(doi, err, text),
+                    f"[{doi}] language detection failed with {err} on {text}",
                     file=sys.stderr,
                 )
             abstract_text = clean_str(text)
@@ -594,7 +592,7 @@ class DataciteImporter(EntityImporter):
                 release_type = "stub"
 
         if release_type is None:
-            print("[{}] no mapped type: {}".format(doi, types), file=sys.stderr)
+            print(f"[{doi}] no mapped type: {types}", file=sys.stderr)
 
         return release_type
 
@@ -708,7 +706,7 @@ class DataciteImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch: List[ReleaseEntity]) -> None:
-        print("inserting batch ({})".format(len(batch)), file=sys.stderr)
+        print(f"inserting batch ({len(batch)})", file=sys.stderr)
         if self.insert_log_file:
             with open(self.insert_log_file, "a") as f:
                 for doc in batch:
@@ -742,7 +740,7 @@ class DataciteImporter(EntityImporter):
         contribs: List[ReleaseContrib] = []
 
         # Names, that should be ignored right away.
-        name_blocklist = set(("Occdownload Gbif.Org",))
+        name_blocklist = {"Occdownload Gbif.Org"}
 
         i: Optional[int] = 0
         for c in creators:
@@ -849,7 +847,7 @@ class DataciteImporter(EntityImporter):
                 if i is not None:
                     i += 1
             else:
-                print("[{}] unknown name type: {}".format(doi, nameType), file=sys.stderr)
+                print(f"[{doi}] unknown name type: {nameType}", file=sys.stderr)
 
         return contribs
 
@@ -897,20 +895,20 @@ def datacite_lookup_license_slug(raw: Optional[str]) -> Optional[str]:
             r"creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)", raw, re.IGNORECASE
         )
         if not match:
-            print("missed potential license: {}".format(raw), file=sys.stderr)
+            print(f"missed potential license: {raw}", file=sys.stderr)
             return None
         name = match.groupdict().get("name")
         if not name:
             return None
         if not name.startswith("cc"):
-            name = "cc-{}".format(name)
+            name = f"cc-{name}"
         return name.upper()
 
     if "opensource.org" in raw:
         # https://opensource.org/licenses/alphabetical, e.g. opensource.org/licenses/EUPL-1.2
         match = re.search(r"opensource.org/licenses/(?P<name>[^/]+)", raw, re.IGNORECASE)
         if not match:
-            print("missed potential license: {}".format(raw), file=sys.stderr)
+            print(f"missed potential license: {raw}", file=sys.stderr)
             return None
         name = match.groupdict().get("name")
         if not name:
@@ -927,7 +925,7 @@ def datacite_lookup_license_slug(raw: Optional[str]) -> Optional[str]:
             re.IGNORECASE,
         )
         if not match:
-            print("missed potential license: {}".format(raw), file=sys.stderr)
+            print(f"missed potential license: {raw}", file=sys.stderr)
             return None
         name = match.groupdict().get("name")
         if not name:
@@ -942,7 +940,7 @@ def datacite_lookup_license_slug(raw: Optional[str]) -> Optional[str]:
         # https://spdx.org/licenses/CC-BY-NC-ND-4.0.html
         match = re.search(r"spdx.org/licenses/(?P<name>[a-z0-9-]+)", raw, re.IGNORECASE)
         if not match:
-            print("missed potential license: {}".format(raw), file=sys.stderr)
+            print(f"missed potential license: {raw}", file=sys.stderr)
             return None
         name = match.groupdict().get("name")
         if not name:
@@ -957,14 +955,14 @@ def datacite_lookup_license_slug(raw: Optional[str]) -> Optional[str]:
         # http://rightsstatements.org/vocab/InC/1.0/
         match = re.search(r"rightsstatements.org/(vocab|page)/(?P<name>[^/]*)", raw)
         if not match:
-            print("missed potential license: {}".format(raw), file=sys.stderr)
+            print(f"missed potential license: {raw}", file=sys.stderr)
             return None
         name = match.groupdict().get("name")
         if not name:
             return None
         if len(name) > 9:
             return None
-        return "RS-{}".format(name.upper())
+        return f"RS-{name.upper()}"
 
     # Fallback to generic license lookup
     return lookup_license_slug(raw)
@@ -1056,7 +1054,7 @@ def parse_single_date(
             else:
                 return result.date(), result.month, result.year
     except TypeError as err:
-        print("{} date parsing failed with: {}".format(value, err), file=sys.stderr)
+        print(f"{value} date parsing failed with: {err}", file=sys.stderr)
 
     return None, None, None
 
@@ -1123,7 +1121,7 @@ def parse_datacite_dates(
                 break
 
         if result is None:
-            print("fallback for {}".format(value), file=sys.stderr)
+            print(f"fallback for {value}", file=sys.stderr)
             release_date, release_month, release_year = parse_single_date(value)
 
         # XXX: result has not been updated since the above line
@@ -1214,4 +1212,4 @@ def index_form_to_display_name(s: str) -> str:
             return s
 
     a, b = s.split(",")
-    return "{} {}".format(b.strip(), a.strip())
+    return f"{b.strip()} {a.strip()}"

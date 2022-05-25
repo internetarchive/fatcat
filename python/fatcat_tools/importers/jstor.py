@@ -121,7 +121,7 @@ class JstorImporter(EntityImporter):
         if issn:
             issn = issn.string
             if len(issn) == 8:
-                issn = "{}-{}".format(issn[0:4], issn[4:8])
+                issn = f"{issn[0:4]}-{issn[4:8]}"
             else:
                 assert len(issn) == 9
 
@@ -177,7 +177,7 @@ class JstorImporter(EntityImporter):
 
                 if not raw_name:
                     if given and surname:
-                        raw_name = "{} {}".format(given, surname)
+                        raw_name = f"{given} {surname}"
                     elif surname:
                         raw_name = surname
 
@@ -299,7 +299,7 @@ class JstorImporter(EntityImporter):
         if not existing:
             doi = re.ext_ids.doi
             if not doi:
-                doi = "10.2307/{}".format(re.ext_ids.jstor)
+                doi = f"10.2307/{re.ext_ids.jstor}"
             try:
                 existing = self.api.lookup_release(doi=doi)
             except fatcat_openapi_client.rest.ApiException as err:

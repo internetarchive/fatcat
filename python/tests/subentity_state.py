@@ -38,7 +38,7 @@ def test_relation_states(api, app, mocker):
     ]
     eg = quick_eg(api)
     j2 = api.get_container(api.create_container(eg.editgroup_id, j2).ident)
-    rv = app.get("/container/{}".format(j2.ident))
+    rv = app.get(f"/container/{j2.ident}")
     assert rv.status_code == 200
 
     # create inter-related entities
@@ -59,14 +59,14 @@ def test_relation_states(api, app, mocker):
     assert r1.contribs[0].creator_id == c1.ident
     assert r1.contribs[0].creator.display_name == "test person"
     assert r1.contribs[0].creator.state == "active"
-    rv = app.get("/release/{}".format(r1.ident))
+    rv = app.get(f"/release/{r1.ident}")
     assert rv.status_code == 200
 
     # delete creator
     eg = quick_eg(api)
     api.delete_creator(eg.editgroup_id, c1.ident)
     api.accept_editgroup(eg.editgroup_id)
-    rv = app.get("/creator/{}".format(c1.ident))
+    rv = app.get(f"/creator/{c1.ident}")
     assert rv.status_code == 200  # TODO: HTTP status "Gone"?
 
     c1_deleted = api.get_creator(c1.ident)
@@ -79,7 +79,7 @@ def test_relation_states(api, app, mocker):
     assert r1.contribs[0].creator_id == c1.ident
     assert r1.contribs[0].creator.display_name is None
     assert r1.contribs[0].creator.state == "deleted"
-    rv = app.get("/release/{}".format(r1.ident))
+    rv = app.get(f"/release/{r1.ident}")
     assert rv.status_code == 200
 
     # wip container
@@ -96,7 +96,7 @@ def test_relation_states(api, app, mocker):
     assert r1.contribs[0].creator_id == c1.ident
     assert r1.contribs[0].creator.display_name is None
     assert r1.contribs[0].creator.state == "deleted"
-    rv = app.get("/release/{}".format(r1.ident))
+    rv = app.get(f"/release/{r1.ident}")
     assert rv.status_code == 200
 
     # redirect release
@@ -118,9 +118,9 @@ def test_relation_states(api, app, mocker):
     assert r2.contribs[0].creator_id == c1.ident
     assert r2.contribs[0].creator.display_name is None
     assert r2.contribs[0].creator.state == "deleted"
-    rv = app.get("/release/{}".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/file/{}".format(f2.ident))
+    rv = app.get(f"/file/{f2.ident}")
     assert rv.status_code == 200
 
     # delete release
@@ -132,9 +132,9 @@ def test_relation_states(api, app, mocker):
     assert r2.container is None
     assert r2.files is None
     assert r2.contribs is None
-    rv = app.get("/release/{}".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}")
     assert rv.status_code == 200  # TODO: HTTP Gone?
-    rv = app.get("/file/{}".format(f2.ident))
+    rv = app.get(f"/file/{f2.ident}")
     print(rv.data)
     assert rv.status_code == 200
 
@@ -184,25 +184,25 @@ def test_app_entity_states(api, app, mocker):
     api.accept_editgroup(eg.editgroup_id)
 
     # all entities
-    rv = app.get("/container/{}".format(j1.ident))
+    rv = app.get(f"/container/{j1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/container/{}".format(j2.ident))
+    rv = app.get(f"/container/{j2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/creator/{}".format(c1.ident))
+    rv = app.get(f"/creator/{c1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/creator/{}".format(c2.ident))
+    rv = app.get(f"/creator/{c2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/file/{}".format(f1.ident))
+    rv = app.get(f"/file/{f1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/file/{}".format(f2.ident))
+    rv = app.get(f"/file/{f2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/release/{}".format(r1.ident))
+    rv = app.get(f"/release/{r1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/release/{}".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/work/{}".format(r1.work_id))
+    rv = app.get(f"/work/{r1.work_id}")
     assert rv.status_code == 200
-    rv = app.get("/work/{}".format(r2.work_id))
+    rv = app.get(f"/work/{r2.work_id}")
     assert rv.status_code == 302
 
     # delete targets
@@ -215,23 +215,23 @@ def test_app_entity_states(api, app, mocker):
     api.accept_editgroup(eg.editgroup_id)
 
     # all entities
-    rv = app.get("/container/{}".format(j1.ident))
+    rv = app.get(f"/container/{j1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/container/{}".format(j2.ident))
+    rv = app.get(f"/container/{j2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/creator/{}".format(c1.ident))
+    rv = app.get(f"/creator/{c1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/creator/{}".format(c2.ident))
+    rv = app.get(f"/creator/{c2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/file/{}".format(f1.ident))
+    rv = app.get(f"/file/{f1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/file/{}".format(f2.ident))
+    rv = app.get(f"/file/{f2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/release/{}".format(r1.ident))
+    rv = app.get(f"/release/{r1.ident}")
     assert rv.status_code == 200
-    rv = app.get("/release/{}".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}")
     assert rv.status_code == 302
-    rv = app.get("/work/{}".format(r1.work_id))
+    rv = app.get(f"/work/{r1.work_id}")
     assert rv.status_code == 200
-    rv = app.get("/work/{}".format(r2.work_id))
+    rv = app.get(f"/work/{r2.work_id}")
     assert rv.status_code == 302

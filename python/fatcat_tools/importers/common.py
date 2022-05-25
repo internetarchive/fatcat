@@ -42,7 +42,7 @@ def make_rel_url(raw_url: str, default_link_rel: str = "web") -> Tuple[str, str]
     # bad domains, invalid URLs, etc
     rel = default_link_rel
     for domain, domain_rel in DOMAIN_REL_MAP.items():
-        if "//{}/".format(domain) in raw_url:
+        if f"//{domain}/" in raw_url:
             rel = domain_rel
             break
     return (rel, raw_url)
@@ -348,7 +348,7 @@ class EntityImporter:
             self._issn_issnl_map[issn] = issnl
             # double mapping makes lookups easy
             self._issn_issnl_map[issnl] = issnl
-        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)), file=sys.stderr)
+        print(f"Got {len(self._issn_issnl_map)} ISSN-L mappings.", file=sys.stderr)
 
     def issn2issnl(self, issn: str) -> Optional[str]:
         if issn is None:
@@ -555,7 +555,7 @@ class SqlitePusher(RecordPusher):
         self.where_clause = where_clause
 
     def run(self) -> Counter:
-        cur = self.db.execute("SELECT * FROM {} {};".format(self.table_name, self.where_clause))
+        cur = self.db.execute(f"SELECT * FROM {self.table_name} {self.where_clause};")
         for row in cur:
             self.importer.push_record(row)
         counts = self.importer.finish()
@@ -683,7 +683,7 @@ class Bs4XmlFileListPusher(RecordPusher):
             xml_path = xml_path.strip()
             if not xml_path or xml_path.startswith("#"):
                 continue
-            with open(xml_path, "r") as xml_file:
+            with open(xml_path) as xml_file:
                 soup = BeautifulSoup(xml_file, "xml")
                 for record in soup.find_all(self.record_tag):
                     self.importer.push_record(record)
@@ -758,7 +758,7 @@ class KafkaBs4XmlPusher(RecordPusher):
                 soup.decompose()
                 count += 1
                 if count % 500 == 0:
-                    print("Import counts: {}".format(self.importer.counts))
+                    print(f"Import counts: {self.importer.counts}")
             last_push = datetime.datetime.now()
             for msg in batch:
                 # locally store offsets of processed messages; will be
@@ -845,7 +845,7 @@ class KafkaJsonPusher(RecordPusher):
                 self.importer.push_record(record)
                 count += 1
                 if count % 500 == 0:
-                    print("Import counts: {}".format(self.importer.counts))
+                    print(f"Import counts: {self.importer.counts}")
             last_push = datetime.datetime.now()
             for msg in batch:
                 # locally store offsets of processed messages; will be
@@ -863,18 +863,18 @@ class KafkaJsonPusher(RecordPusher):
 def make_kafka_consumer(
     hosts: str, env: str, topic_suffix: str, group: str, kafka_namespace: str = "fatcat"
 ) -> Consumer:
-    topic_name = "{}-{}.{}".format(kafka_namespace, env, topic_suffix)
+    topic_name = f"{kafka_namespace}-{env}.{topic_suffix}"
 
     def fail_fast(err: Any, partitions: List[Any]) -> None:
         if err is not None:
-            print("Kafka consumer commit error: {}".format(err))
+            print(f"Kafka consumer commit error: {err}")
             print("Bailing out...")
             # TODO: should it be sys.exit(-1)?
             raise KafkaException(err)
         for p in partitions:
             # check for partition-specific commit errors
             if p.error:
-                print("Kafka consumer commit error: {}".format(p.error))
+                print(f"Kafka consumer commit error: {p.error}")
                 print("Bailing out...")
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(p.error)
@@ -904,7 +904,7 @@ def make_kafka_consumer(
         for p in partitions:
             if p.error:
                 raise KafkaException(p.error)
-        print("Kafka partitions rebalanced: {} / {}".format(consumer, partitions))
+        print(f"Kafka partitions rebalanced: {consumer} / {partitions}")
 
     consumer = Consumer(conf)
     # NOTE: it's actually important that topic_name *not* be bytes (UTF-8
@@ -914,7 +914,7 @@ def make_kafka_consumer(
         on_assign=on_rebalance,
         on_revoke=on_rebalance,
     )
-    print("Consuming from kafka topic {}, group {}".format(topic_name, group))
+    print(f"Consuming from kafka topic {topic_name}, group {group}")
     return consumer
 
 
@@ -924,6 +924,6 @@ def filesets_very_similar(a: FilesetEntity, b: FilesetEntity) -> bool:
 
     Uses a set() of SHA1 hashes to test for equivalence.
     """
-    a_hashes = set([f.sha1 for f in a.manifest])
-    b_hashes = set([f.sha1 for f in b.manifest])
+    a_hashes = {f.sha1 for f in a.manifest}
+    b_hashes = {f.sha1 for f in b.manifest}
     return a_hashes == b_hashes

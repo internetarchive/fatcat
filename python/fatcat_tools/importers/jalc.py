@@ -48,7 +48,7 @@ def parse_jalc_persons(raw_persons: List[Any]) -> List[ReleaseContrib]:
             lang = "ja"
         if lang == "en" and surname and given_name:
             # english names order is flipped
-            name = "{} {}".format(given_name, surname)
+            name = f"{given_name} {surname}"
         rc = ReleaseContrib(
             raw_name=name, surname=surname, given_name=given_name, role="author"
         )
@@ -162,7 +162,7 @@ class JalcImporter(EntityImporter):
             elif doi.startswith("https://doi.org/"):
                 doi = doi.replace("https://doi.org/", "")
             if not (doi.startswith("10.") and "/" in doi):
-                sys.stderr.write("bogus JALC DOI: {}\n".format(doi))
+                sys.stderr.write(f"bogus JALC DOI: {doi}\n")
                 doi = None
         if not doi:
             return None
@@ -192,7 +192,7 @@ class JalcImporter(EntityImporter):
         if record.startingPage and record.startingPage.string.strip():
             pages = record.startingPage.string.strip()
             if record.endingPage and record.endingPage.string.strip():
-                pages = "{}-{}".format(pages, record.endingPage.string.strip())
+                pages = f"{pages}-{record.endingPage.string.strip()}"
         # double check to prevent "-" as pages
         if pages and pages.strip() == "-":
             pages = None

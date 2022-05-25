@@ -27,7 +27,7 @@ def test_pubmed_harvest_date(mocker):
 
     # We'll need one entry in the date_file_map.
     generate_date_file_map = mocker.patch("fatcat_tools.harvest.pubmed.generate_date_file_map")
-    generate_date_file_map.return_value = {test_date: set(["dummy"])}
+    generate_date_file_map.return_value = {test_date: {"dummy"}}
 
     # For cleanup.
     os.remove = mocker.Mock()
@@ -65,7 +65,7 @@ def test_pubmed_harvest_date_no_pmid(mocker):
 
     # We'll need one entry in the date_file_map.
     generate_date_file_map = mocker.patch("fatcat_tools.harvest.pubmed.generate_date_file_map")
-    generate_date_file_map.return_value = {test_date: set(["dummy"])}
+    generate_date_file_map.return_value = {test_date: {"dummy"}}
 
     harvester = PubmedFTPWorker(
         kafka_hosts="dummy",

@@ -27,7 +27,7 @@ def kafka_pixy_produce(
     if sync:
         params["sync"] = True
     resp = requests.post(
-        "{}/topics/{}/messages".format(Config.KAFKA_PIXY_ENDPOINT, topic),
+        f"{Config.KAFKA_PIXY_ENDPOINT}/topics/{topic}/messages",
         params=params,
         data=msg,
         headers={"Content-Type": "text/plain"},

@@ -131,7 +131,7 @@ class ArxivRawImporter(EntityImporter):
         if metadata.doi and metadata.doi.string:
             doi = clean_doi(metadata.doi.string.lower().split()[0].strip())
             if doi and not (doi.startswith("10.") and "/" in doi and doi.split("/")[1]):
-                sys.stderr.write("BOGUS DOI: {}\n".format(doi))
+                sys.stderr.write(f"BOGUS DOI: {doi}\n")
                 doi = None
         title = latex_to_text(metadata.title.get_text().replace("\n", " "))
         authors = parse_arxiv_authors(metadata.authors.get_text().replace("\n", " "))

@@ -12,7 +12,7 @@ def most_recent_message(topic: str, kafka_config: Dict[str, Any]) -> Message:
     first partition), though could be extended with "last N" behavior.
     """
 
-    print("Fetching most Kafka message from {}".format(topic))
+    print(f"Fetching most Kafka message from {topic}")
 
     conf = kafka_config.copy()
     conf.update(
@@ -31,8 +31,8 @@ def most_recent_message(topic: str, kafka_config: Dict[str, Any]) -> Message:
 
     hwm = consumer.get_watermark_offsets(TopicPartition(topic, 0), timeout=5.0, cached=False)
     if not hwm:
-        raise Exception("Kafka consumer timeout, or topic {} doesn't exist".format(topic))
-    print("High watermarks: {}".format(hwm))
+        raise Exception(f"Kafka consumer timeout, or topic {topic} doesn't exist")
+    print(f"High watermarks: {hwm}")
 
     if hwm[1] == 0:
         print("topic is new; not 'most recent message'")

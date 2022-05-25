@@ -47,7 +47,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
             state=entity.state,
         )
     elif entity.state != "active":
-        raise ValueError("Unhandled entity state: {}".format(entity.state))
+        raise ValueError(f"Unhandled entity state: {entity.state}")
 
     # First, the easy ones (direct copy)
     release = entity
@@ -267,7 +267,7 @@ def _rte_container_helper(container: ContainerEntity, release_year: Optional[int
     t["container_id"] = container.redirect or container.ident
     t["container_issnl"] = container.issnl
     issns = [container.issnl, container.issne, container.issnp]
-    issns = list(set([i for i in issns if i]))
+    issns = list({i for i in issns if i})
     t["container_issns"] = issns
     t["container_type"] = container.container_type
     t["container_publication_status"] = container.publication_status
@@ -424,7 +424,7 @@ def container_to_elasticsearch(
             state=entity.state,
         )
     elif entity.state != "active":
-        raise ValueError("Unhandled entity state: {}".format(entity.state))
+        raise ValueError(f"Unhandled entity state: {entity.state}")
 
     # First, the easy ones (direct copy)
     t = dict(
@@ -473,7 +473,7 @@ def container_to_elasticsearch(
     for key in ("issnp", "issne"):
         if entity.extra.get(key):
             t["issns"].append(entity.extra[key])
-    t["issns"] = list(set([i for i in t["issns"] if i]))
+    t["issns"] = list({i for i in t["issns"] if i})
 
     in_doaj = None
     in_road = None
@@ -624,7 +624,7 @@ def file_to_elasticsearch(entity: FileEntity) -> Dict[str, Any]:
             state=entity.state,
         )
     elif entity.state != "active":
-        raise ValueError("Unhandled entity state: {}".format(entity.state))
+        raise ValueError(f"Unhandled entity state: {entity.state}")
 
     # First, the easy ones (direct copy)
     t = dict(
@@ -643,9 +643,9 @@ def file_to_elasticsearch(entity: FileEntity) -> Dict[str, Any]:
     )
 
     parsed_urls = [tldextract.extract(u.url) for u in entity.urls]
-    t["hosts"] = list(set([".".join([seg for seg in pu if seg]) for pu in parsed_urls]))
-    t["domains"] = list(set([pu.registered_domain for pu in parsed_urls]))
-    t["rels"] = list(set([u.rel for u in entity.urls]))
+    t["hosts"] = list({".".join([seg for seg in pu if seg]) for pu in parsed_urls})
+    t["domains"] = list({pu.registered_domain for pu in parsed_urls})
+    t["rels"] = list({u.rel for u in entity.urls})
 
     t["in_ia"] = bool("archive.org" in t["domains"])
     t["in_ia_petabox"] = bool("archive.org" in t["hosts"])

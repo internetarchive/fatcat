@@ -43,7 +43,7 @@ def b32_hex(s: str) -> str:
     if len(s) != 32:
         if len(s) == 40:
             return s
-        raise ValueError("not a base-32 encoded SHA-1 hash: {}".format(s))
+        raise ValueError(f"not a base-32 encoded SHA-1 hash: {s}")
     return base64.b16encode(base64.b32decode(s.upper())).lower().decode("utf-8")
 
 

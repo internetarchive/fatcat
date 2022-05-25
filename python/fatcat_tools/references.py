@@ -184,7 +184,7 @@ def _execute_ref_query(search: Any, limit: int, offset: Optional[int] = None) ->
     except elasticsearch.exceptions.TransportError as e:
         # all other errors
         # logging.warn(f"elasticsearch non-200 status code: {e.info}")
-        raise IOError(str(e.info)) from e
+        raise OSError(str(e.info)) from e
     query_delta = datetime.datetime.now() - query_start
 
     result_refs = []

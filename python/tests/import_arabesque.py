@@ -19,7 +19,7 @@ def test_arabesque_importer_basic(arabesque_importer):
 
 
 def test_arabesque_importer_json(arabesque_importer):
-    with open("tests/files/arabesque_example.json", "r") as f:
+    with open("tests/files/arabesque_example.json") as f:
         JsonLinePusher(arabesque_importer, f).run()
 
 
@@ -54,7 +54,7 @@ def test_arabesque_importer(arabesque_importer):
 
 
 def test_arabesque_dict_parse(arabesque_importer):
-    with open("tests/files/arabesque_example.json", "r") as f:
+    with open("tests/files/arabesque_example.json") as f:
         raw = json.loads(f.readline())
         f = arabesque_importer.parse_record(raw)
         assert f.sha1 == "bdd78be55800bb1c9a5e47005bac5e4124793c7b"

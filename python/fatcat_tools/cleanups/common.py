@@ -92,7 +92,7 @@ class EntityCleaner:
 
         if entity.ident in self._idents_inflight:
             raise ValueError(
-                "Entity already part of in-process update: {}".format(entity.ident)
+                f"Entity already part of in-process update: {entity.ident}"
             )
 
         updated = self.try_update(cleaned)

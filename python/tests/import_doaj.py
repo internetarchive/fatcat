@@ -14,7 +14,7 @@ from fatcat_tools.transforms import entity_to_dict
 def doaj_importer(api, mocker):
     es_client = elasticsearch.Elasticsearch("mockbackend")
     mocker.patch("elasticsearch.connection.Urllib3HttpConnection.perform_request")
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield DoajArticleImporter(
             api,
             issn_file,
@@ -25,7 +25,7 @@ def doaj_importer(api, mocker):
 
 def test_doaj_importer(doaj_importer):
     last_index = doaj_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         doaj_importer.bezerk_mode = True
         doaj_importer.do_fuzzy_match = False
         counts = JsonLinePusher(doaj_importer, f).run()
@@ -44,7 +44,7 @@ def test_doaj_importer(doaj_importer):
     assert "fatcat_tools.DoajArticleImporter" in eg.extra["agent"]
 
     last_index = doaj_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         doaj_importer.bezerk_mode = False
         doaj_importer.reset()
         counts = JsonLinePusher(doaj_importer, f).run()
@@ -66,7 +66,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
     One of the DOAJ test entities has a dummy DOI (10.123/abc); this test
     ensures that it isn't clobbered, an then that it gets updated.
     """
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = False
@@ -79,7 +79,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
     success_changelog = doaj_importer.api.get_changelog(limit=1)[0]
     success_editgroup = doaj_importer.api.get_editgroup(success_changelog.editgroup_id)
 
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = True
@@ -92,7 +92,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
     update_changelog = doaj_importer.api.get_changelog(limit=1)[0]
     update_editgroup = doaj_importer.api.get_editgroup(update_changelog.editgroup_id)
 
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         doaj_importer.reset()
         doaj_importer.bezerk_mode = False
         doaj_importer.do_updates = True
@@ -121,7 +121,7 @@ def test_doaj_importer_existing_doi(doaj_importer):
 
 
 def test_doaj_dict_parse(doaj_importer):
-    with open("tests/files/example_doaj_articles.json", "r") as f:
+    with open("tests/files/example_doaj_articles.json") as f:
         raw = json.loads(f.readline())
         r = doaj_importer.parse_record(raw)
 

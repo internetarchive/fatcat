@@ -147,7 +147,7 @@ class PubmedImporter(EntityImporter):
                 language = LANG_MAP_MARC.get(language)
                 if not language and not (medline.Article.Language.get_text() in LANG_MAP_MARC):
                     warnings.warn(
-                        "MISSING MARC LANG: {}".format(medline.Article.Language.string)
+                        f"MISSING MARC LANG: {medline.Article.Language.string}"
                     )
 
         ### Journal/Issue Metadata
@@ -200,7 +200,7 @@ class PubmedImporter(EntityImporter):
                     )
                     release_date = release_date_date.isoformat()
                 except ValueError as ve:
-                    print("bad date, skipping: {}".format(ve), file=sys.stderr)
+                    print(f"bad date, skipping: {ve}", file=sys.stderr)
                     release_date = None
         elif pub_date.MedlineDate:
             medline_date = pub_date.MedlineDate.string.strip()
@@ -208,12 +208,12 @@ class PubmedImporter(EntityImporter):
                 release_year = int(medline_date[:4])
                 if release_year < 1300 or release_year > 2040:
                     print(
-                        "bad medline year, skipping: {}".format(release_year), file=sys.stderr
+                        f"bad medline year, skipping: {release_year}", file=sys.stderr
                     )
                     release_year = None
             else:
                 print(
-                    "unparsable medline date, skipping: {}".format(medline_date),
+                    f"unparsable medline date, skipping: {medline_date}",
                     file=sys.stderr,
                 )
 
@@ -307,7 +307,7 @@ class PubmedImporter(EntityImporter):
                 if author.LastName:
                     surname = author.LastName.get_text().replace("\n", " ")
                 if given_name and surname:
-                    raw_name = "{} {}".format(given_name, surname)
+                    raw_name = f"{given_name} {surname}"
                 elif surname:
                     raw_name = surname
                 if not raw_name and author.CollectiveName and author.CollectiveName.get_text():

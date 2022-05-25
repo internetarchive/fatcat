@@ -58,7 +58,7 @@ def fetch_git_sha() -> str:
     )
 
 
-class Config(object):
+class Config:
     GIT_REVISION = (
         subprocess.check_output(["git", "describe", "--tags", "--long", "--always"])
         .strip()

@@ -329,7 +329,7 @@ def get_elastic_container_browse_year_volume_issue(ident: str) -> List[Dict[str,
     buckets = resp.aggregations.year_volume.buckets
     # print(buckets)
     buckets = [h for h in buckets if h["key"]["year"]]
-    year_nums = set([int(h["key"]["year"]) for h in buckets])
+    year_nums = {int(h["key"]["year"]) for h in buckets}
     year_dicts: Dict[int, Dict[str, Any]] = dict()
     if year_nums:
         for year in year_nums:
@@ -686,7 +686,7 @@ def get_elastic_preservation_by_year(query: ReleaseQuery) -> List[Dict[str, Any]
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.year_preservation.buckets
-    year_nums = set([int(h["key"]["year"]) for h in buckets])
+    year_nums = {int(h["key"]["year"]) for h in buckets}
     year_dicts = dict()
     if year_nums:
         for num in range(min(year_nums), max(year_nums) + 1):
@@ -855,9 +855,9 @@ def get_elastic_container_preservation_by_volume(query: ReleaseQuery) -> List[di
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.volume_preservation.buckets
-    volume_nums = set(
-        [int(h["key"]["volume"]) for h in buckets if h["key"]["volume"].isdigit()]
-    )
+    volume_nums = {
+        int(h["key"]["volume"]) for h in buckets if h["key"]["volume"].isdigit()
+    }
     volume_dicts = dict()
     if volume_nums:
         if max(volume_nums) - min(volume_nums) > 500:
@@ -932,7 +932,7 @@ def get_elastic_preservation_by_type(query: ReleaseQuery) -> List[dict]:
     resp = wrap_es_execution(search)
 
     buckets = resp.aggregations.type_preservation.buckets
-    type_set = set([h["key"]["release_type"] for h in buckets])
+    type_set = {h["key"]["release_type"] for h in buckets}
     type_dicts = dict()
     for k in type_set:
         type_dicts[k] = dict(release_type=k, bright=0, dark=0, shadows_only=0, none=0, total=0)

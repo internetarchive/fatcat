@@ -98,7 +98,7 @@ class EntityMerger(EntityImporter):
         for i in all_ids:
             if i in self._idents_inflight:
                 raise ValueError(
-                    "Entity already part of in-process merge operation: {}".format(i)
+                    f"Entity already part of in-process merge operation: {i}"
                 )
             self._idents_inflight.append(i)
         count = self.try_merge(

@@ -14,7 +14,7 @@ def test_datacite_harvest_date(mocker):
     mocker.patch("fatcat_tools.harvest.harvest_common.HarvestState.initialize_from_kafka")
 
     # mock day request to datacite API
-    with open("tests/files/datacite_api.json", "r") as f:
+    with open("tests/files/datacite_api.json") as f:
         resp = json.loads(f.readline())
     responses.add(responses.GET, "https://api.datacite.org/dois", json=resp, status=200)
 

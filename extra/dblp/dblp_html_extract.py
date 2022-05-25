@@ -35,7 +35,7 @@ def parse_html(path: str) -> dict:
     meta = dict(dblp_prefix=key, issns=[])
 
     try:
-        with open(path, 'r') as html_file:
+        with open(path) as html_file:
             doc = HTMLParser(html_file.read())
     except FileNotFoundError:
         return {}

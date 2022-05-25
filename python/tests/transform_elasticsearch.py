@@ -24,7 +24,7 @@ from fatcat_tools.transforms import (
 
 
 def test_basic_elasticsearch_convert(crossref_importer):
-    with open("tests/files/crossref-works.single.json", "r") as f:
+    with open("tests/files/crossref-works.single.json") as f:
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)
@@ -102,7 +102,7 @@ def test_rich_elasticsearch_convert():
 
 def test_elasticsearch_release_from_json():
     r = entity_from_json(
-        open("./tests/files/release_etodop5banbndg3faecnfm6ozi.json", "r").read(), ReleaseEntity
+        open("./tests/files/release_etodop5banbndg3faecnfm6ozi.json").read(), ReleaseEntity
     )
     es = release_to_elasticsearch(r)
 
@@ -129,7 +129,7 @@ def test_elasticsearch_release_from_json():
 
     # this release has a fileset, and no file
     r = entity_from_json(
-        open("./tests/files/release_3mssw2qnlnblbk7oqyv2dafgey.json", "r").read(), ReleaseEntity
+        open("./tests/files/release_3mssw2qnlnblbk7oqyv2dafgey.json").read(), ReleaseEntity
     )
     es = release_to_elasticsearch(r)
 
@@ -152,7 +152,7 @@ def test_elasticsearch_release_from_json():
 
     # this release has a web capture, and no file (edited the JSON to remove file)
     r = entity_from_json(
-        open("./tests/files/release_mjtqtuyhwfdr7j2c3l36uor7uy.json", "r").read(), ReleaseEntity
+        open("./tests/files/release_mjtqtuyhwfdr7j2c3l36uor7uy.json").read(), ReleaseEntity
     )
     es = release_to_elasticsearch(r)
 
@@ -175,7 +175,7 @@ def test_elasticsearch_release_from_json():
 
 
 def test_elasticsearch_container_transform(journal_metadata_importer):
-    with open("tests/files/journal_metadata.sample.json", "r") as f:
+    with open("tests/files/journal_metadata.sample.json") as f:
         raw1 = json.loads(f.readline())
         raw2 = json.loads(f.readline())
         c1 = journal_metadata_importer.parse_record(raw1)
@@ -216,7 +216,7 @@ def test_elasticsearch_container_transform(journal_metadata_importer):
 
 def test_elasticsearch_file_transform():
 
-    with open("./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json", "r") as f:
+    with open("./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json") as f:
         json_str = f.read()
 
     fe = entity_from_json(json_str, FileEntity)
@@ -243,7 +243,7 @@ def test_elasticsearch_file_transform():
 
 def test_elasticsearch_changelog_transform():
     ce = entity_from_json(
-        open("./tests/files/changelog_3469683.json", "r").read(), ChangelogEntry
+        open("./tests/files/changelog_3469683.json").read(), ChangelogEntry
     )
 
     es = changelog_to_elasticsearch(ce)

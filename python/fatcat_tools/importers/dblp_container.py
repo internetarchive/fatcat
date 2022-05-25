@@ -47,7 +47,7 @@ class DblpContainerImporter(EntityImporter):
             self._dblp_container_map[prefix] = container_id
             print("\t".join([prefix, container_id]), file=self.dblp_container_map_output)
         print(
-            "Got {} existing dblp container mappings.".format(len(self._dblp_container_map)),
+            f"Got {len(self._dblp_container_map)} existing dblp container mappings.",
             file=sys.stderr,
         )
 

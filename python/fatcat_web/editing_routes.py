@@ -313,7 +313,7 @@ def generic_entity_edit(
                 status = 400
         elif form.errors:
             status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
+            app.log.info(f"form errors (did not validate): {form.errors}")
 
     else:  # form is not submitted
         if existing:
@@ -452,7 +452,7 @@ def generic_entity_toml_edit(
                 status = 400
         elif form.errors:
             status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
+            app.log.info(f"form errors (did not validate): {form.errors}")
 
     else:  # form is not submitted
         if existing:
@@ -555,7 +555,7 @@ def generic_entity_delete(
                 status = 400
         elif form.errors:
             status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
+            app.log.info(f"form errors (did not validate): {form.errors}")
 
     else:  # form is not submitted
         if existing:
@@ -608,7 +608,7 @@ def generic_edit_delete(
 
     # do the deletion
     generic_entity_delete_edit(user_api, entity_type, editgroup.editgroup_id, edit_id)
-    return redirect("/editgroup/{}".format(editgroup_id))
+    return redirect(f"/editgroup/{editgroup_id}")
 
 
 ### Views ###################################################################

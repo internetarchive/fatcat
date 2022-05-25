@@ -19,7 +19,7 @@ def run(db_path):
     for row in reader:
         (pmid, pmcid, doi) = row
         if count % 1000 == 0:
-            print("read {}, wrote {}".format(count, inserted))
+            print(f"read {count}, wrote {inserted}")
             db.commit()
         count = count + 1
         if not doi.startswith("http"):

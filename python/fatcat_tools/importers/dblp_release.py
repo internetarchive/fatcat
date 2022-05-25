@@ -90,7 +90,7 @@ class DblpReleaseImporter(EntityImporter):
             assert len(container_id) == 26
             self._dblp_container_map[prefix] = container_id
         print(
-            "Got {} dblp container mappings.".format(len(self._dblp_container_map)),
+            f"Got {len(self._dblp_container_map)} dblp container mappings.",
             file=sys.stderr,
         )
 

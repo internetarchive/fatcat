@@ -14,7 +14,7 @@ def test_crossref_harvest_date(mocker):
     mocker.patch("fatcat_tools.harvest.harvest_common.HarvestState.initialize_from_kafka")
 
     # mock day request to crossref API
-    with open("tests/files/crossref_api_works.json", "r") as f:
+    with open("tests/files/crossref_api_works.json") as f:
         crossref_resp = json.loads(f.readline())
     responses.add(
         responses.GET, "https://api.crossref.org/works", json=crossref_resp, status=200

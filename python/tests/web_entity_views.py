@@ -37,38 +37,38 @@ def test_entity_basics(app, mocker):
 
     for entity_type, (ident, revision) in DUMMY_DEMO_ENTITIES.items():
         # good requests
-        rv = app.get("/{}/{}".format(entity_type, ident))
+        rv = app.get(f"/{entity_type}/{ident}")
         assert rv.status_code == 200
-        rv = app.get("/{}_{}".format(entity_type, ident))
+        rv = app.get(f"/{entity_type}_{ident}")
         assert rv.status_code == 302
-        rv = app.get("/{}/{}/history".format(entity_type, ident))
+        rv = app.get(f"/{entity_type}/{ident}/history")
         assert rv.status_code == 200
-        rv = app.get("/{}/{}/metadata".format(entity_type, ident))
+        rv = app.get(f"/{entity_type}/{ident}/metadata")
         assert rv.status_code == 200
-        rv = app.get("/{}/rev/{}".format(entity_type, revision))
+        rv = app.get(f"/{entity_type}/rev/{revision}")
         assert rv.status_code == 200
-        rv = app.get("/{}/rev/{}_something".format(entity_type, revision))
+        rv = app.get(f"/{entity_type}/rev/{revision}_something")
         assert rv.status_code == 404
-        rv = app.get("/{}/rev/{}/metadata".format(entity_type, revision))
+        rv = app.get(f"/{entity_type}/rev/{revision}/metadata")
         assert rv.status_code == 200
-        print("/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}".format(entity_type, ident))
-        rv = app.get("/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}".format(entity_type, ident))
+        print(f"/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{entity_type}/{ident}")
+        rv = app.get(f"/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{entity_type}/{ident}")
         assert rv.status_code == 200
         rv = app.get(
-            "/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}/metadata".format(entity_type, ident)
+            f"/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{entity_type}/{ident}/metadata"
         )
         assert rv.status_code == 200
 
         # bad requests
-        rv = app.get("/{}/9999999999".format(entity_type))
+        rv = app.get(f"/{entity_type}/9999999999")
         assert rv.status_code == 404
-        rv = app.get("/{}/9999999999/history".format(entity_type))
+        rv = app.get(f"/{entity_type}/9999999999/history")
         assert rv.status_code == 404
-        rv = app.get("/{}/f1f046a3-45c9-ffff-ffff-ffffffffffff".format(entity_type))
+        rv = app.get(f"/{entity_type}/f1f046a3-45c9-ffff-ffff-ffffffffffff")
         assert rv.status_code == 404
-        rv = app.get("/{}/rev/f1f046a3-45c9-ffff-ffff-fffffffff".format(entity_type))
+        rv = app.get(f"/{entity_type}/rev/f1f046a3-45c9-ffff-ffff-fffffffff")
         assert rv.status_code == 404
-        rv = app.get("/{}/ccccccccccccccccccccccccca".format(entity_type))
+        rv = app.get(f"/{entity_type}/ccccccccccccccccccccccccca")
         assert rv.status_code == 404
 
         # TODO: redirects and deleted entities
@@ -93,11 +93,11 @@ def test_web_deleted_release(app, api):
     r2 = api.get_release(r1edit.ident)
     assert r2.state == "deleted"
 
-    rv = app.get("/release/{}".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}")
     assert rv.status_code == 200
-    rv = app.get("/release/{}/metadata".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}/metadata")
     assert rv.status_code == 200
-    rv = app.get("/release/{}/history".format(r2.ident))
+    rv = app.get(f"/release/{r2.ident}/history")
     assert rv.status_code == 200
 
 

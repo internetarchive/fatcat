@@ -58,14 +58,14 @@ class OrcidImporter(EntityImporter):
         if display is None:
             # TODO: sorry human beings
             if given and sur:
-                display = "{} {}".format(given, sur)
+                display = f"{given} {sur}"
             elif sur:
                 display = sur
             elif given:
                 display = given
         orcid = obj["orcid-identifier"]["path"]
         if not self.is_orcid(orcid):
-            sys.stderr.write("Bad ORCID: {}\n".format(orcid))
+            sys.stderr.write(f"Bad ORCID: {orcid}\n")
             return None
         display = clean_str(display)
         if not display:

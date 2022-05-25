@@ -17,7 +17,7 @@ from fatcat_tools.workers import (
 
 
 def run_changelog(args: argparse.Namespace) -> None:
-    topic = "fatcat-{}.changelog".format(args.env)
+    topic = f"fatcat-{args.env}.changelog"
     worker = ChangelogWorker(
         args.api, args.kafka_hosts, topic, poll_interval=args.poll_interval
     )
@@ -25,12 +25,12 @@ def run_changelog(args: argparse.Namespace) -> None:
 
 
 def run_entity_updates(args: argparse.Namespace) -> None:
-    changelog_topic = "fatcat-{}.changelog".format(args.env)
-    release_topic = "fatcat-{}.release-updates-v03".format(args.env)
-    file_topic = "fatcat-{}.file-updates".format(args.env)
-    container_topic = "fatcat-{}.container-updates".format(args.env)
-    work_ident_topic = "fatcat-{}.work-ident-updates".format(args.env)
-    ingest_file_request_topic = "sandcrawler-{}.ingest-file-requests-daily".format(args.env)
+    changelog_topic = f"fatcat-{args.env}.changelog"
+    release_topic = f"fatcat-{args.env}.release-updates-v03"
+    file_topic = f"fatcat-{args.env}.file-updates"
+    container_topic = f"fatcat-{args.env}.container-updates"
+    work_ident_topic = f"fatcat-{args.env}.work-ident-updates"
+    ingest_file_request_topic = f"sandcrawler-{args.env}.ingest-file-requests-daily"
     worker = EntityUpdatesWorker(
         args.api,
         args.kafka_hosts,
@@ -45,7 +45,7 @@ def run_entity_updates(args: argparse.Namespace) -> None:
 
 
 def run_elasticsearch_release(args: argparse.Namespace) -> None:
-    consume_topic = "fatcat-{}.release-updates-v03".format(args.env)
+    consume_topic = f"fatcat-{args.env}.release-updates-v03"
     worker = ElasticsearchReleaseWorker(
         args.kafka_hosts,
         consume_topic,
@@ -56,7 +56,7 @@ def run_elasticsearch_release(args: argparse.Namespace) -> None:
 
 
 def run_elasticsearch_container(args: argparse.Namespace) -> None:
-    consume_topic = "fatcat-{}.container-updates".format(args.env)
+    consume_topic = f"fatcat-{args.env}.container-updates"
     worker = ElasticsearchContainerWorker(
         args.kafka_hosts,
         consume_topic,
@@ -69,7 +69,7 @@ def run_elasticsearch_container(args: argparse.Namespace) -> None:
 
 
 def run_elasticsearch_file(args: argparse.Namespace) -> None:
-    consume_topic = "fatcat-{}.file-updates".format(args.env)
+    consume_topic = f"fatcat-{args.env}.file-updates"
     worker = ElasticsearchFileWorker(
         args.kafka_hosts,
         consume_topic,
@@ -80,7 +80,7 @@ def run_elasticsearch_file(args: argparse.Namespace) -> None:
 
 
 def run_elasticsearch_changelog(args: argparse.Namespace) -> None:
-    consume_topic = "fatcat-{}.changelog".format(args.env)
+    consume_topic = f"fatcat-{args.env}.changelog"
     worker = ElasticsearchChangelogWorker(
         args.kafka_hosts,
         consume_topic,

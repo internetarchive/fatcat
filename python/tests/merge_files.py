@@ -142,9 +142,9 @@ def test_merge_file_metadata_from(api) -> None:
     assert fm.merge_file_metadata_from(fe_partial, fe_complete) is True
     assert fe_partial.md5 != fe_complete.md5
     assert fe_partial.extra == fe_complete.extra
-    assert set([(u.rel, u.url) for u in fe_partial.urls or []]) == set(
-        [(u.rel, u.url) for u in fe_complete.urls or []]
-    )
+    assert {(u.rel, u.url) for u in fe_partial.urls or []} == {
+        (u.rel, u.url) for u in fe_complete.urls or []
+    }
     assert fe_partial.release_ids == fe_complete.release_ids
     assert fm.merge_file_metadata_from(fe_partial, fe_another_release_id) is True
     assert fe_partial.release_ids == [

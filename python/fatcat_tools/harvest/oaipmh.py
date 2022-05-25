@@ -54,7 +54,7 @@ class HarvestOaiPmhWorker:
     def fetch_date(self, date: datetime.date) -> None:
         def fail_fast(err: Any, _msg: Any) -> None:
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err), file=sys.stderr)
+                print(f"Kafka producer delivery error: {err}", file=sys.stderr)
                 print("Bailing out...", file=sys.stderr)
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
@@ -84,7 +84,7 @@ class HarvestOaiPmhWorker:
             )
         except sickle.oaiexceptions.NoRecordsMatch:
             print(
-                "WARN: no OAI-PMH records for this date: {} (UTC)".format(date_str),
+                f"WARN: no OAI-PMH records for this date: {date_str} (UTC)",
                 file=sys.stderr,
             )
             return
@@ -93,7 +93,7 @@ class HarvestOaiPmhWorker:
         for item in records:
             count += 1
             if count % 50 == 0:
-                print("... up to {}".format(count), file=sys.stderr)
+                print(f"... up to {count}", file=sys.stderr)
             producer.produce(
                 self.produce_topic,
                 item.raw.encode("utf-8"),
@@ -107,7 +107,7 @@ class HarvestOaiPmhWorker:
         while True:
             current = self.state.next_span(continuous)
             if current:
-                print("Fetching DOIs updated on {} (UTC)".format(current), file=sys.stderr)
+                print(f"Fetching DOIs updated on {current} (UTC)", file=sys.stderr)
                 self.fetch_date(current)
                 self.state.complete(
                     current, kafka_topic=self.state_topic, kafka_config=self.kafka_config
@@ -115,11 +115,11 @@ class HarvestOaiPmhWorker:
                 continue
 
             if continuous:
-                print("Sleeping {} seconds...".format(self.loop_sleep), file=sys.stderr)
+                print(f"Sleeping {self.loop_sleep} seconds...", file=sys.stderr)
                 time.sleep(self.loop_sleep)
             else:
                 break
-        print("{} OAI-PMH ingest caught up".format(self.name), file=sys.stderr)
+        print(f"{self.name} OAI-PMH ingest caught up", file=sys.stderr)
 
 
 class HarvestArxivWorker(HarvestOaiPmhWorker):

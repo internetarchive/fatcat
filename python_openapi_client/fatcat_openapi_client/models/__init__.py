@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # flake8: noqa
 """
     fatcat
@@ -12,7 +10,6 @@
 """
 
 
-from __future__ import absolute_import
 
 # import models into model package
 from fatcat_openapi_client.models.auth_oidc import AuthOidc

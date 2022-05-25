@@ -67,14 +67,14 @@ class ElasticsearchReleaseWorker(FatcatWorker):
 
         def fail_fast(err: Any, partitions: List[Any]) -> None:
             if err is not None:
-                print("Kafka consumer commit error: {}".format(err), file=sys.stderr)
+                print(f"Kafka consumer commit error: {err}", file=sys.stderr)
                 print("Bailing out...", file=sys.stderr)
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
             for p in partitions:
                 # check for partition-specific commit errors
                 if p.error:
-                    print("Kafka consumer commit error: {}".format(p.error), file=sys.stderr)
+                    print(f"Kafka consumer commit error: {p.error}", file=sys.stderr)
                     print("Bailing out...", file=sys.stderr)
                     # TODO: should it be sys.exit(-1)?
                     raise KafkaException(p.error)
@@ -86,7 +86,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                 if p.error:
                     raise KafkaException(p.error)
             print(
-                "Kafka partitions rebalanced: {} / {}".format(consumer, partitions),
+                f"Kafka partitions rebalanced: {consumer} / {partitions}",
                 file=sys.stderr,
             )
 
@@ -126,7 +126,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     file=sys.stderr,
                 )
                 continue
-            print("... got {} kafka messages".format(len(batch)), file=sys.stderr)
+            print(f"... got {len(batch)} kafka messages", file=sys.stderr)
             # first check errors on entire batch...
             for msg in batch:
                 if msg.error():
@@ -200,7 +200,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
             )
             resp.raise_for_status()
             if resp.json()["errors"]:
-                desc = "Elasticsearch errors from post to {}:".format(elasticsearch_endpoint)
+                desc = f"Elasticsearch errors from post to {elasticsearch_endpoint}:"
                 print(desc, file=sys.stderr)
                 print(resp.content, file=sys.stderr)
                 raise Exception(desc)

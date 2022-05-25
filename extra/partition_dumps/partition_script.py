@@ -31,7 +31,7 @@ def run():
         if prefix != last_prefix:
             if f:
                 f.close()
-            f = gzip.GzipFile('partitioned/{}.json.gz'.format(prefix), 'a')
+            f = gzip.GzipFile(f'partitioned/{prefix}.json.gz', 'a')
         f.write(obj.encode('utf-8'))
         f.write(b"\n")
         last_prefix = prefix

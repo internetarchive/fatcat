@@ -14,14 +14,14 @@ from fatcat_tools.importers import (
 
 @pytest.fixture(scope="function")
 def dblp_importer(api):
-    with open("tests/files/dblp_container_map.tsv", "r") as tsv_file:
+    with open("tests/files/dblp_container_map.tsv") as tsv_file:
         yield DblpReleaseImporter(api, tsv_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def dblp_container_importer(api):
-    with open("tests/files/dblp_container_map.tsv", "r") as tsv_file:
-        with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/dblp_container_map.tsv") as tsv_file:
+        with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
             yield DblpContainerImporter(
                 api, issn_file, tsv_file, io.StringIO(), bezerk_mode=True
             )
@@ -76,7 +76,7 @@ def test_dblp_importer(dblp_importer):
 def test_dblp_container_importer(dblp_container_importer):
     last_index = dblp_container_importer.api.get_changelog(limit=1)[0].index
     output_tsv_map = io.StringIO()
-    with open("tests/files/example_dblp_containers.json", "r") as f:
+    with open("tests/files/example_dblp_containers.json") as f:
         dblp_container_importer.bezerk_mode = True
         dblp_container_importer.dblp_container_map_output = output_tsv_map
         counts = JsonLinePusher(dblp_container_importer, f).run()
@@ -108,7 +108,7 @@ def test_dblp_container_importer(dblp_container_importer):
     output_tsv_map.seek(0)
     # print(output_tsv_map.read())
     # output_tsv_map.seek(0)
-    with open("tests/files/example_dblp_containers.json", "r") as f:
+    with open("tests/files/example_dblp_containers.json") as f:
         dblp_container_importer.reset()
         dblp_container_importer.bezerk_mode = False
         dblp_container_importer.dblp_container_map_output = io.StringIO()
@@ -122,7 +122,7 @@ def test_dblp_container_importer(dblp_container_importer):
 
 
 def test_dblp_xml_parse(dblp_importer):
-    with open("tests/files/example_dblp_article.xml", "r") as f:
+    with open("tests/files/example_dblp_article.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r1 = dblp_importer.parse_record(soup.find_all("article")[0])
 

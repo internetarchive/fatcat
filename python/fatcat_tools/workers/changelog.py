@@ -41,11 +41,11 @@ class ChangelogWorker(FatcatWorker):
                 self.offset = json.loads(msg.decode("utf-8"))["index"]
             else:
                 self.offset = 0
-            print("Most recent changelog index in Kafka seems to be {}".format(self.offset))
+            print(f"Most recent changelog index in Kafka seems to be {self.offset}")
 
         def fail_fast(err: Any, _msg: Any) -> None:
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err))
+                print(f"Kafka producer delivery error: {err}")
                 print("Bailing out...")
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
@@ -64,7 +64,7 @@ class ChangelogWorker(FatcatWorker):
         while True:
             latest = int(self.api.get_changelog(limit=1)[0].index)
             if latest > self.offset:
-                print("Fetching changelogs from {} through {}".format(self.offset + 1, latest))
+                print(f"Fetching changelogs from {self.offset + 1} through {latest}")
             for i in range(self.offset + 1, latest + 1):
                 cle = self.api.get_changelog_entry(i)
                 obj = self.api.api_client.sanitize_for_serialization(cle)
@@ -77,7 +77,7 @@ class ChangelogWorker(FatcatWorker):
                 )
                 self.offset = i
             producer.flush()
-            print("Sleeping {} seconds...".format(self.poll_interval))
+            print(f"Sleeping {self.poll_interval} seconds...")
             time.sleep(self.poll_interval)
 
 
@@ -274,14 +274,14 @@ class EntityUpdatesWorker(FatcatWorker):
     def run(self) -> None:
         def fail_fast(err: Any, _msg: Any) -> None:
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err))
+                print(f"Kafka producer delivery error: {err}")
                 print("Bailing out...")
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
 
         def on_commit(err: Any, partitions: List[Any]) -> None:
             if err is not None:
-                print("Kafka consumer commit error: {}".format(err))
+                print(f"Kafka consumer commit error: {err}")
                 print("Bailing out...")
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
@@ -289,7 +289,7 @@ class EntityUpdatesWorker(FatcatWorker):
                 # check for partition-specific commit errors
                 print(p)
                 if p.error:
-                    print("Kafka consumer commit error: {}".format(p.error))
+                    print(f"Kafka consumer commit error: {p.error}")
                     print("Bailing out...")
                     # TODO: should it be sys.exit(-1)?
                     raise KafkaException(p.error)
@@ -300,7 +300,7 @@ class EntityUpdatesWorker(FatcatWorker):
             for p in partitions:
                 if p.error:
                     raise KafkaException(p.error)
-            print("Kafka partitions rebalanced: {} / {}".format(consumer, partitions))
+            print(f"Kafka partitions rebalanced: {consumer} / {partitions}")
 
         consumer_conf = self.kafka_config.copy()
         consumer_conf.update(
@@ -337,13 +337,13 @@ class EntityUpdatesWorker(FatcatWorker):
             on_assign=on_rebalance,
             on_revoke=on_rebalance,
         )
-        print("Kafka consuming {}".format(self.consume_topic))
+        print(f"Kafka consuming {self.consume_topic}")
 
         while True:
             msg = consumer.poll(self.poll_interval)
             if not msg:
                 print(
-                    "nothing new from kafka (poll_interval: {} sec)".format(self.poll_interval)
+                    f"nothing new from kafka (poll_interval: {self.poll_interval} sec)"
                 )
                 continue
             if msg.error():

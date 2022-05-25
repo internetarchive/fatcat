@@ -14,7 +14,7 @@ def arxiv_importer(api):
 
 def test_arxiv_importer(arxiv_importer):
     last_index = arxiv_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/arxivraw_1810.09584.xml", "r") as f:
+    with open("tests/files/arxivraw_1810.09584.xml") as f:
         arxiv_importer.bezerk_mode = True
         counts = Bs4XmlFilePusher(arxiv_importer, f, "record").run()
     assert counts["insert"] == 2
@@ -30,7 +30,7 @@ def test_arxiv_importer(arxiv_importer):
     assert "fatcat_tools.ArxivRawImporter" in eg.extra["agent"]
 
     last_index = arxiv_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/arxivraw_1810.09584.xml", "r") as f:
+    with open("tests/files/arxivraw_1810.09584.xml") as f:
         arxiv_importer.bezerk_mode = False
         arxiv_importer.reset()
         counts = Bs4XmlFilePusher(arxiv_importer, f, "record").run()
@@ -41,7 +41,7 @@ def test_arxiv_importer(arxiv_importer):
 
 
 def test_arxiv_xml_parse(arxiv_importer):
-    with open("tests/files/arxivraw_1810.09584.xml", "r") as f:
+    with open("tests/files/arxivraw_1810.09584.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r = arxiv_importer.parse_record(soup.find_all("record")[0])
 

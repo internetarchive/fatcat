@@ -5,7 +5,7 @@ def test_web_release_create_accept(app_admin, api):
 
     eg = quick_eg(api)
 
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
     assert b"Release Edits (0)" in rv.data
 
@@ -54,46 +54,46 @@ def test_web_release_create_accept(app_admin, api):
     assert rv.status_code == 200
     assert b"10.1234/999999" in rv.data
 
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
     assert b"Release Edits (1)" in rv.data
 
     rv = app_admin.post(
-        "/editgroup/{}/submit".format(eg.editgroup_id),
+        f"/editgroup/{eg.editgroup_id}/submit",
         follow_redirects=True,
     )
     assert rv.status_code == 200
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
     assert b"Submitted" in rv.data
     assert b"None!" in rv.data
 
     rv = app_admin.post(
-        "/editgroup/{}/unsubmit".format(eg.editgroup_id),
+        f"/editgroup/{eg.editgroup_id}/unsubmit",
         follow_redirects=True,
     )
     assert rv.status_code == 200
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
 
     rv = app_admin.post(
-        "/editgroup/{}/annotation".format(eg.editgroup_id),
+        f"/editgroup/{eg.editgroup_id}/annotation",
         data={
             "comment_markdown": "This is an **example** of markdown in a test annotation",
         },
         follow_redirects=True,
     )
     assert rv.status_code == 200
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
     assert b"<p>This is an <strong>example</strong> of markdown in a test annotation" in rv.data
 
     rv = app_admin.post(
-        "/editgroup/{}/accept".format(eg.editgroup_id),
+        f"/editgroup/{eg.editgroup_id}/accept",
         follow_redirects=True,
     )
     assert rv.status_code == 200
-    rv = app_admin.get("/editgroup/{}".format(eg.editgroup_id))
+    rv = app_admin.get(f"/editgroup/{eg.editgroup_id}")
     assert rv.status_code == 200
     assert b"Merged" in rv.data
 

@@ -38,7 +38,7 @@ def test_file_meta_importer_basic(file_meta_importer):
     )
     api.accept_editgroup(eg.editgroup_id)
 
-    with open("tests/files/example_file_meta.json", "r") as f:
+    with open("tests/files/example_file_meta.json") as f:
         counts = JsonLinePusher(file_meta_importer, f).run()
 
     assert counts["insert"] == 0
@@ -56,7 +56,7 @@ def test_file_meta_importer_basic(file_meta_importer):
 
 
 def test_file_meta_dict_parse(file_meta_importer):
-    with open("tests/files/example_file_meta.json", "r") as f:
+    with open("tests/files/example_file_meta.json") as f:
         raw = json.loads(f.readline())
         f = file_meta_importer.parse_record(raw)
 

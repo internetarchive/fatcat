@@ -34,13 +34,13 @@ def ingest_fileset_file_importer(api):
 
 # TODO: use API to check that entities actually created...
 def test_ingest_importer_basic(ingest_importer):
-    with open("tests/files/example_ingest.json", "r") as f:
+    with open("tests/files/example_ingest.json") as f:
         JsonLinePusher(ingest_importer, f).run()
 
 
 def test_ingest_importer(ingest_importer):
     last_index = ingest_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_ingest.json", "r") as f:
+    with open("tests/files/example_ingest.json") as f:
         ingest_importer.bezerk_mode = True
         counts = JsonLinePusher(ingest_importer, f).run()
     assert counts["insert"] == 1
@@ -56,7 +56,7 @@ def test_ingest_importer(ingest_importer):
     assert "fatcat_tools.IngestFileResultImporter" in eg.extra["agent"]
 
     # re-insert; should skip
-    with open("tests/files/example_ingest.json", "r") as f:
+    with open("tests/files/example_ingest.json") as f:
         ingest_importer.reset()
         ingest_importer.bezerk_mode = False
         counts = JsonLinePusher(ingest_importer, f).run()
@@ -67,7 +67,7 @@ def test_ingest_importer(ingest_importer):
 
 def test_ingest_importer_xml(ingest_importer):
     last_index = ingest_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_ingest_xml.json", "r") as f:
+    with open("tests/files/example_ingest_xml.json") as f:
         ingest_importer.bezerk_mode = True
         counts = JsonLinePusher(ingest_importer, f).run()
     assert counts["insert"] == 1
@@ -83,7 +83,7 @@ def test_ingest_importer_xml(ingest_importer):
     assert "fatcat_tools.IngestFileResultImporter" in eg.extra["agent"]
 
     # re-import should skip
-    with open("tests/files/example_ingest_xml.json", "r") as f:
+    with open("tests/files/example_ingest_xml.json") as f:
         ingest_importer.reset()
         ingest_importer.bezerk_mode = False
         counts = JsonLinePusher(ingest_importer, f).run()
@@ -94,7 +94,7 @@ def test_ingest_importer_xml(ingest_importer):
 
 def test_ingest_importer_web(ingest_web_importer):
     last_index = ingest_web_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_ingest_html.json", "r") as f:
+    with open("tests/files/example_ingest_html.json") as f:
         ingest_web_importer.bezerk_mode = True
         counts = JsonLinePusher(ingest_web_importer, f).run()
     assert counts["insert"] == 1
@@ -110,7 +110,7 @@ def test_ingest_importer_web(ingest_web_importer):
     assert "fatcat_tools.IngestWebResultImporter" in eg.extra["agent"]
 
     # re-import should skip
-    with open("tests/files/example_ingest_html.json", "r") as f:
+    with open("tests/files/example_ingest_html.json") as f:
         ingest_web_importer.reset()
         ingest_web_importer.bezerk_mode = False
         counts = JsonLinePusher(ingest_web_importer, f).run()
@@ -132,7 +132,7 @@ def test_ingest_importer_stage(ingest_importer, api):
         dict(request_stage="published", release_stage="draft", status="skip-release-stage"),
     ]
     ingest_importer.bezerk_mode = True
-    with open("tests/files/example_ingest.json", "r") as f:
+    with open("tests/files/example_ingest.json") as f:
         raw = json.loads(f.readline())
     for row in test_table:
         # print(row)
@@ -154,7 +154,7 @@ def test_ingest_importer_stage(ingest_importer, api):
 
 
 def test_ingest_dict_parse(ingest_importer):
-    with open("tests/files/example_ingest.json", "r") as f:
+    with open("tests/files/example_ingest.json") as f:
         raw = json.loads(f.readline())
         f = ingest_importer.parse_record(raw)
         assert f.sha1 == "00242a192acc258bdfdb151943419437f440c313"
@@ -171,7 +171,7 @@ def test_ingest_dict_parse(ingest_importer):
 
 
 def test_ingest_dict_parse_old(ingest_importer):
-    with open("tests/files/example_ingest.old.json", "r") as f:
+    with open("tests/files/example_ingest.old.json") as f:
         raw = json.loads(f.readline())
 
         # ancient ingest requests had no type; skip them
@@ -194,7 +194,7 @@ def test_ingest_dict_parse_old(ingest_importer):
 
 
 def test_ingest_fileset_dict_parse(ingest_fileset_importer):
-    with open("tests/files/example_fileset_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_ingest_result.json") as f:
         raw = json.loads(f.readline())
         fs = ingest_fileset_importer.parse_record(raw)
         assert len(fs.manifest) == 3
@@ -222,7 +222,7 @@ def test_ingest_fileset_dict_parse(ingest_fileset_importer):
 
 def test_ingest_fileset_importer(ingest_fileset_importer):
     last_index = ingest_fileset_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_fileset_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_ingest_result.json") as f:
         ingest_fileset_importer.bezerk_mode = True
         counts = JsonLinePusher(ingest_fileset_importer, f).run()
     assert counts["insert"] == 7
@@ -239,7 +239,7 @@ def test_ingest_fileset_importer(ingest_fileset_importer):
     assert "fatcat_tools.IngestFilesetResultImporter" in eg.extra["agent"]
 
     # re-insert; should skip
-    with open("tests/files/example_fileset_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_ingest_result.json") as f:
         ingest_fileset_importer.reset()
         ingest_fileset_importer.bezerk_mode = False
         counts = JsonLinePusher(ingest_fileset_importer, f).run()
@@ -251,7 +251,7 @@ def test_ingest_fileset_importer(ingest_fileset_importer):
 
 
 def test_ingest_fileset_file_dict_parse(ingest_fileset_file_importer):
-    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_file_ingest_result.json") as f:
         raw = json.loads(f.readline())
         fe = ingest_fileset_file_importer.parse_record(raw)
         assert fe.sha1 == "6fb020064da66bb7a666c17555611cf6820fc9ae"
@@ -281,7 +281,7 @@ def test_ingest_fileset_file_importer(ingest_fileset_file_importer):
     Similar to the above, but specifically tests 'file'/'success-file' import pathway
     """
     last_index = ingest_fileset_file_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_file_ingest_result.json") as f:
         ingest_fileset_file_importer.bezerk_mode = True
         counts = JsonLinePusher(ingest_fileset_file_importer, f).run()
     assert counts["insert"] == 16
@@ -298,7 +298,7 @@ def test_ingest_fileset_file_importer(ingest_fileset_file_importer):
     assert "fatcat_tools.IngestFilesetFileResultImporter" in eg.extra["agent"]
 
     # re-insert; should skip
-    with open("tests/files/example_fileset_file_ingest_result.json", "r") as f:
+    with open("tests/files/example_fileset_file_ingest_result.json") as f:
         ingest_fileset_file_importer.reset()
         ingest_fileset_file_importer.bezerk_mode = False
         counts = JsonLinePusher(ingest_fileset_file_importer, f).run()

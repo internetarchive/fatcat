@@ -26,7 +26,7 @@ from fatcat_tools.transforms import entity_to_dict
 
 @pytest.fixture(scope="function")
 def datacite_importer(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield DataciteImporter(
             api,
             issn_file,
@@ -36,7 +36,7 @@ def datacite_importer(api):
 
 @pytest.fixture(scope="function")
 def datacite_importer_existing(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield DataciteImporter(
             api,
             issn_file,
@@ -350,7 +350,7 @@ def test_datacite_spammy_title(datacite_importer):
 
 def test_datacite_importer(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/datacite_sample.jsonl", "r") as f:
+    with open("tests/files/datacite_sample.jsonl") as f:
         datacite_importer.bezerk_mode = True
         counts = JsonLinePusher(datacite_importer, f).run()
     assert counts["insert"] == 1
@@ -366,7 +366,7 @@ def test_datacite_importer(datacite_importer):
     assert "fatcat_tools.DataciteImporter" in eg.extra["agent"]
 
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/datacite_sample.jsonl", "r") as f:
+    with open("tests/files/datacite_sample.jsonl") as f:
         datacite_importer.bezerk_mode = False
         datacite_importer.reset()
         counts = JsonLinePusher(datacite_importer, f).run()
@@ -377,7 +377,7 @@ def test_datacite_importer(datacite_importer):
 
 
 def test_datacite_dict_parse(datacite_importer):
-    with open("tests/files/datacite_sample.jsonl", "r") as f:
+    with open("tests/files/datacite_sample.jsonl") as f:
         raw = json.load(f)
         r = datacite_importer.parse_record(raw)
         # ensure the API server is ok with format
@@ -422,15 +422,15 @@ def test_datacite_conversions(datacite_importer):
     """
     datacite_importer.debug = True
     for i in range(37):
-        src = "tests/files/datacite/datacite_doc_{0:02d}.json".format(i)
-        dst = "tests/files/datacite/datacite_result_{0:02d}.json".format(i)
-        with open(src, "r") as f:
+        src = f"tests/files/datacite/datacite_doc_{i:02d}.json"
+        dst = f"tests/files/datacite/datacite_result_{i:02d}.json"
+        with open(src) as f:
             re = datacite_importer.parse_record(json.load(f))
             result = entity_to_dict(re)
-        with open(dst, "r") as f:
+        with open(dst) as f:
             expected = json.loads(f.read())
 
-        assert result == expected, "output mismatch in {}".format(dst)
+        assert result == expected, f"output mismatch in {dst}"
 
 
 def test_index_form_to_display_name():
@@ -507,7 +507,7 @@ def test_lookup_license_slug():
 
     for c in cases:
         got = datacite_lookup_license_slug(c.input)
-        assert c.output == got, "{}: got {}, want {}".format(c.input, got, c.output)
+        assert c.output == got, f"{c.input}: got {got}, want {c.output}"
 
 
 def test_contributor_list_contains_contributor():

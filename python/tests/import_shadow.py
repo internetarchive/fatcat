@@ -13,13 +13,13 @@ def shadow_importer(api):
 
 # TODO: use API to check that entities actually created...
 def test_shadow_importer_basic(shadow_importer):
-    with open("tests/files/example_shadow.json", "r") as f:
+    with open("tests/files/example_shadow.json") as f:
         JsonLinePusher(shadow_importer, f).run()
 
 
 def test_shadow_importer(shadow_importer):
     last_index = shadow_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/example_shadow.json", "r") as f:
+    with open("tests/files/example_shadow.json") as f:
         shadow_importer.bezerk_mode = True
         counts = JsonLinePusher(shadow_importer, f).run()
     assert counts["insert"] == 2
@@ -35,7 +35,7 @@ def test_shadow_importer(shadow_importer):
     assert "fatcat_tools.ShadowLibraryImporter" in eg.extra["agent"]
 
     # re-insert; should skip
-    with open("tests/files/example_shadow.json", "r") as f:
+    with open("tests/files/example_shadow.json") as f:
         shadow_importer.reset()
         shadow_importer.bezerk_mode = False
         counts = JsonLinePusher(shadow_importer, f).run()
@@ -45,7 +45,7 @@ def test_shadow_importer(shadow_importer):
 
 
 def test_shadow_dict_parse(shadow_importer):
-    with open("tests/files/example_shadow.json", "r") as f:
+    with open("tests/files/example_shadow.json") as f:
         raw = json.loads(f.readline())
         f = shadow_importer.parse_record(raw)
 

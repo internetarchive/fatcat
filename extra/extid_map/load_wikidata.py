@@ -21,7 +21,7 @@ def run(db_path):
             continue
         (doi, qid) = row[:2]
         if count % 1000 == 0:
-            print("read {}, wrote {}".format(count, inserted))
+            print(f"read {count}, wrote {inserted}")
             db.commit()
         count = count + 1
         if not doi.startswith("10.") or not qid.startswith('Q'):

@@ -54,7 +54,7 @@ def enrich_fileset_entity(entity: FilesetEntity) -> FilesetEntity:
         return entity
     entity._total_size = None
     if entity.manifest is not None:
-        entity._total_size = sum([f.size for f in entity.manifest]) or 0
+        entity._total_size = sum(f.size for f in entity.manifest) or 0
     return entity
 
 
@@ -79,7 +79,7 @@ def enrich_release_entity(entity: ReleaseEntity) -> ReleaseEntity:
         ]
     if entity.filesets:
         for fs in entity.filesets:
-            fs._total_size = sum([f.size for f in fs.manifest])
+            fs._total_size = sum(f.size for f in fs.manifest)
     if entity.webcaptures:
         for wc in entity.webcaptures:
             wc._wayback_suffix = wayback_suffix(wc)
@@ -117,17 +117,17 @@ def enrich_release_entity(entity: ReleaseEntity) -> ReleaseEntity:
         if entity.abstracts[0].mimetype == "application/xml+jats":
             for tag in ("p", "jats", "jats:p"):
                 entity.abstracts[0].content = entity.abstracts[0].content.replace(
-                    "<{}>".format(tag), ""
+                    f"<{tag}>", ""
                 )
                 entity.abstracts[0].content = entity.abstracts[0].content.replace(
-                    "</{}>".format(tag), ""
+                    f"</{tag}>", ""
                 )
                 # ugh, double encoding happens
                 entity.abstracts[0].content = entity.abstracts[0].content.replace(
-                    "&lt;/{}&gt;".format(tag), ""
+                    f"&lt;/{tag}&gt;", ""
                 )
                 entity.abstracts[0].content = entity.abstracts[0].content.replace(
-                    "&lt;{}&gt;".format(tag), ""
+                    f"&lt;{tag}&gt;", ""
                 )
     return entity
 

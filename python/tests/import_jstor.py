@@ -7,19 +7,19 @@ from fatcat_tools.importers import Bs4XmlFilePusher, JstorImporter
 
 @pytest.fixture(scope="function")
 def jstor_importer(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield JstorImporter(api, issn_file, bezerk_mode=True)
 
 
 @pytest.fixture(scope="function")
 def jstor_importer_existing(api):
-    with open("tests/files/ISSN-to-ISSN-L.snip.txt", "r") as issn_file:
+    with open("tests/files/ISSN-to-ISSN-L.snip.txt") as issn_file:
         yield JstorImporter(api, issn_file, bezerk_mode=False)
 
 
 def test_jstor_importer(jstor_importer):
     last_index = jstor_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jstor-article-10.2307_111039.xml", "r") as f:
+    with open("tests/files/jstor-article-10.2307_111039.xml") as f:
         jstor_importer.bezerk_mode = True
         counts = Bs4XmlFilePusher(jstor_importer, f, "article").run()
     assert counts["insert"] == 1
@@ -35,7 +35,7 @@ def test_jstor_importer(jstor_importer):
     assert "fatcat_tools.JstorImporter" in eg.extra["agent"]
 
     last_index = jstor_importer.api.get_changelog(limit=1)[0].index
-    with open("tests/files/jstor-article-10.2307_111039.xml", "r") as f:
+    with open("tests/files/jstor-article-10.2307_111039.xml") as f:
         jstor_importer.bezerk_mode = False
         jstor_importer.reset()
         counts = Bs4XmlFilePusher(jstor_importer, f, "article").run()
@@ -46,7 +46,7 @@ def test_jstor_importer(jstor_importer):
 
 
 def test_jstor_xml_parse(jstor_importer):
-    with open("tests/files/jstor-article-10.2307_111039.xml", "r") as f:
+    with open("tests/files/jstor-article-10.2307_111039.xml") as f:
         soup = BeautifulSoup(f, "xml")
         r = jstor_importer.parse_record(soup.find_all("article")[0])
 
