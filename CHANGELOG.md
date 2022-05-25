@@ -290,7 +290,7 @@ changes.
   in editgroup objects by default.
 - `created` timestamp is included in editgroup objects (when GET) by default.
 - in client libraries, `FileEntityUrls` renamed `FileUrl`, and several similar
-  singlular/plural and `Entity` removed renamings.
+  singular/plural and `Entity` removed renamings.
 - elasticsearch release schema updated to match API schema changes
 
 ### Removed
