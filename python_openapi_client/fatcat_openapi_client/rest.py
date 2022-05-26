@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """
     fatcat
 
@@ -9,15 +11,18 @@
 """
 
 
+from __future__ import absolute_import
 
 import io
 import json
 import logging
 import re
 import ssl
-from urllib.parse import urlencode
 
 import certifi
+# python 2 and python 3 compatibility library
+import six
+from six.moves.urllib.parse import urlencode
 import urllib3
 
 from fatcat_openapi_client.exceptions import ApiException, ApiValueError
@@ -43,7 +48,7 @@ class RESTResponse(io.IOBase):
         return self.urllib3_response.getheader(name, default)
 
 
-class RESTClientObject:
+class RESTClientObject(object):
 
     def __init__(self, configuration, pools_size=4, maxsize=None):
         # urllib3.PoolManager will pass all kw parameters to connectionpool
@@ -137,7 +142,7 @@ class RESTClientObject:
 
         timeout = None
         if _request_timeout:
-            if isinstance(_request_timeout, int):
+            if isinstance(_request_timeout, (int, ) if six.PY3 else (int, long)):  # noqa: E501,F821
                 timeout = urllib3.Timeout(total=_request_timeout)
             elif (isinstance(_request_timeout, tuple) and
                   len(_request_timeout) == 2):
@@ -207,7 +212,7 @@ class RESTClientObject:
                                               timeout=timeout,
                                               headers=headers)
         except urllib3.exceptions.SSLError as e:
-            msg = f"{type(e).__name__}\n{str(e)}"
+            msg = "{0}\n{1}".format(type(e).__name__, str(e))
             raise ApiException(status=0, reason=msg)
 
         if _preload_content:
@@ -215,7 +220,8 @@ class RESTClientObject:
 
             # In the python 3, the response.data is bytes.
             # we need to decode it to string.
-            r.data = r.data.decode('utf8')
+            if six.PY3:
+                r.data = r.data.decode('utf8')
 
             # log response body
             logger.debug("response body: %s", r.data)
