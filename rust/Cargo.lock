@@ -23,16 +23,16 @@ version = "0.6.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e9a933f4e58658d7b12defcf96dc5c720f20832deebe3e0a19efd3b6aaeeb9e"
 dependencies = [
- "memchr 2.3.4",
+ "memchr 2.5.0",
 ]
 
 [[package]]
 name = "aho-corasick"
-version = "0.7.15"
+version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
+checksum = "1e37cfd5e7657ada45f742d6e99ca5788580b5c529dc78faf11ece6dc702656f"
 dependencies = [
- "memchr 2.3.4",
+ "memchr 2.5.0",
 ]
 
 [[package]]
@@ -412,7 +412,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "088c9627adec1e494ff9dea77377f1e69893023d631254a0ec68b16ee20be3e9"
 dependencies = [
  "lazy_static 1.4.0",
- "regex 1.4.2",
+ "regex 1.5.5",
  "serde 1.0.117",
  "uuid 0.7.2",
 ]
@@ -551,7 +551,7 @@ dependencies = [
  "atty",
  "humantime",
  "log 0.4.11",
- "regex 1.4.2",
+ "regex 1.5.5",
  "termcolor",
 ]
 
@@ -626,11 +626,11 @@ dependencies = [
  "iron-slog",
  "iron-test",
  "lazy_static 1.4.0",
- "log 0.3.9",
+ "log 0.4.11",
  "macaroon",
  "num_cpus",
- "rand 0.3.23",
- "regex 1.4.2",
+ "rand 0.6.5",
+ "regex 1.5.5",
  "sentry",
  "serde 1.0.117",
  "serde_derive 1.0.117",
@@ -1075,9 +1075,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.3.4"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ee1c47aaa256ecabcaea351eae4a9b01ef39ed810004e298d2511ed284b1525"
+checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 
 [[package]]
 name = "memoffset"
@@ -1456,7 +1456,7 @@ dependencies = [
  "error-chain 0.12.4",
  "idna 0.2.0",
  "lazy_static 1.4.0",
- "regex 1.4.2",
+ "regex 1.5.5",
  "url 2.2.0",
 ]
 
@@ -1668,22 +1668,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9329abc99e39129fcceabd24cf5d85b4671ef7c29c50e972bc5afe32438ec384"
 dependencies = [
  "aho-corasick 0.6.9",
- "memchr 2.3.4",
+ "memchr 2.5.0",
  "regex-syntax 0.5.6",
- "thread_local 0.3.6",
+ "thread_local",
  "utf8-ranges",
 ]
 
 [[package]]
 name = "regex"
-version = "1.4.2"
+version = "1.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38cf2c13ed4745de91a5eb834e11c00bcc3709e773173b2ce4c56c9fbde04b9c"
+checksum = "1a11647b6b25ff05a515cb92c365cec08801e83423a235b51e231e1808747286"
 dependencies = [
- "aho-corasick 0.7.15",
- "memchr 2.3.4",
- "regex-syntax 0.6.21",
- "thread_local 1.0.1",
+ "aho-corasick 0.7.18",
+ "memchr 2.5.0",
+ "regex-syntax 0.6.26",
 ]
 
 [[package]]
@@ -1697,9 +1696,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.21"
+version = "0.6.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b181ba2dcf07aaccad5448e8ead58db5b742cf85dfe035e2227f137a539a189"
+checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
 
 [[package]]
 name = "remove_dir_all"
@@ -1841,7 +1840,7 @@ dependencies = [
  "lazy_static 1.4.0",
  "log 0.4.11",
  "rand 0.6.5",
- "regex 1.4.2",
+ "regex 1.5.5",
  "reqwest",
  "rustc_version",
  "sentry-types",
@@ -2001,7 +2000,7 @@ checksum = "e544d16c6b230d84c866662fe55e31aacfca6ae71e6fc49ae9a311cb379bfc2f"
 dependencies = [
  "slog",
  "take_mut",
- "thread_local 0.3.6",
+ "thread_local",
 ]
 
 [[package]]
@@ -2037,7 +2036,7 @@ dependencies = [
  "isatty",
  "slog",
  "term",
- "thread_local 0.3.6",
+ "thread_local",
 ]
 
 [[package]]
@@ -2211,15 +2210,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "thread_local"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d40c6d1b69745a6ec6fb1ca717914848da4b44ae29d9b3080cbee91d72a69b14"
-dependencies = [
- "lazy_static 1.4.0",
-]
-
-[[package]]
 name = "time"
 version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2383,7 +2373,7 @@ version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59b11b2b5241ba34be09c3cc85a36e56e48f9888862e19cedf23336d35316ed1"
 dependencies = [
- "memchr 2.3.4",
+ "memchr 2.5.0",
 ]
 
 [[package]]
