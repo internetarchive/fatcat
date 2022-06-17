@@ -419,9 +419,9 @@ dependencies = [
 
 [[package]]
 name = "diesel"
-version = "1.4.1"
+version = "1.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2469cbcf1dfb9446e491cac4c493c2554133f87f7d041e892ac82e5cd36e863"
+checksum = "047bfc4d5c3bd2ef6ca6f981941046113524b9a9f9a7cbdfdd7ff40f58e6f542"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -626,10 +626,10 @@ dependencies = [
  "iron-slog",
  "iron-test",
  "lazy_static 1.4.0",
- "log 0.3.9",
+ "log 0.4.11",
  "macaroon",
  "num_cpus",
- "rand 0.3.23",
+ "rand 0.6.5",
  "regex 1.4.2",
  "sentry",
  "serde 1.0.117",
