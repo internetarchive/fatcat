@@ -18,12 +18,20 @@ latex2text = LatexNodes2Text()
 
 
 def latex_to_text(raw: str) -> str:
+    # hack: handle a single special mangled title
+    if raw.startswith("%CRTFASTGEEPWR"):
+        return raw.strip()
     try:
         return latex2text.latex_to_text(raw).strip()
     except AttributeError:
         return raw.strip()
     except IndexError:
         return raw.strip()
+
+
+def test_latex_to_text() -> None:
+    s = "%CRTFASTGEEPWR: a SAS macro for power of the generalized estimating equations of multi-period cluster randomized trials with application to stepped wedge designs"
+    assert latex_to_text(s) == s
 
 
 def parse_arxiv_authors(raw: str) -> List[str]:
