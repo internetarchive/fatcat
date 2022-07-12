@@ -85,6 +85,10 @@ def release_ingest_request(
         url = "https://doi.org/{}".format(release.ext_ids.doi.lower())
         link_source = "doi"
         link_source_id = release.ext_ids.doi.lower()
+    elif release.ext_ids.doaj:
+        url = "https://doaj.org/article/{}".format(release.ext_ids.doaj.lower())
+        link_source = "doaj"
+        link_source_id = release.ext_ids.doaj.lower()
 
     if not url:
         return None
