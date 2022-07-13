@@ -13,6 +13,9 @@ This file should not turn in to a TODO list!
 
 Ran a journal-level metadata update, using chocula.
 
+Cleaned up just under 500 releases with missing `container_id` from an older
+DOAJ article import.
+
 
 ## 2022-04
 
