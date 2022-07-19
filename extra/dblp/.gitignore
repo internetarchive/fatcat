@@ -4,3 +4,9 @@ series/
 Pipfile.lock
 *.json
 *.html
+*.txt
+*.dtd
+*.xml
+*.xml.gz
+*.tsv
+*.json.gz
