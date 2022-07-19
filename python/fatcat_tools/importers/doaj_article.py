@@ -100,6 +100,10 @@ class DoajArticleImporter(EntityImporter):
                 container_name = None
                 break
 
+        if not container_id:
+            self.counts['skip-no-container'] += 1
+            return None
+
         volume = clean_str(bibjson["journal"].get("volume"))
         # NOTE: this schema seems to use "number" as "issue number"
         issue = clean_str(bibjson["journal"].get("number"))
