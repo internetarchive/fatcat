@@ -1,0 +1,61 @@
+<record>
+  <header xmlns:oai_doaj="http://doaj.org/features/oai_doaj/1.0/">
+    <identifier>oai:doaj.org/article:2a48ccce13c546ceab0c6bc5b74d433d</identifier>
+    <datestamp>2015-03-21T20:28:31Z</datestamp>
+    <setSpec>TENDOkRpc2Vhc2VzIG9mIHRoZSBtdXNjdWxvc2tlbGV0YWwgc3lzdGVt</setSpec>
+    <setSpec>TENDOlNwZWNpYWx0aWVzIG9mIGludGVybmFsIG1lZGljaW5l</setSpec>
+    <setSpec>TENDOkludGVybmFsIG1lZGljaW5l</setSpec>
+    <setSpec>TENDOk1lZGljaW5l</setSpec>
+    <setSpec>dGVzdDp0ZXJt</setSpec>
+  </header>
+  <metadata xmlns:oai_doaj="http://doaj.org/features/oai_doaj/1.0/">
+    <oai_doaj:doajArticle xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd http://doaj.org/features/oai_doaj/1.0/ https://doaj.org/static/doaj/doajArticles.xsd">
+      <oai_doaj:language>ger</oai_doaj:language>
+      <oai_doaj:publisher>Verlag Krause und Pachernegg GmbH</oai_doaj:publisher>
+      <oai_doaj:journalTitle>Journal f&#xFC;r Mineralstoffwechsel</oai_doaj:journalTitle>
+      <oai_doaj:issn>1023-7763</oai_doaj:issn>
+      <oai_doaj:eissn>1680-9408</oai_doaj:eissn>
+      <oai_doaj:publicationDate>1998-01-01</oai_doaj:publicationDate>
+      <oai_doaj:volume>5</oai_doaj:volume>
+      <oai_doaj:issue>1</oai_doaj:issue>
+      <oai_doaj:startPage>25</oai_doaj:startPage>
+      <oai_doaj:endPage>29</oai_doaj:endPage>
+      <oai_doaj:publisherRecordId>648</oai_doaj:publisherRecordId>
+      <oai_doaj:title>Leitfaden zur medikament&#xF6;sen Standardtherapie in der Osteoporose</oai_doaj:title>
+      <authors>
+        <author>
+          <name>Stevo Popovic</name>
+          <affiliationId>0</affiliationId>
+          <orcid_id>https://orcid.org/0000-0001-1234-1234</orcid_id>
+        </author>
+        <author>
+          <name>Dusko Bjelica</name>
+          <affiliationId>1</affiliationId>
+        </author>
+        <author>
+          <name>Gabriela Doina Tanase</name>
+          <affiliationId>2</affiliationId>
+          <orcid_id>https://orcid.org/0000-0001-1111-2222</orcid_id>
+        </author>
+        <author>
+          <name>Rajko Mila&#x161;inovi&#x107;</name>
+          <affiliationId>3</affiliationId>
+        </author>
+      </authors>
+      <affiliationsList>
+        <affiliationName affiliationId="0">University of Montenegro, Faculty for Sport and Physical Education, Nik&#x161;i&#x107;, Montenegro</affiliationName>
+        <affiliationName affiliationId="1">University of Montenegro, Faculty for Sport and Physical Education, Nik&#x161;i&#x107;, Montenegro</affiliationName>
+        <affiliationName affiliationId="2">University of Montenegro, Faculty for Sport and Physical Education, Nik&#x161;i&#x107;, Montenegro</affiliationName>
+        <affiliationName affiliationId="3">University of Novi Sad, ACIMSR, Novi Sad, Serbia</affiliationName>
+      </affiliationsList>
+      <oai_doaj:fullTextUrl format="pdf">http://www.kup.at/kup/pdf/648.pdf</oai_doaj:fullTextUrl>
+      <oai_doaj:keywords>
+        <oai_doaj:keyword>Empfehlung</oai_doaj:keyword>
+        <oai_doaj:keyword>Mineralstoffwechsel</oai_doaj:keyword>
+        <oai_doaj:keyword>Osteoporose</oai_doaj:keyword>
+        <oai_doaj:keyword>Richtlinie</oai_doaj:keyword>
+        <oai_doaj:keyword>Therapie</oai_doaj:keyword>
+      </oai_doaj:keywords>
+    </oai_doaj:doajArticle>
+  </metadata>
+</record>
