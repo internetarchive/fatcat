@@ -19,3 +19,6 @@ https://fatcat.wiki/release/search?q=NeuroTrends+Visualization
 
     45 versions across two figshare works 
 
+https://fatcat.wiki/container/hqhtzu2pufgulc5pdw2tfx55e4
+
+    container has several DOAJ/DOI duplicates
