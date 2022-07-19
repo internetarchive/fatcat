@@ -101,7 +101,7 @@ class DoajArticleImporter(EntityImporter):
                 break
 
         if not container_id:
-            self.counts['skip-no-container'] += 1
+            self.counts["skip-no-container"] += 1
             return None
 
         volume = clean_str(bibjson["journal"].get("volume"))

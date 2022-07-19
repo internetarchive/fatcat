@@ -144,8 +144,7 @@ def test_doaj_dict_parse(doaj_importer):
         assert r.pages == "608-617"
         assert r.version is None
         assert r.language == "en"
-        # matched by ISSN, so wouldn't be defined normally
-        assert r.extra["container_name"] == "Materials & Design"
+        assert r.container_id
         assert len(r.abstracts) == 1
         assert len(r.abstracts[0].content) == 1033
         assert len(r.contribs) == 5
