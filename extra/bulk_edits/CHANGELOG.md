@@ -16,6 +16,17 @@ Ran a journal-level metadata update, using chocula.
 Cleaned up just under 500 releases with missing `container_id` from an older
 DOAJ article import.
 
+Imported roughly 100k releases from DOAJ, new since 2022-04.
+
+Imported roughly 2.7 million new ORCiD `creator` entities, using the 2021 dump
+(first update since 2020 dump).
+
+Imported almost 1 million new DOI release entities from JALC, first update in
+more than a year.
+
+Imported at least 400 new dblp containers, and an unknown number of new dblp
+release entities.
+
 
 ## 2022-04
 
