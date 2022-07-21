@@ -27,6 +27,10 @@ more than a year.
 Imported at least 400 new dblp containers, and an unknown number of new dblp
 release entities.
 
+Cleaned up about a thousand containers with incorrect `publisher_type`, based
+on current publisher name. Further updates will populate after the next chocula
+import.
+
 
 ## 2022-04
 
