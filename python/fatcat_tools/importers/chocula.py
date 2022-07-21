@@ -136,6 +136,9 @@ class ChoculaImporter(EntityImporter):
             do_update = True
         if ce.extra.get("webarchive_urls") and not ce.extra.get("webarchive_urls", []):
             do_update = True
+        if ce.extra.get("publisher_type") and not ce.extra.get("publisher_type"):
+            # many older containers were missing this metadata
+            do_update = True
         for k in ("kbart", "ia", "doaj"):
             # always update these fields if not equal (chocula override)
             if ce.extra.get(k) and ce.extra[k] != existing.extra.get(k):
