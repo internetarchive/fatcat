@@ -542,18 +542,21 @@ class DblpReleaseImporter(EntityImporter):
         Used only in JSON dump mode, with the intent of transforming into
         sandcrawler ingest requests.
         """
-        EXTID_PATTERNS = [
+        SKIP_PATTERNS = [
             "://doi.acm.org/",
             "://doi.ieeecomputersociety.org/",
             "doi.org/10.",
             "wikidata.org/entity/Q",
             "://arxiv.org/abs/",
+            "://hdl.handle.net/",
+            "://d-nb.info/",
+            "://www.base-search.net/",
         ]
         urls = []
         for ee in xml_elem.find_all("ee"):
             url = ee.text
             skip = False
-            for pattern in EXTID_PATTERNS:
+            for pattern in SKIP_PATTERNS:
                 if pattern in url:
                     skip = True
                     break

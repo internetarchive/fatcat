@@ -1,14 +1,51 @@
 
-This file describes hacks used to import dblp container metadata.
+This file describes hacks used to import dblp container and release metadata.
 
-As of December 2020 this is part of the dblp release metadata import pipeline:
-we must have conference and other non-ISSN containers created before running
-the release import. dblp does not publish container-level metadata in a
-structured format (eg, in their dumps), so scraping the HTML is unfortunately
-necessary.
+The container metadata must be processed and imported first, to create
+containers for non-ISSN venues. However, dblp only publishes structured
+metadata for articles (releases), not venues (containers), so we need to
+process the articles, then import the containers, then import the articles.
+
+There is a path that scrapes venue metadata out of dblp.org HTML.
 
 
-## Quick Bootstrap Commands
+## New Process (2022)
+
+Usually all of this gets run on a production fatcat instance. It may be
+possible to run parts elsewhere, but not confirmed, and would require copying
+some set of files around.
+
+    # remove any old/stale files
+    ./cleanup.sh
+
+    ./prep_container_metadata.sh
+
+This will take a while to run, after which the container metadata can be
+imported, like:
+
+    cd ../../python
+    pipenv shell
+    export FATCAT_AUTH_WORKER_DBLP=[...]
+    ./fatcat_import.py dblp-container --issn-map-file /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --dblp-container-map-file ../extra/dblp/existing_dblp_containers.tsv --dblp-container-map-output ../extra/dblp/all_dblp_containers.tsv ../extra/dblp/dblp_container_meta.json
+
+Check that counts look sane:
+
+    wc -l existing_dblp_containers.tsv all_dblp_containers.tsv dblp_container_meta.json prefix_list.txt
+
+Then do release import like:
+
+    cd ../../python
+    pipenv shell
+    export FATCAT_AUTH_WORKER_DBLP=[...]
+    ./fatcat_import.py dblp-release --dblp-container-map-file ../extra/dblp/all_dblp_containers.tsv ../extra/dblp/dblp.xml
+
+Lastly, to generate sandcrawler ingest requests, from the JSON-dumped partial
+release objects::
+
+    cat dblp_releases_partial.json | pipenv run ./dblp2ingestrequest.py - | pv -l | gzip > dblp_sandcrawler_ingest_requests.json.gz
+
+
+## [OLD] Manual Commands
 
 Set up a working directory somewhere:
 

@@ -89,6 +89,10 @@ def release_ingest_request(
         url = "https://doaj.org/article/{}".format(release.ext_ids.doaj.lower())
         link_source = "doaj"
         link_source_id = release.ext_ids.doaj.lower()
+    elif release.ext_ids.hdl:
+        url = "https://hdl.handle.net/{}".format(release.ext_ids.hdl.lower())
+        link_source = "hdl"
+        link_source_id = release.ext_ids.hdl.lower()
 
     if not url:
         return None
