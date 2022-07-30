@@ -31,6 +31,9 @@ Cleaned up about a thousand containers with incorrect `publisher_type`, based
 on current publisher name. Further updates will populate after the next chocula
 import.
 
+Ran a second batch of journal-level metadata updates, from chocula, resulting
+in a couple thousand updated entities.
+
 
 ## 2022-04
 
