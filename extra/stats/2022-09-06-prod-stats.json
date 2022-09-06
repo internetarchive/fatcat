@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" style="position: relative; min-height: 100%; height: auto;">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="origin-when-cross-origin">
+
+  <title>Stats | fatcat!</title>
+
+  <link rel="stylesheet"
+    type="text/css"
+    href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.css"
+    type="text/css"
+    crossorigin="anonymous">
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin&display=swap"
+    as="style">
+  <link rel="preload"
+    href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/themes/default/assets/fonts/icons.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous">
+  <link rel="icon" href="data:,">
+
+  <style>
+    .ui.inverted.menu .item:before { background: none; }
+
+    @media only screen and (max-width: 479px) {
+      .mobile-hide{ display: none !important; }
+    }
+
+    .field textarea#toml {
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body style="margin-bottom: 130px;">
+
+<header class="ui fixed inverted menu" style="height: 3em;">
+  <div class="ui container">
+    <a href="/" class="header item">
+      <!-- <img class="logo" src="assets/images/logo.png"> -->
+      fatcat!
+    </a>
+    <a href="/about" class="item mobile-hide">About</a>
+    <a href="https://guide.fatcat.wiki/" class="item mobile-hide">Guide</a>
+    <a href="/changelog" class="item mobile-hide">Changelog</a>
+    <div class="right menu">
+      <div class="item" style="padding: 0;">
+        <form class="" action="/search" method="get" role="search" aria-label="Papers">
+          <div class="ui transparent inverted icon input">
+            <i class="search icon" style="padding-right: 2em;"></i>
+            <input type="text" placeholder="Search Papers..." name="q" style="border: 1px solid #777 !important; padding: 5px !important; width: 15em;">
+          </div>
+        </form>
+      </div>
+      <div class="ui simple item">
+        <a href="/auth/login">Login/Signup</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- 4em top margin is "enough" -->
+<main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;" >
+  <div class="ui container text">
+
+<h1>Stats</h1>
+
+You can also fetch these numbers <a href="./stats.json">as JSON</a>.
+
+<h3>Changelog</h3>
+
+<p>Latest changelog index is 6205643 (2022-09-06).
+
+<h3>Entities</h3>
+
+<table class="ui structured table">
+  <tbody>
+    <tr style="padding-top:0px;"><td rowspan="5" class="active top aligned center aligned"><b>"Papers"</b></td>
+        <td>Total</td>
+        <td class="right aligned">131,082,821</td>
+    <tr>
+        <td>Fulltext on web</td>
+        <td class="right aligned">37,792,347</td>
+    <tr>
+        <td>"Gold" Open Access</td>
+        <td class="right aligned">25,854,622</td>
+    <tr>
+        <td>In a Keepers/KBART archive</td>
+        <td class="right aligned">78,632,782</td>
+    <tr>
+        <td>On web, not in Keepers</td>
+        <td class="right aligned">19,770,890</td>
+
+    <tr style="padding-top:0px;"><td rowspan="1" class="active top aligned center aligned"><b>Releases</b></td>
+        <td>Total</td>
+        <td class="right aligned">188,266,679</td>
+
+    <tr style="padding-top:0px;"><td rowspan="1" class="active top aligned center aligned"><b>Containers</b></td>
+        <td>Total</td>
+        <td class="right aligned">194,685</td>
+  </tbody>
+</table>
+
+<br>
+<i>"Papers" are journal articles and conference proceedings, a subset of Releases</i>
+
+  </div>
+</main>
+
+
+<footer class="ui inverted vertical footer segment" style="margin-top: 2em; padding-top: 2em; padding-bottom:2em; position: absolute; bottom: 0px; width: 100%;">
+  <div class="ui center aligned container">
+    <div class="ui horizontal inverted small divided link list">
+      <a class="item" href="/">fatcat!</a>
+      <a class="item" href="/about">About</a>
+      <a class="item" href="https://guide.fatcat.wiki/sources.html">Sources</a>
+      <a class="item" href="https://stats.uptimerobot.com/GM9YNSrB0">Status</a>
+      <a class="item" href="https://guide.fatcat.wiki/bulk_exports.html">Bulk Exports</a>
+      <a class="item" href="https://github.com/internetarchive/fatcat/">Code</a>
+      <a class="item" href="https://github.com/internetarchive/fatcat/tree/v0.5.1-109-g5ecf72cb"><code>v0.5.1-109-g5ecf72cb</code></a>
+    </div>
+  </div>
+</footer>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous">
+</script>
+<script
+  src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.js"
+  integrity="sha256-9H3HWYnPJ2bEHgkOrw+48KheOqYzTvJd1hbeU9sEDFk="
+  crossorigin="anonymous">
+</script>
+<script>
+    window.goatcounter = {
+        /* title leaks search query, so don't report it */
+        title: "",
+    };
+  </script>
+  <script data-goatcounter="/goatcounter/count" async src="/goatcounter/count.js"></script>
+</body>
+</html>
