@@ -1,6 +1,5 @@
 .env
 target/
-bin/
 fatcat-*.tar.gz
 
 !.cargo
