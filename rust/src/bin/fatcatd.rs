@@ -27,7 +27,7 @@ pub struct XClacksOverheadMiddleware;
 impl AfterMiddleware for XClacksOverheadMiddleware {
     fn after(&self, _req: &mut Request, mut res: Response) -> iron::IronResult<Response> {
         res.headers
-            .set(XClacksOverhead("GNU aaronsw, jpb".to_owned()));
+            .set(XClacksOverhead("GNU aaronsw, jpb, pde".to_owned()));
         Ok(res)
     }
 }
