@@ -20,6 +20,9 @@ TODO:
 
 ## Test Base Image
 
+NOTE: check that you don't have `sshuttle` or other VPN things running before
+attempting a build.
+
     docker build -t bnewbold/fatcat-test-base -f Dockerfile.test-base .
 
 If it looks good:

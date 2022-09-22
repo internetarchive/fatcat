@@ -1,5 +1,5 @@
 
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 ENV CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
@@ -7,15 +7,21 @@ ENV CARGO_HOME=/usr/local/cargo \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
+# distro version of pipenv does not work on ubuntu jammy
+# https://github.com/pypa/pipenv/issues/5088
+
 # APT dependencies
 RUN set -eux; \
     apt update -qy; \
-    apt install -y \
-        software-properties-common wget pkg-config git \
+    apt install -y --no-install-recommends \
+        software-properties-common wget pkg-config git ca-certificates \
         rustc cargo \
         libpq-dev libsnappy-dev libsodium-dev software-properties-common \
-        python3.8 python3.8-dev python3.8-venv python3.8-distutils \
-        pipenv python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest; \
+        python3.10 python3.10-dev python3.10-venv python3.10-distutils \
+        python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest; \
+    wget https://archive.org/download/ia-deb-pkgs/pipenv_11.15-0ia1_all.deb; \
+    apt install -y ./pipenv_11.15-0ia1_all.deb; \
+    apt-get clean; \
     mkdir -p $CARGO_HOME; \
     chmod -R a+w $CARGO_HOME; \
     rustc --version; \
@@ -25,4 +31,3 @@ RUN set -eux; \
 RUN set -eux; \
     cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres; \
     diesel --version
-
