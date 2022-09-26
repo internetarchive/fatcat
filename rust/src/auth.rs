@@ -183,16 +183,17 @@ pub struct AuthConfectionary {
 }
 
 fn parse_macaroon_key(key_base64: &str) -> Result<MacaroonKey> {
-    // while we created the base64-encoded key from just 32 bytes of binary data, because of
-    // padding the result decodes in to 33 bytes of data. we just drop the last byte
-    let mut key_bytes: [u8; 33] = [0; 33];
+    // instead of creating a [u8; 32], we decode into an arbitrary Vec (after checking the input
+    // length first), because the MacaroonKey 'From' trait is implemented differently for [u8] and
+    // [u8; 32] (sigh).
     if key_base64.len() != 44 {
         bail!("bad base64-padded-encoded key for macaroons");
     }
-    BASE64
-        .decode_mut(key_base64.as_bytes(), &mut key_bytes)
+    let key_bytes = BASE64
+        .decode(key_base64.as_bytes())
         .expect("base64 key decode");
-    let key: MacaroonKey = key_bytes[..32].into();
+    let bytes_ref: &[u8] = key_bytes.as_ref();
+    let key = MacaroonKey::from(bytes_ref);
     Ok(key)
 }
 
@@ -557,4 +558,26 @@ pub fn env_confectionary() -> Result<AuthConfectionary> {
         }
     };
     Ok(confectionary)
+}
+
+#[test]
+fn test_macaroon_keys() {
+    assert!(parse_macaroon_key("blah").is_err());
+
+    let key_bytes: [u8; 32] = [
+        231, 158, 121, 231, 158, 121, 231, 158, 121, 231, 158, 121, 231, 158, 121, 231, 158, 121,
+        231, 158, 121, 231, 158, 121, 231, 158, 121, 231, 158, 121, 198, 107,
+    ];
+
+    // old way of parsing keys
+    let old_key = BASE64
+        .decode(b"5555555555555555555555555555555555555555xms=")
+        .unwrap();
+    assert_eq!(old_key.len(), 32);
+    assert_eq!(old_key, key_bytes);
+    let old_macaroon_key: MacaroonKey = old_key.as_slice().into();
+
+    // new (2022) way of parsing keys
+    let key = parse_macaroon_key("5555555555555555555555555555555555555555xms=").unwrap();
+    assert_eq!(old_macaroon_key, key);
 }
