@@ -5,7 +5,7 @@
 //! role-based authentication (RBAC).
 
 use data_encoding::BASE64;
-use macaroon::{Format, Macaroon, Verifier};
+use macaroon::{ByteString, Caveat, Format, Macaroon, MacaroonError, MacaroonKey, Verifier};
 use std::fmt;
 use swagger::auth::{AuthData, Authorization, Scopes};
 
@@ -23,8 +23,8 @@ use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
 
-// 32 bytes max (!)
-static DUMMY_KEY: &[u8] = b"dummy-key-a-one-two-three-a-la";
+// 32 bytes exactly
+static DUMMY_KEY_BYTES: &[u8; 32] = b"dummy-key-a-one-two-three-a-la!!";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum FatcatRole {
@@ -178,8 +178,22 @@ impl iron::middleware::BeforeMiddleware for MacaroonAuthMiddleware {
 pub struct AuthConfectionary {
     pub location: String,
     pub identifier: String,
-    pub key: Vec<u8>,
-    pub root_keys: HashMap<String, Vec<u8>>,
+    pub key: MacaroonKey,
+    pub root_keys: HashMap<String, MacaroonKey>,
+}
+
+fn parse_macaroon_key(key_base64: &str) -> Result<MacaroonKey> {
+    // while we created the base64-encoded key from just 32 bytes of binary data, because of
+    // padding the result decodes in to 33 bytes of data. we just drop the last byte
+    let mut key_bytes: [u8; 33] = [0; 33];
+    if key_base64.len() != 44 {
+        bail!("bad base64-padded-encoded key for macaroons");
+    }
+    BASE64
+        .decode_mut(key_base64.as_bytes(), &mut key_bytes)
+        .expect("base64 key decode");
+    let key: MacaroonKey = key_bytes[..32].into();
+    Ok(key)
 }
 
 impl AuthConfectionary {
@@ -188,10 +202,10 @@ impl AuthConfectionary {
         identifier: String,
         key_base64: &str,
     ) -> Result<AuthConfectionary> {
-        macaroon::initialize().unwrap();
-        let key = BASE64.decode(key_base64.as_bytes())?;
+        macaroon::initialize().expect("initializing macaroon library");
+        let key = parse_macaroon_key(key_base64)?;
         let mut root_keys = HashMap::new();
-        root_keys.insert(identifier.clone(), key.clone());
+        root_keys.insert(identifier.clone(), key);
         Ok(AuthConfectionary {
             location,
             identifier,
@@ -204,13 +218,13 @@ impl AuthConfectionary {
         AuthConfectionary::new(
             "test.fatcat.wiki".to_string(),
             "dummy".to_string(),
-            &BASE64.encode(DUMMY_KEY),
+            &BASE64.encode(DUMMY_KEY_BYTES),
         )
-        .unwrap()
+        .expect("creating dummy AuthConfectionary")
     }
 
     pub fn add_keypair(&mut self, identifier: String, key_base64: &str) -> Result<()> {
-        let key = BASE64.decode(key_base64.as_bytes())?;
+        let key = parse_macaroon_key(key_base64)?;
         self.root_keys.insert(identifier, key);
         Ok(())
     }
@@ -220,23 +234,31 @@ impl AuthConfectionary {
         editor_id: FatcatId,
         duration: Option<chrono::Duration>,
     ) -> Result<String> {
-        let mut mac = Macaroon::create(&self.location, &self.key, &self.identifier)
-            .expect("Macaroon creation");
-        mac.add_first_party_caveat(&format!("editor_id = {}", editor_id.to_string()));
+        let mut mac = Macaroon::create(
+            Some(self.location.clone().into()),
+            &self.key,
+            self.identifier.clone().into(),
+        )
+        .expect("Macaroon creation");
+        mac.add_first_party_caveat(format!("editor_id = {}", editor_id.to_string()).into());
         let now_utc = Utc::now();
         let now = now_utc.to_rfc3339_opts(SecondsFormat::Secs, true);
-        mac.add_first_party_caveat(&format!("time > {}", now));
+        mac.add_first_party_caveat(format!("time > {}", now).into());
         if let Some(duration) = duration {
             let expires = now_utc + duration;
-            mac.add_first_party_caveat(&format!(
-                "time < {}",
-                &expires.to_rfc3339_opts(SecondsFormat::Secs, true)
-            ));
+            mac.add_first_party_caveat(
+                format!(
+                    "time < {}",
+                    &expires.to_rfc3339_opts(SecondsFormat::Secs, true)
+                )
+                .into(),
+            );
         };
         let raw = mac.serialize(Format::V2).expect("macaroon serialization");
         Ok(BASE64.encode(&raw))
     }
 
+    /// Takes a macaroon as a base64-encoded string, deserializes it
     pub fn parse_macaroon_token(
         &self,
         conn: &DbConn,
@@ -255,23 +277,19 @@ impl AuthConfectionary {
                 .into());
             }
         };
-        let mac = match mac.validate() {
-            Ok(m) => m,
-            Err(e) => {
-                // TODO: should be "chaining" here
-                return Err(FatcatError::InvalidCredentials(format!(
-                    "macaroon validate error: {:?}",
-                    e
-                ))
-                .into());
-            }
-        };
-        let mut verifier = Verifier::new();
+        let mut verifier = Verifier::default();
         let mut editor_id: Option<FatcatId> = None;
         for caveat in mac.first_party_caveats() {
-            if caveat.predicate().starts_with("editor_id = ") {
-                editor_id = Some(FatcatId::from_str(caveat.predicate().get(12..).unwrap())?);
-                break;
+            if let Caveat::FirstParty(fp) = caveat {
+                let predicate_str = String::from_utf8(fp.predicate().as_ref().to_vec())?;
+                if predicate_str.starts_with("editor_id = ") {
+                    editor_id = Some(FatcatId::from_str(
+                        predicate_str
+                            .get(12..)
+                            .expect("parsing editor_id from macaroon"),
+                    )?);
+                    break;
+                }
             }
         }
         let editor_id = match editor_id {
@@ -283,25 +301,28 @@ impl AuthConfectionary {
                 .into());
             }
         };
-        verifier.satisfy_exact(&format!("editor_id = {}", editor_id.to_string()));
+        verifier.satisfy_exact(format!("editor_id = {}", editor_id.to_string()).into());
         if let Some(endpoint) = endpoint {
             // API endpoint
-            verifier.satisfy_exact(&format!("endpoint = {}", endpoint));
+            verifier.satisfy_exact(format!("endpoint = {}", endpoint).into());
         }
         let mut created: Option<DateTime<Utc>> = None;
         for caveat in mac.first_party_caveats() {
-            if caveat.predicate().starts_with("time > ") {
-                let ts: chrono::ParseResult<DateTime<Utc>> =
-                    DateTime::parse_from_rfc3339(caveat.predicate().get(7..).unwrap())
-                        .map(|x| x.with_timezone(&Utc));
-                if let Ok(ts) = ts {
-                    created = Some(ts);
-                    break;
-                } else {
-                    info!(
-                        "couldn't parse macaroon time constraint: {}",
-                        caveat.predicate()
-                    );
+            if let Caveat::FirstParty(fp) = caveat {
+                let predicate_str = String::from_utf8(fp.predicate().as_ref().to_vec())?;
+                if predicate_str.starts_with("time > ") {
+                    let ts: chrono::ParseResult<DateTime<Utc>> = DateTime::parse_from_rfc3339(
+                        predicate_str
+                            .get(7..)
+                            .expect("parsing timestamp from macaroon"),
+                    )
+                    .map(|x| x.with_timezone(&Utc));
+                    if let Ok(ts) = ts {
+                        created = Some(ts);
+                        break;
+                    } else {
+                        info!("couldn't parse macaroon time constraint: {}", predicate_str);
+                    }
                 }
             }
         }
@@ -314,10 +335,13 @@ impl AuthConfectionary {
                 .into());
             }
         };
-        verifier.satisfy_exact(&format!(
-            "time > {}",
-            created.to_rfc3339_opts(SecondsFormat::Secs, true)
-        ));
+        verifier.satisfy_exact(
+            format!(
+                "time > {}",
+                created.to_rfc3339_opts(SecondsFormat::Secs, true)
+            )
+            .into(),
+        );
         // not finding the editor_id is an auth issue, not a 404
         let editor: EditorRow =
             match Editor::db_get(conn, editor_id).map_err(|e| FatcatError::from(e)) {
@@ -340,39 +364,48 @@ impl AuthConfectionary {
             )
             .into());
         }
-        verifier.satisfy_general(|p: &str| -> bool {
-            // not expired (based on time)
-            if p.starts_with("time < ") {
-                let expires: chrono::ParseResult<DateTime<Utc>> =
-                    DateTime::parse_from_rfc3339(p.get(7..).unwrap())
-                        .map(|x| x.with_timezone(&Utc));
-                if let Ok(when) = expires {
-                    //info!("checking time constraint: {} < {}", Utc::now(), when);
-                    Utc::now() < when
+        verifier.satisfy_general(|p_bstr: &ByteString| -> bool {
+            if let Ok(p) = String::from_utf8(p_bstr.as_ref().to_vec()) {
+                // not expired (based on time)
+                if p.starts_with("time < ") {
+                    let expires: chrono::ParseResult<DateTime<Utc>> = DateTime::parse_from_rfc3339(
+                        p.get(7..).expect("parsing datetime from macaroon"),
+                    )
+                    .map(|x| x.with_timezone(&Utc));
+                    if let Ok(when) = expires {
+                        //info!("checking time constraint: {} < {}", Utc::now(), when);
+                        Utc::now() < when
+                    } else {
+                        info!("couldn't parse macaroon time constraint: {}", p);
+                        false
+                    }
                 } else {
-                    info!("couldn't parse macaroon time constraint: {}", p);
                     false
                 }
             } else {
                 false
             }
         });
-        let verify_key = match self.root_keys.get(mac.identifier()) {
+        let verify_key = match self
+            .root_keys
+            .get(std::str::from_utf8(mac.identifier().as_ref())?)
+        {
             Some(key) => key,
             None => {
                 return Err(FatcatError::InvalidCredentials(format!(
                     "no valid auth signing key for identifier: {}",
-                    mac.identifier()
+                    std::str::from_utf8(mac.identifier().as_ref())?
                 ))
                 .into());
             }
         };
-        match mac.verify(verify_key, &mut verifier) {
-            Ok(true) => (),
-            Ok(false) => {
-                return Err(FatcatError::InvalidCredentials(
-                    "auth token (macaroon) not valid (signature and/or caveats failed)".to_string(),
-                )
+        match verifier.verify(&mac, verify_key.into(), Default::default()) {
+            Ok(()) => (),
+            Err(MacaroonError::InvalidMacaroon(em)) => {
+                return Err(FatcatError::InvalidCredentials(format!(
+                    "auth token (macaroon) not valid (signature and/or caveats failed): {}",
+                    em
+                ))
                 .into());
             }
             Err(e) => {
@@ -448,9 +481,15 @@ impl AuthConfectionary {
         let now = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
         println!("current time: {}", now);
         println!("domain (location): {:?}", mac.location());
-        println!("signing key name (identifier): {}", mac.identifier());
+        println!(
+            "signing key name (identifier): {}",
+            std::str::from_utf8(mac.identifier().as_ref())?
+        );
         for caveat in mac.first_party_caveats() {
-            println!("caveat: {}", caveat.predicate());
+            if let Caveat::FirstParty(fp) = caveat {
+                let predicate_str = String::from_utf8(fp.predicate().as_ref().to_vec())?;
+                println!("caveat: {}", predicate_str);
+            }
         }
         println!("verify: {:?}", self.parse_macaroon_token(conn, token, None));
         Ok(())
