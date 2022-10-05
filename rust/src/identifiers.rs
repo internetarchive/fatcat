@@ -5,7 +5,7 @@ use std::str::FromStr;
 use std::{convert, fmt};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Eq)]
 pub struct FatcatId(Uuid);
 
 impl fmt::Display for FatcatId {
@@ -51,7 +51,7 @@ impl FatcatId {
 
 /// Convert fatcat IDs (base32 strings) to UUID
 pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
-    if fcid.is_ascii() == false || fcid.len() != 26 {
+    if !fcid.is_ascii() || fcid.len() != 26 {
         return Err(FatcatError::InvalidFatcatId(fcid.to_string()).into());
     }
     let mut raw = vec![0; 16];

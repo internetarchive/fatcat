@@ -13,7 +13,7 @@ use uuid::Uuid;
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EntityState {
     WorkInProgress,
     Active(Uuid),
@@ -552,7 +552,7 @@ pub struct RefsBlobRow {
     pub refs_json: serde_json::Value,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Eq)]
 /// This model is a stable representation of what goes in a RefsBlobRow `refs_json` field (an array
 /// of this model). We could rely on the `ReleaseRef` API spec model directly, but that would lock
 /// the database contents to the API spec rigidly; by defining this struct independently, we can
@@ -684,8 +684,8 @@ impl EditgroupRow {
         Editgroup {
             editgroup_id: Some(uuid2fcid(&self.id)),
             editor_id: Some(uuid2fcid(&self.editor_id)),
-            editor: editor,
-            changelog_index: changelog_index,
+            editor,
+            changelog_index,
             created: Some(chrono::DateTime::from_utc(self.created, chrono::Utc)),
             submitted: self
                 .submitted

@@ -96,7 +96,7 @@ where
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct ExpandFlags {
     pub files: bool,
     pub filesets: bool,
@@ -187,7 +187,7 @@ fn test_expand_flags() {
     );
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct HideFlags {
     // release
     pub abstracts: bool,
@@ -1194,7 +1194,7 @@ impl EntityCrud for FileEntity {
                 None => (),
                 Some(url_list) => {
                     let these_url_rows: Vec<FileRevUrlNewRow> = url_list
-                        .into_iter()
+                        .iter()
                         .map(|u| FileRevUrlNewRow {
                             file_rev: *rev_id,
                             rel: u.rel.clone(),
@@ -1398,7 +1398,7 @@ impl EntityCrud for FilesetEntity {
                 None => (),
                 Some(file_list) => {
                     let these_file_rows: Vec<FilesetRevFileNewRow> = file_list
-                        .into_iter()
+                        .iter()
                         .map(|f| FilesetRevFileNewRow {
                             fileset_rev: *rev_id,
                             path_name: f.path.clone(),
@@ -1418,7 +1418,7 @@ impl EntityCrud for FilesetEntity {
                 None => (),
                 Some(url_list) => {
                     let these_url_rows: Vec<FilesetRevUrlNewRow> = url_list
-                        .into_iter()
+                        .iter()
                         .map(|u| FilesetRevUrlNewRow {
                             fileset_rev: *rev_id,
                             rel: u.rel.clone(),
@@ -1653,11 +1653,11 @@ impl EntityCrud for WebcaptureEntity {
                 None => (),
                 Some(cdx_list) => {
                     let these_cdx_rows: Vec<WebcaptureRevCdxNewRow> = cdx_list
-                        .into_iter()
+                        .iter()
                         .map(|c| WebcaptureRevCdxNewRow {
                             webcapture_rev: *rev_id,
                             surt: c.surt.clone(),
-                            timestamp: c.timestamp.clone(),
+                            timestamp: c.timestamp,
                             url: c.url.clone(),
                             mimetype: c.mimetype.clone(),
                             status_code: c.status_code,
@@ -1674,7 +1674,7 @@ impl EntityCrud for WebcaptureEntity {
                 None => (),
                 Some(url_list) => {
                     let these_url_rows: Vec<WebcaptureRevUrlNewRow> = url_list
-                        .into_iter()
+                        .iter()
                         .map(|u| WebcaptureRevUrlNewRow {
                             webcapture_rev: *rev_id,
                             rel: u.rel.clone(),
@@ -1817,8 +1817,8 @@ impl EntityCrud for ReleaseEntity {
                 Some(ident) => match &self.redirect {
                     // If we're a redirect, then expand for the *target* identifier, not *our*
                     // identifier. Tricky!
-                    None => FatcatId::from_str(&ident)?,
-                    Some(redir) => FatcatId::from_str(&redir)?,
+                    None => FatcatId::from_str(ident)?,
+                    Some(redir) => FatcatId::from_str(redir)?,
                 },
             };
             self.files = Some(get_release_files(conn, ident, HideFlags::none())?);
@@ -1827,8 +1827,8 @@ impl EntityCrud for ReleaseEntity {
             let ident = match &self.ident {
                 None => bail!("Can't expand filesets on a non-concrete entity"), // redundant with above is_some()
                 Some(ident) => match &self.redirect {
-                    None => FatcatId::from_str(&ident)?,
-                    Some(redir) => FatcatId::from_str(&redir)?,
+                    None => FatcatId::from_str(ident)?,
+                    Some(redir) => FatcatId::from_str(redir)?,
                 },
             };
             self.filesets = Some(get_release_filesets(conn, ident, HideFlags::none())?);
@@ -1837,8 +1837,8 @@ impl EntityCrud for ReleaseEntity {
             let ident = match &self.ident {
                 None => bail!("Can't expand webcaptures on a non-concrete entity"), // redundant with above is_some()
                 Some(ident) => match &self.redirect {
-                    None => FatcatId::from_str(&ident)?,
-                    Some(redir) => FatcatId::from_str(&redir)?,
+                    None => FatcatId::from_str(ident)?,
+                    Some(redir) => FatcatId::from_str(redir)?,
                 },
             };
             self.webcaptures = Some(get_release_webcaptures(conn, ident, HideFlags::none())?);
@@ -1847,7 +1847,7 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref cid) = self.container_id {
                 self.container = Some(ContainerEntity::db_get(
                     conn,
-                    FatcatId::from_str(&cid)?,
+                    FatcatId::from_str(cid)?,
                     HideFlags::none(),
                 )?);
             }
@@ -1928,7 +1928,7 @@ impl EntityCrud for ReleaseEntity {
                 model
             })
             .collect();
-        let model_refs: Vec<&Self> = models_with_work_ids.iter().map(|s| s).collect();
+        let model_refs: Vec<&Self> = models_with_work_ids.iter().collect();
         let models = model_refs.as_slice();
 
         // The rest here is copy/pasta from the generic (how to avoid copypasta?)
@@ -1951,7 +1951,7 @@ impl EntityCrud for ReleaseEntity {
                 rev_ids
                     .into_iter()
                     .zip(ident_ids.into_iter())
-                    .zip(models.into_iter().map(|m| m.edit_extra.clone()))
+                    .zip(models.iter().map(|m| m.edit_extra.clone()))
                     .map(|((rev_id, ident_id), edit_extra)| Self::EditNewRow {
                         editgroup_id: edit_context.editgroup_id.to_uuid(),
                         rev_id: Some(rev_id),
@@ -2100,7 +2100,7 @@ impl EntityCrud for ReleaseEntity {
             withdrawn_status: rev_row.withdrawn_status,
             withdrawn_date: rev_row.withdrawn_date,
             withdrawn_year: rev_row.withdrawn_year,
-            ext_ids: ext_ids,
+            ext_ids,
             volume: rev_row.volume,
             issue: rev_row.issue,
             pages: rev_row.pages,
@@ -2459,7 +2459,7 @@ impl EntityCrud for ReleaseEntity {
                     .collect();
                 abstract_rows.extend(new_abstracts);
                 let new_release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
-                    .into_iter()
+                    .iter()
                     .map(|c| {
                         Ok(ReleaseRevAbstractNewRow {
                             release_rev: *rev_id,

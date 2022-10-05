@@ -89,7 +89,7 @@ fn main() -> Result<()> {
             };
             let editor_row = editor.db_create(&db_conn)?;
             //println!("{:?}", editor);
-            println!("{}", FatcatId::from_uuid(&editor_row.id).to_string());
+            println!("{}", FatcatId::from_uuid(&editor_row.id));
         }
         ("create-token", Some(subm)) => {
             let editor_id = FatcatId::from_str(subm.value_of("editor-id").unwrap())?;

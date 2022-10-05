@@ -26,7 +26,7 @@ use std::str::FromStr;
 // 32 bytes exactly
 static DUMMY_KEY_BYTES: &[u8; 32] = b"dummy-key-a-one-two-three-a-la!!";
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FatcatRole {
     Public,
     Editor,
@@ -236,12 +236,12 @@ impl AuthConfectionary {
         duration: Option<chrono::Duration>,
     ) -> Result<String> {
         let mut mac = Macaroon::create(
-            Some(self.location.clone().into()),
+            Some(self.location.clone()),
             &self.key,
             self.identifier.clone().into(),
         )
         .expect("Macaroon creation");
-        mac.add_first_party_caveat(format!("editor_id = {}", editor_id.to_string()).into());
+        mac.add_first_party_caveat(format!("editor_id = {}", editor_id).into());
         let now_utc = Utc::now();
         let now = now_utc.to_rfc3339_opts(SecondsFormat::Secs, true);
         mac.add_first_party_caveat(format!("time > {}", now).into());
@@ -302,7 +302,7 @@ impl AuthConfectionary {
                 .into());
             }
         };
-        verifier.satisfy_exact(format!("editor_id = {}", editor_id.to_string()).into());
+        verifier.satisfy_exact(format!("editor_id = {}", editor_id).into());
         if let Some(endpoint) = endpoint {
             // API endpoint
             verifier.satisfy_exact(format!("endpoint = {}", endpoint).into());
@@ -344,18 +344,17 @@ impl AuthConfectionary {
             .into(),
         );
         // not finding the editor_id is an auth issue, not a 404
-        let editor: EditorRow =
-            match Editor::db_get(conn, editor_id).map_err(|e| FatcatError::from(e)) {
-                Ok(ed) => ed,
-                Err(FatcatError::NotFound(_, _)) => {
-                    return Err(FatcatError::InvalidCredentials(format!(
-                        "editor_id not found: {}",
-                        editor_id
-                    ))
-                    .into());
-                }
-                other_db_err => other_db_err?,
-            };
+        let editor: EditorRow = match Editor::db_get(conn, editor_id).map_err(FatcatError::from) {
+            Ok(ed) => ed,
+            Err(FatcatError::NotFound(_, _)) => {
+                return Err(FatcatError::InvalidCredentials(format!(
+                    "editor_id not found: {}",
+                    editor_id
+                ))
+                .into());
+            }
+            other_db_err => other_db_err?,
+        };
         let auth_epoch = DateTime::<Utc>::from_utc(editor.auth_epoch, Utc);
         // allow a second of wiggle room for precision and, eg, tests
         if created < (auth_epoch - chrono::Duration::seconds(1)) {
@@ -400,7 +399,7 @@ impl AuthConfectionary {
                 .into());
             }
         };
-        match verifier.verify(&mac, verify_key.into(), Default::default()) {
+        match verifier.verify(&mac, verify_key, Default::default()) {
             Ok(()) => (),
             Err(MacaroonError::InvalidMacaroon(em)) => {
                 return Err(FatcatError::InvalidCredentials(format!(
@@ -528,7 +527,7 @@ pub fn print_editors(conn: &DbConn) -> Result<()> {
     for e in all_editors {
         println!(
             "{}\t{}/{}/{}\t{}\t{}\t{:?}",
-            FatcatId::from_uuid(&e.id).to_string(),
+            FatcatId::from_uuid(&e.id),
             e.is_superuser,
             e.is_admin,
             e.is_bot,
