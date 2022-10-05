@@ -23,7 +23,7 @@ data-encoding = "2.1"
 regex = "1"
 lazy_static = "1"
 sha1 = { version = "0.6", features = ["std"] }
-macaroon = "0.2"
+macaroon = { git = "https://github.com/bnewbold/macaroon", branch = "bnewbold-legacy-hmac-fixed-branch" }
 rand = "*"
 failure = "*"
 
