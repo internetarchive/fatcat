@@ -171,7 +171,7 @@ impl Server {
             };
 
         let mut entity = ContainerEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
-        entity.db_expand(&conn, expand_flags)?;
+        entity.db_expand(conn, expand_flags)?;
         Ok(entity)
     }
 
@@ -210,7 +210,7 @@ impl Server {
         };
 
         let mut entity = CreatorEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
-        entity.db_expand(&conn, expand_flags)?;
+        entity.db_expand(conn, expand_flags)?;
         Ok(entity)
     }
 
@@ -280,7 +280,7 @@ impl Server {
         };
 
         let mut entity = FileEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
-        entity.db_expand(&conn, expand_flags)?;
+        entity.db_expand(conn, expand_flags)?;
         Ok(entity)
     }
 
@@ -705,7 +705,7 @@ impl Server {
         };
 
         let mut entity = ReleaseEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
-        entity.db_expand(&conn, expand_flags)?;
+        entity.db_expand(conn, expand_flags)?;
         Ok(entity)
     }
 
@@ -906,7 +906,7 @@ impl Server {
                 username.truncate(24);
                 let editor = Editor {
                     editor_id: None,
-                    username: username,
+                    username,
                     is_admin: Some(false),
                     is_bot: Some(false),
                     is_active: Some(true),

@@ -173,16 +173,16 @@ impl From<data_encoding::DecodeError> for FatcatError {
 impl From<failure::Error> for FatcatError {
     fn from(error: failure::Error) -> FatcatError {
         // TODO: I think it should be possible to match here? regardless, this is *super* janky
-        if let Some(_) = error.downcast_ref::<FatcatError>() {
+        if error.downcast_ref::<FatcatError>().is_some() {
             return error.downcast::<FatcatError>().unwrap();
         }
-        if let Some(_) = error.downcast_ref::<std::fmt::Error>() {
+        if error.downcast_ref::<std::fmt::Error>().is_some() {
             return error.downcast::<std::fmt::Error>().unwrap().into();
         }
-        if let Some(_) = error.downcast_ref::<diesel::result::Error>() {
+        if error.downcast_ref::<diesel::result::Error>().is_some() {
             return error.downcast::<diesel::result::Error>().unwrap().into();
         }
-        if let Some(_) = error.downcast_ref::<uuid::ParseError>() {
+        if error.downcast_ref::<uuid::ParseError>().is_some() {
             return error.downcast::<uuid::ParseError>().unwrap().into();
         }
         FatcatError::InternalError(error.to_string())

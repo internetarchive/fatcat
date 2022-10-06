@@ -11,7 +11,6 @@ use fatcat::server::DbConn;
 use std::process;
 use std::str::FromStr;
 
-use diesel;
 use diesel::prelude::*;
 
 fn backfill_changelog_gap(conn: &DbConn, last_good: i64, max_index: i64) -> Result<()> {

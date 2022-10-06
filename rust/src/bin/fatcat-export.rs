@@ -28,7 +28,7 @@ use std::thread;
 const CHANNEL_BUFFER_LEN: usize = 200;
 
 arg_enum! {
-    #[derive(PartialEq, Debug, Clone, Copy)]
+    #[derive(PartialEq, Debug, Clone, Copy, Eq)]
     pub enum ExportEntityType {
         Creator,
         Container,
@@ -163,7 +163,7 @@ fn parse_line(s: &str) -> Result<IdentRow> {
     let group_id: Option<FatcatId> = if fields.len() == 4 {
         match fields[3].as_ref() {
             "" => None,
-            val => Some(FatcatId::from_uuid(&Uuid::from_str(&val)?)),
+            val => Some(FatcatId::from_uuid(&Uuid::from_str(val)?)),
         }
     } else if fields.len() == 3 {
         None
@@ -174,11 +174,11 @@ fn parse_line(s: &str) -> Result<IdentRow> {
         ident_id: FatcatId::from_uuid(&Uuid::from_str(&fields[0])?),
         rev_id: match fields[1].as_ref() {
             "" => None,
-            val => Some(Uuid::from_str(&val)?),
+            val => Some(Uuid::from_str(val)?),
         },
         redirect_id: match fields[2].as_ref() {
             "" => None,
-            val => Some(FatcatId::from_uuid(&Uuid::from_str(&val)?)),
+            val => Some(FatcatId::from_uuid(&Uuid::from_str(val)?)),
         },
         group_id,
     })
@@ -331,7 +331,7 @@ pub fn do_export_batch(
             (Some(_), Some(_), false) => (),
             _ => {
                 if row.group_id == None || row.group_id != last_group_id {
-                    if batch.len() > 0 {
+                    if !batch.is_empty() {
                         row_sender.send(batch);
                         batch = vec![];
                     }
@@ -345,7 +345,7 @@ pub fn do_export_batch(
             info!("processed {} lines...", count);
         }
     }
-    if batch.len() > 0 {
+    if !batch.is_empty() {
         row_sender.send(batch);
     }
     drop(row_sender);
@@ -385,7 +385,7 @@ fn main() -> Result<()> {
         None => std::cmp::min(1, num_cpus::get() / 2) as usize,
     };
     let expand = match m.value_of("expand") {
-        Some(s) => Some(ExpandFlags::from_str(&s)?),
+        Some(s) => Some(ExpandFlags::from_str(s)?),
         None => None,
     };
     let log_level = if m.is_present("quiet") {
