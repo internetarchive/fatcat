@@ -16,12 +16,13 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
-## UNRELEASED
+## [0.5.2] - UNRELEASED
 
 ### Changes
 
 - 'stub' releases are not included in container preservation coverage "by year"
   and "by volume" charts. they are still included in overall counts.
+- rust: upgraded 'macaroon' crate to upstream v0.3.0, instead of patched version
 
 ## [0.5.1] - 2022-01-26
 
