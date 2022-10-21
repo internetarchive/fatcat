@@ -183,17 +183,13 @@ pub struct AuthConfectionary {
 }
 
 fn parse_macaroon_key(key_base64: &str) -> Result<MacaroonKey> {
-    // instead of creating a [u8; 32], we decode into an arbitrary Vec (after checking the input
-    // length first), because the MacaroonKey 'From' trait is implemented differently for [u8] and
-    // [u8; 32] (sigh).
     if key_base64.len() != 44 {
         bail!("bad base64-padded-encoded key for macaroons");
     }
     let key_bytes = BASE64
         .decode(key_base64.as_bytes())
         .expect("base64 key decode");
-    let bytes_ref: &[u8] = key_bytes.as_ref();
-    let key = MacaroonKey::from(bytes_ref);
+    let key = MacaroonKey::generate(&key_bytes);
     Ok(key)
 }
 
@@ -255,8 +251,7 @@ impl AuthConfectionary {
                 .into(),
             );
         };
-        let raw = mac.serialize(Format::V2).expect("macaroon serialization");
-        Ok(BASE64.encode(&raw))
+        Ok(mac.serialize(Format::V2).expect("macaroon serialization"))
     }
 
     /// Takes a macaroon as a base64-encoded string, deserializes it
@@ -266,8 +261,7 @@ impl AuthConfectionary {
         s: &str,
         endpoint: Option<&str>,
     ) -> Result<EditorRow> {
-        let raw = BASE64.decode(s.as_bytes())?;
-        let mac = match Macaroon::deserialize(&raw) {
+        let mac = match Macaroon::deserialize(s) {
             Ok(m) => m,
             Err(e) => {
                 // TODO: should be "chaining" here
@@ -401,17 +395,15 @@ impl AuthConfectionary {
         };
         match verifier.verify(&mac, verify_key, Default::default()) {
             Ok(()) => (),
-            Err(MacaroonError::InvalidMacaroon(em)) => {
-                return Err(FatcatError::InvalidCredentials(format!(
-                    "auth token (macaroon) not valid (signature and/or caveats failed): {}",
-                    em
-                ))
+            Err(MacaroonError::CaveatNotSatisfied(_)) | Err(MacaroonError::InvalidSignature) => {
+                return Err(FatcatError::InvalidCredentials(
+                    "auth token (macaroon) not valid (signature and/or caveats failed)".to_string(),
+                )
                 .into());
             }
             Err(e) => {
-                // TODO: chain
                 return Err(FatcatError::InvalidCredentials(format!(
-                    "token parsing failed: {:?}",
+                    "auth token (macaroon) parsing failed: {:?}",
                     e
                 ))
                 .into());
@@ -574,7 +566,7 @@ fn test_macaroon_keys() {
         .unwrap();
     assert_eq!(old_key.len(), 32);
     assert_eq!(old_key, key_bytes);
-    let old_macaroon_key: MacaroonKey = old_key.as_slice().into();
+    let old_macaroon_key = MacaroonKey::generate(&old_key);
 
     // new (2022) way of parsing keys
     let key = parse_macaroon_key("5555555555555555555555555555555555555555xms=").unwrap();
