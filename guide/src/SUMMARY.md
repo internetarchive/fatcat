@@ -29,6 +29,10 @@
     - [Code of Conduct](./code_of_conduct.md)
     - [Privacy](./privacy_policy.md)
 
+[For Publishers](./publishers.md)
+
+[For Authors](./authors.md)
+
 [Further Reading](./bibliography.md)
 
 [About This Guide](./guide.md)
