@@ -23,7 +23,7 @@ Exceptions will likely be made:
 
 - temporary caching of IP addresses may be necessary to implement rate-limiting
   and debug traffic spikes
-- exception logging, abuse detection, and other exceptional 
+- exception logging, abuse detection, and other exceptional situations
 
 Some uncertain areas of privacy include:
 

@@ -126,8 +126,7 @@ to ensure they are properly formatted, though these checks aren't always
 complete or correct in more obscure cases.
 
 - `doi` (string): full DOI number, lower-case. Example: "10.1234/abcde.789".
-  See the "External Identifiers" section of style guide for more notes
-  about DOIs specifically.
+  See section below for more about DOIs specifically
 - `wikidata_qid` (string): external identifier for Wikidata entities. These are
   integers prefixed with "Q", like "Q4321". Each `release` entity can be
   associated with at most one Wikidata entity (this field is not an array), and
@@ -180,11 +179,11 @@ complete or correct in more obscure cases.
 - `is_work_alias` (boolean): if true, then this release is an alias or pointer to
   the entire work, or the most recent version of the work. For example, some
   data repositories have separate DOIs for each version of the dataset, then an
-  additional DOI that points to the "lastest" version/DOI.
+  additional DOI that points to the "latest" version/DOI.
 
 #### `release_type` Vocabulary
 
-This vocabulary is based on the 
+This vocabulary is based on the
 [CSL types](http://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types),
 with a small number of (proposed) extensions:
 
@@ -230,7 +229,7 @@ with a small number of (proposed) extensions:
   represent a "full work".
 - `component` (fatcat extension) for sub-components of a full paper or other
   work. Eg, tables, or individual files as part of a dataset.
-  
+
 An example of a `stub` might be a paper that gets an extra DOI by accident; the
 primary DOI should be a full release, and the accidental DOI can be a `stub`
 release under the same work. `stub` releases shouldn't be considered full
@@ -369,3 +368,28 @@ Fatcat:
 
 If blank, indicates that type of contribution is not known; this can often be
 interpreted as authorship.
+
+## More About DOIs
+
+All DOIs stored in an entity column should be registered (aka, should be
+resolvable from `doi.org`). Invalid identifiers may be cleaned up or removed by
+bots.
+
+DOIs should *always* be stored and transferred in lower-case form. Note that
+there are almost no other constraints on DOIs (and handles in general): they
+may have multiple forward slashes, whitespace, of arbitrary length, etc.
+Crossref has a [number of examples][] of such "valid" but frustratingly
+formatted strings.
+
+[number of examples]: https://www.crossref.org/blog/dois-unambiguously-and-persistently-identify-published-trustworthy-citable-online-scholarly-literature-right/
+
+In the Fatcat ontology, DOIs and release entities are one-to-one.
+
+It is the intention to automatically (via bot) create a Fatcat release for
+every Crossref-registered DOI from an allowlist of media types
+("journal-article" etc, but not all), and it would be desirable to auto-create
+entities for in-scope publications from all registrars. It is not the intention
+to auto-create a release for every registered DOI. In particular,
+"sub-component" DOIs (eg, for an individual figure or table from a publication)
+aren't currently auto-created, but could be stored in "extra" metadata, or on a
+case-by-case basis.

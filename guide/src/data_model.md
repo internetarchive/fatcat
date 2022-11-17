@@ -70,7 +70,7 @@ be reverted (even merges/redirects and "deletion").
 "Work in progress" or "proposed" updates are staged as edit objects without
 updating the identifiers themselves.
 
-## Controlled Vocabularies 
+## Controlled Vocabularies
 
 Some individual fields have additional constraints, either in the form of
 pattern validation ("values must be upper case, contain only certain

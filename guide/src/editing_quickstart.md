@@ -81,7 +81,7 @@ editgroups from the drop-down link in the upper right-hand corner of every
 page (your username, then "Edit History"). The editgroup page shows all the
 entities created, updated, or deleted, and allows you to make tweaks (re-edit)
 or remove changes. If the release/container update you made was bogus (just as
-a learning exercize), you could remove it here. It's a good practice to group
+a learning exercise), you could remove it here. It's a good practice to group
 related edits into the same editgroup, but only up to 50 or so edits at a time
 (more than that becomes difficult hard to review).
 
