@@ -135,27 +135,30 @@ complete or correct in more obscure cases.
   entities instead.
 - `isbn13` (string): external identifier for books. ISBN-9 and other formats
   should be converted to canonical ISBN-13.
-- `pmid` (string): external identifier for PubMed database. These are bare
+- `pmid` (string): external identifier for the PubMed database. These are bare
   integers, but stored in a string format.
 - `pmcid` (string): external identifier for PubMed Central database. These are
   integers prefixed with "PMC" (upper case), like "PMC4321". Versioned PMCIDs
   can also be stored (eg, "PMC4321.1"; future clarification of whether versions
   should *always* be stored will be needed.
-- `core` (string): external identifier for the [CORE] open access
-  aggregator. These identifiers are integers, but stored in string format.
+- `core` (string): external identifier for the [CORE][] open access
+  aggregator. Not used much in practice. These identifiers are integers, but
+  stored in string format.
 - `arxiv` (string): external identifier to a (version-specific) [arxiv.org][]
   work. For releases, must always include the `vN` suffix (eg, `v3`).
-- `jstor` (string): external identifier for works in JSTOR.
-- `ark` (string): ARK identifier
+- `jstor` (string): external identifier for works in JSTOR which do not have a
+  valid registered DOI.
+- `ark` (string): ARK identifier.
 - `mag` (DEPRECATED; string): Microsoft Academic Graph (MAG) identifier. As of
   December 2021, no entities in the catalog have a value for this field.
 - `doaj` (string): [DOAJ](https://doaj.org) article-level identifier
 - `dblp` (string): [dblp](https://dblp.org) article-level identifier
 - `oai` (string): OAI-PMH record id. Only use if no other identifier is available
 - `hdl` (string): [handle.net](https://handle.net) identifier. While DOIs are
-  technically handles, do not put DOIs in this field. Handles are transformed
-  to lower-case in database.
+  technically handles, do not put DOIs in this field. Handles are normalized
+  to lower-case in the catalog (server-side).
 
+[CORE]: https://core.ac.uk/
 [arxiv.org]: https://arxiv.org
 
 #### `extra` Fields
