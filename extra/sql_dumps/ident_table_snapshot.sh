@@ -18,11 +18,11 @@ echo "Will move output to '${OUTPUT_DIR}'"
 echo "Running SQL (from '${DATABASE_URL}')..."
 psql $DATABASE_URL < ./dump_idents.sql
 
-CHANGELOG_REV="`head -n1 /tmp/fatcat_ident_latest_changelog.tsv`"
+CHANGELOG_REV="`head -n1 /srv/fatcat/tmp/fatcat_ident_latest_changelog.tsv`"
 OUTFILE="${OUTPUT_DIR}/fatcat_idents.$DATESLUG.r$CHANGELOG_REV.tar.gz"
 
 echo "Compressing..."
-tar -C /tmp -c --verbose \
+tar -C /srv/fatcat/tmp -c --verbose \
     --use-compress-program=pigz \
     -f $OUTFILE \
     fatcat_ident_latest_changelog.tsv \

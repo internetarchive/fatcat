@@ -18,7 +18,7 @@ create_datadir:
 
 $(DATADIR)/.IDENTS:
 	sudo -u postgres DATABASE_URL=$(DATABASE_URL) ./ident_table_snapshot.sh $(DATADIR)
-	sudo -u postgres mv /tmp/fatcat_ident_*.tsv $(DATADIR)
+	sudo -u postgres mv /srv/fatcat/tmp/fatcat_ident_*.tsv $(DATADIR)
 	touch $@
 
 $(DATADIR)/release_export_expanded.json.gz: $(DATADIR)/.IDENTS
