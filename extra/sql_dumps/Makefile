@@ -91,3 +91,21 @@ $(DATADIR)/.PUBLIC_DB_UPLOADED: $(DATADIR)/.PUBLIC_DB_DUMP
 .PHONY: upload-public-database-snapshot
 upload-public-database-snapshot: create_datadir public-database-snapshot $(DATADIR)/.PUBLIC_DB_UPLOADED ## Upload metadata snapshot to archive.org
 	@echo
+
+$(DATADIR)/.PRIVATE_DB_DUMP:
+	sudo -u postgres pg_dump --verbose --format=custom fatcat_prod > $(DATADIR)/fatcat_private_dbdump_${DATESLUG}.pgdump.wip
+	mv $(DATADIR)/fatcat_private_dbdump_${DATESLUG}.pgdump.wip $(DATADIR)/fatcat_private_dbdump_${DATESLUG}.pgdump
+	touch $@
+
+.PHONY: private-database-snapshot
+private-database-snapshot: create_datadir $(DATADIR)/.PRIVATE_DB_DUMP ## Create SQL database snapshot which can be shared privately
+	@echo
+
+$(DATADIR)/.PRIVATE_DB_UPLOADED: $(DATADIR)/.PRIVATE_DB_DUMP
+	ia upload --checksum fatcat_sqldump_private_$(TODAY) ia_sqldump_item_readme.md --remote-name=README.md -m collection:webgroup-internal-backups -m mediatype:data -m creator:"Internet Archive Web Group" -m date:$(TODAY) -m title:"Fatcat Private Database Snapshot ($(TODAY))"
+	ia upload --checksum fatcat_sqldump_private_$(TODAY) $(DATADIR)/fatcat_private_dbdump_*.pgdump
+	touch $@
+
+.PHONY: upload-private-database-snapshot
+upload-private-database-snapshot: create_datadir private-database-snapshot $(DATADIR)/.PRIVATE_DB_UPLOADED ## Upload metadata snapshot to archive.org
+	@echo
