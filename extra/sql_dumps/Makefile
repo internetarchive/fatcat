@@ -67,7 +67,7 @@ metadata-exports: create_datadir $(DATADIR)/.METADATA_EXPORT  ## Dump bulk metad
 
 $(DATADIR)/.METADATA_UPLOADED: $(DATADIR)/.METADATA_EXPORT
 	ia upload --checksum fatcat_bulk_exports_$(TODAY) ia_exports_item_readme.md --remote-name=README.md -m collection:fatcat_snapshots_and_exports -m mediatype:data -m creator:"Internet Archive Web Group" -m date:$(TODAY) -m title:"Fatcat Bulk Metadata Exports ($(TODAY))"
-	ia upload fatcat_bulk_exports_$(TODAY) $(DATADIR)/*_export.json.gz $(DATADIR)/*_export_expanded.json.gz $(DATADIR)/abstracts.json.gz $(DATADIR)/file_hashes.tsv.gz $(DATADIR)/release_extid.tsv.gz
+	ia upload fatcat_bulk_exports_$(TODAY) $(DATADIR)/*_export.json.gz $(DATADIR)/*_export_expanded.json.gz $(DATADIR)/abstracts.json.gz
 	touch $@
 
 .PHONY: upload-metadata-exports
