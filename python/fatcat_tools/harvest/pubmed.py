@@ -176,9 +176,19 @@ class PubmedFTPWorker:
         while True:
             self.date_file_map = generate_date_file_map(host=self.host)
             if len(self.date_file_map) == 0:
-                raise ValueError(
-                    "map from dates to files should not be empty, maybe the HTML changed?"
-                )
+                # NOTE: This may happen once - typically in December - when
+                # Pubmed publishes a baseline dataset for the year and resets
+                # the daily update directory. Details: https://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/README.txt
+                if datetime.date.today().month == 12:
+                    print(
+                        "ignoring empty map, as we assume baseline/updatefile reset "
+                        "(see also: https://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/README.txt)",
+                        file=sys.stderr,
+                    )
+                else:
+                    raise ValueError(
+                        "map from dates to files should not be empty, maybe the HTML changed?"
+                    )
 
             current = self.state.next_span(continuous)
             if current:
