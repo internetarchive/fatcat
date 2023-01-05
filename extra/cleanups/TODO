@@ -1,0 +1,95 @@
+
+## Containers: bad publisher strings
+
+    fatcat-cli search container publisher:NULL --count
+    # 131
+    # update to empty string (?)
+
+## Releases: very long titles
+
+
+## Bad PDFs
+
+    https://fatcat.wiki/file/ypoyxwqw5zexbamwtdmpavjjbi
+    https://web.archive.org/web/20190305033128/http://pdfs.semanticscholar.org/ceb2/b47a7647c710cd8e2c1937395b5d4a3a0204.pdf
+    sha1:ceb2b47a7647c710cd8e2c1937395b5d4a3a0204
+    not actually even a PDF?
+
+Should do a query of `file_meta` and/or `pdf_meta` from sandcrawler DB, with
+updated `fatcat_file` table, and look for mismatches, then remove/update on
+fatcat side.
+
+
+## Partial PDFs
+
+look in to `ieeexplore.ieee.org` PDFs; may be partial?
+
+
+## Invalid DOIs
+
+We get a bunch of bogus DOIs from various sources. Eg, pubmed and doaj metadata
+(and probably dblp).
+
+It is not hard to verify individual DOIs, but doing so at scale is a bit harder.
+
+We could start by identifying bogus DOIs from failed ingests in sandcrawler-db,
+then verifying and removing from fatcat. Need to ensure we aren't "looping" the
+DOIs on the fatcat side (eg, re-importing).
+
+Could also do random sampling across, eg, DOAJ containers, to identify
+publishers which don't register DOIs, then verify all of them.
+
+Also, deleted DOIs
+
+
+## Likely Bogus Dates
+
+If 1970-01-01, then set to none (UNIX timestamp zero)
+
+
+## Forthcoming Articles
+
+These entities are created when the DOI is registered, but perhaps shouldn't be?
+
+Forthcoming Article 2019   Astrophysical Journal Letters
+doi:10.3847/2041-8213/ab0c96 
+
+
+## File Slides
+
+Many PDFs in fatcat, which are associated with "papers", seem to actually be slide decks.
+
+#### Sandcrawler SQL Exploration
+
+    SELECT *
+    FROM pdf_meta
+    LEFT JOIN fatcat_file
+        ON pdf_meta.sha1hex = fatcat_file.sha1hex
+    WHERE
+        status = 'success'
+        AND page0_height < page0_width
+        AND fatcat_file.sha1hex IS NOT NULL
+    LIMIT 10;
+
+    SELECT COUNT(*)
+    FROM pdf_meta
+    LEFT JOIN fatcat_file
+        ON pdf_meta.sha1hex = fatcat_file.sha1hex
+    WHERE
+        status = 'success'
+        AND page0_height < page0_width
+        AND fatcat_file.sha1hex IS NOT NULL
+    LIMIT 10;
+    # 199,126
+
+#### Low-Code Cleanup Idea
+
+1. do a SQL dump of file idents with this issue
+2. use fatcat-cli to fetch the file entities, with releases expanded
+3. use jq to filter to files with only one release associated
+4. use jq to filter to files where the single release is a paper (eg, "article-journal") and maybe also has a `container_id`
+5. use jq to modify the entities, setting `release_id` to null/empty, and setting `file_scope`
+6. use `fatcat-cli` to update the file entities
+
+This should fix many, though not all, such cases.
+
