@@ -48,6 +48,6 @@ sentry = { version = "0.15", default-features = false, features = ["with_client_
 cadence = "^0.16"
 
 # Command-line tools
-crossbeam-channel = "0.2"
+crossbeam-channel = "0.5"
 num_cpus = "1"
 env_logger = "0.8"
