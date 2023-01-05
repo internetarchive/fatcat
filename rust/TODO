@@ -1,6 +1,18 @@
 
-correctness
+from recent rust learning:
+- entity_crud: don't need "generic" implementations, can have default implementaiton in the trait itself
+- refactor all fatcatd code into `fatcat-server` directory (crate?)
+- possibly a single fatcat-admin command (part of fatcat-server) instead of individual ones? also much better ergonomics for this command (eg, lookups by username)
+
+correctness:
 - changelog sequence without gaps
+
+observability:
+- remove sentry integration, we never use it and it is large/complex dependency
+- improve logging, especially errors
+    => query parameters for errors (but not auth tokens)
+    => database timing?
+    => any message for 400 errors
 
 huge compile times:
 - iron not small, but mostly reasonable deps

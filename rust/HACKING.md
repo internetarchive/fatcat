@@ -70,3 +70,23 @@ Creating entities via API:
 ## Authentication
 
 Uses macaroons. See `notes/auth.md` and maybe look in the guide.
+
+## Codegen Updates
+
+These are notes from another branch?
+
+### OpenAPI Generator 5.0
+
+    export OPENAPI_GENERATOR_VERSION=5.0.0-SNAPSHOT
+    ./openapi-generator-cli.sh version
+
+### OpenAPI Standard 3.0
+
+Should consider doing this conversion by hand, not using converter tool.
+
+Motivation to make this change for CLI was that rust-server doesn't support
+client Bearer authentication from OpenAPI 2.0.
+
+Request bodies now don't have a "name", so the parameter ends up being infered
+from the type. For auto_batch, this means "auto_batch_fileset" or whatever
+instead of "auto_batch".
