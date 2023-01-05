@@ -1,0 +1,45 @@
+
+sha1:fe27d2d036d478fb692be95045b72773e0dc27ac
+https://fatcat.wiki/file/4tcvwhzunrgvri4x3uruug62jq
+
+    cover page... an ILL request? via ILL request.
+
+    "metadata": {
+        "author": "Emmanuel Lemoine",
+        "creator": "Okina",
+        "producer": "mPDF 6.0",
+        "title": "Chloro complexes of cobalt(II) in aprotic solvents: stability and structural modifications due to solvent effect"
+    },
+    "pdf_created": "2017-01-26T10:43:21+00:00",
+    "pdf_version": "1.4",
+    "permanent_id": "2d231660c0e26f92aad7cb2f62b5e03a",
+
+    SELECT *
+    FROM pdf_meta
+    WHERE
+        status = 'success'
+        AND page_count < 3
+        AND (metadata->>'creator')::text = 'Okina'
+    LIMIT 5;
+
+    SELECT COUNT(*)
+    FROM pdf_meta
+    WHERE
+        status = 'success'
+        AND page_count < 3
+        AND (metadata->>'creator')::text = 'Okina'
+    ;
+    # 4235
+
+    TODO: 'COPY TO'...
+
+    SELECT pdf_meta.sha1hex
+    FROM pdf_meta
+    LEFT JOIN fatcat_file ON pdf_meta.sha1hex = fatcat_file.sha1hex
+    WHERE
+        status = 'success'
+        AND page_count < 3
+        AND (metadata->>'creator')::text = 'Okina'
+        AND (metadata->>'publisher')::text LIKE 'mPDF%'
+        AND fatcat_file.ident IS NOT NULL
+    ;
