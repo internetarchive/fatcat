@@ -1,9 +1,9 @@
 
 Status: planned
 
-## Schema Changes for v0.4 Release
+## Schema Changes for Next Release
 
-Proposed schema changes for next fatcat iteration (v0.4? v0.5?).
+Proposed schema changes for next fatcat iteration with SQL changes (v0.6? v1.0?).
 
 SQL (and API, and elasticsearch):
 

@@ -1,5 +1,5 @@
 
-status: planning
+status: notes
 
 If we update fatcat python code to python3.7, what code refactoring changes can
 we make? We currently use/require python3.5.

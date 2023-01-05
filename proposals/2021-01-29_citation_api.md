@@ -1,4 +1,6 @@
 
+status: implemented
+
 Describes schemas, APIs, use-cases, and data store for citation graph.
 
 ## Use Cases

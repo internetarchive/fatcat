@@ -1,5 +1,5 @@
 
-status: in progress
+status: implemented
 
 Coverage UI/UX Enhancements
 ===========================

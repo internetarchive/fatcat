@@ -1,0 +1,25 @@
+
+status: brainstorm
+
+Institutional Repository Importer
+=================================
+
+Want to import content from IRs. Same general workflow for CORE, SHARE, BASE,
+other aggregators.
+
+Filter input to only works with known/ingested fulltext.
+
+Lookup file by hash. If found, skip for now. In future might do
+mapping/matching.
+
+Lookup by primary id (eg, CORE ident). If existing, can skip if it has file, or
+add file/location directly.
+
+Two indirect lookups: by external ident (DOI, PMID), or fuzzy search match. If
+we get either of these, want to do release/work grouping correctly.
+
+1. if we are certain of IR copy stage, then compare with existing release,
+   and/or lookup entire work for releases with same stage. update release or
+   add new release under same work.
+2. not sure of IR copy stage. guess stage from sherpa/romeo color and proceed
+   to insert/update.

@@ -1,5 +1,5 @@
 
-status: planning
+status: work-in-progress
 
 This proposal tracks a batch of catalog metadata cleanups planned for 2020.
 

@@ -1,6 +1,5 @@
 
-status: prototyping, side-project
-
+status: implemented (fatcat-cli)
 
 Fatcat CLI Client
 ===================

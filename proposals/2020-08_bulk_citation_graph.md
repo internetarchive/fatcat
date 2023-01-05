@@ -1,6 +1,8 @@
 
-status: brainstorm
+status: mostly implemented (refcat, mostly)
 
+Bulk Citation Graph
+===================
 
 This is one design proposal for how to scale up citation graph potential-match
 generation, as well as for doing fuzzy matching of other types at scale (eg,

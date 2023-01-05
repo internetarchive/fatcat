@@ -1,5 +1,5 @@
 
-Status: planned
+Status: mostly implemented (fuzzycat)
 
 Bibliographic Entity Fuzzy Match and Verification
 ====================================================
