@@ -16,7 +16,19 @@ See also:
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 
-## [0.5.2] - UNRELEASED
+## [0.5.x] - UNRELEASED
+
+## [0.5.2] - 2023-01-04
+
+This is mostly a roll-up release of changes from the last year, as an arbitrary
+milestone.
+
+No changes to API or SQL schemas.
+
+### Added
+
+- web: container "browse" views (eg, by volume)
+- guide: more content, particularly "for publishers" and "for authors"
 
 ### Changes
 
