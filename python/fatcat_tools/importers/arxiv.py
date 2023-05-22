@@ -142,6 +142,8 @@ class ArxivRawImporter(EntityImporter):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
         title = latex_to_text(metadata.title.get_text().replace("\n", " "))
+        if title.strip() == "":
+            return None # ConstraintViolation, from 2019-01-28 and 2023-05-22
         authors = parse_arxiv_authors(metadata.authors.get_text().replace("\n", " "))
         contribs = [
             fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role="author")
