@@ -1,0 +1,7 @@
+# Assorted issues
+
+## Checksum mismatch
+
+We have three files, recorded with different SHA1, which point to the same file in the archive:
+
+* https://fatcat.wiki/release/wf42ii3mwnel7pvp72zmfryl5m
