@@ -1,4 +1,3 @@
-
 Not allowed to PUT edits to the same entity in the same editgroup. If you want
 to update an edit, need to delete the old one first.
 
@@ -37,4 +36,25 @@ state was deleted or a redirect, it is set to null.
 This parameter is not checked/enforced at edit accept time (but could be, and
 maybe introduce `prev_redirect`, for race detection). Or, could have ident
 point to most-recent edit, and have edits point to prev, for firmer control.
+
+
+fatcat misc:
+
+- opencitations: https://arxiv.org/abs/1906.11964
+- https://pub.uni-bielefeld.de/record/2934907
+- re-read: scratch/issn/web_archiving.md
+- should expansion of 'wip' entities be allowed?
+- could now just not show 'wip' entities (unless part of editgroup)
+-  release_ref | 19904400 | Missing Index? |  4141039616 | 81833687 |  61929287
+- privacy/security issue with libmacaroon logging failed caveat verification
+- blank box on editgroup pages when not logged in
+- don't have "Editable catalog of bibliographic and fulltext file metadata" be the thing in snippets?
+- web: '|dictsort' in a bunch of places (for stability)
+- example HTML paper: https://andrewgyork.github.io/rescan_line_sted/
+- pubmed importer should include section in ALLCAPS: for multi-part abstracts
+- https://github.com/rholder/retrying
+- feature: push-button "update metadata from crossref"
+- demo ORCID: 0000-0002-1825-0097
+- link: https://www.jstor.org/dfr/about/technical-specifications
+- after indexing, optimise the Elasticsearch index by merging into a single segment: curl -XPOST 'http://localhost:9200/scholar/_forcemerge?max_num_segments=1'
 
