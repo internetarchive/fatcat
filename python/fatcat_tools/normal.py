@@ -6,7 +6,7 @@ free-form input, titles, etc.
 import base64
 import re
 import unicodedata
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import ftfy
 import langdetect
