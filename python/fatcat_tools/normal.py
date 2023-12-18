@@ -366,13 +366,13 @@ def clean_str(thing: Any, force_xml: bool = False) -> Optional[str]:
     """
     if thing is None:
         return None
+
     thing = f"{thing}"
     unescape_html: Union[str, bool] = "auto"
     if force_xml:
         unescape_html = True
     fixed = ftfy.fix_text(thing, unescape_html=unescape_html).strip()
-    if not fixed or len(fixed) <= 1:
-        # wasn't zero-length before, but is now; return None
+    if not fixed or len(fixed) < 1:
         return None
     return fixed
 
@@ -381,7 +381,6 @@ def test_clean_str() -> None:
 
     assert clean_str(None) is None
     assert clean_str("") is None
-    assert clean_str("1") is None
     assert clean_str("123") == "123"
     assert clean_str("a&amp;b") == "a&b"
     assert clean_str("<b>a&amp;b</b>") == "<b>a&amp;b</b>"
