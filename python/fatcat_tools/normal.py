@@ -350,7 +350,7 @@ def test_clean_hdl() -> None:
     assert clean_hdl("20./asdf") is None
 
 
-def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
+def clean_str(thing: Any, force_xml: bool = False) -> Optional[str]:
     """
     This function is appropriate to be called on any random, non-markup string,
     such as author names, titles, etc.
@@ -364,8 +364,9 @@ def clean_str(thing: Optional[str], force_xml: bool = False) -> Optional[str]:
 
     Also strips extra whitespace.
     """
-    if not thing:
+    if thing is None:
         return None
+    thing = f"{thing}"
     unescape_html: Union[str, bool] = "auto"
     if force_xml:
         unescape_html = True
@@ -385,6 +386,8 @@ def test_clean_str() -> None:
     assert clean_str("a&amp;b") == "a&b"
     assert clean_str("<b>a&amp;b</b>") == "<b>a&amp;b</b>"
     assert clean_str("<b>a&amp;b</b>", force_xml=True) == "<b>a&b</b>"
+    assert clean_str(1) == "1"
+    assert clean_str(1.1) == "1.1"
 
 
 def b32_hex(s: str) -> str:
