@@ -22,8 +22,6 @@ ADD COLUMN mimetype            TEXT CHECK (octet_length(mimetype) >= 1);
 -------------------- Update Test Revs --------------------------------------
 -- IMPORTANT: don't create new entities here, only mutate existing
 
-BEGIN;
-
 UPDATE container_rev SET
     issne = '1234-3333',
     issnp = '1234-6666',
@@ -40,5 +38,3 @@ INSERT INTO release_rev_extid (release_rev, extid_type, value) VALUES
     ('00000000-0000-0000-4444-FFF000000002', 'hdl',     '20.500.23456/abc/dummy');
 
 UPDATE fileset_rev_file SET mimetype = 'application/gzip' WHERE fileset_rev = '00000000-0000-0000-6666-fff000000003' and md5 = 'f4de91152c7ab9fdc2a128f962faebff';
-
-COMMIT;
