@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+
+FROM ubuntu:focal
+WORKDIR /src
+COPY . .
+RUN apt-get update && apt-get install git python3-pip curl -y && pip install pipenv pytest
+RUN git config --global --add safe.directory /src
+WORKDIR python
+RUN make dep
+CMD make test
+
+# Build
+# docker build -t fatcat-pytest -f Dockerfile.fatcat-pytest .
+
+# Run, adjusting source path as needed
+# docker run --network host -v/home/vilmibm/src/fatcat:/src fatcat-pytest
