@@ -498,8 +498,6 @@ CREATE INDEX webcapture_rev_release_target_release_idx ON webcapture_rev_release
 -- part of a stable external interface, and edits might be made here instead of
 -- in a migration.
 
-BEGIN;
-
 INSERT INTO editor (id, username, is_superuser, is_admin, is_bot, auth_epoch) VALUES
     ('00000000-0000-0000-AAAA-000000000001', 'root', true, true, false, '1970-01-01T01:01:01Z'),          -- aaaaaaaaaaaabkvkaaaaaaaaae
     ('00000000-0000-0000-AAAA-000000000002', 'admin', true, true, false, '1970-01-01T01:01:01Z'),         -- aaaaaaaaaaaabkvkaaaaaaaaai
@@ -751,5 +749,3 @@ INSERT INTO fileset_rev_release (fileset_rev, target_release_ident_id) VALUES
 INSERT INTO webcapture_rev_release (webcapture_rev, target_release_ident_id) VALUES
     ('00000000-0000-0000-7777-FFF000000002', '00000000-0000-0000-4444-000000000002'),
     ('00000000-0000-0000-7777-FFF000000003', '00000000-0000-0000-4444-000000000003');
-
-commit;

@@ -253,7 +253,8 @@
         "face": {
             "hashes": [
                 "sha256:3790311a7329e4b0d90baee346eecad54b337629576edf3a246683a5f0d24446",
-                "sha256:7d59ca5ba341316e58cf72c6aff85cca2541cf5056c4af45cb63af9a814bed3e"
+                "sha256:7d59ca5ba341316e58cf72c6aff85cca2541cf5056c4af45cb63af9a814bed3e",
+                "sha256:ca3a1d8b8b6aa8e61d62a300e9ee24e09c062aceda549e9a640128e4fa0f4559"
             ],
             "version": "==20.1.1"
         },

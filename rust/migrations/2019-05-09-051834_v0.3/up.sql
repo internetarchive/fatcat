@@ -62,8 +62,6 @@ CREATE INDEX IF NOT EXISTS work_edit_ident_idx ON work_edit(ident_id);
 
 -- IMPORTANT: don't create new entities here, only mutate existing
 
-BEGIN;
-
 UPDATE release_rev SET
     subtitle = 'and here a reasonable-length subtitle',
     withdrawn_status = 'withdrawn',
@@ -83,5 +81,3 @@ INSERT INTO release_rev_extid (release_rev, extid_type, value) VALUES
 UPDATE release_contrib SET given_name = 'John', surname = 'Ioannidis' WHERE release_rev = '00000000-0000-0000-4444-FFF000000003';
 
 UPDATE webcapture_rev_cdx SET size_bytes = 12345 WHERE webcapture_rev = '00000000-0000-0000-7777-FFF000000003';
-
-commit;

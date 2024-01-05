@@ -56,7 +56,22 @@ a local PostgreSQL database server. Tests will fail if this endpoint isn't
 found. See the README there to get that set up first. The CI integration tests
 build and start this daemon automatically.
 
-To run the python tests (with `fatcatd` running locally on port 9411):
+To run the python tests with docker requires some setup:
+
+```
+docker build -t fatcat-pytest -f Docker.fatcat-pytest .
+cd python
+cp example.env .env
+# update .env so FATCAT_DOMAIN="localhost"
+```
+
+once that is done, run tests from the root of `fatcat` with:
+
+```
+docker run --network host -v/home/vilmibm/src/fatcat:/src fatcat-pytest
+```
+
+To run the python tests without docker:
 
     sudo apt install libsnappy-dev
     pipenv install --dev
