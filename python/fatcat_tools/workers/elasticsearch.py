@@ -135,7 +135,11 @@ class ElasticsearchReleaseWorker(FatcatWorker):
             bulk_actions = []
             for msg in batch:
                 json_str = msg.value().decode("utf-8")
-                entity = entity_from_json(json_str, self.entity_type, api_client=ac)
+                try:
+                    entity = entity_from_json(json_str, self.entity_type, api_client=ac)
+                except ValueError as e:
+                    print(f"WARNING: {e} skipping corrupted entity payload: {json_str}")
+                    continue
                 assert isinstance(entity, self.entity_type)
                 if self.entity_type == ChangelogEntry:
                     key = entity.index
