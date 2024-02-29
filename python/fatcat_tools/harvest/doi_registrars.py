@@ -4,6 +4,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse
+from requests.exceptions import ChunkedEncodingError
 
 from confluent_kafka import KafkaException, Producer
 
@@ -138,7 +139,15 @@ class HarvestCrossrefWorker:
         )
         count = 0
         while True:
-            http_resp = http_session.get(self.api_host_url, params=params)
+            try:
+                http_resp = http_session.get(self.api_host_url, params=params)
+            except ChunkedEncodingError as e:
+                print(f"ChunkedEncodingError: '{e}', pausing for 30 seconds",
+                      file=sys.stderr)
+                # keep kafka producer connection alive
+                self.producer.poll(0)
+                time.sleep(30.0)
+                continue
             if http_resp.status_code == 503:
                 # crude backoff; now redundant with session exponential
                 # backoff, but allows for longer backoff/downtime on remote end
