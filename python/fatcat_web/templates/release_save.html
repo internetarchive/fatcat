@@ -11,12 +11,6 @@
 <div class="ui segment" style="padding: 3em;">
 <h1 class="ui header">"Save Paper Now"</h1>
 
-<div class="ui error message" style="margin-top: 2em;">
-  <div class="header">Error</div>
-  <p>Whoops, something went wrong and we couldn't enqueue your request. This
-  didn't have anything to do with the URL you supplied; please try again later.
-</div>
-
 {% if release and release.ext_ids.doi %}
   {% set syp_suffix = release.ext_ids.doi %}
 {% else %}
