@@ -3,7 +3,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from confluent_kafka import Consumer, KafkaException, Producer
-from fatcat_openapi_client import ApiClient, ReleaseEntity
+from fatcat_openapi_client import ApiClient, ApiException, ReleaseEntity
 
 from fatcat_tools.transforms import release_ingest_request, release_to_elasticsearch
 
@@ -66,7 +66,11 @@ class ChangelogWorker(FatcatWorker):
             if latest > self.offset:
                 print("Fetching changelogs from {} through {}".format(self.offset + 1, latest))
             for i in range(self.offset + 1, latest + 1):
-                cle = self.api.get_changelog_entry(i)
+                try:
+                    cle = self.api.get_changelog_entry(i)
+                except ApiException as e:
+                    print(f"failed to get changelog entry {i}: {cle}")
+                    continue
                 obj = self.api.api_client.sanitize_for_serialization(cle)
                 producer.produce(
                     self.produce_topic,
