@@ -18,10 +18,8 @@ def most_recent_message(topic: str, kafka_config: Dict[str, Any]) -> Message:
     conf.update(
         {
             "group.id": "worker-init-last-msg",  # should never commit
-            "delivery.report.only.error": True,
             "enable.auto.commit": False,
             "default.topic.config": {
-                "request.required.acks": -1,
                 "auto.offset.reset": "latest",
             },
         }
