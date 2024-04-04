@@ -68,9 +68,10 @@ class ChangelogWorker(FatcatWorker):
             for i in range(self.offset + 1, latest + 1):
                 try:
                     cle = self.api.get_changelog_entry(i)
-                except ApiException as e:
-                    print(f"failed to get changelog entry {i}: {cle}")
-                    continue
+                except ApiException as ae:
+                    if ae.status == 404:
+                        continue
+                    raise ae
                 obj = self.api.api_client.sanitize_for_serialization(cle)
                 producer.produce(
                     self.produce_topic,
