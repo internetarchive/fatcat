@@ -28,7 +28,7 @@ from fatcat_openapi_client.rest import ApiException
 from fuzzycat.matching import match_release_fuzzy
 
 from fatcat_tools.biblio_lookup_tables import DOMAIN_REL_MAP
-from fatcat_tools.normal import clean_doi
+from fatcat_tools.normal import clean_doi, clean_orcid
 from fatcat_tools.transforms import entity_to_dict
 
 DATE_FMT: str = "%Y-%m-%d"
@@ -258,15 +258,12 @@ class EntityImporter:
     def insert_batch(self, raw_records: List[Any]) -> None:
         raise NotImplementedError
 
-    def is_orcid(self, orcid: str) -> bool:
-        # TODO: replace with clean_orcid() from fatcat_tools.normal
-        return self._orcid_regex.match(orcid) is not None
-
     def lookup_orcid(self, orcid: str) -> Optional[str]:
         """Caches calls to the Orcid lookup API endpoint in a local dict.
 
         Returns a creator fatcat ident if found, else None"""
-        if not self.is_orcid(orcid):
+        orcid = clean_orcid(orcid)
+        if orcid is None:
             return None
         if orcid in self._orcid_id_map:
             return self._orcid_id_map[orcid]

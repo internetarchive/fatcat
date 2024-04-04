@@ -23,11 +23,3 @@ def test_identifiers(api):
     assert ci.is_issnl("1234-5678.") is False
     assert ci.is_issnl("12345678") is False
     assert ci.is_issnl("1-2345678") is False
-
-    oi = OrcidImporter(api)
-
-    assert oi.is_orcid("0000-0003-3118-6591") is True
-    assert oi.is_orcid("0000-0003-3953-765X") is True
-    assert oi.is_orcid("0000-00x3-3118-659") is False
-    assert oi.is_orcid("0000-00033118-659") is False
-    assert oi.is_orcid("0000-0003-3118-659.") is False
