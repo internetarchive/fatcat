@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 import fatcat_openapi_client
 from fatcat_openapi_client import ApiClient, CreatorEntity
 
-from fatcat_tools.normal import clean_str
+from fatcat_tools.normal import clean_str, clean_orcid
 
 from .common import EntityImporter
 
@@ -63,8 +63,8 @@ class OrcidImporter(EntityImporter):
                 display = sur
             elif given:
                 display = given
-        orcid = obj["orcid-identifier"]["path"]
-        if not self.is_orcid(orcid):
+        orcid = clean_orcid(obj["orcid-identifier"]["path"])
+        if orcid is None:
             sys.stderr.write("Bad ORCID: {}\n".format(orcid))
             return None
         display = clean_str(display)
