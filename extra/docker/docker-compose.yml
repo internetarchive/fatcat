@@ -32,11 +32,3 @@ services:
       cluster.routing.allocation.disk.watermark.high: "500mb"
       cluster.routing.allocation.disk.watermark.flood_stage: "100mb"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-  kafka_pixy:
-    image: mailgun/kafka-pixy:0.17.0
-    entrypoint: /usr/bin/kafka-pixy -kafkaPeers kafka:9092 -zookeeperPeers zookeeper:2181
-    ports:
-      - "19091:19091"
-      - "19092:19092"
-    depends_on:
-      - kafka
