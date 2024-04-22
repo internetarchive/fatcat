@@ -371,47 +371,6 @@ class IngestFileResultImporter(EntityImporter):
                 )
             )
 
-
-class SavePaperNowFileImporter(IngestFileResultImporter):
-    """
-    This worker ingests from the same feed as IngestFileResultImporter, but
-    only imports files from anonymous save-paper-now requests, and "submits"
-    them for further human review (as opposed to accepting by default).
-    """
-
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
-
-        eg_desc = (
-            kwargs.pop("editgroup_description", None)
-            or "Files crawled after a public 'Save Paper Now' request"
-        )
-        eg_extra = kwargs.pop("editgroup_extra", dict())
-        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.SavePaperNowFileImporter")
-        kwargs["submit_mode"] = submit_mode
-        kwargs["require_grobid"] = False
-        kwargs["do_updates"] = False
-        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
-
-    def want(self, row: Dict[str, Any]) -> bool:
-
-        source = row["request"].get("ingest_request_source")
-        if not source:
-            self.counts["skip-ingest_request_source"] += 1
-            return False
-        if not source.startswith("savepapernow"):
-            self.counts["skip-not-savepapernow"] += 1
-            return False
-
-        if row.get("hit") is not True:
-            self.counts["skip-hit"] += 1
-            return False
-
-        if not self.want_file(row):
-            return False
-
-        return True
-
-
 class IngestWebResultImporter(IngestFileResultImporter):
     """
     Variant of IngestFileResultImporter for processing HTML ingest requests
@@ -578,58 +537,6 @@ class IngestWebResultImporter(IngestFileResultImporter):
                     entity_list=batch,
                 )
             )
-
-
-class SavePaperNowWebImporter(IngestWebResultImporter):
-    """
-    Like SavePaperNowFileImporter, but for webcapture (HTML) ingest.
-    """
-
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
-
-        eg_desc = (
-            kwargs.pop("editgroup_description", None)
-            or "Webcaptures crawled after a public 'Save Paper Now' request"
-        )
-        eg_extra = kwargs.pop("editgroup_extra", dict())
-        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.SavePaperNowWebImporter")
-        kwargs["submit_mode"] = submit_mode
-        kwargs["do_updates"] = False
-        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
-
-    def want(self, row: Dict[str, Any]) -> bool:
-        """
-        Relatively custom want() here, a synthesis of other filters.
-
-        We do currently allow unknown-scope through for this specific code
-        path, which means allowing hit=false.
-        """
-
-        source = row["request"].get("ingest_request_source")
-        if not source:
-            self.counts["skip-ingest_request_source"] += 1
-            return False
-        if not source.startswith("savepapernow"):
-            self.counts["skip-not-savepapernow"] += 1
-            return False
-
-        # webcapture-specific filters
-        if row["request"].get("ingest_type") != "html":
-            self.counts["skip-ingest-type"] += 1
-            return False
-        if not row.get("file_meta"):
-            self.counts["skip-file-meta"] += 1
-            return False
-        if row["file_meta"].get("mimetype") not in ("text/html", "application/xhtml+xml"):
-            self.counts["skip-mimetype"] += 1
-            return False
-
-        if row.get("status") not in ["success", "unknown-scope"]:
-            self.counts["skip-hit"] += 1
-            return False
-
-        return True
-
 
 class IngestFilesetResultImporter(IngestFileResultImporter):
     """
@@ -1050,40 +957,3 @@ class IngestFilesetFileResultImporter(IngestFileResultImporter):
         if edit_extra:
             fe.edit_extra = edit_extra
         return fe
-
-
-class SavePaperNowFilesetImporter(IngestFilesetResultImporter):
-    """
-    Like SavePaperNowFileImporter, but for fileset/dataset ingest.
-    """
-
-    def __init__(self, api: ApiClient, submit_mode: bool = True, **kwargs) -> None:
-
-        eg_desc = (
-            kwargs.pop("editgroup_description", None)
-            or "Fileset crawled after a public 'Save Paper Now' request"
-        )
-        eg_extra = kwargs.pop("editgroup_extra", dict())
-        eg_extra["agent"] = eg_extra.get("agent", "fatcat_tools.SavePaperNowFilesetImporter")
-        kwargs["submit_mode"] = submit_mode
-        kwargs["do_updates"] = False
-        super().__init__(api, editgroup_description=eg_desc, editgroup_extra=eg_extra, **kwargs)
-
-    def want(self, row: Dict[str, Any]) -> bool:
-
-        source = row["request"].get("ingest_request_source")
-        if not source:
-            self.counts["skip-ingest_request_source"] += 1
-            return False
-        if not source.startswith("savepapernow"):
-            self.counts["skip-not-savepapernow"] += 1
-            return False
-
-        if row.get("hit") is not True:
-            self.counts["skip-hit"] += 1
-            return False
-
-        if not self.want_fileset(row):
-            return False
-
-        return True

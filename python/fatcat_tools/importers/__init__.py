@@ -40,9 +40,6 @@ from .ingest import (
     IngestFilesetFileResultImporter,
     IngestFilesetResultImporter,
     IngestWebResultImporter,
-    SavePaperNowFileImporter,
-    SavePaperNowFilesetImporter,
-    SavePaperNowWebImporter,
 )
 from .jalc import JalcImporter
 from .journal_metadata import JournalMetadataImporter

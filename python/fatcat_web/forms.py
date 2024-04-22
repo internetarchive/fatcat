@@ -452,53 +452,6 @@ INGEST_TYPE_OPTIONS: List[Tuple[str, str]] = [
     ("xml", "XML Fulltext"),
 ]
 
-
-class SavePaperNowForm(FlaskForm):
-
-    base_url = StringField("URL", [validators.DataRequired(), validators.URL()])
-    ingest_type = SelectField(
-        "Content Type", [validators.DataRequired()], choices=INGEST_TYPE_OPTIONS, default="pdf"
-    )
-    release_stage = SelectField(
-        "Publication Stage",
-        [validators.DataRequired()],
-        choices=release_stage_options,
-        default="",
-    )
-
-    def to_ingest_request(
-        self, release: ReleaseEntity, ingest_request_source: str = "savepapernow"
-    ) -> Dict[str, Any]:
-        base_url = self.base_url.data
-        ext_ids = release.ext_ids.to_dict()
-        # by default this dict has a bunch of empty values
-        ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
-        ingest_request = {
-            "ingest_type": self.ingest_type.data,
-            "ingest_request_source": ingest_request_source,
-            "link_source": "spn",
-            "link_source_id": release.ident,
-            "base_url": base_url,
-            "fatcat": {
-                "release_ident": release.ident,
-                "work_ident": release.work_id,
-            },
-            "ext_ids": ext_ids,
-        }
-        if self.release_stage.data:
-            ingest_request["release_stage"] = self.release_stage.data
-
-        if release.ext_ids.doi and base_url == "https://doi.org/{}".format(release.ext_ids.doi):
-            ingest_request["link_source"] = "doi"
-            ingest_request["link_source_id"] = release.ext_ids.doi
-        elif release.ext_ids.arxiv and base_url == "https://arxiv.org/pdf/{}.pdf".format(
-            release.ext_ids.arxiv
-        ):
-            ingest_request["link_source"] = "arxiv"
-            ingest_request["link_source_id"] = release.ext_ids.arxiv
-        return ingest_request
-
-
 def valid_toml(form: Any, field: Any) -> None:
     try:
         toml.loads(field.data)
