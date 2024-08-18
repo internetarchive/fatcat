@@ -41,7 +41,7 @@ and improvements as much as possible, often a human touch is best.
 Any person can contribute to the catalog directly by creating an account and
 submitting changes for review. This includes, but is not limited to, authors or
 a person acting on their behalf submitting corrections. The [editing
-quickstart](./quickstart.md) is a good place to start. Please remember that
+quickstart](./editing_quickstart.md) is a good place to start. Please remember that
 corrections are considered part of the public record of the catalog and will be
 preserved even if a contributor later deletes their account. Editor *usernames*
 can be changed at any time.
@@ -57,7 +57,7 @@ publisher databases, repositories, or ORCiD in addition to in fatcat.
 The preferred workflow for author name changes depends on the author's
 sensitivity to having prior names accessible and searchable.
 
-If "also known as" behvior is desirable, contributor names on the release
+If "also known as" behavior is desirable, contributor names on the release
 record should remain unchanged (matching what the publication at the time
 indicated), and a linked `creator` entity should include the
 currently-preferred name for display.
